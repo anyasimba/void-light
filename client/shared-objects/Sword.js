@@ -3,7 +3,7 @@ export class Sword extends mix(global.Sword, MixGameObject) {
     const graphics = new Phaser.Graphics(game, 0, 0);
 
     graphics.beginFill(0xFF9900, 0.5);
-    graphics.lineStyle(1, 0xFF9900, 1.2);
+    graphics.lineStyle(1, 0xFF9900, 1);
     graphics.drawRect(-20, -2, 100, 4);
     graphics.endFill();
 
@@ -26,7 +26,7 @@ export class Sword extends mix(global.Sword, MixGameObject) {
     this.view.y = this.pos.y;
     this.view.angle = this.angle;
 
-    if (this.parent.speed.length() > 0) {
+    if (this.parent.speed.length() >= 1) {
       this.group.angle = this.parent.speed.toAngle();
     }
   }

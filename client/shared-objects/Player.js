@@ -4,10 +4,10 @@ export class Player extends mix(global.Player, MixGameObject) {
 
     if (isSelf) {
       graphics.beginFill(0x0099FF, 0.5);
-      graphics.lineStyle(4, 0x0099FF, 1.2);
+      graphics.lineStyle(2, 0x0099FF, 1);
     } else {
       graphics.beginFill(0xFF9900, 0.5);
-      graphics.lineStyle(4, 0xFF9900, 1.2);
+      graphics.lineStyle(2, 0xFF9900, 1);
     }
     graphics.drawCircle(0, 0, this.BODY_SIZE);
     graphics.endFill();
