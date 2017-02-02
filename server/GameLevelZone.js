@@ -120,7 +120,6 @@ export class GameLevelZone {
       const object = objectsWithBody[id];
       this.updateObjectWithBody(object);
     }
-
   }
 
   updateObjectWithBody(object) {
