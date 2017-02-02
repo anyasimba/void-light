@@ -8,13 +8,21 @@ export class Sword {
   }
 
   update() {
-    if (this.doHit) {
-      this.angle += 20;
-      delete this.doHit;
-    }
+
   }
 
-  onHit() {
-    this.doHit = true;
+  onHit(opts) {
+    this.tasks.push(async() => {
+      const start = this.angle;
+      this.animations['angle'] = {
+        end: 200,
+        fn: t => t,
+      };
+      await this.waitAnimation('angle');
+      this.animations['angle'] = {
+        end: start,
+        fn: t => t,
+      };
+    });
   }
 }

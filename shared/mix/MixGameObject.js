@@ -21,6 +21,19 @@ export const MixGameObject = base => class extends base {
       gameObjects[id] = this;
       ++gameObjectsCount;
     }
+
+    this.tasks = [];
+    (async() => {
+      while (!this.isDestroyed) {
+        if (this.tasks.length > 0) {
+          const task = this.tasks.shift();
+          task();
+        }
+        await sleep(0);
+      }
+    })();
+
+    this.animations = {};
   }
   destructor() {
     for (const k in this.children) {
@@ -39,6 +52,17 @@ export const MixGameObject = base => class extends base {
       delete gameObjects[this.id];
       --gameObjectsCount;
     }
+
+    this.isDestroyed = true;
+  }
+
+  async waitAnimation(k) {
+    return new Promise(async r => {
+      while (this.animations[k]) {
+        await sleep(0);
+      }
+      return r();
+    });
   }
 
   update() {
@@ -49,6 +73,26 @@ export const MixGameObject = base => class extends base {
     for (const id in this.children) {
       const child = this.children[id];
       child.update();
+    }
+
+    for (const k in this.animations) {
+      const animation = this.animations[k];
+      if (!animation.time) {
+        animation.time = 0;
+      }
+      if (!animation.start) {
+        animation.start = this[k];
+      }
+      if (!animation.duration) {
+        animation.duration = 1;
+      }
+      animation.time += dt / animation.duration;
+      if (animation.time >= 1) {
+        animation.time = 1;
+        delete this.animations[k];
+      }
+      this[k] = animation.start + animation.fn(animation.time) *
+        (animation.end - animation.start);
     }
 
     if (super.update) {
