@@ -6,20 +6,22 @@ function initUpdate() {
     global.time += dt;
     global.dt *= 0.001;
 
-    for (const k in gameObjects) {
-      const object = gameObjects[k];
+    for (const id in gameObjects) {
+      const object = gameObjects[id];
       object.update();
     }
+
+    gameLevelZone.update();
   }, 1000.0 / 60.0);
 }
 
 export function main() {
-  initUpdate();
-
   global.gameLevelZone = new GameLevelZone({
     w: 1024,
     h: 1024,
   });
+
+  initUpdate();
 
   global.server = Server();
   console.log('Server started');

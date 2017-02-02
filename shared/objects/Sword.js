@@ -7,5 +7,14 @@ export class Sword {
     return 10;
   }
 
-  update() {}
+  update() {
+    if (this.doHit) {
+      this.angle += 20;
+      delete this.doHit;
+    }
+  }
+
+  onHit() {
+    this.doHit = true;
+  }
 }

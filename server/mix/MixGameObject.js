@@ -8,28 +8,56 @@ preMain(async() => {
 
 const MixGameObjectBase = global.MixGameObject;
 export const MixGameObject = base => class extends mix(base, MixGameObjectBase) {
+  get clients() {
+    if (this.gameLevelZone) {
+      return this.gameLevelZone.clients;
+    }
+    if (this.parent) {
+      return this.parent.clients;
+    }
+  }
+  get objects() {
+    if (this.gameLevelZone) {
+      return this.gameLevelZone.objects;
+    }
+    if (this.parent) {
+      return this.parent.objects;
+    }
+  }
+
   constructor(state, ...args) {
     super(MixGameObject.createID(), state, ...args);
 
-    const message = {
-      class: this.constructor.classID,
-    };
-    if (this.parent) {
-      message.parentID = this.parent.id;
+    if (this.clients) {
+      for (const client of this.clients) {
+        this.emitTo(client);
+      }
     }
-    this.emitAll('new', Object.assign(message, this.state));
   }
   destructor() {
+    if (this.gameLevelZone) {
+      this.gameLevelZone.removeObject(this);
+    }
+
     super.destructor();
-
-    this.emitAll('delete', {});
   }
 
-  get players() {
-    return Player.list;
-  }
-  get objects() {
-    return gameObjects;
+  emitTo(client) {
+    client.emit('new', Object.assign({
+      class: this.constructor.classID,
+      id: this.id,
+    }, this.state));
+
+    if (this.childrenCount > 0) {
+      for (const id in this.children) {
+        const child = this.children[id];
+        client.emit('new', Object.assign({
+          class: child.constructor.classID,
+          id: child.id,
+          parentID: this.id,
+        }, child.state));
+      }
+    }
   }
 
   emitAll(eventType, eventData) {
@@ -37,9 +65,10 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
     if (this.parent) {
       eventData.parentID = this.parent.id;
     }
-    const players = this.players;
-    for (const player of players) {
-      player.emit(eventType, eventData);
+    const clients = this.clients;
+    for (const i in clients) {
+      const client = clients[i];
+      client.emit(eventType, eventData);
     }
   }
 }

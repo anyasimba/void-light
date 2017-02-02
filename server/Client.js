@@ -2,13 +2,22 @@ export class Client extends global.Client {
   constructor(sock) {
     super(sock);
 
-    this.player = new Player(this, gameLevelZone);
+    this.player = new Player(this);
+
+    this.emit('playerID', {
+      playerID: this.player.id,
+    });
+
+    gameLevelZone.addClient(this);
 
     this.registerEvents();
   }
 
   onDisconnect() {
+    gameLevelZone.removeClient(this);
+
     this.player.pendingDestroy = true;
+
     console.log('User disconnected');
   }
 
@@ -52,5 +61,7 @@ export class Client extends global.Client {
     if (typeof data.y !== 'number') {
       return;
     }
+
+    this.player.doHit(data);
   }
 }

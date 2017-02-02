@@ -20,10 +20,17 @@ export class Player extends mix(global.Player, MixGameObject) {
       pos: new vec3(data.pos),
       speed: new vec3(data.speed),
       inputMove: new vec3(data.inputMove),
+      look: new vec3(data.look),
 
       view: Player.createView(data.id === client.playerID),
     });
     this.group.add(this.view);
+  }
+
+  onPos(data) {
+    this.pos.init(data.pos);
+    this.speed.init(data.speed);
+    this.inputMove.init(data.inputMove);
   }
 
   update() {
@@ -31,11 +38,5 @@ export class Player extends mix(global.Player, MixGameObject) {
 
     this.group.x = this.pos.x;
     this.group.y = this.pos.y;
-  }
-
-  onPos(data) {
-    this.pos.init(data.pos);
-    this.speed.init(data.speed);
-    this.inputMove.init(data.inputMove);
   }
 }

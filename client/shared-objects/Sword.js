@@ -26,8 +26,8 @@ export class Sword extends mix(global.Sword, MixGameObject) {
     this.view.y = this.pos.y;
     this.view.angle = this.angle;
 
-    if (this.parent.speed.length() >= 1) {
-      this.group.angle = this.parent.speed.toAngle();
+    if (this.parent.look.length() > 0) {
+      this.group.angle = this.parent.look.toAngle();
     }
   }
 }

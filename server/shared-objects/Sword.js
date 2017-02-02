@@ -1,14 +1,14 @@
 export class Sword extends mix(global.Sword, MixGameObject) {
-  constructor(player, data) {
-    super(Object.assign({
-      parent: player,
-    }, data));
-  }
-
   get state() {
     return {
       pos: this.pos,
       angle: this.angle,
     };
+  }
+
+  onHit() {
+    super.onHit();
+
+    this.emitAll('hit', {});
   }
 }
