@@ -76,7 +76,7 @@ export class GameLevelZone {
 
       vec3.unit(v);
       const force = object.speed.length() + otherObject.speed.length();
-      const imp = 2;
+      const imp = 0.5;
       vec3.add(object.speed, v.multiply(force * imp));
       vec3.subtract(otherObject.speed, v.multiply(force * imp));
 

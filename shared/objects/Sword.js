@@ -24,15 +24,16 @@ export class Sword {
       (async() => {
         const start = this.angle;
         await this.animate('angle', {
-          end: start + 30,
-          duration: 0.2,
+          end: start + 70,
+          duration: 0.3,
           fn: easing.easeInQuad,
         });
         await this.animate('angle', {
-          end: start + 20,
+          end: start + 100,
           duration: 0.1,
           fn: easing.easeOutQuad,
         });
+        await sleep(100);
         await this.animate('angle', {
           end: start,
           duration: 0.2,
@@ -42,24 +43,25 @@ export class Sword {
       (async() => {
         const start = this.sideAngle;
         await this.animate('sideAngle', {
-          end: start + 20,
-          duration: 0.2,
+          end: start,
+          duration: 0.3,
           fn: easing.easeInQuad,
         });
         await this.animate('sideAngle', {
-          end: start - 170,
+          end: start - 200,
           duration: 0.1,
           fn: easing.easeOutQuad,
         });
+        await sleep(100);
         await this.animate('sideAngle', {
           end: start,
           duration: 0.2,
           fn: easing.easeInOutQuad,
         });
       })();
-      await sleep(300);
-      this.canNextHit = true;
       await sleep(350);
+      this.canNextHit = true;
+      await sleep(400);
       delete this.canNextHit;
       delete this.inHit;
 
