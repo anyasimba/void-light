@@ -14,6 +14,7 @@ export class Sword extends mix(global.Sword, MixGameObject) {
     super(data, {
       pos: new vec3(data.pos),
       angle: data.angle,
+      sideAngle: data.sideAngle,
       view: Sword.createView(),
     });
     this.group.add(this.view);
@@ -27,7 +28,7 @@ export class Sword extends mix(global.Sword, MixGameObject) {
     this.view.angle = this.angle;
 
     if (this.parent.look.length() > 0) {
-      this.group.angle = this.parent.look.toAngle();
+      this.group.angle = this.parent.look.toAngle() + this.sideAngle;
     }
   }
 }

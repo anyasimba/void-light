@@ -3,7 +3,14 @@ export class Sword extends mix(global.Sword, MixGameObject) {
     return {
       pos: this.pos,
       angle: this.angle,
+      sideAngle: this.sideAngle,
     };
+  }
+
+  constructor(...args) {
+    super(...args);
+
+    this.sideAngle = 0;
   }
 
   onHit() {

@@ -65,6 +65,11 @@ export const MixGameObject = base => class extends base {
     });
   }
 
+  async animate(k, opts) {
+    this.animations[k] = opts;
+    return await this.waitAnimation(k);
+  }
+
   update() {
     if (this.pendingDestroy) {
       return this.destructor();
