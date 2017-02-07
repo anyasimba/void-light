@@ -22,18 +22,13 @@ export const MixGameObject = base => class extends base {
       ++gameObjectsCount;
     }
 
-    this.tasks = [];
-    (async() => {
-      while (!this.isDestroyed) {
-        if (this.tasks.length > 0) {
-          const task = this.tasks.shift();
-          task();
-        }
-        await sleep(0);
-      }
-    })();
-
     this.animations = {};
+
+    this.timeSpeed = 1;
+
+    if (this.onCreate) {
+      this.onCreate();
+    }
   }
   destructor() {
     for (const k in this.children) {
@@ -70,6 +65,17 @@ export const MixGameObject = base => class extends base {
     return await this.waitAnimation(k);
   }
 
+  async sleep(time) {
+    return await sleep(time * 1000 / this.calcTimeSpeed());
+  }
+
+  calcTimeSpeed() {
+    if (this.parent) {
+      return this.timeSpeed * this.parent.calcTimeSpeed();
+    }
+    return this.timeSpeed;
+  }
+
   update() {
     if (this.pendingDestroy) {
       return this.destructor();
@@ -86,18 +92,32 @@ export const MixGameObject = base => class extends base {
         animation.time = 0;
       }
       if (!animation.start) {
-        animation.start = this[k];
+        if (typeof this[k] !== 'number') {
+          animation.start = this[k].clone();
+        } else {
+          animation.start = this[k];
+        }
       }
       if (!animation.duration) {
         animation.duration = 1;
       }
-      animation.time += dt / animation.duration;
+      animation.time += dt / animation.duration * this.calcTimeSpeed();
       if (animation.time >= 1) {
         animation.time = 1;
         delete this.animations[k];
       }
-      this[k] = animation.start + animation.fn(animation.time) *
-        (animation.end - animation.start);
+      if (typeof this[k] !== 'number') {
+        const t = animation.fn(animation.time);
+        this[k].x = animation.start.x + t *
+          (animation.end.x - animation.start.x);
+        this[k].y = animation.start.y + t *
+          (animation.end.y - animation.start.y);
+        this[k].z = animation.start.z + t *
+          (animation.end.z - animation.start.z);
+      } else {
+        this[k] = animation.start + animation.fn(animation.time) *
+          (animation.end - animation.start);
+      }
     }
 
     if (super.update) {

@@ -34,7 +34,7 @@ export class Player extends mix(global.Player, MixGameObject) {
       size: Player.BODY_SIZE,
     }
 
-    this.sword = new Sword({
+    new Sword({
       parent: this,
       pos: {
         x: -20,
@@ -45,6 +45,10 @@ export class Player extends mix(global.Player, MixGameObject) {
   }
 
   doHit(data) {
-    this.sword.onHit();
+    this.onHit(data);
+    this.emitAll('hit', {
+      x: data.x,
+      y: data.y,
+    });
   }
 }

@@ -1,9 +1,9 @@
 export class vec3 {
   constructor(x, y, z) {
     if (x && typeof x !== 'number') {
-      this.x = x.x;
-      this.y = x.y;
-      this.z = x.z;
+      this.x = x.x || 0;
+      this.y = x.y || 0;
+      this.z = x.z || 0;
       return;
     }
     this.x = x || 0;

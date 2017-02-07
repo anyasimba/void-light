@@ -12,10 +12,4 @@ export class Sword extends mix(global.Sword, MixGameObject) {
 
     this.sideAngle = 0;
   }
-
-  onHit() {
-    super.onHit();
-
-    this.emitAll('hit', {});
-  }
 }
