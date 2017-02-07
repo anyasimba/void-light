@@ -18,6 +18,24 @@ export const game = new Phaser.Game(
 
       game.scene = game.add.group();
 
+      game.scene.postUpdate = () => {
+        if (global.client && client.player) {
+          const targetX = client.player.pos.x + client.player.speed.x *
+            0.5;
+          const targetY = client.player.pos.y + client.player.speed.y *
+            0.5;
+
+          const dx = -targetX *
+            game.scaleFactor + game.width / 2 - game.scene.x;
+          const dy = -targetY *
+            game.scaleFactor + game.height / 2 - game.scene.y;
+
+          const f = (1 - Math.pow(0.1, dt));
+          game.scene.x += dx * f;
+          game.scene.y += dy * f;
+        }
+      };
+
       function resize(e) {
         const w = window.innerWidth;
         const h = window.innerHeight;
@@ -42,7 +60,6 @@ export const game = new Phaser.Game(
       console.log('Game preloaded');
     },
     async create() {
-
       EZGUI.renderer = game.renderer;
       await new Promise(r => EZGUI.Theme.load(uiThemePaths, r));
 
@@ -55,8 +72,10 @@ export const game = new Phaser.Game(
         return;
       }
 
-      global.mx = game.input.x / game.scaleFactor;
-      global.my = game.input.y / game.scaleFactor;
+      global.mx = (game.input.x - game.scene.x) / game.scaleFactor;
+      global.my = (game.input.y - game.scene.y) / game.scaleFactor;
       global.dt = game.time.elapsed * 0.001;
     },
+
+    render() {},
   });

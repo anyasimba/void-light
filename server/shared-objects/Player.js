@@ -51,4 +51,16 @@ export class Player extends mix(global.Player, MixGameObject) {
       y: data.y,
     });
   }
+
+  doDamageRadialArea(opts) {
+    opts.hitVec = this.hitVec;
+
+    const hitAngle = this.hitVec.toAngle();
+    opts.a1 += hitAngle;
+    opts.a2 += hitAngle;
+
+    if (this.gameLevelZone) {
+      this.gameLevelZone.doDamageRadialArea(this, opts);
+    }
+  }
 }

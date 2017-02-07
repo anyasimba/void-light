@@ -21,10 +21,14 @@ export class Player extends mix(global.Player, MixGameObject) {
       speed: new vec3(data.speed),
       inputMove: new vec3(data.inputMove),
       look: new vec3(data.look),
-
-      view: Player.createView(data.id === client.playerID),
     });
+
+    this.view = Player.createView(this.id === client.playerID);
     this.group.add(this.view);
+
+    if (this.id === client.playerID) {
+      client.player = this;
+    }
   }
 
   onPos(data) {

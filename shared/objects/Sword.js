@@ -55,6 +55,14 @@ export class Sword {
         duration: 0.1,
         fn: easing.easeOutQuad,
       });
+
+      this.parent.doDamageRadialArea({
+        r1: 60,
+        r2: 160,
+        a1: -80,
+        a2: 80,
+      });
+
       await this.sleep(0.1);
       await this.animate('sideAngle', {
         end: start,

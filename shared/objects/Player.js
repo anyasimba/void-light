@@ -13,6 +13,9 @@ export class Player {
   static get LOOK_ROTATE_F() {
     return 0.95;
   }
+  static get LOOK_ROTATE_IN_HIT_F() {
+    return 0.98;
+  }
 
   static get BODY_SIZE() {
     return 40;
@@ -26,9 +29,15 @@ export class Player {
     vec3.multiply(this.speed, Math.pow(this.constructor.FRICTION, dt * 60));
     vec3.add(this.pos, this.speed.multiply(dt));
 
-    const lookRel = this.inputMove
+    let lookInput = this.inputMove;
+    let lookF = Player.LOOK_ROTATE_F;
+    if (this.inHit) {
+      lookInput = this.hitVec;
+      lookF = Player.LOOK_ROTATE_IN_HIT_F;
+    }
+    const lookRel = lookInput
       .subtract(this.look)
-      .multiply(1 - Math.pow(1 - this.constructor.LOOK_ROTATE_F, dt));
+      .multiply(1 - Math.pow(1 - lookF, dt));
     vec3.add(this.look, lookRel);
   }
 
@@ -42,18 +51,19 @@ export class Player {
     this.inHit = true;
 
     const pos = new vec3(opts);
-    this.hitAngle = pos
+    this.hitVec = pos
       .subtract(this.pos)
-      .toAngle();
+      .unit();
 
     this.sword.doHit();
 
     run(async() => {
       await this.sleep(0.35);
+      vec3.add(this.speed, this.hitVec.multiply(600));
       this.canNextHit = true;
       await this.sleep(0.4);
       delete this.canNextHit;
-      delete this.hitAngle;
+      delete this.hitVec;
       delete this.inHit;
 
       if (this.needNextHit) {
@@ -62,5 +72,9 @@ export class Player {
         this.onHit(opts);
       }
     });
+  }
+
+  doDamageRadialArea() {
+
   }
 }
