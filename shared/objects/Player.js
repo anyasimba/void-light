@@ -21,6 +21,10 @@ export class Player {
     return 40;
   }
 
+  get CELL_SIZE() {
+    return 400;
+  }
+
   update() {
     const move = this.inputMove.unit();
     if (!this.inHit) {

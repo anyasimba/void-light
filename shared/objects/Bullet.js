@@ -7,6 +7,10 @@ export class Bullet {
     return 10;
   }
 
+  get CELL_SIZE() {
+    return 100;
+  }
+
   update() {
     vec3.multiply(this.speed, Math.pow(1.1, dt * 60));
     vec3.add(this.pos, this.speed.multiply(dt));

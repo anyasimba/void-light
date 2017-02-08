@@ -1,6 +1,6 @@
 export class GameLevelZone {
   static get CELL_SIZE() {
-    return 64;
+    return 256;
   }
 
   constructor(opts) {
@@ -35,6 +35,12 @@ export class GameLevelZone {
 
     delete this.objects[object.id];
     delete this.bodies[object.id];
+
+    object.cells = object.cells || [];
+    for (const k in object.cells) {
+      const cell = object.cells[k];
+      delete this.cells[cell.x][cell.y][object.id];
+    }
   }
 
 
@@ -116,37 +122,81 @@ export class GameLevelZone {
 
   update() {
     const objectsWithBody = this.bodies;
-    for (const id in objectsWithBody) {
-      const object = objectsWithBody[id];
-      this.updateObjectWithBody(object);
+    for (const k in objectsWithBody) {
+      const object = objectsWithBody[k];
+      this.updateObjectWithBodyCells(object);
+    }
+    for (const k in objectsWithBody) {
+      const object = objectsWithBody[k];
+      this.updateObjectWithBodyCollisions(object);
     }
   }
 
-  updateObjectWithBody(object) {
-    const objectsWithBody = this.bodies;
-    for (const id in objectsWithBody) {
-      const otherObject = objectsWithBody[id];
-      if (object !== otherObject) {
-        this.resolveCollision(object, otherObject);
+  updateObjectWithBodyCells(object) {
+    object.cells = object.cells || [];
+    for (const k in object.cells) {
+      const cell = object.cells[k];
+      delete this.cells[cell.x][cell.y][object.id];
+    }
+    object.cells = [];
+
+    const CELL_SIZE = GameLevelZone.CELL_SIZE;
+    const xb = Math.floor(
+      (object.pos.x - object.CELL_SIZE * 0.5) / CELL_SIZE);
+    const xe = Math.ceil(
+      (object.pos.x + object.CELL_SIZE * 0.5) / CELL_SIZE);
+    const yb = Math.floor(
+      (object.pos.y - object.CELL_SIZE * 0.5) / CELL_SIZE);
+    const ye = Math.ceil(
+      (object.pos.y + object.CELL_SIZE * 0.5) / CELL_SIZE);
+
+    for (let x = xb; x <= xe; ++x) {
+      for (let y = yb; y <= ye; ++y) {
+        this.cells[x] = this.cells[x] || {};
+        this.cells[x][y] = this.cells[x][y] || {};
+        this.cells[x][y][object.id] = object;
+        object.cells.push({
+          x: x,
+          y: y
+        });
       }
+    }
+  }
+  objectWithBodyOthers(object, log) {
+    const others = {};
+    for (const k in object.cells) {
+      const cellID = object.cells[k];
+      const cell = this.cells[cellID.x][cellID.y];
+      for (const k in cell) {
+        const other = cell[k];
+        if (object !== other) {
+          others[other.id] = other;
+        }
+      }
+    }
+    return others;
+  }
+  updateObjectWithBodyCollisions(object) {
+    const others = this.objectWithBodyOthers(object);
+    for (const k in others) {
+      const other = others[k];
+      this.resolveCollision(object, other);
     }
 
     this.resolveBounds(object);
   }
 
   doDamageRadialArea(source, opts) {
-    const objectsWithBody = this.bodies;
-    for (const id in objectsWithBody) {
-      const object = objectsWithBody[id];
-      if (object !== source) {
-        switch (object.body.kind) {
-          case 'circle':
-            {
-              this.doDamageRadialArea2Circle(source, opts, object);
-            }
-          default:
-            break;
-        }
+    const others = this.objectWithBodyOthers(source);
+    for (const k in others) {
+      const other = others[k];
+      switch (other.body.kind) {
+        case 'circle':
+          {
+            this.doDamageRadialArea2Circle(source, opts, other);
+          }
+        default:
+          break;
       }
     }
   }
