@@ -16,10 +16,7 @@ function initUpdate() {
 }
 
 export function main() {
-  global.gameLevelZone = new GameLevelZone({
-    w: 1024,
-    h: 1024,
-  });
+  global.gameLevelZone = new GameLevelZone('1');
 
   initUpdate();
 

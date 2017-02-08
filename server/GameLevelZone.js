@@ -3,9 +3,8 @@ export class GameLevelZone {
     return 256;
   }
 
-  constructor(opts) {
-    this.w = opts.w;
-    this.h = opts.h;
+  constructor(mapName) {
+    this.loadMap(mapName);
 
     this.cells = [];
 
@@ -13,6 +12,24 @@ export class GameLevelZone {
 
     this.objects = {};
     this.bodies = {};
+  }
+
+  loadMap(mapName) {
+    this.map = JSON.parse(fs.readFileSync(
+      'maps/' + mapName + '.json',
+      'utf8'));
+
+    this.w = this.map.width * 32;
+    this.h = this.map.height * 32;
+
+    const ground = this.map.layers[0];
+    for (let y = 0; y < this.map.height; ++y) {
+      for (let x = 0; x < this.map.width; ++x) {
+        const i = y * this.map.width + x;
+        const v = ground.data[i];
+        console.log(i, v);
+      }
+    }
   }
 
   addObject(object) {

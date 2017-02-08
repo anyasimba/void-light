@@ -44,6 +44,7 @@ export function Server() {
     .useStaticFile('/client.dev.js')
     .useStaticFolder('/client/third-party/')
     .useStaticFolder('/client/')
+    .useStaticFolder('/maps/')
     .useStaticFolder('/shared/');
 
   server.listen(3000);
