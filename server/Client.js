@@ -10,6 +10,10 @@ export class Client extends global.Client {
 
     gameLevelZone.addClient(this);
 
+    this.emit('map', {
+      name: gameLevelZone.mapName,
+    });
+
     this.registerEvents();
   }
 

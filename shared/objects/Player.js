@@ -4,10 +4,13 @@ export class Player {
   }
 
   static get ACC() {
-    return 3000;
+    return 3600;
+  }
+  static get AIR_FRICTION() {
+    return 0.95;
   }
   static get FRICTION() {
-    return 0.85;
+    return 2200;
   }
 
   static get LOOK_ROTATE_F() {
@@ -28,9 +31,16 @@ export class Player {
   update() {
     const move = this.inputMove.unit();
     if (!this.inHit) {
-      vec3.add(this.speed, move.multiply(this.constructor.ACC * dt));
+      vec3.add(this.speed, move.multiply(Player.ACC * dt));
     }
-    vec3.multiply(this.speed, Math.pow(this.constructor.FRICTION, dt * 60));
+    vec3.multiply(this.speed, Math.pow(Player.AIR_FRICTION, dt * 60));
+    if (this.speed.length() > Player.FRICTION * dt) {
+      vec3.subtract(this.speed, this.speed
+        .unit()
+        .multiply(Player.FRICTION * dt));
+    } else {
+      this.speed.init();
+    }
     vec3.add(this.pos, this.speed.multiply(dt));
 
     let lookInput = this.inputMove;

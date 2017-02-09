@@ -77,4 +77,70 @@ export class Client extends global.Client {
   onPlayerID(data) {
     this.playerID = data.playerID;
   }
+  onMap(data) {
+    run(async() => {
+      this.mapName = data.name;
+
+      const mapData = await httpGet('maps/' + this.mapName + '.json');
+      this.map = JSON.parse(mapData);
+
+      this.w = this.map.width * 32;
+      this.h = this.map.height * 32;
+
+      const ground = this.map.layers[0];
+      for (let y = 0; y < this.map.height; ++y) {
+        for (let x = 0; x < this.map.width; ++x) {
+          const i = y * this.map.width + x;
+          const v = ground.data[i];
+
+          if (v === 1) {
+            const view = new Phaser.Graphics(game, 0, 0);
+            view.beginFill(0x333333, 1);
+            view.lineStyle(1, 0x999999, 1);
+            view.drawRect(0, 0, 48, 48);
+            view.endFill();
+
+            view.x = x * 48;
+            view.y = y * 48;
+
+            game.scene.add(view);
+          }
+        }
+      }
+
+      const points = this.map.layers[1];
+      for (let y = 0; y < this.map.height; ++y) {
+        for (let x = 0; x < this.map.width; ++x) {
+          const i = y * this.map.width + x;
+          const v = points.data[i];
+
+          if (v === 2) {
+            const view = new Phaser.Graphics(game, 0, 0);
+            view.beginFill(0x339933, 1);
+            view.lineStyle(1, 0x99FF99, 1);
+            view.drawRect(0, 0, 24, 24);
+            view.endFill();
+
+            view.x = x * 48 + 12;
+            view.y = y * 48 + 12;
+
+            game.scene.add(view);
+          }
+
+          if (v === 3) {
+            const view = new Phaser.Graphics(game, 0, 0);
+            view.beginFill(0x996633, 1);
+            view.lineStyle(1, 0xFFAA99, 1);
+            view.drawRect(0, 0, 24, 24);
+            view.endFill();
+
+            view.x = x * 48 + 12;
+            view.y = y * 48 + 12;
+
+            game.scene.add(view);
+          }
+        }
+      }
+    });
+  }
 }

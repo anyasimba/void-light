@@ -1,3 +1,23 @@
+// common functions
+export function httpGet(url) {
+  return new Promise(r => {
+    const xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = () => {
+      if (xmlHttp.readyState < 4) {
+        return;
+      }
+      if (xmlHttp.status === 200) {
+        r(xmlHttp.responseText);
+      } else {
+        r();
+      }
+    }
+    xmlHttp.open("GET", url, true); // true for asynchronous 
+    xmlHttp.send(null);
+  });
+}
+
+//
 export let ui;
 
 const uiThemePaths = [

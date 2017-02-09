@@ -19,8 +19,10 @@ export class GameLevelZone {
       'maps/' + mapName + '.json',
       'utf8'));
 
-    this.w = this.map.width * 32;
-    this.h = this.map.height * 32;
+    this.mapName = mapName;
+
+    this.w = this.map.width * 48;
+    this.h = this.map.height * 48;
 
     const ground = this.map.layers[0];
     for (let y = 0; y < this.map.height; ++y) {
