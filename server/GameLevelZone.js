@@ -4,14 +4,18 @@ export class GameLevelZone {
   }
 
   constructor(mapName) {
-    this.loadMap(mapName);
-
     this.cells = [];
 
     this.clients = [];
 
     this.objects = {};
+    this.staticBodies = {};
     this.bodies = {};
+
+    this.playerPoints = [];
+    this.enemyPoints = [];
+
+    this.loadMap(mapName);
   }
 
   loadMap(mapName) {
@@ -29,7 +33,43 @@ export class GameLevelZone {
       for (let x = 0; x < this.map.width; ++x) {
         const i = y * this.map.width + x;
         const v = ground.data[i];
-        console.log(i, v);
+        if (v === 1) {
+          const wall = {
+            CELL_SIZE: 48,
+            id: MixGameObject.createID(),
+            body: {
+              kind: 'staticRect',
+              w: 48,
+              h: 48,
+            },
+            pos: {
+              x: x * 48 + 24,
+              y: y * 48 + 24,
+            },
+          };
+
+          this.updateObjectWithBodyCells(wall);
+        }
+      }
+    }
+
+    const points = this.map.layers[1];
+    for (let y = 0; y < this.map.height; ++y) {
+      for (let x = 0; x < this.map.width; ++x) {
+        const i = y * this.map.width + x;
+        const v = points.data[i];
+        if (v === 2) {
+          this.playerPoints.push({
+            x: x * 48 + 24,
+            y: y * 48 + 24
+          });
+        }
+        if (v === 3) {
+          this.enemyPoints.push({
+            x: x * 48 + 24,
+            y: y * 48 + 24
+          });
+        }
       }
     }
   }
@@ -64,6 +104,11 @@ export class GameLevelZone {
 
 
   addClient(client) {
+    const i = Math.floor(Math.random() * this.playerPoints.length);
+    const p = this.playerPoints[i];
+    client.player.pos.x = p.x;
+    client.player.pos.y = p.y;
+
     this.addObject(client.player);
     this.emitTo(client);
     this.clients.push(client);
@@ -81,15 +126,18 @@ export class GameLevelZone {
     }
   }
 
-  resolveCollision(object, otherObject) {
-    if (object.body.kind === 'circle' && otherObject.body.kind === 'circle') {
-      this.resolveCircle2CircleCollision(object, otherObject);
+  resolveCollision(object, other) {
+    if (object.body.kind === 'circle' && other.body.kind === 'circle') {
+      this.resolveCircle2CircleCollision(object, other);
+    }
+    if (object.body.kind === 'circle' && other.body.kind === 'staticRect') {
+      this.resolveCircle2StaticRectCollision(object, other);
     }
   }
-  resolveCircle2CircleCollision(object, otherObject) {
-    const bodyD = (object.body.size + otherObject.body.size) * 0.5;
-    const dx = object.pos.x - otherObject.pos.x;
-    const dy = object.pos.y - otherObject.pos.y;
+  resolveCircle2CircleCollision(object, other) {
+    const bodyD = (object.body.size + other.body.size) * 0.5;
+    const dx = object.pos.x - other.pos.x;
+    const dy = object.pos.y - other.pos.y;
     const d = Math.pow((dx * dx + dy * dy), 0.5);
     if (d < bodyD) {
       const x = dx / d;
@@ -97,16 +145,129 @@ export class GameLevelZone {
       const rd = bodyD - d;
       const v = new vec3(rd * x, rd * y);
       vec3.add(object.pos, v);
-      vec3.subtract(otherObject.pos, v);
+      vec3.subtract(other.pos, v);
 
       vec3.unit(v);
-      const force = object.speed.length() + otherObject.speed.length();
+      const force = object.speed.length() + other.speed.length();
       const imp = 0.5;
       vec3.add(object.speed, v.multiply(force * imp));
-      vec3.subtract(otherObject.speed, v.multiply(force * imp));
+      vec3.subtract(other.speed, v.multiply(force * imp));
 
       object.emitPos();
-      otherObject.emitPos();
+      other.emitPos();
+    }
+  }
+  resolveCircle2StaticRectCollision(object, other) {
+    const bodyDX = (object.body.size + other.body.w) * 0.5;
+    const bodyDY = (object.body.size + other.body.h) * 0.5;
+    const dx = object.pos.x - other.pos.x;
+    const dy = object.pos.y - other.pos.y;
+
+    const imp = 0.5;
+
+    if (Math.abs(dy) <= other.body.h * 0.5) {
+      if (dx > 0 && dx < bodyDX) {
+        object.pos.x = other.pos.x + bodyDX;
+        const force = object.speed.length();
+        object.speed.x += force * imp;
+
+        object.emitPos();
+      } else if (dx < 0 && -dx < bodyDX) {
+        object.pos.x = other.pos.x - bodyDX;
+        const force = object.speed.length();
+        object.speed.x -= force * imp;
+
+        object.emitPos();
+      }
+    } else if (Math.abs(dx) <= other.body.w * 0.5) {
+      if (dy > 0 && dy < bodyDY) {
+        object.pos.y = other.pos.y + bodyDY;
+        const force = object.speed.length();
+        object.speed.y += force * imp;
+
+        object.emitPos();
+      } else if (dy < 0 && -dy < bodyDY) {
+        object.pos.y = other.pos.y - bodyDY;
+        const force = object.speed.length();
+        object.speed.y -= force * imp;
+
+        object.emitPos();
+      }
+    }
+
+    const x1 = (other.pos.x - other.body.w * 0.5);
+    const y1 = (other.pos.y - other.body.h * 0.5);
+    const x2 = (other.pos.x + other.body.w * 0.5);
+    const y2 = (other.pos.y + other.body.h * 0.5);
+
+    const dx1 = (object.pos.x - x1) * (object.pos.x - x1);
+    const dy1 = (object.pos.y - y1) * (object.pos.y - y1);
+    const dx2 = (object.pos.x - x2) * (object.pos.x - x2);
+    const dy2 = (object.pos.y - y2) * (object.pos.y - y2);
+
+    const d1 = Math.sqrt(dx1 + dy1);
+    if (d1 < object.body.size * 0.5) {
+      const dx = (object.pos.x - x1) / d1;
+      const dy = (object.pos.y - y1) / d1;
+      object.pos.x = x1 + dx * object.body.size * 0.5;
+      object.pos.y = y1 + dy * object.body.size * 0.5;
+
+      const force = object.speed.length();
+      vec3.add(object.speed, {
+        x: dx * force * imp,
+        y: dy * force * imp,
+        z: 0,
+      });
+
+      object.emitPos();
+    }
+    const d2 = Math.sqrt(dx1 + dy2);
+    if (d2 < object.body.size * 0.5) {
+      const dx = (object.pos.x - x1) / d2;
+      const dy = (object.pos.y - y2) / d2;
+      object.pos.x = x1 + dx * object.body.size * 0.5;
+      object.pos.y = y2 + dy * object.body.size * 0.5;
+
+      const force = object.speed.length();
+      vec3.add(object.speed, {
+        x: dx * force * imp,
+        y: dy * force * imp,
+        z: 0,
+      });
+
+      object.emitPos();
+    }
+    const d3 = Math.sqrt(dx2 + dy1);
+    if (d3 < object.body.size * 0.5) {
+      const dx = (object.pos.x - x2) / d3;
+      const dy = (object.pos.y - y1) / d3;
+      object.pos.x = x2 + dx * object.body.size * 0.5;
+      object.pos.y = y1 + dy * object.body.size * 0.5;
+
+      const force = object.speed.length();
+      vec3.add(object.speed, {
+        x: dx * force * imp,
+        y: dy * force * imp,
+        z: 0,
+      });
+
+      object.emitPos();
+    }
+    const d4 = Math.sqrt(dx2 + dy2);
+    if (d4 < object.body.size * 0.5) {
+      const dx = (object.pos.x - x2) / d4;
+      const dy = (object.pos.y - y2) / d4;
+      object.pos.x = x2 + dx * object.body.size * 0.5;
+      object.pos.y = y2 + dy * object.body.size * 0.5;
+
+      const force = object.speed.length();
+      vec3.add(object.speed, {
+        x: dx * force * imp,
+        y: dy * force * imp,
+        z: 0,
+      });
+
+      object.emitPos();
     }
   }
 

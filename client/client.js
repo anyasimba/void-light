@@ -114,19 +114,6 @@ export class Client extends global.Client {
           const i = y * this.map.width + x;
           const v = points.data[i];
 
-          if (v === 2) {
-            const view = new Phaser.Graphics(game, 0, 0);
-            view.beginFill(0x339933, 1);
-            view.lineStyle(1, 0x99FF99, 1);
-            view.drawRect(0, 0, 24, 24);
-            view.endFill();
-
-            view.x = x * 48 + 12;
-            view.y = y * 48 + 12;
-
-            game.scene.add(view);
-          }
-
           if (v === 3) {
             const view = new Phaser.Graphics(game, 0, 0);
             view.beginFill(0x996633, 1);
