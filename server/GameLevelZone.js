@@ -5,6 +5,7 @@ export class GameLevelZone {
 
   constructor(mapName) {
     this.cells = [];
+    this.grid = [];
 
     this.clients = [];
 
@@ -34,21 +35,8 @@ export class GameLevelZone {
         const i = y * this.map.width + x;
         const v = ground.data[i];
         if (v === 1) {
-          const wall = {
-            CELL_SIZE: 48,
-            id: MixGameObject.createID(),
-            body: {
-              kind: 'staticRect',
-              w: 48,
-              h: 48,
-            },
-            pos: {
-              x: x * 48 + 24,
-              y: y * 48 + 24,
-            },
-          };
-
-          this.updateObjectWithBodyCells(wall);
+          this.grid[x] = this.grid[x] || {};
+          this.grid[x][y] = true;
         }
       }
     }
@@ -130,9 +118,6 @@ export class GameLevelZone {
     if (object.body.kind === 'circle' && other.body.kind === 'circle') {
       this.resolveCircle2CircleCollision(object, other);
     }
-    if (object.body.kind === 'circle' && other.body.kind === 'staticRect') {
-      this.resolveCircle2StaticRectCollision(object, other);
-    }
   }
   resolveCircle2CircleCollision(object, other) {
     const bodyD = (object.body.size + other.body.size) * 0.5;
@@ -157,37 +142,39 @@ export class GameLevelZone {
       other.emitPos();
     }
   }
-  resolveCircle2StaticRectCollision(object, other) {
-    const bodyDX = (object.body.size + other.body.w) * 0.5;
-    const bodyDY = (object.body.size + other.body.h) * 0.5;
-    const dx = object.pos.x - other.pos.x;
-    const dy = object.pos.y - other.pos.y;
+  resolveCircle2StaticRectCollision(object, x, y) {
+    const bodyDX = (object.body.size + 48) * 0.5;
+    const bodyDY = (object.body.size + 48) * 0.5;
+    x = x * 48;
+    y = y * 48;
+    const dx = object.pos.x - x;
+    const dy = object.pos.y - y;
 
     const imp = 0.5;
 
-    if (Math.abs(dy) <= other.body.h * 0.5) {
+    if (Math.abs(dy) <= 24) {
       if (dx > 0 && dx < bodyDX) {
-        object.pos.x = other.pos.x + bodyDX;
+        object.pos.x = x + bodyDX;
         const force = object.speed.length();
         object.speed.x += force * imp;
 
         object.emitPos();
       } else if (dx < 0 && -dx < bodyDX) {
-        object.pos.x = other.pos.x - bodyDX;
+        object.pos.x = x - bodyDX;
         const force = object.speed.length();
         object.speed.x -= force * imp;
 
         object.emitPos();
       }
-    } else if (Math.abs(dx) <= other.body.w * 0.5) {
+    } else if (Math.abs(dx) <= 24) {
       if (dy > 0 && dy < bodyDY) {
-        object.pos.y = other.pos.y + bodyDY;
+        object.pos.y = y + bodyDY;
         const force = object.speed.length();
         object.speed.y += force * imp;
 
         object.emitPos();
       } else if (dy < 0 && -dy < bodyDY) {
-        object.pos.y = other.pos.y - bodyDY;
+        object.pos.y = y - bodyDY;
         const force = object.speed.length();
         object.speed.y -= force * imp;
 
@@ -195,10 +182,10 @@ export class GameLevelZone {
       }
     }
 
-    const x1 = (other.pos.x - other.body.w * 0.5);
-    const y1 = (other.pos.y - other.body.h * 0.5);
-    const x2 = (other.pos.x + other.body.w * 0.5);
-    const y2 = (other.pos.y + other.body.h * 0.5);
+    const x1 = (x - 24);
+    const y1 = (y - 24);
+    const x2 = (x + 24);
+    const y2 = (y + 24);
 
     const dx1 = (object.pos.x - x1) * (object.pos.x - x1);
     const dy1 = (object.pos.y - y1) * (object.pos.y - y1);
@@ -305,6 +292,16 @@ export class GameLevelZone {
     for (const k in objectsWithBody) {
       const object = objectsWithBody[k];
       this.updateObjectWithBodyCells(object);
+
+      const cx = Math.floor(object.pos.x / 48);
+      const cy = Math.floor(object.pos.y / 48);
+      for (let x = -2; x <= 2; ++x) {
+        for (let y = -2; y <= 2; ++y) {
+          if (this.grid[x + cx] && this.grid[x + cx][y+cy]) {
+            this.resolveCircle2StaticRectCollision(object, x+cx+0.5, y+cy+0.5);
+          }
+        }
+      }
     }
     for (const k in objectsWithBody) {
       const object = objectsWithBody[k];
