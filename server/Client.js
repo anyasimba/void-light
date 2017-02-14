@@ -2,7 +2,7 @@ export class Client extends global.Client {
   constructor(sock) {
     super(sock);
 
-    this.player = new Player(this);
+    this.player = new Fighter(this);
 
     this.emit('playerID', {
       playerID: this.player.id,
@@ -23,6 +23,11 @@ export class Client extends global.Client {
     this.player.pendingDestroy = true;
 
     console.log('User disconnected');
+  }
+
+  onDie() {
+    this.player.hp = 100;
+    this.player.gameLevelZone.rebornPlayer(this.player);
   }
 
   registerEvents() {

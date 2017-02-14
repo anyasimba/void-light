@@ -1,14 +1,13 @@
-export class Player extends mix(global.Player, MixGameObject) {
+export class Fighter extends mix(global.Fighter, MixGameObject) {
   static createView(isSelf) {
     const graphics = new Phaser.Graphics(game, 0, 0);
 
+    let color = 0xFF9900;
     if (isSelf) {
-      graphics.beginFill(0x0099FF, 0.5);
-      graphics.lineStyle(2, 0x0099FF, 1);
-    } else {
-      graphics.beginFill(0xFF9900, 0.5);
-      graphics.lineStyle(2, 0xFF9900, 1);
+      color = 0x0099FF;
     }
+    graphics.beginFill(color, 0.5);
+    graphics.lineStyle(2, color, 1);
     graphics.drawCircle(0, 0, this.BODY_SIZE);
     graphics.endFill();
 
@@ -23,7 +22,7 @@ export class Player extends mix(global.Player, MixGameObject) {
       look: new vec3(data.look),
     });
 
-    this.view = Player.createView(this.id === client.playerID);
+    this.view = Fighter.createView(this.id === client.playerID);
     this.group.add(this.view);
 
     if (this.id === client.playerID) {

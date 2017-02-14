@@ -1,10 +1,10 @@
-export class Mob {
+export class Fighter {
   static get classID() {
-    return 'Player';
+    return 'Fighter';
   }
 
   static get ACC() {
-    return 3000;
+    return 3600;
   }
   static get AIR_FRICTION() {
     return 0.95;
@@ -21,7 +21,7 @@ export class Mob {
   }
 
   static get BODY_SIZE() {
-    return 30;
+    return 40;
   }
 
   get CELL_SIZE() {
@@ -31,23 +31,23 @@ export class Mob {
   update() {
     const move = this.inputMove.unit();
     if (!this.inHit) {
-      vec3.add(this.speed, move.multiply(Mob.ACC * dt));
+      vec3.add(this.speed, move.multiply(Fighter.ACC * dt));
     }
-    vec3.multiply(this.speed, Math.pow(Mob.AIR_FRICTION, dt * 60));
-    if (this.speed.length() > Mob.FRICTION * dt) {
+    vec3.multiply(this.speed, Math.pow(Fighter.AIR_FRICTION, dt * 60));
+    if (this.speed.length() > Fighter.FRICTION * dt) {
       vec3.subtract(this.speed, this.speed
         .unit()
-        .multiply(Mob.FRICTION * dt));
+        .multiply(Fighter.FRICTION * dt));
     } else {
       this.speed.init();
     }
     vec3.add(this.pos, this.speed.multiply(dt));
 
     let lookInput = this.inputMove;
-    let lookF = Mob.LOOK_ROTATE_F;
+    let lookF = Fighter.LOOK_ROTATE_F;
     if (this.inHit) {
       lookInput = this.hitVec;
-      lookF = Mob.LOOK_ROTATE_IN_HIT_F;
+      lookF = Fighter.LOOK_ROTATE_IN_HIT_F;
     }
     const lookRel = lookInput
       .subtract(this.look)
@@ -88,7 +88,5 @@ export class Mob {
     });
   }
 
-  doDamageRadialArea() {
-
-  }
+  doDamageRadialArea() {}
 }

@@ -16,6 +16,7 @@ globally(require('./mix/MixGameObject'));
 globally(require('./shared-objects/+'));
 globally(require('./Client'));
 globally(require('./GameLevelZone'));
+globally(require('./Mob'));
 globally(require('./Server'));
 
 (async() => {

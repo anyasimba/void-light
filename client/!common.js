@@ -66,7 +66,7 @@ export const game = new Phaser.Game(
           game.renderer.resize(w, h);
         }
 
-        const s = Math.min(w / 1366, h / 768);
+        const s = Math.min(w / 1920, h / 1080);
         game.scene.scale.set(s);
         game.scaleFactor = s;
       }

@@ -16,6 +16,8 @@ export class GameLevelZone {
     this.playerPoints = [];
     this.enemyPoints = [];
 
+    this.mobs = [];
+
     this.loadMap(mapName);
   }
 
@@ -26,8 +28,8 @@ export class GameLevelZone {
 
     this.mapName = mapName;
 
-    this.w = this.map.width * 48;
-    this.h = this.map.height * 48;
+    this.w = this.map.width * WALL_SIZE;
+    this.h = this.map.height * WALL_SIZE;
 
     const ground = this.map.layers[0];
     for (let y = 0; y < this.map.height; ++y) {
@@ -48,17 +50,25 @@ export class GameLevelZone {
         const v = points.data[i];
         if (v === 2) {
           this.playerPoints.push({
-            x: x * 48 + 24,
-            y: y * 48 + 24
+            x: x * WALL_SIZE + WALL_SIZE * 0.5,
+            y: y * WALL_SIZE + WALL_SIZE * 0.5
           });
         }
         if (v === 3) {
           this.enemyPoints.push({
-            x: x * 48 + 24,
-            y: y * 48 + 24
+            x: x * WALL_SIZE + WALL_SIZE * 0.5,
+            y: y * WALL_SIZE + WALL_SIZE * 0.5
           });
         }
       }
+    }
+
+    this.mobs = [];
+    for (const k in this.enemyPoints) {
+      const p = this.enemyPoints[k];
+      const mob = new Mob(this, p);
+      this.addObject(mob.fighter);
+      this.mobs.push(mob);
     }
   }
 
@@ -105,6 +115,15 @@ export class GameLevelZone {
     this.clients.slice(this.clients.indexOf(client), 1);
     this.removeObject(client.player);
   }
+  rebornPlayer(player) {
+    const i = Math.floor(Math.random() * this.playerPoints.length);
+    const p = this.playerPoints[i];
+    player.pos.x = p.x;
+    player.pos.y = p.y;
+    player.speed.x = 0;
+    player.speed.y = 0;
+    player.emitPos();
+  }
 
   emitTo(client) {
     const objects = this.objects;
@@ -143,16 +162,16 @@ export class GameLevelZone {
     }
   }
   resolveCircle2StaticRectCollision(object, x, y) {
-    const bodyDX = (object.body.size + 48) * 0.5;
-    const bodyDY = (object.body.size + 48) * 0.5;
-    x = x * 48;
-    y = y * 48;
+    const bodyDX = (object.body.size + WALL_SIZE) * 0.5;
+    const bodyDY = (object.body.size + WALL_SIZE) * 0.5;
+    x = x * WALL_SIZE;
+    y = y * WALL_SIZE;
     const dx = object.pos.x - x;
     const dy = object.pos.y - y;
 
     const imp = 0.5;
 
-    if (Math.abs(dy) <= 24) {
+    if (Math.abs(dy) <= WALL_SIZE * 0.5) {
       if (dx > 0 && dx < bodyDX) {
         object.pos.x = x + bodyDX;
         const force = object.speed.length();
@@ -166,7 +185,7 @@ export class GameLevelZone {
 
         object.emitPos();
       }
-    } else if (Math.abs(dx) <= 24) {
+    } else if (Math.abs(dx) <= WALL_SIZE * 0.5) {
       if (dy > 0 && dy < bodyDY) {
         object.pos.y = y + bodyDY;
         const force = object.speed.length();
@@ -182,10 +201,10 @@ export class GameLevelZone {
       }
     }
 
-    const x1 = (x - 24);
-    const y1 = (y - 24);
-    const x2 = (x + 24);
-    const y2 = (y + 24);
+    const x1 = (x - WALL_SIZE * 0.5);
+    const y1 = (y - WALL_SIZE * 0.5);
+    const x2 = (x + WALL_SIZE * 0.5);
+    const y2 = (y + WALL_SIZE * 0.5);
 
     const dx1 = (object.pos.x - x1) * (object.pos.x - x1);
     const dy1 = (object.pos.y - y1) * (object.pos.y - y1);
@@ -293,12 +312,13 @@ export class GameLevelZone {
       const object = objectsWithBody[k];
       this.updateObjectWithBodyCells(object);
 
-      const cx = Math.floor(object.pos.x / 48);
-      const cy = Math.floor(object.pos.y / 48);
+      const cx = Math.floor(object.pos.x / WALL_SIZE);
+      const cy = Math.floor(object.pos.y / WALL_SIZE);
       for (let x = -2; x <= 2; ++x) {
         for (let y = -2; y <= 2; ++y) {
-          if (this.grid[x + cx] && this.grid[x + cx][y+cy]) {
-            this.resolveCircle2StaticRectCollision(object, x+cx+0.5, y+cy+0.5);
+          if (this.grid[x + cx] && this.grid[x + cx][y + cy]) {
+            this.resolveCircle2StaticRectCollision(
+              object, x + cx + 0.5, y + cy + 0.5);
           }
         }
       }
@@ -307,6 +327,8 @@ export class GameLevelZone {
       const object = objectsWithBody[k];
       this.updateObjectWithBodyCollisions(object);
     }
+
+    this.updateMobs();
   }
 
   updateObjectWithBodyCells(object) {
@@ -399,6 +421,38 @@ export class GameLevelZone {
     if (isHit) {
       vec3.add(other.speed, opts.hitVec.multiply(600));
       other.emitPos();
+
+      other.hp -= 40;
+      if (other.hp <= 0) {
+        other.owner.onDie();
+      }
+    }
+  }
+
+  updateMobs() {
+    this.updateMobsTime = this.updateMobsTime || 0;
+    this.updateMobsTime += dt;
+    if (this.updateMobsTime >= 1) {
+      this.updateMobsTime -= 1;
+
+      const clients = this.clients;
+      for (const k in clients) {
+        const client = clients[k];
+        const x = Math.floor(client.player.pos.x / WALL_SIZE);
+        const y = Math.floor(client.player.pos.y / WALL_SIZE);
+
+        const mobs = this.mobs;
+        for (const k in mobs) {
+          const mob = mobs[k];
+          mob.checkPlayer(x, y, client.player);
+        }
+      }
+    }
+
+    const mobs = this.mobs;
+    for (const k in mobs) {
+      const mob = mobs[k];
+      mob.update();
     }
   }
 }

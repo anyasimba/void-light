@@ -1,8 +1,8 @@
 preMain(async() => {
-  Player.list = [];
+  Fighter.list = [];
 });
 
-export class Player extends mix(global.Player, MixGameObject) {
+export class Fighter extends mix(global.Fighter, MixGameObject) {
   get state() {
     return {
       pos: this.pos,
@@ -19,19 +19,21 @@ export class Player extends mix(global.Player, MixGameObject) {
     });
   }
 
-  constructor(client) {
+  constructor(owner) {
     super({
-      client,
-
       pos: new vec3,
       speed: new vec3,
       inputMove: new vec3,
       look: new vec3,
     });
+    this.owner = owner;
+
+    this.hp = 100;
+    this.mp = 100;
 
     this.body = {
       kind: 'circle',
-      size: Player.BODY_SIZE,
+      size: Fighter.BODY_SIZE,
     }
 
     new Sword({
@@ -46,6 +48,17 @@ export class Player extends mix(global.Player, MixGameObject) {
 
   doHit(data) {
     this.onHit(data);
+    this.emitAll('hit', {
+      x: data.x,
+      y: data.y,
+    });
+  }
+  onHit(data) {
+    const inHit = this.inHit;
+    super.onHit(data);
+    if (inHit) {
+      return;
+    }
     this.emitAll('hit', {
       x: data.x,
       y: data.y,
