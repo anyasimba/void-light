@@ -28,16 +28,22 @@ export class Fighter {
     return 400;
   }
 
+  constructor() {
+    this.ACC = Fighter.ACC;
+    this.AIR_FRICTION = Fighter.AIR_FRICTION;
+    this.FRICTION = Fighter.FRICTION;
+  }
+
   update() {
     const move = this.inputMove.unit();
     if (!this.inHit) {
-      vec3.add(this.speed, move.multiply(Fighter.ACC * dt));
+      vec3.add(this.speed, move.multiply(this.ACC * dt));
     }
-    vec3.multiply(this.speed, Math.pow(Fighter.AIR_FRICTION, dt * 60));
-    if (this.speed.length() > Fighter.FRICTION * dt) {
+    vec3.multiply(this.speed, Math.pow(this.AIR_FRICTION, dt * 60));
+    if (this.speed.length() > this.FRICTION * dt) {
       vec3.subtract(this.speed, this.speed
         .unit()
-        .multiply(Fighter.FRICTION * dt));
+        .multiply(this.FRICTION * dt));
     } else {
       this.speed.init();
     }

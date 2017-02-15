@@ -1,17 +1,23 @@
 export class Fighter extends mix(global.Fighter, MixGameObject) {
-  static createView(isSelf) {
-    const graphics = new Phaser.Graphics(game, 0, 0);
+  static createView(isHost) {
 
-    let color = 0xFF9900;
-    if (isSelf) {
-      color = 0x0099FF;
+    let color = 0xFF4400;
+    if (isHost) {
+      color = 0xFFFFFF;
     }
-    graphics.beginFill(color, 0.5);
-    graphics.lineStyle(2, color, 1);
-    graphics.drawCircle(0, 0, this.BODY_SIZE);
-    graphics.endFill();
-
-    return graphics;
+    const image = new Phaser.Image(game, 0, 0, 'player');
+    image.scale.x = 0.9;
+    image.scale.y = 1;
+    image.anchor.x = 0.5;
+    image.anchor.y = 0.5;
+    image.angle = 90;
+    image.tint = color;
+    if (!isHost) {
+      image.scale.x = 0.8;
+      image.scale.y = 0.9;
+    }
+    image.smoothed = true;
+    return image;
   }
 
   constructor(data) {
@@ -41,5 +47,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     this.group.x = this.pos.x;
     this.group.y = this.pos.y;
+    this.view.angle = this.look.toAngle() + 90;
   }
 }

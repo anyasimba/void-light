@@ -32,6 +32,11 @@ let time;
 export const game = new Phaser.Game(
   "100%", "100%", Phaser.AUTO, '', {
     async preload() {
+      game.load.image('sword', 'assets/sword.png');
+      game.load.image('player', 'assets/player.png');
+
+      game.stage.backgroundColor = 0x101010;
+
       game.stage.disableVisibilityChange = true;
       game.time.advancedTiming = true;
       game.scaleMode = Phaser.FILL_WINDOW_FIXED_ASPECT;

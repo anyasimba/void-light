@@ -19,7 +19,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     });
   }
 
-  constructor(owner) {
+  constructor(owner, opts) {
     super({
       pos: new vec3,
       speed: new vec3,
@@ -27,6 +27,12 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       look: new vec3,
     });
     this.owner = owner;
+
+    opts = opts || {};
+    this.ACC = opts.ACC || this.ACC;
+    this.AIR_FRICTION = opts.AIR_FRICTION || this.AIR_FRICTION;
+    this.FRICTION = opts.FRICTION || this.FRICTION;
+    this.DAMAGE = opts.DAMAGE || 60;
 
     this.hp = 100;
     this.mp = 100;
@@ -39,10 +45,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     new Sword({
       parent: this,
       pos: {
-        x: -20,
-        y: 20,
+        x: -25,
+        y: 25,
       },
-      angle: 10,
+      angle: 15,
     });
   }
 

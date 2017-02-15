@@ -2,7 +2,10 @@ export class Mob {
   constructor(gameLevelZone, opts) {
     this.gameLevelZone = gameLevelZone;
 
-    this.fighter = new Fighter(this);
+    this.fighter = new Fighter(this, {
+      ACC: 3400,
+      DAMAGE: 5,
+    });
     this.fighter.pos.x = opts.x;
     this.fighter.pos.y = opts.y;
 
@@ -28,7 +31,7 @@ export class Mob {
         const p = q[i];
         const cost = pathMap[p.x][p.y];
         const check = (x, y, cost) => {
-          if (cost > 20) {
+          if (cost > 30) {
             return;
           }
           if (map[x] && map[x][y]) {
@@ -107,7 +110,7 @@ export class Mob {
       delete this.onWay;
       return;
     }
-    if (this.pathMap[x][y] <= 10) {
+    if (this.target || this.pathMap[x][y] <= 12) {
       this.target = player;
       this.path = [];
       delete this.onWay;
@@ -168,26 +171,36 @@ export class Mob {
       }
     }
 
-    if (this.pathMap[tx][ty] > 16) {
-      delete this.target;
-      delete this.path;
-      delete this.onWay;
-    }
-
     if (this.target) {
       const dx = this.fighter.pos.x - this.target.pos.x;
       const dy = this.fighter.pos.y - this.target.pos.y;
       const d = Math.sqrt(dx * dx + dy * dy);
-      if (d < 400) {
-        nextX = this.target.pos.x;
-        nextY = this.target.pos.y;
-      }
 
-      if (d < 180) {
-        this.fighter.doHit({
-          x: this.target.pos.x,
-          y: this.target.pos.y,
-        });
+      const px = Math.floor(this.target.pos.x / WALL_SIZE);
+      const py = Math.floor(this.target.pos.y / WALL_SIZE);
+      const cd = Math.abs(this.pathMap[tx][ty] - this.pathMap[px][py]);
+
+      const needGoHome = !this.pathMap[px] ||
+        this.pathMap[px][py] === undefined ||
+        this.pathMap[px][py] > 24 ||
+        this.target.pendingDestroy;
+
+      if (needGoHome) {
+        delete this.target;
+        delete this.path;
+        delete this.onWay;
+      } else {
+        if (d < 400 && cd <= 2) {
+          nextX = this.target.pos.x;
+          nextY = this.target.pos.y;
+        }
+
+        if (d < 180) {
+          this.fighter.doHit({
+            x: this.target.pos.x,
+            y: this.target.pos.y,
+          });
+        }
       }
     }
 

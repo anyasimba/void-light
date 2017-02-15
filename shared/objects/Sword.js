@@ -15,9 +15,9 @@ export class Sword {
     run(async() => {
       let start = this.pos.clone();
       await this.animate('pos', {
-        end: start.add({
-          x: -20,
-          y: 20,
+        end: new vec3({
+          x: -40,
+          y: 40,
         }),
         duration: 0.3,
         fn: easing.easeInQuad,
@@ -58,7 +58,7 @@ export class Sword {
 
       this.parent.doDamageRadialArea({
         r1: 60,
-        r2: 160,
+        r2: 240,
         a1: -80,
         a2: 80,
       });

@@ -42,6 +42,7 @@ export function Server() {
     .useStaticFile('/client.js')
     .useStaticFile('/client.min.js')
     .useStaticFile('/client.dev.js')
+    .useStaticFolder('/assets/')
     .useStaticFolder('/client/third-party/')
     .useStaticFolder('/client/')
     .useStaticFolder('/maps/')

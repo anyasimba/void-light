@@ -88,6 +88,18 @@ export class Client extends global.Client {
       this.h = this.map.height * 32;
 
       const ground = this.map.layers[0];
+      const grid = [];
+      for (let y = 0; y < this.map.height; ++y) {
+        for (let x = 0; x < this.map.width; ++x) {
+          const i = y * this.map.width + x;
+          const v = ground.data[i];
+
+          if (v === 1) {
+            grid[x] = grid[x] || [];
+            grid[x][y] = true;
+          }
+        }
+      }
       for (let y = 0; y < this.map.height; ++y) {
         for (let x = 0; x < this.map.width; ++x) {
           const i = y * this.map.width + x;
@@ -95,10 +107,33 @@ export class Client extends global.Client {
 
           if (v === 1) {
             const view = new Phaser.Graphics(game, 0, 0);
-            view.beginFill(0x333333, 1);
-            view.lineStyle(1, 0x999999, 1);
+            const a = game.stage.backgroundColor;
+            view.beginFill(0x111111 + a, 1);
             view.drawRect(0, 0, WALL_SIZE, WALL_SIZE);
             view.endFill();
+
+            view.lineStyle(3, 0x222222 + a, 1);
+            if (!grid[x + 1] || !grid[x + 1][y]) {
+              view.moveTo(WALL_SIZE, 0);
+              view.lineTo(WALL_SIZE, WALL_SIZE);
+            }
+            view.lineStyle(3, 0x333333 + a, 1);
+            if (!grid[x - 1] || !grid[x - 1][y]) {
+              view.moveTo(0, 0);
+              view.lineTo(0, WALL_SIZE);
+            }
+            view.lineStyle(3, 0x222222 + a, 1);
+            if (!grid[x] || !grid[x][y + 1]) {
+              view.moveTo(0, WALL_SIZE);
+              view.lineTo(WALL_SIZE, WALL_SIZE);
+            }
+            view.lineStyle(3, 0x333333 + a, 1);
+            if (!grid[x] || !grid[x][y - 1]) {
+              view.moveTo(0, 0);
+              view.lineTo(WALL_SIZE, 0);
+            }
+            view.endFill();
+
 
             view.x = x * WALL_SIZE;
             view.y = y * WALL_SIZE;

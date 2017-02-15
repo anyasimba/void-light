@@ -422,7 +422,7 @@ export class GameLevelZone {
       vec3.add(other.speed, opts.hitVec.multiply(600));
       other.emitPos();
 
-      other.hp -= 40;
+      other.hp -= source.DAMAGE;
       if (other.hp <= 0) {
         other.owner.onDie();
       }
