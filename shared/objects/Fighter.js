@@ -49,6 +49,16 @@ export class Fighter {
       } else {
         this.speed.init();
       }
+    } else {
+      const lowDT = dt * 0.1;
+      vec3.multiply(this.speed, Math.pow(this.AIR_FRICTION, lowDT * 60));
+      if (this.speed.length() > this.FRICTION * lowDT) {
+        vec3.subtract(this.speed, this.speed
+          .unit()
+          .multiply(this.FRICTION * lowDT));
+      } else {
+        this.speed.init();
+      }
     }
     vec3.add(this.pos, this.speed.multiply(dt));
 
@@ -126,6 +136,7 @@ export class Fighter {
       delete this.hitVec;
       delete this.inHit;
       delete this.isJumpHit;
+      delete this.isRollHit;
 
       if (this.needNextHit) {
         const opts = this.needNextHit;

@@ -60,8 +60,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
     if (this.inRoll) {
       const f = Math.sin(
-        (this.inRoll.time / this.inRoll.duration) * Math.PI) * 2;
-      this.group.scale.x *= 1 - f;
+        (this.inRoll.time / this.inRoll.duration * 2 + 0.5) * Math.PI);
+      this.group.scale.x *= f;
     }
   }
 }
