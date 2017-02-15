@@ -54,6 +54,15 @@ export class Client extends global.Client {
       });
     }
 
+    game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
+      .onDown.add(() => {
+        this.emit('jump', {});
+      });
+    game.input.keyboard.addKey(Phaser.Keyboard.SHIFT)
+      .onDown.add(() => {
+        this.emit('roll', {});
+      });
+
     game.input.onDown.add(() => {
       this.emit('mouseDown', {
         'x': mx,
@@ -100,6 +109,8 @@ export class Client extends global.Client {
           }
         }
       }
+
+      const groundLayer = new Phaser.Group(game);
       for (let y = 0; y < this.map.height; ++y) {
         for (let x = 0; x < this.map.width; ++x) {
           const i = y * this.map.width + x;
@@ -134,14 +145,20 @@ export class Client extends global.Client {
             }
             view.endFill();
 
-
             view.x = x * WALL_SIZE;
             view.y = y * WALL_SIZE;
 
-            game.scene.add(view);
+            groundLayer.add(view);
           }
         }
       }
+
+      const groundTexture = new Phaser.RenderTexture(
+        game, groundLayer.width * 2.5, groundLayer.height * 2.5,
+        null, null, 0.4);
+      groundTexture.renderXY(groundLayer, 0, 0);
+      groundLayer.destroy();
+      game.scene.add(new Phaser.Sprite(game, 0, 0, groundTexture));
     });
   }
 }

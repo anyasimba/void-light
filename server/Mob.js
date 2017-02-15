@@ -3,6 +3,8 @@ export class Mob {
     this.gameLevelZone = gameLevelZone;
 
     this.fighter = new Fighter(this, {
+      kind: 'mob',
+
       ACC: 3400,
       DAMAGE: 5,
     });
@@ -31,7 +33,7 @@ export class Mob {
         const p = q[i];
         const cost = pathMap[p.x][p.y];
         const check = (x, y, cost) => {
-          if (cost > 30) {
+          if (cost > 40) {
             return;
           }
           if (map[x] && map[x][y]) {
@@ -178,7 +180,6 @@ export class Mob {
 
       const px = Math.floor(this.target.pos.x / WALL_SIZE);
       const py = Math.floor(this.target.pos.y / WALL_SIZE);
-      const cd = Math.abs(this.pathMap[tx][ty] - this.pathMap[px][py]);
 
       const needGoHome = !this.pathMap[px] ||
         this.pathMap[px][py] === undefined ||
@@ -190,6 +191,8 @@ export class Mob {
         delete this.path;
         delete this.onWay;
       } else {
+        const cd = Math.abs(this.pathMap[tx][ty] - this.pathMap[px][py]);
+
         if (d < 400 && cd <= 2) {
           nextX = this.target.pos.x;
           nextY = this.target.pos.y;

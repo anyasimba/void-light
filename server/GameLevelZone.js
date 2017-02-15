@@ -400,6 +400,10 @@ export class GameLevelZone {
     }
   }
   doDamageRadialArea2Circle(source, opts, other) {
+    if (other.inRoll) {
+      return;
+    }
+
     let isHit = true;
 
     const rel = other.pos
@@ -422,7 +426,14 @@ export class GameLevelZone {
       vec3.add(other.speed, opts.hitVec.multiply(600));
       other.emitPos();
 
-      other.hp -= source.DAMAGE;
+      let damage = source.DAMAGE;
+      if (source.isJumpHit || source.inJump) {
+        damage *= 1.5;
+      }
+      if (source.isRollHit || source.inRoll) {
+        damage *= 1.5;
+      }
+      other.hp -= damage;
       if (other.hp <= 0) {
         other.owner.onDie();
       }

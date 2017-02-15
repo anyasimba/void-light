@@ -2,7 +2,9 @@ export class Client extends global.Client {
   constructor(sock) {
     super(sock);
 
-    this.player = new Fighter(this);
+    this.player = new Fighter(this, {
+      kind: 'player',
+    });
 
     this.emit('playerID', {
       playerID: this.player.id,
@@ -33,6 +35,8 @@ export class Client extends global.Client {
   registerEvents() {
     this.on('move', data => this.onEventMove(data));
     this.on('mouseDown', data => this.onEventMouseDown(data));
+    this.on('jump', data => this.onEventJump(data));
+    this.on('roll', data => this.onEventRoll(data));
   }
 
   /**
@@ -72,5 +76,11 @@ export class Client extends global.Client {
     }
 
     this.player.doHit(data);
+  }
+  onEventJump(data) {
+    this.player.doJump(data);
+  }
+  onEventRoll(data) {
+    this.player.doRoll(data);
   }
 }

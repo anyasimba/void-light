@@ -9,6 +9,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       speed: this.speed,
       inputMove: this.inputMove,
       look: this.look,
+
+      kind: this.kind,
     };
   }
   emitPos() {
@@ -25,6 +27,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       speed: new vec3,
       inputMove: new vec3,
       look: new vec3,
+
+      kind: opts.kind,
     });
     this.owner = owner;
 
@@ -80,6 +84,27 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     if (this.gameLevelZone) {
       this.gameLevelZone.doDamageRadialArea(this, opts);
+    }
+  }
+
+  doJump(data) {
+    const canJump = !this.inJump &&
+      !this.Roll &&
+      !this.afterJumpTime &&
+      this.speed.length() > 200;
+    if (canJump) {
+      this.onJump(data);
+      this.emitAll('jump', {});
+    }
+  }
+  doRoll(data) {
+    const canRoll = !this.inRoll &&
+      !this.afterRollTime &&
+      this.speed.length() > 0;
+
+    if (canRoll) {
+      this.onRoll(data);
+      this.emitAll('roll', {});
     }
   }
 }

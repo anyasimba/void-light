@@ -26,6 +26,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       speed: new vec3(data.speed),
       inputMove: new vec3(data.inputMove),
       look: new vec3(data.look),
+
+      kind: data.kind,
     });
 
     this.view = Fighter.createView(this.id === client.playerID);
@@ -47,6 +49,19 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     this.group.x = this.pos.x;
     this.group.y = this.pos.y;
-    this.view.angle = this.look.toAngle() + 90;
+    this.group.angle = this.look.toAngle();
+    this.group.scale.x = 1;
+    this.group.scale.y = 1;
+    if (this.inJump) {
+      const f = Math.sin(
+        (this.inJump.time / this.inJump.duration) * Math.PI) * 0.2;
+      this.group.scale.x = 1 + f;
+      this.group.scale.y = 1 + f;
+    }
+    if (this.inRoll) {
+      const f = Math.sin(
+        (this.inRoll.time / this.inRoll.duration) * Math.PI) * 2;
+      this.group.scale.x *= 1 - f;
+    }
   }
 }

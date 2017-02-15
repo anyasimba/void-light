@@ -36,29 +36,62 @@ export class Fighter {
 
   update() {
     const move = this.inputMove.unit();
-    if (!this.inHit) {
+    if (!this.inHit && !this.inJump && !this.inRoll) {
       vec3.add(this.speed, move.multiply(this.ACC * dt));
     }
-    vec3.multiply(this.speed, Math.pow(this.AIR_FRICTION, dt * 60));
-    if (this.speed.length() > this.FRICTION * dt) {
-      vec3.subtract(this.speed, this.speed
-        .unit()
-        .multiply(this.FRICTION * dt));
-    } else {
-      this.speed.init();
+
+    if (!this.inJump && !this.inRoll) {
+      vec3.multiply(this.speed, Math.pow(this.AIR_FRICTION, dt * 60));
+      if (this.speed.length() > this.FRICTION * dt) {
+        vec3.subtract(this.speed, this.speed
+          .unit()
+          .multiply(this.FRICTION * dt));
+      } else {
+        this.speed.init();
+      }
     }
     vec3.add(this.pos, this.speed.multiply(dt));
 
-    let lookInput = this.inputMove;
-    let lookF = Fighter.LOOK_ROTATE_F;
-    if (this.inHit) {
-      lookInput = this.hitVec;
-      lookF = Fighter.LOOK_ROTATE_IN_HIT_F;
+    if ((!this.inJump && !this.inRoll) || this.inHit) {
+      let lookInput = this.inputMove;
+      let lookF = Fighter.LOOK_ROTATE_F;
+      if (this.inHit) {
+        lookInput = this.hitVec;
+        lookF = Fighter.LOOK_ROTATE_IN_HIT_F;
+      }
+      const lookRel = lookInput
+        .subtract(this.look)
+        .multiply(1 - Math.pow(1 - lookF, dt));
+      vec3.add(this.look, lookRel);
     }
-    const lookRel = lookInput
-      .subtract(this.look)
-      .multiply(1 - Math.pow(1 - lookF, dt));
-    vec3.add(this.look, lookRel);
+
+    if (this.inJump) {
+      this.inJump.time += dt;
+      if (this.inJump.time >= this.inJump.duration) {
+        this.afterJumpTime = this.inJump.afterTime;
+        delete this.inJump;
+      }
+    }
+    if (this.afterJumpTime) {
+      this.afterJumpTime -= dt;
+      if (this.afterJumpTime <= 0) {
+        delete this.afterJumpTime;
+      }
+    }
+
+    if (this.inRoll) {
+      this.inRoll.time += dt;
+      if (this.inRoll.time >= this.inRoll.duration) {
+        this.afterRollTime = this.inRoll.afterTime;
+        delete this.inRoll;
+      }
+    }
+    if (this.afterRollTime) {
+      this.afterRollTime -= dt;
+      if (this.afterRollTime <= 0) {
+        delete this.afterRollTime;
+      }
+    }
   }
 
   onHit(opts) {
@@ -69,6 +102,13 @@ export class Fighter {
       return;
     }
     this.inHit = true;
+
+    if (this.inJump) {
+      this.isJumpHit = true;
+    }
+    if (this.inRoll) {
+      this.isRollHit = true;
+    }
 
     const pos = new vec3(opts);
     this.hitVec = pos
@@ -85,6 +125,7 @@ export class Fighter {
       delete this.canNextHit;
       delete this.hitVec;
       delete this.inHit;
+      delete this.isJumpHit;
 
       if (this.needNextHit) {
         const opts = this.needNextHit;
@@ -95,4 +136,27 @@ export class Fighter {
   }
 
   doDamageRadialArea() {}
+
+  onJump() {
+    this.speed = this.speed.unit().multiply(600);
+    this.inJump = {
+      time: 0,
+      duration: 0.7,
+      afterTime: 0.5,
+    };
+    this.look = this.speed.unit();
+  }
+  onRoll() {
+    let input = this.inputMove;
+    if (this.inJump) {
+      input = this.look;
+    }
+    this.speed = input.unit().multiply(800);
+    this.inRoll = {
+      time: 0,
+      duration: 0.4,
+      afterTime: 0.2,
+    };
+    this.look = this.speed.unit();
+  }
 }
