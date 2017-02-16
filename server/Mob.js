@@ -6,15 +6,27 @@ export class Mob {
       kind: 'mob',
 
       ACC: 3400,
-      DAMAGE: 5,
+      DAMAGE: 100,
     });
-    this.fighter.pos.x = opts.x;
-    this.fighter.pos.y = opts.y;
+    this.opts = opts;
+
+    this.reborn();
 
     this.genGrid(
       Math.floor(opts.x / WALL_SIZE),
       Math.floor(opts.y / WALL_SIZE)
     );
+  }
+
+  reborn() {
+    this.fighter.pos.x = this.opts.x;
+    this.fighter.pos.y = this.opts.y;
+
+    if (!this.isAlive) {
+      this.isAlive = true;
+      this.hp = 100;
+      this.gameLevelZone.addObject(this.fighter);
+    }
   }
 
   genGrid(x, y) {
@@ -226,5 +238,6 @@ export class Mob {
 
   onDie() {
     this.gameLevelZone.removeObject(this.fighter);
+    delete this.isAlive;
   }
 }

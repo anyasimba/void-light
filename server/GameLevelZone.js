@@ -100,6 +100,16 @@ export class GameLevelZone {
     }
   }
 
+  restart() {
+    for (const k in this.clients) {
+      const client = this.clients[k];
+      this.rebornPlayer(client.player);
+    }
+    for (const k in this.mobs) {
+      const mob = this.mobs[k];
+      mob.reborn();
+    }
+  }
 
   addClient(client) {
     const i = Math.floor(Math.random() * this.playerPoints.length);

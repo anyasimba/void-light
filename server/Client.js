@@ -29,7 +29,7 @@ export class Client extends global.Client {
 
   onDie() {
     this.player.hp = 100;
-    this.player.gameLevelZone.rebornPlayer(this.player);
+    this.player.gameLevelZone.restart();
   }
 
   registerEvents() {
