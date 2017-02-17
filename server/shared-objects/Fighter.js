@@ -54,6 +54,15 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       },
       angle: 15,
     });
+
+    new Shield({
+      parent: this,
+      pos: {
+        x: -15,
+        y: -30,
+      },
+      angle: -35,
+    });
   }
 
   doHit(data) {
@@ -76,9 +85,12 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
 
   doDamageRadialArea(opts) {
-    opts.hitVec = this.hitVec;
+    if (this.hp <= 0) {
+      return;
+    }
+    opts.hitVec = this.hitVec.clone();
 
-    const hitAngle = this.hitVec.toAngle();
+    const hitAngle = opts.hitVec.toAngle();
     opts.a1 += hitAngle;
     opts.a2 += hitAngle;
 

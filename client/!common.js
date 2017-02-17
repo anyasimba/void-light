@@ -32,8 +32,10 @@ let time;
 export const game = new Phaser.Game(
   "100%", "100%", Phaser.AUTO, '', {
     async preload() {
+      game.load.image('shield', 'assets/shield.png');
       game.load.image('sword', 'assets/sword.png');
       game.load.image('player', 'assets/player.png');
+      game.load.image('player-back', 'assets/player-back.png');
 
       game.stage.backgroundColor = 0x101010;
 

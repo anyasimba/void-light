@@ -1,19 +1,15 @@
-export class Sword extends mix(global.Sword, MixGameObject) {
+export class Shield extends mix(global.Shield, MixGameObject) {
   static createView(isHost) {
     let color = 0xAA3300;
     if (isHost) {
       color = 0xFFFFFF;
     }
-    const image = new Phaser.Image(game, 0, 0, 'sword');
-    image.scale.x = 0.7;
-    image.scale.y = 1;
+    const image = new Phaser.Image(game, 0, 0, 'shield');
+    image.scale.x = 1.4;
+    image.scale.y = 1.4;
     image.anchor.x = 0.5;
-    image.anchor.y = 0.8;
+    image.anchor.y = 0.5;
     image.tint = color;
-    if (!isHost) {
-      image.scale.x = 0.6;
-      image.scale.y = 0.9;
-    }
     image.smoothed = true;
     return image;
   }
@@ -24,7 +20,7 @@ export class Sword extends mix(global.Sword, MixGameObject) {
       angle: data.angle,
       sideAngle: data.sideAngle,
     });
-    this.view = Sword.createView(this.parent.id === client.playerID);
+    this.view = Shield.createView(this.parent.id === client.playerID);
     this.group.add(this.view);
   }
 
@@ -35,6 +31,11 @@ export class Sword extends mix(global.Sword, MixGameObject) {
     this.view.y = this.pos.y - this.parent.moveShift * 2 + 2;
     this.view.angle = this.angle + 90;
 
-    this.group.angle = this.sideAngle;
+    let groupAngle = this.sideAngle + 100;
+    if (this.parent.inJump || this.parent.inRoll || this.parent.inHit) {
+      groupAngle = this.sideAngle;
+    }
+    this.group.angle += (groupAngle - this.group.angle) *
+      (1 - Math.pow(0.01, dt));
   }
 }

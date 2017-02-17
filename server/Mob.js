@@ -22,9 +22,9 @@ export class Mob {
     this.fighter.pos.x = this.opts.x;
     this.fighter.pos.y = this.opts.y;
 
+    this.hp = 100;
     if (!this.isAlive) {
       this.isAlive = true;
-      this.hp = 100;
       this.gameLevelZone.addObject(this.fighter);
     }
   }

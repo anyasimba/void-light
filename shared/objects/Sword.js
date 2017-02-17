@@ -56,12 +56,25 @@ export class Sword {
         fn: easing.easeOutQuad,
       });
 
-      this.parent.doDamageRadialArea({
-        r1: 60,
+      const damageOpts = {
+        r1: 0,
         r2: 240,
-        a1: -80,
-        a2: 80,
-      });
+        a1: -90,
+        a2: 90,
+      }
+      if (this.parent.inRoll) {
+        damageOpts.a1 = -140;
+        damageOpts.a2 = 140;
+        damageOpts.r2 = 260;
+      }
+      if (this.parent.inJump) {
+        if (!this.parent.inRoll) {
+          damageOpts.a1 = -120;
+          damageOpts.a2 = 120;
+        }
+        damageOpts.r2 = 260;
+      }
+      this.parent.doDamageRadialArea(damageOpts);
 
       await this.sleep(0.1);
       await this.animate('sideAngle', {

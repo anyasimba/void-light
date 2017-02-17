@@ -120,10 +120,7 @@ export class Fighter {
       this.isRollHit = true;
     }
 
-    const pos = new vec3(opts);
-    this.hitVec = pos
-      .subtract(this.pos)
-      .unit();
+    this.hitVec = new vec3(opts).subtract(this.pos).unit();
 
     this.sword.doHit();
 
@@ -149,10 +146,10 @@ export class Fighter {
   doDamageRadialArea() {}
 
   onJump() {
-    this.speed = this.speed.unit().multiply(600);
+    this.speed = this.speed.unit().multiply(700);
     this.inJump = {
       time: 0,
-      duration: 0.7,
+      duration: 0.6,
       afterTime: 0.5,
     };
     this.look = this.speed.unit();
