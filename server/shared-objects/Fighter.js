@@ -12,6 +12,16 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
       kind: this.kind,
       size: this.size,
+
+      ACC: this.ACC,
+      AIR_FRICTION: this.AIR_FRICTION,
+      FRICTION: this.FRICTION,
+
+      BALANCE: this.BALANCE,
+
+      HP: this.HP,
+      MP: this.MP,
+      STAMINA: this.STAMINA,
     };
   }
   emitPos() {
@@ -23,6 +33,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
 
   constructor(owner, opts) {
+    opts = opts || {};
+
     super({
       pos: new vec3,
       speed: new vec3,
@@ -31,17 +43,22 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
       kind: opts.kind,
       size: opts.BODY_SIZE || Fighter.BODY_SIZE,
+
+      ACC: opts.ACC || Fighter.ACC,
+      AIR_FRICTION: opts.AIR_FRICTION || Fighter.AIR_FRICTION,
+      FRICTION: opts.FRICTION || Fighter.FRICTION,
+
+      BALANCE: opts.BALANCE,
+      balance: opts.BALANCE,
+      HP: opts.HP,
+      hp: opts.HP,
+      MP: opts.MP,
+      mp: opts.MP,
+      STAMINA: opts.STAMINA,
+      stamina: opts.STAMINA,
     });
+
     this.owner = owner;
-
-    opts = opts || {};
-    this.ACC = opts.ACC || this.ACC;
-    this.AIR_FRICTION = opts.AIR_FRICTION || this.AIR_FRICTION;
-    this.FRICTION = opts.FRICTION || this.FRICTION;
-    this.DAMAGE = opts.DAMAGE || 60;
-
-    this.hp = 100;
-    this.mp = 100;
 
     this.body = {
       kind: 'circle',
@@ -50,6 +67,12 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     ItemSword(this);
     ItemShield(this);
+  }
+  reborn() {
+    this.balance = this.BALANCE;
+    this.hp = this.HP;
+    this.mp = this.MP;
+    this.stamina = this.STAMINA;
   }
 
   doHit(data) {

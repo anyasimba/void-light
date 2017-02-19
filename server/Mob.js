@@ -13,6 +13,11 @@ export class Mob {
       ACC: 3400,
       DAMAGE: 100,
       BODY_SIZE: size,
+
+      BALANCE: 10,
+      HP: 100,
+      MP: 100,
+      STAMINA: 20,
     });
     this.opts = opts;
 

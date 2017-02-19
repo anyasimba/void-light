@@ -31,15 +31,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
 
   constructor(data) {
-    super(data, {
-      pos: new vec3(data.pos),
-      speed: new vec3(data.speed),
-      inputMove: new vec3(data.inputMove),
-      look: new vec3(data.look),
+    console.log(data);
+    data.pos = new vec3(data.pos);
+    data.speed = new vec3(data.speed);
+    data.inputMove = new vec3(data.inputMove);
+    data.look = new vec3(data.look);
 
-      kind: data.kind,
-      size: data.size,
-    });
+    super(data, data);
 
     this.views = Fighter.createView(
       this.id === client.playerID, this.kind, this.size);

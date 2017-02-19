@@ -4,6 +4,11 @@ export class Client extends global.Client {
 
     this.player = new Fighter(this, {
       kind: 'player',
+
+      BALANCE: 10,
+      HP: 100,
+      MP: 100,
+      STAMINA: 20,
     });
 
     this.emit('playerID', {
@@ -28,7 +33,6 @@ export class Client extends global.Client {
   }
 
   onDie() {
-    this.player.hp = 100;
     this.player.gameLevelZone.restart();
   }
 
