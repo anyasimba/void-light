@@ -1,12 +1,18 @@
 export class Mob {
-  constructor(gameLevelZone, opts) {
+  constructor(gameLevelZone, opts, i) {
     this.gameLevelZone = gameLevelZone;
+
+    let size = 40;
+    if (i === '0') {
+      size = 160;
+    }
 
     this.fighter = new Fighter(this, {
       kind: 'mob',
 
       ACC: 3400,
       DAMAGE: 100,
+      BODY_SIZE: size,
     });
     this.opts = opts;
 
@@ -22,7 +28,7 @@ export class Mob {
     this.fighter.pos.x = this.opts.x;
     this.fighter.pos.y = this.opts.y;
 
-    this.hp = 100;
+    this.fighter.hp = 100;
     if (!this.isAlive) {
       this.isAlive = true;
       this.gameLevelZone.addObject(this.fighter);

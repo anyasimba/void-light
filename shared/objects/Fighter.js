@@ -104,7 +104,7 @@ export class Fighter {
     }
   }
 
-  onHit(opts) {
+  onHit(opts, fromWeapon) {
     if (this.canNextHit) {
       this.needNextHit = opts;
     }
@@ -122,25 +122,22 @@ export class Fighter {
 
     this.hitVec = new vec3(opts).subtract(this.pos).unit();
 
-    this.sword.doHit();
+    if (!fromWeapon) {
+      this.weapon.doHit();
+    }
+  }
+  finishHit() {
+    delete this.canNextHit;
+    delete this.hitVec;
+    delete this.inHit;
+    delete this.isJumpHit;
+    delete this.isRollHit;
 
-    run(async() => {
-      await this.sleep(0.35);
-      vec3.add(this.speed, this.hitVec.multiply(600));
-      this.canNextHit = true;
-      await this.sleep(0.4);
-      delete this.canNextHit;
-      delete this.hitVec;
-      delete this.inHit;
-      delete this.isJumpHit;
-      delete this.isRollHit;
-
-      if (this.needNextHit) {
-        const opts = this.needNextHit;
-        delete this.needNextHit;
-        this.onHit(opts);
-      }
-    });
+    if (this.needNextHit) {
+      const opts = this.needNextHit;
+      delete this.needNextHit;
+      this.onHit(opts);
+    }
   }
 
   doDamageRadialArea() {}

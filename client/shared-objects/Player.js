@@ -1,9 +1,10 @@
 export class Fighter extends mix(global.Fighter, MixGameObject) {
-  static createView(isHost) {
-
+  static createView(isHost, kind, size) {
     let color = 0xFF4400;
     if (isHost) {
       color = 0xFFFFFF;
+    } else if (kind === 'player') {
+      color = 0x55FF00;
     }
     const images = [
       new Phaser.Image(game, 0, 0, 'player'),
@@ -22,6 +23,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         image.scale.y = 0.9;
       }
       image.smoothed = true;
+
+      image.scale.x *= size / 40;
+      image.scale.y *= size / 40;
     }
     return images;
   }
@@ -34,9 +38,11 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       look: new vec3(data.look),
 
       kind: data.kind,
+      size: data.size,
     });
 
-    this.views = Fighter.createView(this.id === client.playerID);
+    this.views = Fighter.createView(
+      this.id === client.playerID, this.kind, this.size);
     this.group.add(this.views[0]);
     this.group.add(this.views[1]);
     this.views[1].alpha = 0;

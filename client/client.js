@@ -153,12 +153,20 @@ export class Client extends global.Client {
         }
       }
 
-      const groundTexture = new Phaser.RenderTexture(
-        game, groundLayer.width * 2.5, groundLayer.height * 2.5,
-        null, null, 0.4);
-      groundTexture.renderXY(groundLayer, 0, 0);
+      const f = 4;
+      for (let x = 0; x < f; ++x) {
+        for (let y = 0; y < f; ++y) {
+          const ax = groundLayer.width / f * x;
+          const ay = groundLayer.height / f * y;
+          const groundTexture = new Phaser.RenderTexture(
+            game, groundLayer.width / f, groundLayer.height / f,
+            null, null, 1);
+          groundTexture.renderXY(
+            groundLayer, -ax, -ay);
+          game.scene.add(new Phaser.Sprite(game, ax, ay, groundTexture));
+        }
+      }
       groundLayer.destroy();
-      game.scene.add(new Phaser.Sprite(game, 0, 0, groundTexture));
     });
   }
 }

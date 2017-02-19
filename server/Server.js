@@ -48,7 +48,7 @@ export function Server() {
     .useStaticFolder('/maps/')
     .useStaticFolder('/shared/');
 
-  server.listen(3000);
+  server.listen(3000, '0.0.0.0');
 
   const socksServer = http.createServer();
   const ioListener = io.listen(socksServer);

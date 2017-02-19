@@ -8,7 +8,6 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
 
     super(data.id, state, ...args);
 
-
     if (data.parentID) {
       this.parent.group.add(this.group);
     } else {

@@ -11,6 +11,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       look: this.look,
 
       kind: this.kind,
+      size: this.size,
     };
   }
   emitPos() {
@@ -29,6 +30,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       look: new vec3,
 
       kind: opts.kind,
+      size: opts.BODY_SIZE || Fighter.BODY_SIZE,
     });
     this.owner = owner;
 
@@ -43,41 +45,15 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     this.body = {
       kind: 'circle',
-      size: Fighter.BODY_SIZE,
+      size: this.size,
     }
 
-    new Sword({
-      parent: this,
-      pos: {
-        x: -25,
-        y: 25,
-      },
-      angle: 15,
-    });
-
-    new Shield({
-      parent: this,
-      pos: {
-        x: -15,
-        y: -30,
-      },
-      angle: -35,
-    });
+    ItemSword(this);
+    ItemShield(this);
   }
 
   doHit(data) {
     this.onHit(data);
-    this.emitAll('hit', {
-      x: data.x,
-      y: data.y,
-    });
-  }
-  onHit(data) {
-    const inHit = this.inHit;
-    super.onHit(data);
-    if (inHit) {
-      return;
-    }
     this.emitAll('hit', {
       x: data.x,
       y: data.y,
@@ -106,6 +82,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.speed.length() > 200;
     if (canJump) {
       this.onJump(data);
+      this.emitPos();
       this.emitAll('jump', {});
     }
   }
@@ -116,6 +93,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     if (canRoll) {
       this.onRoll(data);
+      this.emitPos();
       this.emitAll('roll', {});
     }
   }
