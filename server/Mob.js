@@ -196,6 +196,8 @@ export class Mob {
       }
     }
 
+    let canAttack;
+
     if (this.target) {
       const dx = this.fighter.pos.x - this.target.pos.x;
       const dy = this.fighter.pos.y - this.target.pos.y;
@@ -213,7 +215,7 @@ export class Mob {
         delete this.target;
         delete this.path;
         delete this.onWay;
-      } else {
+      } else if (this.pathMap[tx] && this.pathMap[px]) {
         const cd = Math.abs(this.pathMap[tx][ty] - this.pathMap[px][py]);
 
         if (d < 400 && cd <= 2) {
@@ -221,13 +223,87 @@ export class Mob {
           nextY = this.target.pos.y;
         }
 
-        if (d < 180) {
-          this.fighter.doHit({
-            x: this.target.pos.x,
-            y: this.target.pos.y,
-          });
+        this.attackDistance = this.attackDistance ||
+          160 + Math.random() * 60;
+        if (d < this.attackDistance) {
+          canAttack = true;
         }
       }
+    }
+
+    if (canAttack) {
+      if (!this.act) {
+        if (Math.random() < 0.6) {
+          if (Math.random() < 0.2) {
+            this.fighter.doJump();
+          }
+          if (Math.random() < 0.2) {
+            this.fighter.doRoll();
+          }
+
+          this.act = 'hit';
+          this.actTime = Math.random() * 2;
+          this.hits = setInterval(() => {
+            if (Math.random() < 0.1) {
+              this.fighter.doRoll();
+            }
+            if (this.target) {
+              this.fighter.doHit({
+                x: this.target.pos.x,
+                y: this.target.pos.y,
+              });
+            }
+          }, 0.2);
+        } else if (Math.random() < 0.5) {
+          this.act = 'left';
+          this.actTime = 1 + Math.random() * 2;
+        } else {
+          this.act = 'right';
+          this.actTime = 1 + Math.random() * 2;
+        }
+      }
+
+      if (this.act === 'left') {
+        const dx = nextX - this.fighter.pos.x;
+        const dy = nextY - this.fighter.pos.y;
+
+        nextX = this.fighter.pos.x + dy;
+        nextY = this.fighter.pos.y - dx;
+      } else if (this.act === 'right') {
+        const dx = nextX - this.fighter.pos.x;
+        const dy = nextY - this.fighter.pos.y;
+
+        nextX = this.fighter.pos.x - dy;
+        nextY = this.fighter.pos.y + dx;
+      } else {
+        nextX = this.fighter.pos.x;
+        nextY = this.fighter.pos.y;
+      }
+    }
+
+    if (this.actTime) {
+      this.actTime -= dt;
+      if (this.actTime <= 0) {
+        delete this.actTime;
+        delete this.act;
+        if (this.hits) {
+          clearInterval(this.hits);
+          delete this.hits;
+        }
+      }
+    }
+
+    this.rollTime = this.rollTime || Math.random() * 10;
+    this.rollTime -= dt;
+    if (this.rollTime <= 0) {
+      delete this.rollTime;
+      this.fighter.doRoll();
+    }
+    this.jumpTime = this.jumpTime || Math.random() * 15;
+    this.jumpTime -= dt;
+    if (this.jumpTime <= 0) {
+      delete this.jumpTime;
+      this.fighter.doJump();
     }
 
     const oldX = this.fighter.inputMove.x;
@@ -245,6 +321,7 @@ export class Mob {
     if (hasChange) {
       this.fighter.emitPos();
     }
+
   }
 
   onDie() {

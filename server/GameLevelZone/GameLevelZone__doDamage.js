@@ -19,7 +19,7 @@ Object.assign(GameLevelZone.prototype, {
     if (other.inRoll) {
       return;
     }
-    if (source.kind === 'player' && other.kind === 'player') {
+    if (source.kind === other.kind) {
       return;
     }
 
@@ -44,9 +44,9 @@ Object.assign(GameLevelZone.prototype, {
     if (isHit) {
       vec3.add(other.speed, opts.hitVec.multiply(600));
       other.emitPos();
-      let damage = 0;
+      let damage = 50;
       if (source.kind === 'player') {
-        damage = 60;
+        damage = 120;
       }
       other.hp -= damage;
       if (other.hp <= 0) {
@@ -55,7 +55,11 @@ Object.assign(GameLevelZone.prototype, {
       if (other.inHit) {
         other.breakHit();
       }
-      other.stun(0.5);
+      if (other.kind === 'player') {
+        other.stun(0.3);
+      } else {
+        other.stun(1);
+      }
     }
   },
 });

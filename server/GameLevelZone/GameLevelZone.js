@@ -144,6 +144,7 @@ export class GameLevelZone {
     player.pos.y = p.y;
     player.speed.x = 0;
     player.speed.y = 0;
+    player.hp = 100;
     player.emitPos();
   }
 
