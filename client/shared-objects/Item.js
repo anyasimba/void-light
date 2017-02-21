@@ -18,6 +18,7 @@ export class Item extends mix(global.Item, MixGameObject) {
     this.updater = opts.update;
 
     this.doHit = global[slug + '__doHit'];
+    this.onStun = global[slug + '__onStun'];
   }
 
   update() {

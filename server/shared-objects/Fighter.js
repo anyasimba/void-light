@@ -82,6 +82,18 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       y: data.y,
     });
   }
+  breakHit() {
+    this.needBreakHit = true;
+    this.emitAll('breakHit', {});
+  }
+  stun(time) {
+    if (this.stunTime === undefined) {
+      this.stunTime = time;
+      this.emitAll('stun', {
+        time: time
+      });
+    }
+  }
 
   doDamageRadialArea(opts) {
     if (this.hp <= 0) {
@@ -102,7 +114,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     const canJump = !this.inJump &&
       !this.Roll &&
       !this.afterJumpTime &&
-      this.speed.length() > 200;
+      this.speed.length() > 200 &&
+      !this.stunTime;
     if (canJump) {
       this.onJump(data);
       this.emitPos();
@@ -112,7 +125,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   doRoll(data) {
     const canRoll = !this.inRoll &&
       !this.afterRollTime &&
-      this.speed.length() > 0;
+      this.speed.length() > 0 &&
+      !this.stunTime;
 
     if (canRoll) {
       this.onRoll(data);

@@ -103,7 +103,7 @@ export class Mob {
       }
     }
 
-    if (this.pathMap[x][y] === 0) {
+    if (this.pathMap[x] && this.pathMap[x][y] === 0) {
       return;
     }
     let p = {

@@ -34,9 +34,13 @@ export class Fighter {
     this.FRICTION = Fighter.FRICTION;
   }
 
+  get hands() {
+    return [this.weapon, this.shield];
+  }
+
   update() {
     const move = this.inputMove.unit();
-    if (!this.inHit && !this.inJump && !this.inRoll) {
+    if (!this.inHit && !this.inJump && !this.inRoll && !this.stunTime) {
       vec3.add(this.speed, move.multiply(this.ACC * dt));
     }
 
@@ -62,7 +66,7 @@ export class Fighter {
     }
     vec3.add(this.pos, this.speed.multiply(dt));
 
-    if ((!this.inJump && !this.inRoll) || this.inHit) {
+    if ((!this.inJump && !this.inRoll && !this.stunTime) || this.inHit) {
       let lookInput = this.inputMove;
       let lookF = Fighter.LOOK_ROTATE_F;
       if (this.inHit) {
@@ -102,9 +106,32 @@ export class Fighter {
         delete this.afterRollTime;
       }
     }
+
+    if (this.needBreakHit) {
+      delete this.needBreakHit;
+      this.weapon.task = 'break';
+    }
+
+    if (this.stunTime) {
+      if (!this.inStun) {
+        this.inStun = true;
+        this.weapon.task = 'stun';
+        this.shield.task = 'stun';
+      }
+      this.stunTime -= dt;
+      if (this.stunTime <= 0) {
+        delete this.stunTime;
+        delete this.inStun;
+        this.weapon.task = 'break';
+        this.shield.task = 'break';
+      }
+    }
   }
 
   onHit(opts, fromWeapon) {
+    if (this.stunTime) {
+      return;
+    }
     if (this.canNextHit) {
       this.needNextHit = opts;
     }
@@ -123,7 +150,7 @@ export class Fighter {
     this.hitVec = new vec3(opts).subtract(this.pos).unit();
 
     if (!fromWeapon) {
-      this.weapon.doHit();
+      this.weapon.task = 'hit';
     }
   }
   finishHit() {

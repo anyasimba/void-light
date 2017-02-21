@@ -1,3 +1,5 @@
 export async function run(fn) {
-  return await fn();
+  try {
+    return await fn();
+  } catch (e) {}
 }

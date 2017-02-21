@@ -51,6 +51,10 @@ export const MixGameObject = base => class extends base {
     this.isDestroyed = true;
   }
 
+  clearAnimations() {
+    this.animations = {};
+  }
+
   async waitAnimation(k) {
     return new Promise(async r => {
       while (this.animations[k]) {

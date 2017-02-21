@@ -52,6 +52,10 @@ Object.assign(GameLevelZone.prototype, {
       if (other.hp <= 0) {
         other.owner.onDie();
       }
+      if (other.inHit) {
+        other.breakHit();
+      }
+      other.stun(0.5);
     }
   },
 });

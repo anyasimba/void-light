@@ -28,6 +28,7 @@ export function ItemSword(parent) {
     },
     angle: 15,
     doHit: weapon__sword__default__doHit,
+    onStun: weapon__sword__default__onStun,
   });
 }
 export function ItemShield(parent) {
@@ -40,5 +41,6 @@ export function ItemShield(parent) {
       y: -30,
     },
     angle: -35,
+    onStun: shield__default__default__onStun,
   });
 }

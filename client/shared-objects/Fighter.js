@@ -31,7 +31,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
 
   constructor(data) {
-    console.log(data);
     data.pos = new vec3(data.pos);
     data.speed = new vec3(data.speed);
     data.inputMove = new vec3(data.inputMove);
@@ -56,6 +55,12 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.pos.init(data.pos);
     this.speed.init(data.speed);
     this.inputMove.init(data.inputMove);
+  }
+  onBreakHit(data) {
+    this.needBreakHit = true;
+  }
+  onStun(data) {
+    this.stunTime = data.time;
   }
 
   update() {
@@ -93,6 +98,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       (this.speed.length() + 100) / (this.speed.length() + 200);
     if (this.inJump || this.inRoll) {
       this.moveShift = 0;
+    }
+    if (this.kind === 'mob') {
+      this.moveTime += this.speed.length() * dt * 0.04;
+      this.moveShift *= 2;
     }
   }
 }
