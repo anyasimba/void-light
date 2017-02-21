@@ -117,33 +117,14 @@ export class Client extends global.Client {
           const v = ground.data[i];
 
           if (v === 1) {
-            const view = new Phaser.Graphics(game, 0, 0);
-            const a = game.stage.backgroundColor;
-            view.beginFill(0x111111 + a, 1);
-            view.drawRect(0, 0, WALL_SIZE, WALL_SIZE);
-            view.endFill();
+            const view = new Phaser.TileSprite(
+              game, 0, 0, WALL_SIZE, WALL_SIZE, 'bricks');
 
-            view.lineStyle(3, 0x222222 + a, 1);
-            if (!grid[x + 1] || !grid[x + 1][y]) {
-              view.moveTo(WALL_SIZE, 0);
-              view.lineTo(WALL_SIZE, WALL_SIZE);
-            }
-            view.lineStyle(3, 0x333333 + a, 1);
-            if (!grid[x - 1] || !grid[x - 1][y]) {
-              view.moveTo(0, 0);
-              view.lineTo(0, WALL_SIZE);
-            }
-            view.lineStyle(3, 0x222222 + a, 1);
-            if (!grid[x] || !grid[x][y + 1]) {
-              view.moveTo(0, WALL_SIZE);
-              view.lineTo(WALL_SIZE, WALL_SIZE);
-            }
-            view.lineStyle(3, 0x333333 + a, 1);
-            if (!grid[x] || !grid[x][y - 1]) {
-              view.moveTo(0, 0);
-              view.lineTo(WALL_SIZE, 0);
-            }
-            view.endFill();
+            const f = 1;
+            view.tilePosition.x = -x * WALL_SIZE / f;
+            view.tilePosition.y = -y * WALL_SIZE / f;
+            view.tileScale.x = f;
+            view.tileScale.y = f;
 
             view.x = x * WALL_SIZE;
             view.y = y * WALL_SIZE;

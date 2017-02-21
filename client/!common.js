@@ -37,6 +37,9 @@ export const game = new Phaser.Game(
       game.load.image('player', 'assets/player.png');
       game.load.image('player-back', 'assets/player-back.png');
 
+      game.load.image('ground', 'assets/ground.jpg');
+      game.load.image('bricks', 'assets/bricks.jpg');
+
       game.stage.backgroundColor = 0x101010;
 
       game.stage.disableVisibilityChange = true;
@@ -91,6 +94,8 @@ export const game = new Phaser.Game(
       await new Promise(r => EZGUI.Theme.load(uiThemePaths, r));
 
       global.client = new Client;
+
+      game.scene.add(new Phaser.TileSprite(game, -10000, -10000, 20000, 20000, 'ground'));
 
       isCreated = true;
     },
