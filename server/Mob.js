@@ -253,7 +253,7 @@ export class Mob {
                 y: this.target.pos.y,
               });
             }
-          }, 0.2);
+          }, 200);
         } else if (Math.random() < 0.5) {
           this.act = 'left';
           this.actTime = 1 + Math.random() * 2;

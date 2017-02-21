@@ -86,6 +86,9 @@ export class Client extends global.Client {
   onPlayerID(data) {
     this.playerID = data.playerID;
   }
+  onDie(data) {
+    game.levelSound.restart();
+  }
   onMap(data) {
     run(async() => {
       this.mapName = data.name;

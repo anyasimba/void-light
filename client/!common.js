@@ -40,6 +40,8 @@ export const game = new Phaser.Game(
       game.load.image('ground', 'assets/ground.jpg');
       game.load.image('bricks', 'assets/bricks.jpg');
 
+      game.load.audio('level', 'assets/onlymeith_-_Truth_.mp3')
+
       game.stage.backgroundColor = 0x101010;
 
       game.stage.disableVisibilityChange = true;
@@ -95,7 +97,11 @@ export const game = new Phaser.Game(
 
       global.client = new Client;
 
-      game.scene.add(new Phaser.TileSprite(game, -10000, -10000, 20000, 20000, 'ground'));
+      game.scene.add(new Phaser.TileSprite(game, -10000, -10000, 20000,
+        20000, 'ground'));
+
+      game.levelSound = game.add.sound('level', 0.4, true);
+      game.levelSound.play();
 
       isCreated = true;
     },

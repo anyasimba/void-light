@@ -34,6 +34,7 @@ export class Client extends global.Client {
 
   onDie() {
     this.player.gameLevelZone.restart();
+    this.emit('die', {});
   }
 
   registerEvents() {
