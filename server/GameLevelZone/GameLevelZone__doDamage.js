@@ -44,9 +44,9 @@ Object.assign(GameLevelZone.prototype, {
     if (isHit) {
       vec3.add(other.speed, opts.hitVec.multiply(600));
       other.emitPos();
-      let damage = 50;
+      let damage = 5;
       if (source.kind === 'player') {
-        damage = 120;
+        damage = 60;
       }
       other.hp -= damage;
       if (other.hp <= 0) {
