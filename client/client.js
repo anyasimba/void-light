@@ -113,44 +113,55 @@ export class Client extends global.Client {
         }
       }
 
-      const groundLayer = new Phaser.Group(game);
+      const ts = WALL_SIZE * 5;
+      const xn = Math.ceil(this.map.width * WALL_SIZE / ts);
+      const yn = Math.ceil(this.map.height * WALL_SIZE / ts);
+      const textures = [];
+
+      for (let x = 0; x < xn; ++x) {
+        for (let y = 0; y < yn; ++y) {
+          const tex = new Phaser.RenderTexture(
+            game, ts, ts, null, null, 1);
+
+          textures[x] = textures[x] || [];
+          textures[x][y] = tex;
+        }
+      }
+
+      const bricksView = new Phaser.TileSprite(
+        game, 0, 0, WALL_SIZE, WALL_SIZE, 'bricks');
+
       for (let y = 0; y < this.map.height; ++y) {
         for (let x = 0; x < this.map.width; ++x) {
           const i = y * this.map.width + x;
           const v = ground.data[i];
 
           if (v === 1) {
-            const view = new Phaser.TileSprite(
-              game, 0, 0, WALL_SIZE, WALL_SIZE, 'bricks');
-
             const f = 1;
-            view.tilePosition.x = -x * WALL_SIZE / f;
-            view.tilePosition.y = -y * WALL_SIZE / f;
-            view.tileScale.x = f;
-            view.tileScale.y = f;
+            bricksView.tilePosition.x = -x * WALL_SIZE / f;
+            bricksView.tilePosition.y = -y * WALL_SIZE / f;
+            bricksView.tileScale.x = f;
+            bricksView.tileScale.y = f;
 
-            view.x = x * WALL_SIZE;
-            view.y = y * WALL_SIZE;
-
-            groundLayer.add(view);
+            const cx = Math.floor(x * WALL_SIZE / ts);
+            const cy = Math.floor(y * WALL_SIZE / ts);
+            textures[cx][cy].renderXY(
+              bricksView,
+              x * WALL_SIZE - cx * ts,
+              y * WALL_SIZE - cy * ts,
+              false);
           }
         }
       }
 
-      const f = 4;
-      for (let x = 0; x < f; ++x) {
-        for (let y = 0; y < f; ++y) {
-          const ax = groundLayer.width / f * x;
-          const ay = groundLayer.height / f * y;
-          const groundTexture = new Phaser.RenderTexture(
-            game, groundLayer.width / f, groundLayer.height / f,
-            null, null, 1);
-          groundTexture.renderXY(
-            groundLayer, -ax, -ay);
-          game.scene.add(new Phaser.Sprite(game, ax, ay, groundTexture));
+      for (let x = 0; x < xn; ++x) {
+        for (let y = 0; y < yn; ++y) {
+          game.scene.add(new Phaser.Sprite(game, x * ts, y * ts,
+            textures[x][y]));
         }
       }
-      groundLayer.destroy();
+
+      bricksView.destroy();
     });
   }
 }

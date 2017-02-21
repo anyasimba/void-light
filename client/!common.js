@@ -40,7 +40,8 @@ export const game = new Phaser.Game(
       game.load.image('ground', 'assets/ground.jpg');
       game.load.image('bricks', 'assets/bricks.jpg');
 
-      game.load.audio('level', 'assets/onlymeith_-_Truth_.mp3')
+      game.load.audio('level',
+        'assets/essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.mp3')
 
       game.stage.backgroundColor = 0x101010;
 
@@ -100,7 +101,7 @@ export const game = new Phaser.Game(
       game.scene.add(new Phaser.TileSprite(game, -10000, -10000, 20000,
         20000, 'ground'));
 
-      game.levelSound = game.add.sound('level', 0.4, true);
+      game.levelSound = game.add.sound('level', 0.5, true);
       game.levelSound.play();
 
       isCreated = true;
