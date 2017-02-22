@@ -76,6 +76,15 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.moveTime = 0;
   }
 
+  playSound(name) {
+    if (game.cameraPos) {
+      const d = this.pos.subtract(game.cameraPos).length();
+      const sound = game.add.sound(name);
+      sound.volume = 100000 / (100000 + d * d);
+      sound.play();
+    }
+  }
+
   onPos(data) {
     this.pos.init(data.pos);
     this.speed.init(data.speed);
@@ -84,12 +93,35 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
   onBreakHit(data) {
     this.needBreakHit = true;
+    this.playSound('breakHit');
   }
   onStun(data) {
     this.stunTime = data.time;
   }
+  onOtherHit() {
+    this.playSound('hit');
+  }
+  onJump(data) {
+    super.onJump(data);
+    if (this.kind === 'mob') {
+      this.playSound('mobJump');
+    } else {
+      this.playSound('jump');
+    }
+  }
+  onRoll(data) {
+    super.onRoll(data);
+    if (this.kind === 'mob') {
+      this.playSound('mobJump');
+    } else {
+      this.playSound('jump');
+    }
+  }
 
   onDie() {
+    if (this.kind === 'mob') {
+      this.playSound('mob1Die');
+    }
     const group = new Phaser.Group(game);
 
     const deadView = Fighter.createDeadView(
@@ -112,7 +144,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       group.scale.y = 1 + group.time * 0.2;
       group.angle = angle + Math.cos(group.time * 0.5) * 40;
     };
-    game.scene.add(group);
+    game.level.add(group);
   }
 
   update() {

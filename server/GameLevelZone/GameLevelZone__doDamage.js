@@ -49,6 +49,7 @@ Object.assign(GameLevelZone.prototype, {
         damage = 60;
       }
       other.hp -= damage;
+      other.emitAll('otherHit', {});
       if (other.hp <= 0) {
         other.onDie();
       }
@@ -56,7 +57,7 @@ Object.assign(GameLevelZone.prototype, {
         other.breakHit();
       }
       if (other.kind === 'player') {
-        other.stun(0.3);
+        other.stun(0.1);
       } else {
         other.stun(1);
       }

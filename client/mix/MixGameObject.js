@@ -15,7 +15,7 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
         this.update();
       }
 
-      game.scene.add(this.group);
+      game.level.add(this.group);
     }
   }
   destructor() {
@@ -24,7 +24,7 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
     if (this.parent) {
       this.parent.group.remove(this);
     } else {
-      game.scene.remove(this.group);
+      game.level.remove(this.group);
     }
   }
 }

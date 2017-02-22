@@ -25,6 +25,11 @@ export class Item extends mix(global.Item, MixGameObject) {
     super.update();
     this.updater();
   }
+
+  playHit() {
+    const variant = Math.floor(Math.random() * 5) + 1;
+    this.parent.playSound('hit' + variant)
+  }
 }
 
 export const weapon__sword__default = {

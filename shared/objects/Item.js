@@ -158,6 +158,8 @@ export class Item {
       time: time,
     });
   }
+
+  playHit() {}
 }
 
 export function shield__default__default__onStun() {
@@ -258,6 +260,7 @@ export function weapon__sword__default__doHit() {
       angle: 135,
       sideAngle: -50,
     });
+    this.playHit();
     await this.stage(0.1, easing.easeOutCubic, {
       sideAngle: -200,
     });
@@ -302,6 +305,7 @@ export function weapon__sword__default__doHit__2() {
     await this.stage(0.25 * this.hitSpeed, easing.easeInCubic, {
       sideAngle: -240,
     });
+    this.playHit();
     await this.stage(0.1, easing.easeOutCubic, {
       sideAngle: -50,
     });
@@ -347,6 +351,7 @@ export function weapon__sword__default__doHit__3() {
     await this.stage(0.25 * this.hitSpeed, easing.easeInCubic, {
       sideAngle: -10,
     });
+    this.playHit();
     await this.stage(0.1, easing.easeOutCubic, {
       sideAngle: -200,
     });

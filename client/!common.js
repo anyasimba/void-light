@@ -40,8 +40,33 @@ export const game = new Phaser.Game(
       game.load.image('ground', 'assets/ground.jpg');
       game.load.image('bricks', 'assets/bricks.jpg');
 
-      game.load.audio('level',
-        'assets/essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.mp3')
+      game.load.audio('back',
+        'assets/back__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.mp3');
+      game.load.audio('hit',
+        'assets/hit__86003__nextmaking__hitting-body-with-blood.mp3');
+      game.load.audio('hit1',
+        'assets/hit1__351754__urupin__whistle-of-a-twig-in-air.mp3');
+      game.load.audio('hit2',
+        'assets/hit2__351754__urupin__whistle-of-a-twig-in-air.mp3');
+      game.load.audio('hit3',
+        'assets/hit3__351754__urupin__whistle-of-a-twig-in-air.mp3');
+      game.load.audio('hit4',
+        'assets/hit4__351754__urupin__whistle-of-a-twig-in-air.mp3');
+      game.load.audio('hit5',
+        'assets/hit5__351754__urupin__whistle-of-a-twig-in-air.mp3');
+
+      game.load.audio('breakHit',
+        'assets/breakHit__326845__johnbuhr__sword-clash-25.mp3');
+
+      game.load.audio('jump',
+        'assets/jump__260188__splicesound__young-boy-grunts-for-body-impact.mp3');
+      game.load.audio('roll',
+        'assets/roll__260188__splicesound__young-boy-grunts-for-body-impact.mp3');
+      game.load.audio('mobJump',
+        'assets/mob1Jump__181068__lolamadeus__zombie-vocals-grunts.mp3');
+
+      game.load.audio('mob1Die',
+        'assets/mob1Die__76964__michel88__grunt2.mp3');
 
       game.stage.backgroundColor = 0x101010;
 
@@ -66,6 +91,11 @@ export const game = new Phaser.Game(
           const f = (1 - Math.pow(0.1, dt));
           game.scene.x += dx * f;
           game.scene.y += dy * f;
+
+          game.cameraPos = new vec3({
+            x: client.player.pos.x,
+            y: client.player.pos.y,
+          });
         }
       };
 
@@ -98,11 +128,14 @@ export const game = new Phaser.Game(
 
       global.client = new Client;
 
-      game.scene.add(new Phaser.TileSprite(
+      game.level = game.scene.add(new Phaser.Group(game));
+      game.level.add(new Phaser.TileSprite(
         game, -100000, -100000, 200000, 200000, 'ground'));
 
-      game.levelSound = game.add.sound('level', 0.5, true);
-      game.levelSound.play();
+      game.ui = game.scene.add(new Phaser.Group(game));
+
+      game.backSound = game.add.sound('back', 0.5, true);
+      game.backSound.play();
 
       isCreated = true;
     },

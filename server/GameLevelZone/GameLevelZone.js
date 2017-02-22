@@ -285,8 +285,8 @@ export class GameLevelZone {
 
     this.updateMobsTime2 = this.updateMobsTime2 || 0;
     this.updateMobsTime2 += dt;
-    if (this.updateMobsTime2 >= 0.2) {
-      this.updateMobsTime2 -= 0.2;
+    if (this.updateMobsTime2 >= 0.1) {
+      this.updateMobsTime2 -= 0.1;
 
       const mobs = this.mobs;
       for (const k in mobs) {

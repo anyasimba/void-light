@@ -60,6 +60,8 @@ export class Client extends global.Client {
       const object = gameObjects[k];
       object.destructor();
     }
+
+    window.location.reload();
   }
 
   readPacket(packet) {
