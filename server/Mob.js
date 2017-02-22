@@ -10,7 +10,7 @@ export class Mob {
     this.fighter = new Fighter(this, {
       kind: 'mob',
 
-      ACC: 3400,
+      ACC: 3600,
       DAMAGE: 100,
       BODY_SIZE: size,
 
@@ -242,7 +242,7 @@ export class Mob {
           }
 
           this.act = 'hit';
-          this.actTime = Math.random() * 2;
+          this.actTime = Math.random() * 5;
           this.hits = setInterval(() => {
             if (Math.random() < 0.1) {
               this.fighter.doRoll();

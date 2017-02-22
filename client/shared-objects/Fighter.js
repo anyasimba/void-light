@@ -29,6 +29,31 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
     return images;
   }
+  static createDeadView(isHost, kind, size) {
+    let color = 0xFF4400;
+    if (isHost) {
+      color = 0xFFFFFF;
+    } else if (kind === 'player') {
+      color = 0x55FF00;
+    }
+    const image = new Phaser.Image(game, 0, 0, 'player-back');
+    image.scale.x = 0.9;
+    image.scale.y = 1;
+    image.anchor.x = 0.5;
+    image.anchor.y = 0.5;
+    image.angle = 90;
+    image.tint = color;
+    if (!isHost) {
+      image.scale.x = 0.8;
+      image.scale.y = 0.9;
+    }
+    image.smoothed = true;
+
+    image.scale.x *= size / 40;
+    image.scale.y *= size / 40;
+
+    return image;
+  }
 
   constructor(data) {
     data.pos = new vec3(data.pos);
@@ -61,6 +86,32 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
   onStun(data) {
     this.stunTime = data.time;
+  }
+
+  onDie() {
+    const group = new Phaser.Group(game);
+
+    const deadView = Fighter.createDeadView(
+      this.id === client.playerID, this.kind, this.size);
+
+    group.add(deadView);
+
+    group.x = this.pos.x;
+    group.y = this.pos.y;
+    const angle = this.look.toAngle();
+    group.angle = angle;
+    group.time = 0;
+    group.update = () => {
+      group.time += dt;
+      if (group.time >= 8) {
+        group.destroy();
+      }
+      group.alpha = 1 - group.time / 8;
+      group.scale.x = 1 + group.time * 0.2;
+      group.scale.y = 1 + group.time * 0.2;
+      group.angle = angle + Math.cos(group.time * 0.5) * 40;
+    };
+    game.scene.add(group);
   }
 
   update() {

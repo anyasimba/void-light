@@ -10,17 +10,20 @@ export class Item extends mix(global.Item, MixGameObject) {
       pos: this.pos,
       angle: this.angle,
       sideAngle: this.sideAngle,
+
+      hitSpeed: this.hitSpeed,
     };
   }
 }
 
-export function ItemSword(parent) {
+export function ItemSword(parent, hitSpeed) {
   return new global.Item({
     parent: parent,
     type: 'weapon',
     kind: 'sword',
     damage: 40,
     balance: 5,
+    hitSpeed: hitSpeed,
     hand: 1,
     pos: {
       x: -25,

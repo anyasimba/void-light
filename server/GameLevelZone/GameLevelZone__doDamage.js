@@ -50,7 +50,7 @@ Object.assign(GameLevelZone.prototype, {
       }
       other.hp -= damage;
       if (other.hp <= 0) {
-        other.owner.onDie();
+        other.onDie();
       }
       if (other.inHit) {
         other.breakHit();

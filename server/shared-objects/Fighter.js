@@ -65,7 +65,12 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       size: this.size,
     }
 
-    ItemSword(this);
+    let hitSpeed = 1.5;
+    if (this.kind === 'mob') {
+      hitSpeed = 2;
+    }
+
+    ItemSword(this, hitSpeed);
     ItemShield(this);
   }
   reborn() {
@@ -73,6 +78,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.hp = this.HP;
     this.mp = this.MP;
     this.stamina = this.STAMINA;
+  }
+  onDie() {
+    this.emitAll('die', {});
+    this.owner.onDie();
   }
 
   doHit(data) {
