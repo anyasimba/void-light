@@ -5,7 +5,7 @@ performance.now = (() => {
     performance.msNow ||
     performance.oNow ||
     performance.webkitNow ||
-    function() {
+    function () {
       return new Date().getTime();
     };
 })();

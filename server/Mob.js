@@ -308,12 +308,17 @@ export class Mob {
 
     const oldX = this.fighter.inputMove.x;
     const oldY = this.fighter.inputMove.y;
+
+    this.fighter.inputMove.x = 0;
+    this.fighter.inputMove.y = 0;
+
     if (nextX) {
-      this.fighter.inputMove.x = nextX - this.fighter.pos.x;
-      this.fighter.inputMove.y = nextY - this.fighter.pos.y;
-    } else {
-      this.fighter.inputMove.x = 0;
-      this.fighter.inputMove.y = 0;
+      if (Math.abs(nextX - this.fighter.pos.x) > 3) {
+        this.fighter.inputMove.x = Math.sign(nextX - this.fighter.pos.x);
+      }
+      if (Math.abs(nextY - this.fighter.pos.y) > 3) {
+        this.fighter.inputMove.y = Math.sign(nextY - this.fighter.pos.y);
+      }
     }
     const hasChange =
       oldX != this.fighter.inputMove.x ||

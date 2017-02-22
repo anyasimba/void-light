@@ -206,11 +206,9 @@ export class GameLevelZone {
       const object = objectsWithBody[k];
       this.updateObjectWithBodyCollisions(object);
     }
-  }
-  updateLow() {
+
     this.updateMobs();
   }
-
   updateObjectWithBodyCells(object) {
     object.cells = object.cells || [];
     for (const k in object.cells) {
@@ -285,10 +283,16 @@ export class GameLevelZone {
       }
     }
 
-    const mobs = this.mobs;
-    for (const k in mobs) {
-      const mob = mobs[k];
-      mob.update();
+    this.updateMobsTime2 = this.updateMobsTime2 || 0;
+    this.updateMobsTime2 += dt;
+    if (this.updateMobsTime2 >= 0.2) {
+      this.updateMobsTime2 -= 0.2;
+
+      const mobs = this.mobs;
+      for (const k in mobs) {
+        const mob = mobs[k];
+        mob.update();
+      }
     }
   }
 }

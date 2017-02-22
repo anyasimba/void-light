@@ -24,6 +24,14 @@ export class Client extends global.Client {
     this.registerEvents();
   }
 
+  emit(event, data) {
+    this.packets = this.packets || [];
+    this.packets.push([event, data]);
+
+    global.packets = global.packets || {};
+    packets[this] = this;
+  }
+
   onDisconnect() {
     gameLevelZone.removeClient(this);
 

@@ -2,35 +2,14 @@ export class Client extends global.Client {
   constructor() {
     super();
 
+    this.packets = [];
+
     this.sock.onevent = packet => {
-      const id = packet.data[1].id;
-      const parentID = packet.data[1].parentID;
-      let name = packet.data[0];
-
-      if (name === 'new') {
-        return new global[packet.data[1]['class']](packet.data[1]);
-      }
-      if (name === 'delete') {
-        const object = gameObjects[id];
-        if (object) {
-          gameObjects[id].destructor();
-        }
-        return;
-      }
-
-      name = name[0].toUpperCase() + name.substring(1);
-      if (id) {
-        let object;
-        if (parentID) {
-          object = gameObjects[parentID].children[id];
-        } else {
-          object = gameObjects[id];
-        }
-        if (object) {
-          object['on' + name].call(object, packet.data[1]);
-        }
-      } else {
-        this['on' + name].call(this, packet.data[1]);
+      for (const k in packet.data[1]) {
+        const p = packet.data[1][k];
+        this.readPacket({
+          data: p,
+        });
       }
     };
 
@@ -83,6 +62,38 @@ export class Client extends global.Client {
     }
   }
 
+  readPacket(packet) {
+    const id = packet.data[1].id;
+    const parentID = packet.data[1].parentID;
+    let name = packet.data[0];
+    const packetTime = packet.data[1].packetTime;
+
+    if (name === 'new') {
+      return new global[packet.data[1]['class']](packet.data[1]);
+    }
+    if (name === 'delete') {
+      const object = gameObjects[id];
+      if (object) {
+        gameObjects[id].destructor();
+      }
+      return;
+    }
+
+    name = name[0].toUpperCase() + name.substring(1);
+    if (id) {
+      let object;
+      if (parentID) {
+        object = gameObjects[parentID].children[id];
+      } else {
+        object = gameObjects[id];
+      }
+      if (object) {
+        object['on' + name].call(object, packet.data[1]);
+      }
+    } else {
+      this['on' + name].call(this, packet.data[1]);
+    }
+  }
   onPlayerID(data) {
     this.playerID = data.playerID;
   }
@@ -113,7 +124,7 @@ export class Client extends global.Client {
         }
       }
 
-      const ts = WALL_SIZE * 5;
+      const ts = WALL_SIZE * 20;
       const xn = Math.ceil(this.map.width * WALL_SIZE / ts);
       const yn = Math.ceil(this.map.height * WALL_SIZE / ts);
       const textures = [];

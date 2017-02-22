@@ -65,6 +65,7 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
     if (this.parent) {
       eventData.parentID = this.parent.id;
     }
+    
     const clients = this.clients;
     for (const i in clients) {
       const client = clients[i];

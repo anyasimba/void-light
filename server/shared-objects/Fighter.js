@@ -29,6 +29,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       pos: this.pos,
       speed: this.speed,
       inputMove: this.inputMove,
+      look: this.look,
     });
   }
 
@@ -87,7 +88,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
   doHit(data) {
     this.onHit(data);
-    this.emitPos();
     this.emitAll('hit', {
       x: data.x,
       y: data.y,
@@ -119,7 +119,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     opts.a2 += hitAngle;
 
     if (this.gameLevelZone) {
-      this.emitPos();
       this.gameLevelZone.doDamageRadialArea(this, opts);
     }
   }
@@ -132,7 +131,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       !this.stunTime;
     if (canJump) {
       this.onJump(data);
-      this.emitPos();
       this.emitAll('jump', {});
     }
   }
@@ -144,7 +142,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     if (canRoll) {
       this.onRoll(data);
-      this.emitPos();
       this.emitAll('roll', {});
     }
   }

@@ -1,5 +1,6 @@
 globally(require('./angle'));
 globally(require('./ease'));
+globally(require('./math'));
 globally(require('./mix'));
 globally(require('./performance'));
 globally(require('./run'));

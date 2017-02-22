@@ -80,6 +80,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.pos.init(data.pos);
     this.speed.init(data.speed);
     this.inputMove.init(data.inputMove);
+    this.look.init(data.look);
   }
   onBreakHit(data) {
     this.needBreakHit = true;
