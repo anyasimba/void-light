@@ -206,7 +206,8 @@ export class GameLevelZone {
       const object = objectsWithBody[k];
       this.updateObjectWithBodyCollisions(object);
     }
-
+  }
+  updateLow() {
     this.updateMobs();
   }
 

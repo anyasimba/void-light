@@ -321,7 +321,6 @@ export class Mob {
     if (hasChange) {
       this.fighter.emitPos();
     }
-
   }
 
   onDie() {

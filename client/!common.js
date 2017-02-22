@@ -98,8 +98,8 @@ export const game = new Phaser.Game(
 
       global.client = new Client;
 
-      game.scene.add(new Phaser.TileSprite(game, -10000, -10000, 20000,
-        20000, 'ground'));
+      game.scene.add(new Phaser.TileSprite(
+        game, -100000, -100000, 200000, 200000, 'ground'));
 
       game.levelSound = game.add.sound('level', 0.5, true);
       game.levelSound.play();

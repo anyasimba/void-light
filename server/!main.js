@@ -12,6 +12,7 @@ function initUpdate() {
     }
 
     gameLevelZone.update();
+    gameLevelZone.updateLow();
   }, 1000.0 / 60.0);
 }
 

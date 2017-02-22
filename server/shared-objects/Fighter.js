@@ -80,12 +80,14 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.stamina = this.STAMINA;
   }
   onDie() {
+    this.emitPos();
     this.emitAll('die', {});
     this.owner.onDie();
   }
 
   doHit(data) {
     this.onHit(data);
+    this.emitPos();
     this.emitAll('hit', {
       x: data.x,
       y: data.y,
@@ -93,11 +95,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
   breakHit() {
     this.needBreakHit = true;
+    this.emitPos();
     this.emitAll('breakHit', {});
   }
   stun(time) {
     if (this.stunTime === undefined) {
       this.stunTime = time;
+      this.emitPos();
       this.emitAll('stun', {
         time: time
       });
@@ -115,6 +119,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     opts.a2 += hitAngle;
 
     if (this.gameLevelZone) {
+      this.emitPos();
       this.gameLevelZone.doDamageRadialArea(this, opts);
     }
   }
