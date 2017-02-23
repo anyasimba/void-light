@@ -169,7 +169,7 @@ export class Client extends global.Client {
 
       for (let x = 0; x < xn; ++x) {
         for (let y = 0; y < yn; ++y) {
-          game.scene.add(new Phaser.Sprite(game, x * ts, y * ts,
+          game.level2.add(new Phaser.Sprite(game, x * ts, y * ts,
             textures[x][y]));
         }
       }

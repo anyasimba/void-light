@@ -20,8 +20,11 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       BALANCE: this.BALANCE,
 
       HP: this.HP,
+      hp: this.hp,
       MP: this.MP,
+      mp: this.mp,
       STAMINA: this.STAMINA,
+      stamina: this.stamina,
     };
   }
   emitPos() {
@@ -30,6 +33,16 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       speed: this.speed,
       inputMove: this.inputMove,
       look: this.look,
+    });
+  }
+  emitParams() {
+    this.emitAll('params', {
+      HP: this.HP,
+      hp: this.hp,
+      MP: this.MP,
+      mp: this.mp,
+      STAMINA: this.STAMINA,
+      stamina: this.stamina,
     });
   }
 

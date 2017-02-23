@@ -50,6 +50,7 @@ Object.assign(GameLevelZone.prototype, {
       }
       other.hp -= damage;
       other.emitAll('otherHit', {});
+      other.emitParams();
       if (other.hp <= 0) {
         other.onDie();
       }

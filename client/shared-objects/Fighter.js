@@ -91,6 +91,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.inputMove.init(data.inputMove);
     this.look.init(data.look);
   }
+  onParams(data) {
+    Object.assign(this, data);
+  }
   onBreakHit(data) {
     this.needBreakHit = true;
     this.playSound('breakHit');

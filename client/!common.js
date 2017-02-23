@@ -59,9 +59,8 @@ export const game = new Phaser.Game(
         'assets/breakHit__326845__johnbuhr__sword-clash-25.mp3');
 
       game.load.audio('jump',
-        'assets/jump__260188__splicesound__young-boy-grunts-for-body-impact.mp3');
-      game.load.audio('roll',
-        'assets/roll__260188__splicesound__young-boy-grunts-for-body-impact.mp3');
+        'assets/jump__260188__splicesound__young-boy-grunts-for-body-impact.mp3'
+      );
       game.load.audio('mobJump',
         'assets/mob1Jump__181068__lolamadeus__zombie-vocals-grunts.mp3');
 
@@ -91,6 +90,9 @@ export const game = new Phaser.Game(
           const f = (1 - Math.pow(0.1, dt));
           game.scene.x += dx * f;
           game.scene.y += dy * f;
+
+          game.ui.x = -game.scene.x / game.scaleFactor;
+          game.ui.y = -game.scene.y / game.scaleFactor;
 
           game.cameraPos = new vec3({
             x: client.player.pos.x,
@@ -132,7 +134,10 @@ export const game = new Phaser.Game(
       game.level.add(new Phaser.TileSprite(
         game, -100000, -100000, 200000, 200000, 'ground'));
 
+      game.level2 = game.scene.add(new Phaser.Group(game));
+
       game.ui = game.scene.add(new Phaser.Group(game));
+      initUI();
 
       game.backSound = game.add.sound('back', 0.5, true);
       game.backSound.play();
