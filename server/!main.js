@@ -22,6 +22,15 @@ function initUpdate() {
         client.__sock.emit('p', client.packets);
         delete client.packets;
       }
+      global.tasks = global.tasks || {};
+      for (const k in tasks) {
+        const client = tasks[k];
+        delete tasks[k];
+        for (const k in client.tasks) {
+          client.tasks[k]();
+        }
+        client.tasks = [];
+      }
 
       await sleep(Math.max(1000.0 / 60.0 - performance.now() + b, 0));
     }

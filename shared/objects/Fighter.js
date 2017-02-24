@@ -69,6 +69,12 @@ export class Fighter {
     if ((!this.inJump && !this.inRoll && !this.stunTime) || this.inHit) {
       let lookInput = this.inputMove;
       let lookF = Fighter.LOOK_ROTATE_F;
+      if (this.absLook && !gameObjects[this.absLook]) {
+        delete this.absLook;
+      }
+      if (this.absLook) {
+        lookInput = gameObjects[this.absLook].pos.subtract(this.pos).unit();
+      }
       if (this.inHit) {
         lookInput = this.hitVec;
         lookF = Fighter.LOOK_ROTATE_IN_HIT_F;
@@ -106,12 +112,6 @@ export class Fighter {
         delete this.afterRollTime;
       }
     }
-
-    if (this.needBreakHit) {
-      delete this.needBreakHit;
-      this.weapon.task = 'break';
-    }
-
     if (this.stunTime) {
       if (!this.inStun) {
         this.inStun = true;
@@ -128,43 +128,13 @@ export class Fighter {
     }
   }
 
-  onHit(opts, fromWeapon) {
-    if (this.stunTime) {
-      return;
-    }
-    if (this.canNextHit) {
-      this.needNextHit = opts;
-    }
-    if (this.inHit) {
-      return;
-    }
-    this.inHit = true;
-
-    if (this.inJump) {
-      this.isJumpHit = true;
-    }
-    if (this.inRoll) {
-      this.isRollHit = true;
-    }
-
-    this.hitVec = new vec3(opts).subtract(this.pos).unit();
-
-    if (!fromWeapon) {
-      this.weapon.task = 'hit';
-    }
-  }
   finishHit() {
     delete this.canNextHit;
     delete this.hitVec;
+    delete this.hitStage;
     delete this.inHit;
     delete this.isJumpHit;
     delete this.isRollHit;
-
-    if (this.needNextHit) {
-      const opts = this.needNextHit;
-      delete this.needNextHit;
-      this.onHit(opts);
-    }
   }
 
   doDamageRadialArea() {}

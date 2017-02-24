@@ -15,17 +15,23 @@ export class Item {
     if (false) {
       //
     } else if (this.type === 'weapon' && this.hand === 1) {
-      this.slug = 'weapon';
+      this.ownerSlug = 'weapon';
     } else if (this.type === 'shield') {
-      this.slug = 'shield';
+      this.ownerSlug = 'shield';
     }
 
-    this.parent[this.slug] = this;
+    this.parent[this.ownerSlug] = this;
 
     this.timeouts = [];
+
+    const kind = this.kind || 'default';
+    const name = this.name || 'default';
+
+    this.slug = this.type + '__' + kind + '__' + name;
+    this.doHit = global[this.slug + '__doHit'];
   }
   destructor() {
-    delete this.parent[this.slug];
+    delete this.parent[this.ownerSlug];
   }
   reborn() {
     this.pos = this.basePos.clone();
@@ -46,19 +52,20 @@ export class Item {
       this.timeouts = [];
       switch (this.task) {
         case 'hit':
-          if (this.doHit) {
+          if (this.doHit && this.doHit[this.parent.hitStage]) {
             this.lock = true;
-            this.cb = () => {
-              this.breakHit();
+            this.cb = nextTask => {
+              this.breakHit(nextTask);
             }
-            this.doHit();
+            this.doHit[this.parent.hitStage].call(this);
           }
           break;
         case 'stun':
-          if (this.onStun) {
+          if (this.opts && this.opts.onStun) {
             this.lock = true;
-            this.onStun();
+            this.opts.onStun.call(this);
           }
+          break;
         default:
       }
       delete this.task;
@@ -89,7 +96,7 @@ export class Item {
         this.clearAnimations();
         this.timeouts = [];
         if (this.cb) {
-          this.cb();
+          this.cb(this.task);
           delete this.cb;
         }
         delete this.lock;
@@ -120,38 +127,6 @@ export class Item {
       sideAngle: this.baseSideAngle,
     });
   }
-
-  checkNextHit(fn) {
-    if (this.parent.needNextHit) {
-      const opts = this.parent.needNextHit;
-      delete this.parent.needNextHit;
-      this.parent.finishHit();
-      this.parent.onHit(opts, true);
-      fn.call(this);
-      return true;
-    }
-  }
-  finishHit() {
-    this.parent.finishHit();
-    delete this.lock;
-  }
-  breakHit() {
-    delete this.parent.needNextHit;
-    this.parent.finishHit();
-    delete this.lock;
-  }
-
-  addImpulse(v) {
-    if (this.parent.hitVec) {
-      vec3.add(this.parent.speed, this.parent.hitVec.multiply(v));
-    }
-  }
-  canNextHit() {
-    if (this.parent.inHit) {
-      this.parent.canNextHit = true;
-    }
-  }
-
   setTimeout(time, fn) {
     this.timeouts.push({
       fn: fn,
@@ -159,210 +134,160 @@ export class Item {
     });
   }
 
+  checkNextHit(i) {}
+  canNextHit() {}
+  breakHit(nextTask) {
+    if (nextTask !== 'hit') {
+      this.parent.finishHit();
+    }
+    delete this.lock;
+  }
+  finishHit() {
+    this.parent.finishHit();
+    delete this.lock;
+  }
   playHit() {}
+  addImpulse(v) {}
 }
 
-export function shield__default__default__onStun() {
-  run(async() => {
-    await this.stage(0.05, easing.easeInCubic, {
-      pos: {
-        x: -45,
-        y: -30,
-      },
-      angle: -120,
-      sideAngle: -30,
-    });
+export const weapon__sword__default__doHit = {
+  1: function () {
+    run(async() => {
+      this.setTimeout(0.3 * this.hitSpeed + 0.05, () => {
+        this.addImpulse(600);
+        this.canNextHit();
 
-    while (true) {
-      await this.stage(1, easing.easeInOutCubic, {
-        pos: {
-          x: -45,
-          y: -30,
-        },
-        angle: -80,
-        sideAngle: -50,
+        const damageOpts = {
+          r1: 0,
+          r2: 240,
+          a1: -90,
+          a2: 90,
+        }
+        if (this.parent.inRoll) {
+          damageOpts.a1 = -140;
+          damageOpts.a2 = 140;
+          damageOpts.r2 = 260;
+        }
+        if (this.parent.inJump) {
+          if (!this.parent.inRoll) {
+            damageOpts.a1 = -120;
+            damageOpts.a2 = 120;
+          }
+          damageOpts.r2 = 260;
+        }
+        this.parent.doDamageRadialArea(damageOpts);
       });
-      await this.stage(1, easing.easeInOutCubic, {
-        pos: {
-          x: -45,
-          y: -30,
-        },
-        angle: -120,
-        sideAngle: -30,
-      });
-    }
-  });
-}
 
-export function weapon__sword__default__onStun() {
-  run(async() => {
-    await this.stage(0.05, easing.easeInCubic, {
-      pos: new vec3({
-        x: -40,
-        y: 40,
-      }),
-      angle: 140,
-      sideAngle: -30,
-    });
-
-    while (true) {
-      await this.stage(1, easing.easeInOutCubic, {
+      await this.stage(0.3 * this.hitSpeed, easing.easeInCubic, {
         pos: new vec3({
           x: -40,
           y: 40,
         }),
-        angle: 120,
+        angle: 135,
         sideAngle: -50,
       });
-      await this.stage(1, easing.easeInOutCubic, {
-        pos: new vec3({
-          x: -40,
-          y: 40,
-        }),
-        angle: 140,
-        sideAngle: -30,
+      this.playHit();
+      await this.stage(0.1, easing.easeOutCubic, {
+        sideAngle: -200,
       });
-    }
-  });
-}
-export function weapon__sword__default__doHit() {
-  run(async() => {
-    this.setTimeout(0.3 * this.hitSpeed + 0.05, () => {
-      this.addImpulse(600);
-      this.canNextHit();
+      await this.sleep(0.1 * this.hitSpeed);
 
-      const damageOpts = {
-        r1: 0,
-        r2: 240,
-        a1: -90,
-        a2: 90,
+      if (this.checkNextHit(2)) {
+        return;
       }
-      if (this.parent.inRoll) {
-        damageOpts.a1 = -140;
-        damageOpts.a2 = 140;
-        damageOpts.r2 = 260;
-      }
-      if (this.parent.inJump) {
-        if (!this.parent.inRoll) {
-          damageOpts.a1 = -120;
-          damageOpts.a2 = 120;
+
+      await this.finalStage(0.2 * this.hitSpeed, easing.easeInOutCubic);
+      this.finishHit();
+    });
+  },
+  2: function () {
+    this.parent.canNextHit = true;
+
+    run(async() => {
+      this.setTimeout(0.25 * this.hitSpeed + 0.05, () => {
+        this.addImpulse(600);
+
+        const damageOpts = {
+          r1: 0,
+          r2: 240,
+          a1: -90,
+          a2: 90,
         }
-        damageOpts.r2 = 260;
-      }
-      this.parent.doDamageRadialArea(damageOpts);
-    });
-
-    await this.stage(0.3 * this.hitSpeed, easing.easeInCubic, {
-      pos: new vec3({
-        x: -40,
-        y: 40,
-      }),
-      angle: 135,
-      sideAngle: -50,
-    });
-    this.playHit();
-    await this.stage(0.1, easing.easeOutCubic, {
-      sideAngle: -200,
-    });
-    await this.sleep(0.1 * this.hitSpeed);
-
-    if (this.checkNextHit(weapon__sword__default__doHit__2)) {
-      return;
-    }
-
-    await this.finalStage(0.2 * this.hitSpeed, easing.easeInOutCubic);
-    this.finishHit();
-  });
-}
-export function weapon__sword__default__doHit__2() {
-  this.parent.canNextHit = true;
-
-  run(async() => {
-    this.setTimeout(0.25 * this.hitSpeed + 0.05, () => {
-      vec3.add(this.parent.speed, this.parent.hitVec.multiply(600));
-
-      const damageOpts = {
-        r1: 0,
-        r2: 240,
-        a1: -90,
-        a2: 90,
-      }
-      if (this.parent.inRoll) {
-        damageOpts.a1 = -140;
-        damageOpts.a2 = 140;
-        damageOpts.r2 = 260;
-      }
-      if (this.parent.inJump) {
-        if (!this.parent.inRoll) {
-          damageOpts.a1 = -120;
-          damageOpts.a2 = 120;
+        if (this.parent.inRoll) {
+          damageOpts.a1 = -140;
+          damageOpts.a2 = 140;
+          damageOpts.r2 = 260;
         }
-        damageOpts.r2 = 260;
-      }
-      this.parent.doDamageRadialArea(damageOpts);
-    });
-
-    await this.stage(0.25 * this.hitSpeed, easing.easeInCubic, {
-      sideAngle: -240,
-    });
-    this.playHit();
-    await this.stage(0.1, easing.easeOutCubic, {
-      sideAngle: -50,
-    });
-    await this.sleep(0.1 * this.hitSpeed);
-
-    if (this.checkNextHit(weapon__sword__default__doHit__3)) {
-      return;
-    }
-
-    await this.finalStage(0.2 * this.hitSpeed, easing.easeInOutCubic);
-    this
-      .finishHit();
-  });
-}
-export function weapon__sword__default__doHit__3() {
-  this.parent.canNextHit = true;
-
-  run(async() => {
-    this.setTimeout(0.25 * this.hitSpeed + 0.05, () => {
-      vec3.add(this.parent.speed, this.parent.hitVec.multiply(600));
-
-      const damageOpts = {
-        r1: 0,
-        r2: 240,
-        a1: -90,
-        a2: 90,
-      }
-      if (this.parent.inRoll) {
-        damageOpts.a1 = -140;
-        damageOpts.a2 = 140;
-        damageOpts.r2 = 260;
-      }
-      if (this.parent.inJump) {
-        if (!this.parent.inRoll) {
-          damageOpts.a1 = -120;
-          damageOpts.a2 = 120;
+        if (this.parent.inJump) {
+          if (!this.parent.inRoll) {
+            damageOpts.a1 = -120;
+            damageOpts.a2 = 120;
+          }
+          damageOpts.r2 = 260;
         }
-        damageOpts.r2 = 260;
+        this.parent.doDamageRadialArea(damageOpts);
+      });
+
+      await this.stage(0.25 * this.hitSpeed, easing.easeInCubic, {
+        sideAngle: -240,
+      });
+      this.playHit();
+      await this.stage(0.1, easing.easeOutCubic, {
+        sideAngle: -50,
+      });
+      await this.sleep(0.1 * this.hitSpeed);
+
+      if (this.checkNextHit(3)) {
+        return;
       }
-      this.parent.doDamageRadialArea(damageOpts);
-    });
 
-    await this.stage(0.25 * this.hitSpeed, easing.easeInCubic, {
-      sideAngle: -10,
+      await this.finalStage(0.2 * this.hitSpeed, easing.easeInOutCubic);
+      this.finishHit();
     });
-    this.playHit();
-    await this.stage(0.1, easing.easeOutCubic, {
-      sideAngle: -200,
+  },
+  3: function () {
+    this.parent.canNextHit = true;
+
+    run(async() => {
+      this.setTimeout(0.25 * this.hitSpeed + 0.05, () => {
+        this.addImpulse(600);
+
+        const damageOpts = {
+          r1: 0,
+          r2: 240,
+          a1: -90,
+          a2: 90,
+        }
+        if (this.parent.inRoll) {
+          damageOpts.a1 = -140;
+          damageOpts.a2 = 140;
+          damageOpts.r2 = 260;
+        }
+        if (this.parent.inJump) {
+          if (!this.parent.inRoll) {
+            damageOpts.a1 = -120;
+            damageOpts.a2 = 120;
+          }
+          damageOpts.r2 = 260;
+        }
+        this.parent.doDamageRadialArea(damageOpts);
+      });
+
+      await this.stage(0.25 * this.hitSpeed, easing.easeInCubic, {
+        sideAngle: -10,
+      });
+      this.playHit();
+      await this.stage(0.1, easing.easeOutCubic, {
+        sideAngle: -200,
+      });
+      await this.sleep(0.1 * this.hitSpeed);
+
+      if (this.checkNextHit(2)) {
+        return;
+      }
+
+      await this.finalStage(0.2 * this.hitSpeed, easing.easeInOutCubic);
+      this.finishHit();
     });
-    await this.sleep(0.1 * this.hitSpeed);
-
-    if (this.checkNextHit(weapon__sword__default__doHit__2)) {
-      return;
-    }
-
-    await this.finalStage(0.2 * this.hitSpeed, easing.easeInOutCubic);
-    this
-      .finishHit();
-  });
+  },
 }

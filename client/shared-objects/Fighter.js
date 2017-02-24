@@ -90,12 +90,22 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.speed.init(data.speed);
     this.inputMove.init(data.inputMove);
     this.look.init(data.look);
+    this.absLook = data.absLook;
   }
   onParams(data) {
     Object.assign(this, data);
   }
+  onHit(data) {
+    this.inHit = true;
+    delete this.canNextHit;
+    this.isRollHit = data.isRollHit;
+    this.isJumpHit = data.isJumpHit;
+    this.hitVec = new vec3(data.hitVec);
+    this.hitStage = data.hitStage;
+    this.weapon.task = 'hit';
+  }
   onBreakHit(data) {
-    this.needBreakHit = true;
+    this.weapon.task = 'break';
     this.playSound('breakHit');
   }
   onStun(data) {
@@ -125,6 +135,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     if (this.kind === 'mob') {
       this.playSound('mob1Die');
     }
+
     const group = new Phaser.Group(game);
 
     const deadView = Fighter.createDeadView(
@@ -187,7 +198,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.moveShift = 0;
     }
     if (this.kind === 'mob') {
-      this.moveTime += this.speed.length() * dt * 0.04;
+      this.moveTime += this.speed.length() * dt * 0.01;
       this.moveShift *= 2;
     }
   }

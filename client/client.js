@@ -68,8 +68,7 @@ export class Client extends global.Client {
     const id = packet.data[1].id;
     const parentID = packet.data[1].parentID;
     let name = packet.data[0];
-    const packetTime = packet.data[1].packetTime;
-
+    
     if (name === 'new') {
       return new global[packet.data[1]['class']](packet.data[1]);
     }
@@ -100,7 +99,7 @@ export class Client extends global.Client {
     this.playerID = data.playerID;
   }
   onDie(data) {
-    game.levelSound.restart();
+    game.backSound.restart();
   }
   onMap(data) {
     run(async() => {

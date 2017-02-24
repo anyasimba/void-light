@@ -5,25 +5,16 @@ export class Item extends mix(global.Item, MixGameObject) {
   onCreate() {
     super.onCreate();
 
-    const kind = this.kind || 'default';
-    const name = this.name || 'default';
+    this.opts = global[this.slug];
 
-    const slug = this.type + '__' + kind + '__' + name;
-    const opts = global[slug];
-
-    this.view = opts.createView(
+    this.view = this.opts.createView(
       this.parent.id === client.playerID, this.parent.kind);
     this.group.add(this.view);
-
-    this.updater = opts.update;
-
-    this.doHit = global[slug + '__doHit'];
-    this.onStun = global[slug + '__onStun'];
   }
 
   update() {
     super.update();
-    this.updater();
+    this.opts.update.call(this);
   }
 
   playHit() {
@@ -32,7 +23,7 @@ export class Item extends mix(global.Item, MixGameObject) {
   }
 }
 
-export const weapon__sword__default = {
+export const weapon__sword__default = new class {
   createView(isHost, kind) {
     let color = 0xAA3300;
     if (isHost) {
@@ -52,17 +43,48 @@ export const weapon__sword__default = {
     }
     image.smoothed = true;
     return image;
-  },
+  }
   update() {
     this.view.x = this.pos.x + this.parent.moveShift + 1;
     this.view.y = this.pos.y - this.parent.moveShift * 2 + 2;
     this.view.angle = this.angle + 90;
 
     this.group.angle = this.sideAngle;
-  },
-};
+  }
+  onStun() {
+    run(async() => {
+      await this.stage(0.05, easing.easeInCubic, {
+        pos: new vec3({
+          x: -40,
+          y: 40,
+        }),
+        angle: 140,
+        sideAngle: -30,
+      });
 
-export const shield__default__default = {
+      while (true) {
+        await this.stage(1, easing.easeInOutCubic, {
+          pos: new vec3({
+            x: -40,
+            y: 40,
+          }),
+          angle: 120,
+          sideAngle: -50,
+        });
+        await this.stage(1, easing.easeInOutCubic, {
+          pos: new vec3({
+            x: -40,
+            y: 40,
+          }),
+          angle: 140,
+          sideAngle: -30,
+        });
+      }
+    });
+  }
+}
+
+export const shield__default__default = new class {
   createView(isHost, kind) {
     let color = 0xAA3300;
     if (isHost) {
@@ -78,7 +100,7 @@ export const shield__default__default = {
     image.tint = color;
     image.smoothed = true;
     return image;
-  },
+  }
   update() {
     this.view.x = this.pos.x + this.parent.moveShift + 1;
     this.view.y = this.pos.y - this.parent.moveShift * 2 + 2;
@@ -90,5 +112,36 @@ export const shield__default__default = {
     }
     this.group.angle += (groupAngle - this.group.angle) *
       (1 - Math.pow(0.1, dt * 10));
-  },
+  }
+  onStun() {
+    run(async() => {
+      await this.stage(0.05, easing.easeInCubic, {
+        pos: {
+          x: -45,
+          y: -30,
+        },
+        angle: -120,
+        sideAngle: -30,
+      });
+
+      while (true) {
+        await this.stage(1, easing.easeInOutCubic, {
+          pos: {
+            x: -45,
+            y: -30,
+          },
+          angle: -80,
+          sideAngle: -50,
+        });
+        await this.stage(1, easing.easeInOutCubic, {
+          pos: {
+            x: -45,
+            y: -30,
+          },
+          angle: -120,
+          sideAngle: -30,
+        });
+      }
+    });
+  }
 }

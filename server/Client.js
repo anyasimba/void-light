@@ -2,6 +2,8 @@ export class Client extends global.Client {
   constructor(sock) {
     super(sock);
 
+    this.tasks = [];
+
     this.player = new Fighter(this, {
       kind: 'player',
 
@@ -31,6 +33,11 @@ export class Client extends global.Client {
     global.packets = global.packets || {};
     packets[this] = this;
   }
+  run(task) {
+    this.tasks.push(task);
+    global.tasks = global.tasks || {}
+    tasks[this] = this;
+  }
 
   onDisconnect() {
     gameLevelZone.removeClient(this);
@@ -41,8 +48,10 @@ export class Client extends global.Client {
   }
 
   onDie() {
-    this.player.gameLevelZone.restart();
     this.emit('die', {});
+    this.run(() => {
+      this.player.gameLevelZone.restart();
+    });
   }
 
   registerEvents() {

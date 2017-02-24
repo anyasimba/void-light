@@ -14,6 +14,40 @@ export class Item extends mix(global.Item, MixGameObject) {
       hitSpeed: this.hitSpeed,
     };
   }
+
+  async stage(duration, fn, opts) {
+    this.stageTime = 0;
+    return await super.stage(duration, fn, {
+      stageTime: 1,
+    });
+  }
+
+  checkNextHit(i) {
+    if (this.parent.needNextHit) {
+      const opts = this.parent.needNextHit;
+      delete this.parent.needNextHit;
+      this.parent.finishHit();
+      opts.hitStage = i;
+      this.parent.doHit(opts);
+      delete this.lock;
+      return true;
+    }
+  }
+  canNextHit() {
+    if (this.parent.inHit) {
+      this.parent.canNextHit = true;
+    }
+  }
+  breakHit() {
+    delete this.parent.needNextHit;
+    super.breakHit();
+  }
+  addImpulse(v) {
+    if (this.parent.hitVec) {
+      vec3.add(this.parent.speed, this.parent.hitVec.multiply(v));
+      this.parent.emitPos();
+    }
+  }
 }
 
 export function ItemSword(parent, hitSpeed) {
@@ -30,8 +64,6 @@ export function ItemSword(parent, hitSpeed) {
       y: 25,
     },
     angle: 15,
-    doHit: weapon__sword__default__doHit,
-    onStun: weapon__sword__default__onStun,
   });
 }
 export function ItemShield(parent) {
@@ -44,6 +76,5 @@ export function ItemShield(parent) {
       y: -30,
     },
     angle: -35,
-    onStun: shield__default__default__onStun,
   });
 }

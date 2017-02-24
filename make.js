@@ -39,6 +39,7 @@ function buildClientJS() {
           'polyfill': false,
         }],
       ],
+      compact: true,
     })
     .require(__dirname + '/client.js', {
       entry: true,
