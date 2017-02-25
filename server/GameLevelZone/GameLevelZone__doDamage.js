@@ -47,9 +47,6 @@ Object.assign(GameLevelZone.prototype, {
         !other.inJump &&
         !other.inHit;
 
-      vec3.add(other.speed, opts.hitVec.multiply(600));
-      other.emitPos();
-
       let balanceF = 1;
       let damageF = 1;
       const isJumpHit = source.isJumpHit || source.inJump;
@@ -110,6 +107,7 @@ Object.assign(GameLevelZone.prototype, {
       } else {
         other.speed.init();
       }
+      vec3.add(other.speed, opts.hitVec.multiply(600));
       other.emitPos();
     }
   },
