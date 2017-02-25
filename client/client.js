@@ -2,8 +2,6 @@ export class Client extends global.Client {
   constructor() {
     super();
 
-    this.netID = Client.createID();
-
     this.packets = [];
 
     this.sock.onevent = packet => {
