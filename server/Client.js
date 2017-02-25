@@ -1,6 +1,16 @@
+preMain(async() => {
+  Client.createID = function () {
+    this.__lastID = this.__lastID || 0;
+    ++this.__lastID;
+    return this.__lastID;
+  }
+})
+
 export class Client extends global.Client {
   constructor(sock) {
     super(sock);
+
+    this.netID = Client.createID();
 
     this.tasks = [];
 
@@ -31,12 +41,12 @@ export class Client extends global.Client {
     this.packets.push([event, data]);
 
     global.packets = global.packets || {};
-    packets[this] = this;
+    packets[this.netID] = this;
   }
   run(task) {
     this.tasks.push(task);
     global.tasks = global.tasks || {}
-    tasks[this] = this;
+    tasks[this.netID] = this;
   }
 
   onDisconnect() {

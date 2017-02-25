@@ -2,6 +2,8 @@ export class Client extends global.Client {
   constructor() {
     super();
 
+    this.netID = Client.createID();
+
     this.packets = [];
 
     this.sock.onevent = packet => {
@@ -68,7 +70,7 @@ export class Client extends global.Client {
     const id = packet.data[1].id;
     const parentID = packet.data[1].parentID;
     let name = packet.data[0];
-    
+
     if (name === 'new') {
       return new global[packet.data[1]['class']](packet.data[1]);
     }
