@@ -106,13 +106,41 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
   onBreakHit(data) {
     this.weapon.task = 'break';
-    this.playSound('breakHit');
   }
   onStun(data) {
     this.stunTime = data.time;
   }
-  onOtherHit() {
-    this.playSound('hit');
+  onOtherHit(data) {
+    if (data.inBlock) {
+      this.playSound('block');
+    } else {
+      this.playSound('hit');
+    }
+    if (data.damage > 0) {
+      const damageView = new Phaser.Text(
+        game, this.pos.x, this.pos.y, '-' + data.damage, {
+          fontSize: 20,
+          fill: '#FF3300',
+          stroke: '#222222',
+          strokeThickness: 3,
+        });
+      damageView.update = () => {
+        damageView.y -= dt * 4;
+        damageView.time = damageView.time || 0;
+        damageView.time += dt;
+        if (damageView.time > 1) {
+          damageView.alpha -= dt;
+          if (damageView.alpha <= 0) {
+            damageView.destroy();
+          }
+        }
+      };
+      game.level2.add(damageView);
+    }
+  }
+  onUseStamina(data) {
+    this.stamina = data.stamina;
+    this.staminaTime = data.time;
   }
   onJump(data) {
     super.onJump(data);

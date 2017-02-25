@@ -112,6 +112,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
 
   doHit(opts) {
+    if (this.stamina <= 0) {
+      return;
+    }
     if (this.stunTime) {
       return;
     }
@@ -135,6 +138,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.hitStage = opts.hitStage || 1;
 
     this.weapon.task = 'hit';
+    this.useStamina(this.weapon.stamina, this.weapon.staminaTime);
 
     this.emitAll('hit', {
       hitVec: this.hitVec,
@@ -143,6 +147,20 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       isJumpHit: this.isJumpHit,
     });
   }
+
+  update() {
+    super.update();
+
+    if (this.balanceTime) {
+      this.balanceTime -= dt;
+      if (this.balanceTime <= 0) {
+        delete this.balanceTime;
+      }
+    } else {
+      this.balance = Math.min(this.BALANCE, this.balance + dt * 5);
+    }
+  }
+
   breakHit() {
     this.needBreakHit = true;
     this.emitPos();
@@ -156,6 +174,21 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         time: time,
       });
     }
+  }
+
+  useStamina(v, time) {
+    this.stamina = Math.max(this.stamina - v, 0);
+    this.staminaTime = this.staminaTime || 0;
+    this.staminaTime = Math.max(this.staminaTime, time);
+    this.emitAll('useStamina', {
+      stamina: this.stamina,
+      time: this.staminaTime,
+    });
+  }
+  useBalance(v, time) {
+    this.balance = Math.max(this.balance - v, 0);
+    this.balanceTime = this.balanceTime || 0;
+    this.balanceTime = Math.max(this.balanceTime, time);
   }
 
   doDamageRadialArea(opts) {
@@ -176,24 +209,30 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
 
   doJump(data) {
-    const canJump = !this.inJump &&
+    const canJump = this.stamina > 0 &&
+      !this.inJump &&
       !this.Roll &&
       !this.afterJumpTime &&
       this.speed.length() > 200 &&
       !this.stunTime;
     if (canJump) {
+      this.useStamina(8, 1.5);
+
       this.onJump(data);
       this.emitPos();
       this.emitAll('jump', {});
     }
   }
   doRoll(data) {
-    const canRoll = !this.inRoll &&
+    const canRoll = this.stamina > 0 &&
+      !this.inRoll &&
       !this.afterRollTime &&
       this.speed.length() > 0 &&
       !this.stunTime;
 
     if (canRoll) {
+      this.useStamina(4, 0.8);
+
       this.onRoll(data);
       this.emitPos();
       this.emitAll('roll', {});

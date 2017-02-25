@@ -57,6 +57,8 @@ export function ItemSword(parent, hitSpeed) {
     kind: 'sword',
     damage: 40,
     balance: 5,
+    stamina: 4,
+    staminaTime: 1,
     hitSpeed: hitSpeed,
     hand: 1,
     pos: {

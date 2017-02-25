@@ -71,7 +71,7 @@ export class GameLevelZone {
         RUN_D: 30,
         HIT_D: [80, 100],
         HIT_VER: 0.8,
-        HIT_TIME: [0, 1],
+        HIT_TIME: [0.5, 2],
         JUMP_HIT_VER: 0.1,
         ROLL_HIT_VER: 0.2,
         MOVE_VER: 0.5,

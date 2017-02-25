@@ -4,7 +4,7 @@ export class Fighter {
   }
 
   static get ACC() {
-    return 3600;
+    return 1400;
   }
   static get AIR_FRICTION() {
     return 0.95;
@@ -41,7 +41,7 @@ export class Fighter {
   update() {
     const move = this.inputMove.unit();
     if (!this.inHit && !this.inJump && !this.inRoll && !this.stunTime) {
-      vec3.add(this.speed, move.multiply(this.ACC * dt));
+      vec3.add(this.speed, move.multiply((this.ACC + this.FRICTION) * dt));
     }
 
     if (!this.inJump && !this.inRoll) {
@@ -85,20 +85,14 @@ export class Fighter {
       vec3.add(this.look, lookRel);
     }
 
-    if (this.inJump) {
-      this.inJump.time += dt;
-      if (this.inJump.time >= this.inJump.duration) {
-        this.afterJumpTime = this.inJump.afterTime;
-        delete this.inJump;
+    if (this.staminaTime) {
+      this.staminaTime -= dt;
+      if (this.staminaTime <= 0) {
+        delete this.staminaTime;
       }
+    } else {
+      this.stamina = Math.min(this.STAMINA, this.stamina + dt * 10);
     }
-    if (this.afterJumpTime) {
-      this.afterJumpTime -= dt;
-      if (this.afterJumpTime <= 0) {
-        delete this.afterJumpTime;
-      }
-    }
-
     if (this.inRoll) {
       this.inRoll.time += dt;
       if (this.inRoll.time >= this.inRoll.duration) {
@@ -110,6 +104,19 @@ export class Fighter {
       this.afterRollTime -= dt;
       if (this.afterRollTime <= 0) {
         delete this.afterRollTime;
+      }
+    }
+    if (this.inJump) {
+      this.inJump.time += dt;
+      if (this.inJump.time >= this.inJump.duration) {
+        this.afterJumpTime = this.inJump.afterTime;
+        delete this.inJump;
+      }
+    }
+    if (this.afterJumpTime) {
+      this.afterJumpTime -= dt;
+      if (this.afterJumpTime <= 0) {
+        delete this.afterJumpTime;
       }
     }
     if (this.stunTime) {

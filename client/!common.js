@@ -55,8 +55,8 @@ export const game = new Phaser.Game(
       game.load.audio('hit5',
         'assets/hit5__351754__urupin__whistle-of-a-twig-in-air.mp3');
 
-      game.load.audio('breakHit',
-        'assets/breakHit__326845__johnbuhr__sword-clash-25.mp3');
+      game.load.audio('block',
+        'assets/block__326845__johnbuhr__sword-clash-25.mp3');
 
       game.load.audio('jump',
         'assets/jump__260188__splicesound__young-boy-grunts-for-body-impact.mp3'

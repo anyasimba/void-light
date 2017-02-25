@@ -53,7 +53,7 @@ export const weapon__sword__default = new class {
   }
   onStun() {
     run(async() => {
-      await this.stage(0.05, easing.easeInCubic, {
+      await this.stage(0.2, easing.easeOutCubic, {
         pos: new vec3({
           x: -40,
           y: 40,
@@ -107,15 +107,18 @@ export const shield__default__default = new class {
     this.view.angle = this.angle + 90;
 
     let groupAngle = this.sideAngle + 100;
-    if (this.parent.inJump || this.parent.inHit) {
+    const isInBlock = !this.parent.inJump &&
+      !this.parent.inHit &&
+      this.parent.stamina > 0
+    if (!isInBlock && !this.parent.inStun) {
       groupAngle = this.sideAngle;
     }
     this.group.angle += (groupAngle - this.group.angle) *
-      (1 - Math.pow(0.1, dt * 10));
+      (1 - Math.pow(0.1, dt * 5));
   }
   onStun() {
     run(async() => {
-      await this.stage(0.05, easing.easeInCubic, {
+      await this.stage(0.2, easing.easeOutCubic, {
         pos: {
           x: -45,
           y: -30,

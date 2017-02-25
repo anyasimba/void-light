@@ -42,26 +42,75 @@ Object.assign(GameLevelZone.prototype, {
     }
 
     if (isHit) {
+      const isInBlock = other.shield &&
+        other.stamina > 0 &&
+        !other.inJump &&
+        !other.inHit;
+
       vec3.add(other.speed, opts.hitVec.multiply(600));
       other.emitPos();
-      let damage = 5;
-      if (source.kind === 'player') {
-        damage = 60;
+
+      let balanceF = 1;
+      let damageF = 1;
+      const isJumpHit = source.isJumpHit || source.inJump;
+      const isRollHit = source.isRollHit || source.inRoll;
+      if (isRollHit) {
+        balanceF = 1.5;
+        damageF = 1.3;
       }
+      if (isJumpHit) {
+        balanceF = 2;
+        damageF = 1.5;
+      }
+      if (isRollHit && isJumpHit) {
+        balanceF = 2.5;
+        damageF = 1.8;
+      }
+      if (isInBlock) {
+        other.useStamina(
+          source.weapon.stamina * balanceF * 2,
+          source.weapon.staminaTime * 2);
+      } else {
+        other.useBalance(source.weapon.balance * balanceF, 1);
+        other.useStamina(source.weapon.stamina * balanceF, source.weapon.staminaTime);
+      }
+
+      let damage = 20;
+      if (source.kind === 'player') {
+        damage = 30;
+      }
+      if (isInBlock) {
+        damage = 0;
+      }
+      damage *= damageF;
       other.hp -= damage;
-      other.emitAll('otherHit', {});
+      other.emitAll('otherHit', {
+        inBlock: isInBlock,
+        damage: damage,
+      });
       other.emitParams();
       if (other.hp <= 0) {
         other.onDie();
       }
-      if (other.inHit) {
+      if (other.inHit && other.balance <= other.BALANCE * 0.5) {
         other.breakHit();
       }
-      if (other.kind === 'player') {
-        other.stun(0.1);
+      if (!isInBlock && other.balance <= 0) {
+        other.stun(source.weapon.staminaTime);
+      } else if (!isInBlock && other.balance <= other.BALANCE * 0.5) {
+        other.stun(0.4);
+      } else if (other.stamina <= 0) {
+        other.stun(source.weapon.staminaTime * 2);
       } else {
-        other.stun(1);
+        other.stun(0.05);
       }
+
+      if (other.speed.length > 200) {
+        vec3.subtract(other.speed, other.speed.unit().multiply(200));
+      } else {
+        other.speed.init();
+      }
+      other.emitPos();
     }
   },
 });
