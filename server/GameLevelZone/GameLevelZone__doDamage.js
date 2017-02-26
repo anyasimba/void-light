@@ -29,10 +29,10 @@ Object.assign(GameLevelZone.prototype, {
       .subtract(source.pos);
 
     const d = rel.length();
-    if (other.body.size * 0.5 + d < opts.r1) {
+    if (d + other.body.size * 0.5 < opts.r1) {
       isHit = false;
     }
-    if (other.body.size * 0.5 + d > opts.r2) {
+    if (d - other.body.size * 0.5 > opts.r2) {
       isHit = false;
     }
 

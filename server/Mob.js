@@ -10,7 +10,7 @@ export class Mob {
 
       ACC: 1000,
       DAMAGE: 100,
-      BODY_SIZE: size,
+      BODY_SIZE: 140,
 
       BALANCE: 10,
       HP: 100,

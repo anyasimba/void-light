@@ -37,6 +37,8 @@ export const game = new Phaser.Game(
       game.load.image('player', 'assets/player.png');
       game.load.image('player-back', 'assets/player-back.png');
 
+      game.load.image('stage1__mob1', 'assets/stage1__mob1.png');
+
       game.load.image('ground', 'assets/ground.jpg');
       game.load.image('bricks', 'assets/bricks.jpg');
 
@@ -154,5 +156,7 @@ export const game = new Phaser.Game(
       global.dt = game.time.elapsed * 0.001;
     },
 
-    render() {},
+    render() {
+      game.debug.text(game.time.fps, 20, 20, '#FFFFFF');
+    },
   });

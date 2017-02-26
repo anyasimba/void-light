@@ -165,7 +165,7 @@ export class Client extends global.Client {
               false);
           }
         }
-        await sleep(0);
+        //await sleep(0);
       }
       console.log('done');
 
@@ -181,7 +181,7 @@ export class Client extends global.Client {
               const cy = sprite.y + ts * 0.5;
               const dx = Math.abs(cx - client.player.pos.x);
               const dy = Math.abs(cy - client.player.pos.y);
-              if (dx < ts && dy < ts) {
+              if (dx < ts * 2 && dy < ts) {
                 sprite.visible = true;
               } else {
                 sprite.visible = false;
