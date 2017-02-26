@@ -69,7 +69,9 @@ Object.assign(GameLevelZone.prototype, {
           source.weapon.staminaTime * 2);
       } else {
         other.useBalance(source.weapon.balance * balanceF, 1);
-        other.useStamina(source.weapon.stamina * balanceF, source.weapon.staminaTime);
+        other.useStamina(
+          source.weapon.stamina * balanceF,
+          source.weapon.staminaTime);
       }
 
       let damage = 20;

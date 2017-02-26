@@ -108,8 +108,8 @@ export class Client extends global.Client {
       const mapData = await httpGet('maps/' + this.mapName + '.json');
       this.map = JSON.parse(mapData);
 
-      this.w = this.map.width * 32;
-      this.h = this.map.height * 32;
+      this.w = this.map.width * WALL_SIZE;
+      this.h = this.map.height * WALL_SIZE;
 
       const ground = this.map.layers[0];
       const grid = [];
@@ -143,6 +143,7 @@ export class Client extends global.Client {
       const bricksView = new Phaser.TileSprite(
         game, 0, 0, WALL_SIZE, WALL_SIZE, 'bricks');
 
+      console.log('loading map...');
       for (let y = 0; y < this.map.height; ++y) {
         for (let x = 0; x < this.map.width; ++x) {
           const i = y * this.map.width + x;
@@ -164,12 +165,30 @@ export class Client extends global.Client {
               false);
           }
         }
+        await sleep(0);
       }
+      console.log('done');
 
       for (let x = 0; x < xn; ++x) {
         for (let y = 0; y < yn; ++y) {
-          game.level2.add(new Phaser.Sprite(game, x * ts, y * ts,
-            textures[x][y]));
+          const sprite = new Phaser.Sprite(
+            game, x * ts, y * ts,
+            textures[x][y]);
+          sprite.visible = false;
+          sprite.update = () => {
+            if (global.client && global.client.player) {
+              const cx = sprite.x + ts * 0.5;
+              const cy = sprite.y + ts * 0.5;
+              const dx = Math.abs(cx - client.player.pos.x);
+              const dy = Math.abs(cy - client.player.pos.y);
+              if (dx < ts && dy < ts) {
+                sprite.visible = true;
+              } else {
+                sprite.visible = false;
+              }
+            }
+          };
+          game.level2.add(sprite);
         }
       }
 
