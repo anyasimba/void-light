@@ -1,5 +1,7 @@
 export class Fighter extends mix(global.Fighter, MixGameObject) {
   static createView(isHost, kind, size) {
+    const orient = Math.floor(Math.random() * 2);
+
     let color = 0xFFFFFF;
     if (isHost) {
       color = 0xFFFFFF;
@@ -24,6 +26,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       image.anchor.y = 0.5;
       image.angle = 90;
       image.tint = color;
+      if (orient) {
+        image.scale.x = -1;
+      }
       image.smoothed = true;
     }
     return images;
@@ -271,7 +276,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         this.speed
         .subtract(this.footSpeed)
         .multiply(1 - Math.pow(0.8, dt)))
-      if (this.footSpeed.length() > 20) {
+      if (this.speed.length() > 20) {
         const l = 250;
         const footTime = this.moveTime * 100 / l * 0.5;
         const sign = Math.sign((footTime % 2) - 1);
