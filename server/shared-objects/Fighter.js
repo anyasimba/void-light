@@ -83,8 +83,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     let hitSpeed = this.owner.hitSpeed || 1;
 
-    ItemSword(this, hitSpeed);
-    ItemShield(this);
+    if (this.kind === 'player') {
+      ItemSword(this, hitSpeed);
+      ItemShield(this);
+    } else {
+      ItemStage1__Mob1__RightHand(this, hitSpeed);
+      ItemStage1__Mob1__LeftHand(this, hitSpeed);
+    }
   }
   reborn() {
     this.balance = this.BALANCE;
@@ -104,7 +109,12 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
   onDie() {
     this.weapon.task = 'break';
-    this.shield.task = 'break';
+    if (this.weapon2) {
+      this.weapon2.task = 'break';
+    }
+    if (this.shield) {
+      this.shield.task = 'break';
+    }
 
     this.emitPos();
     this.emitAll('die', {});

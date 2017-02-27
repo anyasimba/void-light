@@ -36,14 +36,6 @@ export const weapon__sword__default = new class {
     image.scale.y = 1;
     image.anchor.x = 0.5;
     image.anchor.y = 0.8;
-    image.tint = color;
-    if (kind !== 'player') {
-      image.alpha = 0;
-    }
-    if (!isHost) {
-      image.scale.x = 0.6;
-      image.scale.y = 0.9;
-    }
     image.smoothed = true;
     return image;
   }
@@ -96,9 +88,6 @@ export const shield__default__default = new class {
       color = 0x55FF00;
     }
     const image = new Phaser.Image(game, 0, 0, 'shield');
-    if (kind !== 'player') {
-      image.alpha = 0;
-    }
     image.scale.x = 1.4;
     image.scale.y = 1.4;
     image.anchor.x = 0.5;

@@ -4,12 +4,19 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
     if (data.parentID) {
       state.parent = gameObjects[data.parentID];
     }
+    state.bottomGroup = new Phaser.Group(game);
+    state.middleGroup = new Phaser.Group(game);
+    state.topGroup = new Phaser.Group(game);
     state.group = new Phaser.Group(game);
 
     super(data.id, state, ...args);
 
+    this.group.add(this.bottomGroup);
+    this.group.add(this.middleGroup);
+    this.group.add(this.topGroup);
+
     if (data.parentID) {
-      this.parent.group.add(this.group);
+      this.parent.middleGroup.add(this.group);
     } else {
       this.group.update = () => {
         this.update();

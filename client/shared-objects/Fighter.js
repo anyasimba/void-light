@@ -68,31 +68,20 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       let views = [];
       //
       {
-        const graphics = new Phaser.Graphics(game, 0, 0);
-
-        graphics.beginFill(0x660099, 0.5);
-        graphics.lineStyle(2, 0x660099, 1.2);
-        graphics.drawCircle(0, 0, 60);
-        graphics.endFill();
-
-        graphics.beginFill(0x660099, 0.5);
-        graphics.lineStyle(2, 0x660099, 1.2);
-        graphics.drawCircle(30, 0, 20);
-        graphics.endFill();
-        views.push(graphics);
+        const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--foot');
+        image.mirror = true;
+        image.anchor.x = 0.5;
+        image.anchor.y = 0.5;
+        image.angle = 90;
+        image.smoothed = true;
+        views.push(image);
       } {
-        const graphics = new Phaser.Graphics(game, 0, 0);
-
-        graphics.beginFill(0x660099, 0.5);
-        graphics.lineStyle(2, 0x660099, 1.2);
-        graphics.drawCircle(0, 0, 60);
-        graphics.endFill();
-
-        graphics.beginFill(0x660099, 0.5);
-        graphics.lineStyle(2, 0x660099, 1.2);
-        graphics.drawCircle(30, 0, 20);
-        graphics.endFill();
-        views.push(graphics);
+        const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--foot');
+        image.anchor.x = 0.5;
+        image.anchor.y = 0.5;
+        image.angle = 90;
+        image.smoothed = true;
+        views.push(image);
       }
 
       return views;
@@ -110,19 +99,21 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.views = Fighter.createView(
       this.id === client.playerID, this.kind, this.size);
     this.views[1].alpha = 0;
+    if (this.kind === 'player') {
+      this.middleGroup.add(this.views[0]);
+    } else {
+      this.topGroup.add(this.views[0]);
+    }
+    this.bottomGroup.add(this.views[1]);
 
     this.footViews = Fighter.createFootView(
       this.id === client.playerID, this.kind, this.size);
-
-    this.group.add(this.views[1]);
     if (this.footViews) {
       this.footViewsRoot = new Phaser.Group(game);
-      this.group.add(this.footViewsRoot);
+      this.bottomGroup.add(this.footViewsRoot);
       this.footViewsRoot.add(this.footViews[0]);
       this.footViewsRoot.add(this.footViews[1]);
     }
-
-    this.group.add(this.views[0]);
 
     if (this.id === client.playerID) {
       client.player = this;
@@ -234,7 +225,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     group.time = 0;
     group.update = () => {
       group.time += dt;
-      if (group.time >= 8) {
+      if (group.time >= 60) {
         group.destroy();
       }
       if (group.time <= 1) {
@@ -242,7 +233,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       } else {
         deadViews[0].visible = false;
       }
-      group.alpha = 1 - group.time / 8;
+      group.alpha = 1 - group.time / 60;
     };
     game.level.add(group);
   }
@@ -303,7 +294,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         .subtract(this.footSpeed)
         .multiply(1 - Math.pow(0.8, dt)))
       if (this.speed.length() > 10 && this.footSpeed.length() > 2) {
-        const l = 250;
+        const l = 200;
         let footTime = this.moveTime * 100 / l * 0.5;
 
         let sign = Math.sign((footTime % 2) - 1);
@@ -317,30 +308,33 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         }
         const scaleStep =
           1 - Math.abs(Math.sin((step - 0.5) * Math.PI));
-        const hf = 0.5;
+        const hf = 0.3;
         this.footViews[0].x = (0.5 - step) * l * sign;
-        this.footViews[0].y = -70;
+        this.footViews[0].y = -60;
         this.footViews[0].scale.x =
           1 + scaleStep * hf * -Math.sign(sign - 1);
         this.footViews[0].scale.y =
           1 + scaleStep * hf * -Math.sign(sign - 1);
 
         this.footViews[1].x = (step - 0.5) * l * sign;
-        this.footViews[1].y = 70;
+        this.footViews[1].y = 60;
         this.footViews[1].scale.x =
           1 + scaleStep * hf * Math.sign(sign + 1);
         this.footViews[1].scale.y =
           1 + scaleStep * hf * Math.sign(sign + 1);
       } else {
         this.footViews[0].x = 10;
-        this.footViews[0].y = -70;
+        this.footViews[0].y = -60;
         this.footViews[0].scale.x = 1;
         this.footViews[0].scale.y = 1;
 
         this.footViews[1].x = -10;
-        this.footViews[1].y = 70;
+        this.footViews[1].y = 60;
         this.footViews[1].scale.x = 1;
         this.footViews[1].scale.y = 1;
+      }
+      if (this.footViews[0].mirror) {
+        this.footViews[0].scale.x = -this.footViews[0].scale.x;
       }
     }
   }

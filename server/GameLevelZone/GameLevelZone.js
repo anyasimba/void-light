@@ -36,37 +36,37 @@ export class GameLevelZone {
       for (let x = 0; x < this.map.width; ++x) {
         const i = y * this.map.width + x;
         const v = ground.data[i];
-        if (v === 1) {
+        if (v !== 0) {
           this.grid[x] = this.grid[x] || {};
-          this.grid[x][y] = true;
+          this.grid[x][y] = v;
         }
       }
     }
 
-    const points = this.map.layers[1];
-    for (let y = 0; y < this.map.height; ++y) {
-      for (let x = 0; x < this.map.width; ++x) {
-        const i = y * this.map.width + x;
-        const v = points.data[i];
-        if (v === 2) {
-          this.playerPoints.push({
-            x: x * WALL_SIZE + WALL_SIZE * 0.5,
-            y: y * WALL_SIZE + WALL_SIZE * 0.5
-          });
-        }
-        if (v === 3) {
-          this.enemyPoints.push({
-            x: x * WALL_SIZE + WALL_SIZE * 0.5,
-            y: y * WALL_SIZE + WALL_SIZE * 0.5
-          });
-        }
+    const objects = this.map.layers[1];
+    for (const k in objects.objects) {
+      const o = objects.objects[k];
+      const slug = mapIDs[o.gid];
+      const x = o.x / 32 * WALL_SIZE + WALL_SIZE * 0.5;
+      const y = o.y / 32 * WALL_SIZE + WALL_SIZE * 0.5;
+      const data = {
+        x: x,
+        y: y,
+        slug: slug,
+      };
+      switch (slug) {
+        case 'born':
+          this.playerPoints.push(data);
+          break;
+        default:
+          this.enemyPoints.push(data);
       }
     }
 
     this.mobs = [];
     for (const k in this.enemyPoints) {
       const p = this.enemyPoints[k];
-      Object.assign(p, stage1__mob1);
+      Object.assign(p, global[p.slug]);
       const mob = new Mob(this, p, k);
       this.addObject(mob.fighter);
       this.mobs.push(mob);

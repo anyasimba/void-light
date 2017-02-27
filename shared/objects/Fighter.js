@@ -35,7 +35,7 @@ export class Fighter {
   }
 
   get hands() {
-    return [this.weapon, this.shield];
+    return [this.hand1, this.hand2];
   }
 
   update() {
@@ -123,14 +123,24 @@ export class Fighter {
       if (!this.inStun) {
         this.inStun = true;
         this.weapon.task = 'stun';
-        this.shield.task = 'stun';
+        if (this.weapon2) {
+          this.weapon2.task = 'stun';
+        }
+        if (this.shield) {
+          this.shield.task = 'stun';
+        }
       }
       this.stunTime -= dt;
       if (this.stunTime <= 0) {
         delete this.stunTime;
         delete this.inStun;
         this.weapon.task = 'break';
-        this.shield.task = 'break';
+        if (this.weapon2) {
+          this.weapon2.task = 'break';
+        }
+        if (this.shield) {
+          this.shield.task = 'break';
+        }
       }
     }
   }

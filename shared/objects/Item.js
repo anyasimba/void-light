@@ -16,6 +16,8 @@ export class Item {
       //
     } else if (this.type === 'weapon' && this.hand === 1) {
       this.ownerSlug = 'weapon';
+    } else if (this.type === 'weapon' && this.hand === 2) {
+      this.ownerSlug = 'weapon2';
     } else if (this.type === 'shield') {
       this.ownerSlug = 'shield';
     }
@@ -269,6 +271,148 @@ export const weapon__sword__default__doHit = {
             damageOpts.a2 = 120;
           }
           damageOpts.r2 = 260;
+        }
+        this.parent.doDamageRadialArea(damageOpts);
+      });
+
+      await this.stage(0.25 * this.hitSpeed, easing.easeInCubic, {
+        sideAngle: -10,
+      });
+      this.playHit();
+      await this.stage(0.1, easing.easeOutCubic, {
+        sideAngle: -200,
+      });
+      await this.sleep(0.1 * this.hitSpeed);
+
+      if (this.checkNextHit(2)) {
+        return;
+      }
+
+      await this.finalStage(0.2 * this.hitSpeed, easing.easeInOutCubic);
+      this.finishHit();
+    });
+  },
+}
+
+//
+export const weapon__stage1__mob1__rightHand__default__doHit = {
+  1: function () {
+    run(async() => {
+      this.setTimeout(0.3 * this.hitSpeed + 0.05, () => {
+        this.addImpulse(600);
+        this.canNextHit();
+
+        const damageOpts = {
+          r1: 0,
+          r2: 300,
+          a1: -90,
+          a2: 90,
+        }
+        if (this.parent.inRoll) {
+          damageOpts.a1 = -140;
+          damageOpts.a2 = 140;
+          damageOpts.r2 = 350;
+        }
+        if (this.parent.inJump) {
+          if (!this.parent.inRoll) {
+            damageOpts.a1 = -120;
+            damageOpts.a2 = 120;
+          }
+          damageOpts.r2 = 350;
+        }
+        this.parent.doDamageRadialArea(damageOpts);
+      });
+      await this.stage(0.3 * this.hitSpeed, easing.easeInCubic, {
+        pos: new vec3({
+          x: -40,
+          y: 40,
+        }),
+        angle: 135,
+        sideAngle: -50,
+      });
+      this.playHit();
+      await this.stage(0.1, easing.easeOutCubic, {
+        sideAngle: -200,
+      });
+      await this.sleep(0.1 * this.hitSpeed);
+
+      if (this.checkNextHit(2)) {
+        return;
+      }
+
+      await this.finalStage(0.2 * this.hitSpeed, easing.easeInOutCubic);
+      this.finishHit();
+    });
+  },
+  2: function () {
+    this.parent.canNextHit = true;
+
+    run(async() => {
+      this.setTimeout(0.25 * this.hitSpeed + 0.05, () => {
+        this.addImpulse(600);
+
+        const damageOpts = {
+          r1: 0,
+          r2: 300,
+          a1: -90,
+          a2: 90,
+        }
+        if (this.parent.inRoll) {
+          damageOpts.a1 = -140;
+          damageOpts.a2 = 140;
+          damageOpts.r2 = 350;
+        }
+        if (this.parent.inJump) {
+          if (!this.parent.inRoll) {
+            damageOpts.a1 = -120;
+            damageOpts.a2 = 120;
+          }
+          damageOpts.r2 = 350;
+        }
+        this.parent.doDamageRadialArea(damageOpts);
+      });
+
+      await this.stage(0.25 * this.hitSpeed, easing.easeInCubic, {
+        sideAngle: -240,
+      });
+      this.playHit();
+      await this.stage(0.1, easing.easeOutCubic, {
+        sideAngle: -50,
+      });
+      await this.sleep(0.1 * this.hitSpeed);
+
+      if (this.checkNextHit(3)) {
+        return;
+      }
+
+      await this.finalStage(0.2 * this.hitSpeed, easing.easeInOutCubic);
+      this.finishHit();
+    });
+  },
+  3: function () {
+    this.parent.canNextHit = true;
+
+    run(async() => {
+      this.setTimeout(0.25 * this.hitSpeed + 0.05, () => {
+        this.addImpulse(600);
+
+        const damageOpts = {
+          r1: 0,
+          r2: 300,
+          a1: -90,
+          a2: 90,
+        }
+        if (this.parent.inRoll) {
+          damageOpts.a1 = -140;
+          damageOpts.a2 = 140;
+          damageOpts.r2 = 350;
+        }
+        if (this.parent.inJump) {
+          if (!this.parent.inRoll) {
+            damageOpts.a1 = -120;
+            damageOpts.a2 = 120;
+          }
+          damageOpts.r2 = 350;
         }
         this.parent.doDamageRadialArea(damageOpts);
       });
