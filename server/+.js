@@ -13,6 +13,7 @@ globally(require('../shared/+'));
 
 globally(require('./!main'));
 globally(require('./mix/MixGameObject'));
+globally(require('./mobs/stage1'));
 globally(require('./shared-objects/+'));
 globally(require('./Client'));
 globally(require('./GameLevelZone/+'));

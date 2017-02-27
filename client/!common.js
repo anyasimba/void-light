@@ -38,6 +38,8 @@ export const game = new Phaser.Game(
       game.load.image('player-back', 'assets/player-back.png');
 
       game.load.image('stage1__mob1', 'assets/stage1__mob1.png');
+      game.load.image('stage1__mob1--back', 'assets/stage1__mob1--back.png');
+      game.load.image('stage1__mob1--dead', 'assets/stage1__mob1--dead.png');
 
       game.load.image('ground', 'assets/ground.jpg');
       game.load.image('bricks', 'assets/bricks.jpg');

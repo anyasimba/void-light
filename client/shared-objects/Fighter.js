@@ -12,7 +12,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     if (kind === 'mob') {
       images = [
         new Phaser.Image(game, 0, 0, 'stage1__mob1'),
-        new Phaser.Image(game, 0, 0, 'stage1__mob1'),
+        new Phaser.Image(game, 0, 0, 'stage1__mob1--back'),
       ];
     } else {
       images = [
@@ -34,29 +34,34 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     return images;
   }
   static createDeadView(isHost, kind, size) {
-    let color = 0xFF4400;
+    let color = 0xFFFFFF;
     if (isHost) {
       color = 0xFFFFFF;
     } else if (kind === 'player') {
       color = 0x55FF00;
     }
-    const image = new Phaser.Image(game, 0, 0, 'player-back');
-    image.scale.x = 0.9;
-    image.scale.y = 1;
-    image.anchor.x = 0.5;
-    image.anchor.y = 0.5;
-    image.angle = 90;
-    image.tint = color;
-    if (!isHost) {
-      image.scale.x = 0.8;
-      image.scale.y = 0.9;
+    let images;
+    if (kind === 'mob') {
+      images = [
+        new Phaser.Image(game, 0, 0, 'stage1__mob1'),
+        new Phaser.Image(game, 0, 0, 'stage1__mob1--dead'),
+      ];
+    } else {
+      images = [
+        new Phaser.Image(game, 0, 0, 'player'),
+        new Phaser.Image(game, 0, 0, 'player-back'),
+      ]
     }
-    image.smoothed = true;
+    for (const k in images) {
+      const image = images[k];
+      image.anchor.x = 0.5;
+      image.anchor.y = 0.5;
+      image.angle = 90;
+      image.tint = color;
+      image.smoothed = true;
+    }
 
-    image.scale.x *= size / 40;
-    image.scale.y *= size / 40;
-
-    return image;
+    return images;
   }
   static createFootView(isHost, kind, size) {
     if (kind === 'mob') {
@@ -69,6 +74,11 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         graphics.lineStyle(2, 0x660099, 1.2);
         graphics.drawCircle(0, 0, 60);
         graphics.endFill();
+
+        graphics.beginFill(0x660099, 0.5);
+        graphics.lineStyle(2, 0x660099, 1.2);
+        graphics.drawCircle(30, 0, 20);
+        graphics.endFill();
         views.push(graphics);
       } {
         const graphics = new Phaser.Graphics(game, 0, 0);
@@ -76,6 +86,11 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         graphics.beginFill(0x660099, 0.5);
         graphics.lineStyle(2, 0x660099, 1.2);
         graphics.drawCircle(0, 0, 60);
+        graphics.endFill();
+
+        graphics.beginFill(0x660099, 0.5);
+        graphics.lineStyle(2, 0x660099, 1.2);
+        graphics.drawCircle(30, 0, 20);
         graphics.endFill();
         views.push(graphics);
       }
@@ -92,9 +107,14 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     super(data, data);
 
+    this.views = Fighter.createView(
+      this.id === client.playerID, this.kind, this.size);
+    this.views[1].alpha = 0;
+
     this.footViews = Fighter.createFootView(
       this.id === client.playerID, this.kind, this.size);
 
+    this.group.add(this.views[1]);
     if (this.footViews) {
       this.footViewsRoot = new Phaser.Group(game);
       this.group.add(this.footViewsRoot);
@@ -102,11 +122,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.footViewsRoot.add(this.footViews[1]);
     }
 
-    this.views = Fighter.createView(
-      this.id === client.playerID, this.kind, this.size);
     this.group.add(this.views[0]);
-    this.group.add(this.views[1]);
-    this.views[1].alpha = 0;
 
     if (this.id === client.playerID) {
       client.player = this;
@@ -205,10 +221,11 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     const group = new Phaser.Group(game);
 
-    const deadView = Fighter.createDeadView(
+    const deadViews = Fighter.createDeadView(
       this.id === client.playerID, this.kind, this.size);
 
-    group.add(deadView);
+    group.add(deadViews[1]);
+    group.add(deadViews[0]);
 
     group.x = this.pos.x;
     group.y = this.pos.y;
@@ -220,10 +237,12 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       if (group.time >= 8) {
         group.destroy();
       }
+      if (group.time <= 1) {
+        deadViews[0].alpha = 1 - group.time;
+      } else {
+        deadViews[0].visible = false;
+      }
       group.alpha = 1 - group.time / 8;
-      group.scale.x = 1 + group.time * 0.2;
-      group.scale.y = 1 + group.time * 0.2;
-      group.angle = angle + Math.cos(group.time * 0.5) * 40;
     };
     game.level.add(group);
   }
@@ -269,6 +288,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.moveShift *= 2;
     }
 
+    if (this.inStun) {
+      const f = 3;
+      this.group.x += Math.cos(this.stunTime * f) * 5;
+      this.group.y += Math.sin(this.stunTime * f) * 5;
+      this.group.angle += Math.cos(this.stunTime * f * 1.3) * 10;
+    }
+
     if (this.footViews) {
       this.footSpeed = this.footSpeed || this.speed.clone();
       vec3.add(
@@ -276,17 +302,22 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         this.speed
         .subtract(this.footSpeed)
         .multiply(1 - Math.pow(0.8, dt)))
-      if (this.speed.length() > 20) {
+      if (this.speed.length() > 10 && this.footSpeed.length() > 2) {
         const l = 250;
-        const footTime = this.moveTime * 100 / l * 0.5;
-        const sign = Math.sign((footTime % 2) - 1);
-        const step = footTime % 1;
+        let footTime = this.moveTime * 100 / l * 0.5;
+
+        let sign = Math.sign((footTime % 2) - 1);
+        let step = footTime % 1;
+        this.footViewsRoot.angle = this.footSpeed.toAngle() - this.look.toAngle();
+
+        if (!isAngleInRange(this.footViewsRoot.angle, -90, 90)) {
+          sign = -sign;
+          step = 1 - step;
+          this.footViewsRoot.angle += 180;
+        }
         const scaleStep =
           1 - Math.abs(Math.sin((step - 0.5) * Math.PI));
         const hf = 0.5;
-
-        this.footViewsRoot.angle = this.footSpeed.toAngle() - this.look.toAngle();
-
         this.footViews[0].x = (0.5 - step) * l * sign;
         this.footViews[0].y = -70;
         this.footViews[0].scale.x =
