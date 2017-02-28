@@ -13,6 +13,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
       kind: this.kind,
       size: this.size,
+      name: this.name,
+
+      hitSpeed: this.hitSpeed,
 
       ACC: this.ACC,
       AIR_FRICTION: this.AIR_FRICTION,
@@ -58,7 +61,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       look: new vec3,
 
       kind: opts.kind,
+      name: opts.name,
       size: opts.BODY_SIZE || Fighter.BODY_SIZE,
+
+      hitSpeed: opts.hitSpeed,
 
       ACC: opts.ACC || Fighter.ACC,
       AIR_FRICTION: opts.AIR_FRICTION || Fighter.AIR_FRICTION,
@@ -81,14 +87,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       size: this.size,
     }
 
-    let hitSpeed = this.owner.hitSpeed || 1;
-
     if (this.kind === 'player') {
-      ItemSword(this, hitSpeed);
+      ItemSword(this);
       ItemShield(this);
-    } else {
-      ItemStage1__Mob1__RightHand(this, hitSpeed);
-      ItemStage1__Mob1__LeftHand(this, hitSpeed);
     }
   }
   reborn() {
@@ -108,14 +109,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
   }
   onDie() {
-    this.weapon.task = 'break';
-    if (this.weapon2) {
-      this.weapon2.task = 'break';
-    }
-    if (this.shield) {
-      this.shield.task = 'break';
-    }
-
+    this.finishHit();
+    this.clearSteps();
     this.emitPos();
     this.emitAll('die', {});
     this.owner.onDie();
@@ -128,7 +123,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     if (this.stunTime) {
       return;
     }
-    if (this.canNextHit) {
+    if (this.isCanNextHit) {
       this.needNextHit = opts;
       return;
     }
@@ -147,7 +142,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.hitVec = new vec3(opts).subtract(this.pos).unit();
     this.hitStage = opts.hitStage || 1;
 
-    this.weapon.task = 'hit';
+    this.clearSteps();
+    global[this.kind + '__doHit'].call(this);
+
     this.useStamina(this.weapon.stamina, this.weapon.staminaTime);
 
     this.emitAll('hit', {
@@ -172,7 +169,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
 
   breakHit() {
-    this.needBreakHit = true;
+    this.clearSteps();
+    this.finishHit();
+    delete this.needNextHit;
     this.emitPos();
     this.emitAll('breakHit', {});
   }
@@ -183,6 +182,19 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.emitAll('stun', {
         time: time,
       });
+    }
+  }
+  addImpulse(v) {
+    vec3.add(this.speed, this.hitVec.unit().multiply(v));
+    this.emitPos();
+  }
+  checkNextHit(i) {
+    if (this.needNextHit) {
+      const opts = this.needNextHit;
+      delete this.needNextHit;
+      this.finishHit();
+      opts.hitStage = i;
+      this.doHit(opts);
     }
   }
 

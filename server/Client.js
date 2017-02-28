@@ -21,6 +21,8 @@ export class Client extends global.Client {
       HP: 100,
       MP: 100,
       STAMINA: 60,
+
+      hitSpeed: 0.7,
     });
 
     this.emit('playerID', {
@@ -106,13 +108,27 @@ export class Client extends global.Client {
     if (typeof data.y !== 'number') {
       return;
     }
-
-    this.player.doHit(data);
+    try {
+      this.player.doHit(data);
+    } catch (e) {
+      console.log(e, e.stack);
+      process.exit(1);
+    }
   }
   onEventJump(data) {
-    this.player.doJump(data);
+    try {
+      this.player.doJump(data);
+    } catch (e) {
+      console.log(e, e.stack);
+      process.exit(1);
+    }
   }
   onEventRoll(data) {
-    this.player.doRoll(data);
+    try {
+      this.player.doRoll(data);
+    } catch (e) {
+      console.log(e, e.stack);
+      process.exit(1);
+    }
   }
 }

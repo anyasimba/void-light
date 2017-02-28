@@ -32,10 +32,30 @@ export class Fighter {
     this.ACC = Fighter.ACC;
     this.AIR_FRICTION = Fighter.AIR_FRICTION;
     this.FRICTION = Fighter.FRICTION;
+
+    this.timeouts = [];
   }
 
   get hands() {
-    return [this.hand1, this.hand2];
+    return [
+      this.weapon,
+      this.weapon2 || this.shield
+    ];
+  }
+
+  step(time, fn) {
+    this.timeouts.push({
+      fn: fn,
+      time: time,
+    });
+  }
+  clearSteps() {
+    this.timeouts = [];
+    const hands = this.hands;
+    for (const k in hands) {
+      const hand = hands[k];
+      hand.clearAnimations();
+    }
   }
 
   update() {
@@ -122,35 +142,49 @@ export class Fighter {
     if (this.stunTime) {
       if (!this.inStun) {
         this.inStun = true;
-        if (this.weapon) {
-          this.weapon.task = 'stun';
-        }
-        if (this.weapon2) {
-          this.weapon2.task = 'stun';
-        }
-        if (this.shield) {
-          this.shield.task = 'stun';
+        const hands = this.hands;
+        for (const k in hands) {
+          const hand = hands[k];
+          if (hand.opts && hand.opts.onStun) {
+            hand.opts.onStun.call(hand);
+          }
         }
       }
       this.stunTime -= dt;
       if (this.stunTime <= 0) {
         delete this.stunTime;
         delete this.inStun;
-        if (this.weapon) {
-          this.weapon.task = 'break';
+
+        if (!this.inHit) {
+          this.clearSteps();
+          const hands = this.hands;
+          for (const k in hands) {
+            const hand = hands[k];
+            hand.finalStage(0.2, easing.easeInOutCubic);
+          }
         }
-        if (this.weapon2) {
-          this.weapon2.task = 'break';
-        }
-        if (this.shield) {
-          this.shield.task = 'break';
-        }
+      }
+    }
+
+    for (const k in this.timeouts) {
+      const timeout = this.timeouts[k];
+      timeout.time -= dt;
+      if (timeout.time <= 0) {
+        delete this.timeouts[k];
+        timeout.fn();
       }
     }
   }
 
+  addImpulse() {}
+  canNextHit() {
+    this.isCanNextHit = true;
+  }
+  playHit() {}
+  checkNextHit() {}
+
   finishHit() {
-    delete this.canNextHit;
+    delete this.isCanNextHit;
     delete this.hitVec;
     delete this.hitStage;
     delete this.inHit;
@@ -182,4 +216,13 @@ export class Fighter {
     };
     this.look = this.speed.unit();
   }
+}
+
+export function player__doHit() {
+  if (this.weapon) {
+    global[this.weapon.slug + '__doHit'][this.hitStage].call(this);
+  }
+}
+export function mob__doHit() {
+  global[this.name + '__doHit'][this.hitStage].call(this);
 }

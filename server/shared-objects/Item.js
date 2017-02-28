@@ -10,47 +10,18 @@ export class Item extends mix(global.Item, MixGameObject) {
       pos: this.pos,
       angle: this.angle,
       sideAngle: this.sideAngle,
-
-      hitSpeed: this.hitSpeed,
     };
   }
 
-  async stage(duration, fn, opts) {
+  stage(duration, fn, opts) {
     this.stageTime = 0;
-    return await super.stage(duration, fn, {
+    return super.stage(duration, fn, {
       stageTime: 1,
     });
   }
-
-  checkNextHit(i) {
-    if (this.parent.needNextHit) {
-      const opts = this.parent.needNextHit;
-      delete this.parent.needNextHit;
-      this.parent.finishHit();
-      opts.hitStage = i;
-      this.parent.doHit(opts);
-      delete this.lock;
-      return true;
-    }
-  }
-  canNextHit() {
-    if (this.parent.inHit) {
-      this.parent.canNextHit = true;
-    }
-  }
-  breakHit() {
-    delete this.parent.needNextHit;
-    super.breakHit();
-  }
-  addImpulse(v) {
-    if (this.parent.hitVec) {
-      vec3.add(this.parent.speed, this.parent.hitVec.multiply(v));
-      this.parent.emitPos();
-    }
-  }
 }
 
-export function ItemSword(parent, hitSpeed) {
+export function ItemSword(parent) {
   return new global.Item({
     parent: parent,
     type: 'weapon',
@@ -59,7 +30,6 @@ export function ItemSword(parent, hitSpeed) {
     balance: 5,
     stamina: 4,
     staminaTime: 1,
-    hitSpeed: hitSpeed,
     hand: 1,
     pos: {
       x: -25,

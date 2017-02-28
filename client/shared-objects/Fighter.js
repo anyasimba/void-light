@@ -131,6 +131,11 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
   }
 
+  playHit() {
+    const variant = Math.floor(Math.random() * 5) + 1;
+    this.playSound('hit' + variant)
+  }
+
   onPos(data) {
     this.pos.init(data.pos);
     this.speed.init(data.speed);
@@ -143,17 +148,30 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
   onHit(data) {
     this.inHit = true;
-    delete this.canNextHit;
+    delete this.isCanNextHit;
     this.isRollHit = data.isRollHit;
     this.isJumpHit = data.isJumpHit;
     this.hitVec = new vec3(data.hitVec);
     this.hitStage = data.hitStage;
-    this.weapon.task = 'hit';
+
+    if (this.hitStage === 1) {
+      const hands = this.hands;
+      for (const k in hands) {
+        const hand = hands[k];
+        hand.reborn();
+      }
+    }
+
+    this.clearSteps();
+    global[this.kind + '__doHit'].call(this);
   }
   onBreakHit(data) {
-    this.weapon.task = 'break';
+    this.clearSteps();
+    this.finishHit();
   }
   onStun(data) {
+    this.clearSteps();
+    this.finishHit();
     this.stunTime = data.time;
   }
   onOtherHit(data) {
@@ -208,6 +226,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
 
   onDie() {
+    this.clearSteps();
+
     if (this.kind === 'mob') {
       this.playSound('mob1Die');
     }

@@ -3,21 +3,14 @@ export class Mob {
     this.gameLevelZone = gameLevelZone;
 
     let size = 40;
-    this.hitSpeed = 2;
 
-    this.fighter = new Fighter(this, {
-      kind: 'mob',
-
-      ACC: 1300,
-      DAMAGE: 100,
-      BODY_SIZE: 140,
-
-      BALANCE: 30,
-      HP: 200,
-      MP: 100,
-      STAMINA: 16,
-    });
     this.opts = opts;
+
+    this.fighter = new Fighter(this, Object.assign(opts.FIGHTER, {
+      kind: 'mob',
+    }));
+    opts.rightHand(this.fighter);
+    opts.leftHand(this.fighter);
 
     this.reborn();
 

@@ -68,7 +68,7 @@ Object.assign(GameLevelZone.prototype, {
           source.weapon.stamina * balanceF * 2,
           source.weapon.staminaTime * 2);
       } else {
-        other.useBalance(source.weapon.balance * balanceF, 0.6);
+        other.useBalance(source.weapon.balance * balanceF, 1);
         other.useStamina(
           source.weapon.stamina * balanceF,
           source.weapon.staminaTime);
@@ -96,9 +96,10 @@ Object.assign(GameLevelZone.prototype, {
       }
       if (!isInBlock && other.balance <= 0) {
         other.stun(source.weapon.staminaTime);
+        other.balance = other.BALANCE;
       } else if (!isInBlock && other.balance <= other.BALANCE * 0.5) {
-        other.stun(0.4);
-      } else if (other.stamina <= 0) {
+        other.stun(0.2);
+      } else if (isInBlock && other.stamina <= 0) {
         other.stun(source.weapon.staminaTime * 2);
       }
 
@@ -108,7 +109,10 @@ Object.assign(GameLevelZone.prototype, {
         other.speed.init();
       }
       if (isJumpHit) {
-        vec3.add(other.speed, opts.hitVec.multiply(2000));
+        vec3.add(other.speed, opts.hitVec.multiply(2400));
+        if (other.speed.length() > 3000) {
+          other.speed = other.speed.unit().multiply(3000);
+        }
       } else {
         vec3.add(other.speed, opts.hitVec.multiply(600));
       }

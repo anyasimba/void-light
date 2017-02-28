@@ -29,35 +29,47 @@ export const weapon__stage1__mob1__rightHand__default = new class {
     this.group.angle = this.sideAngle;
   }
   onStun() {
-    run(async() => {
-      await this.stage(0.2, easing.easeOutCubic, {
-        pos: new vec3({
+    let time = 0;
+
+    const step1 = 0.2;
+    this.parent.step(time, () => {
+      this.stage(step1, easing.easeOutCubic, {
+        pos: {
           x: -40,
           y: 40,
-        }),
+        },
         angle: 60,
         sideAngle: -30,
       });
-
-      while (true) {
-        await this.stage(1, easing.easeInOutCubic, {
-          pos: new vec3({
-            x: -40,
-            y: 40,
-          }),
-          angle: 80,
-          sideAngle: -50,
-        });
-        await this.stage(1, easing.easeInOutCubic, {
-          pos: new vec3({
-            x: -40,
-            y: 40,
-          }),
-          angle: 60,
-          sideAngle: -30,
-        });
-      }
     });
+    time += step1;
+
+    let step2FN, step3FN;
+    step2FN = () => {
+      const step2 = 1;
+      this.stage(step2, easing.easeInOutCubic, {
+        pos: {
+          x: -40,
+          y: 40,
+        },
+        angle: 80,
+        sideAngle: -50,
+      });
+      this.parent.step(step2, step3FN);
+    };
+    step3FN = () => {
+      const step3 = 1;
+      this.stage(step3, easing.easeInOutCubic, {
+        pos: {
+          x: -40,
+          y: 40,
+        },
+        angle: 60,
+        sideAngle: -30,
+      });
+      this.parent.step(step3, step2FN);
+    };
+    this.parent.step(time, step2FN);
   }
 }
 export const weapon__stage1__mob1__leftHand__default = new class {
@@ -78,34 +90,46 @@ export const weapon__stage1__mob1__leftHand__default = new class {
     this.group.angle = this.sideAngle;
   }
   onStun() {
-    run(async() => {
-      await this.stage(0.2, easing.easeOutCubic, {
-        pos: new vec3({
+    let time = 0;
+
+    const step1 = 0.2;
+    this.parent.step(time, () => {
+      this.stage(step1, easing.easeOutCubic, {
+        pos: {
           x: -40,
           y: -40,
-        }),
+        },
         angle: -60,
         sideAngle: 30,
       });
-
-      while (true) {
-        await this.stage(1, easing.easeInOutCubic, {
-          pos: new vec3({
-            x: -40,
-            y: -40,
-          }),
-          angle: -80,
-          sideAngle: 50,
-        });
-        await this.stage(1, easing.easeInOutCubic, {
-          pos: new vec3({
-            x: -40,
-            y: -40,
-          }),
-          angle: -60,
-          sideAngle: 30,
-        });
-      }
     });
+    time += step1;
+
+    let step2FN, step3FN;
+    step2FN = () => {
+      const step2 = 1;
+      this.stage(step2, easing.easeInOutCubic, {
+        pos: {
+          x: -40,
+          y: -40,
+        },
+        angle: -80,
+        sideAngle: 50,
+      });
+      this.parent.step(step2, step3FN);
+    };
+    step3FN = () => {
+      const step3 = 1;
+      this.stage(step3, easing.easeInOutCubic, {
+        pos: {
+          x: -40,
+          y: -40,
+        },
+        angle: -60,
+        sideAngle: 30,
+      });
+      this.parent.step(step3, step2FN);
+    };
+    this.parent.step(time, step2FN);
   }
 }
