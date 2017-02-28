@@ -99,7 +99,8 @@ export class Client extends global.Client {
     this.playerID = data.playerID;
   }
   onDie(data) {
-    game.backSound.restart();
+    game.backSound.restart('', 0, 0.5, true);
+    game.deads.removeAll();
   }
   onMap(data) {
     run(async() => {
@@ -188,7 +189,7 @@ export class Client extends global.Client {
               }
             }
           };
-          game.level2.add(sprite);
+          game.walls.add(sprite);
         }
       }
 

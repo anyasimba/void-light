@@ -163,12 +163,14 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.playSound('hit');
     }
     if (data.damage > 0) {
+      this.afterHitTime = 0.5;
+
       const damageView = new Phaser.Text(
         game, this.pos.x, this.pos.y, '-' + data.damage, {
-          fontSize: 20,
-          fill: '#FF3300',
+          fontSize: 40,
+          fill: '#FF2200',
           stroke: '#222222',
-          strokeThickness: 3,
+          strokeThickness: 5,
         });
       damageView.update = () => {
         damageView.y -= dt * 4;
@@ -181,7 +183,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
           }
         }
       };
-      game.level2.add(damageView);
+      game.texts.add(damageView);
     }
   }
   onUseStamina(data) {
@@ -235,7 +237,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
       group.alpha = 1 - group.time / 60;
     };
-    game.level.add(group);
+    game.deads.add(group);
   }
 
   update() {
@@ -292,7 +294,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         this.footSpeed,
         this.speed
         .subtract(this.footSpeed)
-        .multiply(1 - Math.pow(0.8, dt)))
+        .multiply(1 - Math.pow(0.95, dt)))
       if (this.speed.length() > 10 && this.footSpeed.length() > 2) {
         const l = 200;
         let footTime = this.moveTime * 100 / l * 0.5;
@@ -336,6 +338,18 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       if (this.footViews[0].mirror) {
         this.footViews[0].scale.x = -this.footViews[0].scale.x;
       }
+    }
+
+    if (this.afterHitTime) {
+      this.afterHitTime -= dt;
+      const f = 1 - this.afterHitTime * 2;
+      this.group.tint = RGBtoHEX(255, 255 * (f * 0.8 + 0.2), 255 * f);
+      if (this.afterHitTime <= 0) {
+        delete this.afterHitTime;
+        this.group.tint = 0xFFFFFF;
+      }
+    } else {
+      this.group.tint = 0xFFFFFF;
     }
   }
 }

@@ -91,7 +91,7 @@ export class Fighter {
         delete this.staminaTime;
       }
     } else {
-      this.stamina = Math.min(this.STAMINA, this.stamina + dt * 10);
+      this.stamina = Math.min(this.STAMINA, this.stamina + dt * 25);
     }
     if (this.inRoll) {
       this.inRoll.time += dt;
@@ -122,7 +122,9 @@ export class Fighter {
     if (this.stunTime) {
       if (!this.inStun) {
         this.inStun = true;
-        this.weapon.task = 'stun';
+        if (this.weapon) {
+          this.weapon.task = 'stun';
+        }
         if (this.weapon2) {
           this.weapon2.task = 'stun';
         }
@@ -134,7 +136,9 @@ export class Fighter {
       if (this.stunTime <= 0) {
         delete this.stunTime;
         delete this.inStun;
-        this.weapon.task = 'break';
+        if (this.weapon) {
+          this.weapon.task = 'break';
+        }
         if (this.weapon2) {
           this.weapon2.task = 'break';
         }

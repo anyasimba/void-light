@@ -167,7 +167,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         delete this.balanceTime;
       }
     } else {
-      this.balance = Math.min(this.BALANCE, this.balance + dt * 5);
+      this.balance = Math.min(this.BALANCE, this.balance + dt * 40);
     }
   }
 

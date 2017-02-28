@@ -117,7 +117,7 @@ export const game = new Phaser.Game(
           game.renderer.resize(w, h);
         }
 
-        const s = Math.min(w / 1920, h / 1080);
+        const s = Math.min(w / 2560, h / 1440);
         game.scene.scale.set(s);
         game.scaleFactor = s;
       }
@@ -136,11 +136,16 @@ export const game = new Phaser.Game(
 
       global.client = new Client;
 
-      game.level = game.scene.add(new Phaser.Group(game));
-      game.level.add(new Phaser.TileSprite(
+      game.ground = game.scene.add(new Phaser.Group(game));
+      game.ground.add(new Phaser.TileSprite(
         game, -100000, -100000, 200000, 200000, 'ground'));
 
-      game.level2 = game.scene.add(new Phaser.Group(game));
+      game.deads = game.scene.add(new Phaser.Group(game));
+      game.bottom = game.scene.add(new Phaser.Group(game));
+      game.middle = game.scene.add(new Phaser.Group(game));
+      game.top = game.scene.add(new Phaser.Group(game));
+      game.walls = game.scene.add(new Phaser.Group(game));
+      game.texts = game.scene.add(new Phaser.Group(game));
 
       game.ui = game.scene.add(new Phaser.Group(game));
       initUI();

@@ -11,18 +11,35 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
 
     super(data.id, state, ...args);
 
-    this.group.add(this.bottomGroup);
-    this.group.add(this.middleGroup);
-    this.group.add(this.topGroup);
 
     if (data.parentID) {
+      this.group.add(this.bottomGroup);
+      this.group.add(this.middleGroup);
+      this.group.add(this.topGroup);
       this.parent.middleGroup.add(this.group);
     } else {
       this.group.update = () => {
         this.update();
+
+        const groups = [
+          this.bottomGroup,
+          this.middleGroup,
+          this.topGroup,
+        ];
+        for (const k in groups) {
+          const g = groups[k];
+          g.x = this.group.x;
+          g.y = this.group.y;
+          g.scale.x = this.group.scale.x;
+          g.scale.y = this.group.scale.y;
+          g.angle = this.group.angle;
+          g.setAll('tint', this.group.tint);
+        }
       }
 
-      game.level.add(this.group);
+      game.bottom.add(this.bottomGroup);
+      game.middle.add(this.middleGroup);
+      game.top.add(this.topGroup);
     }
   }
   update() {
@@ -36,9 +53,13 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
       const dx = Math.abs(cx - client.player.pos.x);
       const dy = Math.abs(cy - client.player.pos.y);
       if (dx < ts * 2 && dy < ts) {
-        this.group.visible = true;
+        this.bottomGroup.visible = true;
+        this.middleGroup.visible = true;
+        this.topGroup.visible = true;
       } else {
-        this.group.visible = false;
+        this.bottomGroup.visible = false;
+        this.middleGroup.visible = false;
+        this.topGroup.visible = false;
       }
     }
   }
@@ -46,9 +67,11 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
     super.destructor();
 
     if (this.parent) {
-      this.parent.group.remove(this);
+      this.parent.middleGroup.remove(this.group);
     } else {
-      game.level.remove(this.group);
+      game.bottom.remove(this.bottomGroup);
+      game.middle.remove(this.middleGroup);
+      game.top.remove(this.topGroup);
     }
   }
 }

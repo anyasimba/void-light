@@ -8,14 +8,14 @@ export class Mob {
     this.fighter = new Fighter(this, {
       kind: 'mob',
 
-      ACC: 1000,
+      ACC: 1300,
       DAMAGE: 100,
       BODY_SIZE: 140,
 
-      BALANCE: 10,
-      HP: 100,
+      BALANCE: 30,
+      HP: 200,
       MP: 100,
-      STAMINA: 10,
+      STAMINA: 16,
     });
     this.opts = opts;
 
