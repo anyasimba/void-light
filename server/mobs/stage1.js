@@ -17,16 +17,16 @@ export const stage1__mob1 = {
 
   FIGHTER: {
     name: 'stage1__mob1',
-    hitSpeed: 2,
+    hitSpeed: 1.4,
 
     ACC: 1300,
     DAMAGE: 100,
     BODY_SIZE: 140,
 
-    BALANCE: 30,
+    BALANCE: 50,
     HP: 200,
     MP: 100,
-    STAMINA: 16,
+    STAMINA: 30,
   },
 
   rightHand(parent) {

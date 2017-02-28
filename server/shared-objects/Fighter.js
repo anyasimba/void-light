@@ -123,7 +123,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     if (this.stunTime) {
       return;
     }
-    if (this.isCanNextHit) {
+    if (this.inHit && this.isCanNextHit) {
       this.needNextHit = opts;
       return;
     }
@@ -192,6 +192,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     if (this.needNextHit) {
       const opts = this.needNextHit;
       delete this.needNextHit;
+      delete this.isCanNextHit;
       this.finishHit();
       opts.hitStage = i;
       this.doHit(opts);

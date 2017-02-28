@@ -20,9 +20,9 @@ export class Client extends global.Client {
       BALANCE: 10,
       HP: 100,
       MP: 100,
-      STAMINA: 60,
+      STAMINA: 100,
 
-      hitSpeed: 0.7,
+      hitSpeed: 1,
     });
 
     this.emit('playerID', {
