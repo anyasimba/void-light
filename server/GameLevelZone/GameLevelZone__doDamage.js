@@ -109,10 +109,7 @@ Object.assign(GameLevelZone.prototype, {
         other.speed.init();
       }
       if (isJumpHit) {
-        vec3.add(other.speed, opts.hitVec.multiply(2400));
-        if (other.speed.length() > 3000) {
-          other.speed = other.speed.unit().multiply(3000);
-        }
+        vec3.add(other.speed, opts.hitVec.multiply(1800));
       } else {
         vec3.add(other.speed, opts.hitVec.multiply(600));
       }

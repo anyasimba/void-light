@@ -25,7 +25,7 @@ export const stage1__mob1 = {
     BODY_SIZE: 140,
     SCALE: 1,
 
-    BALANCE: 30,
+    BALANCE: 50,
     HP: 200,
     MP: 100,
     STAMINA: 30,

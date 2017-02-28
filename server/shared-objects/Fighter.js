@@ -147,7 +147,21 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.clearSteps();
     global[this.kind + '__doHit'].call(this);
 
-    this.useStamina(this.weapon.stamina, this.weapon.staminaTime);
+    if (this.isRollHit && this.isJumpHit) {
+      this.useStamina(
+        this.weapon.stamina * 2,
+        this.weapon.staminaTime * 1.6);
+    } else if (this.isRollHit) {
+      this.useStamina(
+        this.weapon.stamina * 1.3,
+        this.weapon.staminaTime * 1.2);
+    } else if (this.isJumpHit) {
+      this.useStamina(
+        this.weapon.stamina * 1.5,
+        this.weapon.staminaTime * 1.4);
+    } else {
+      this.useStamina(this.weapon.stamina, this.weapon.staminaTime);
+    }
 
     this.emitAll('hit', {
       hitVec: this.hitVec,
@@ -189,11 +203,11 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   addImpulse(v) {
     if (this.inHit) {
       if (this.inRoll && this.inJump) {
-        v *= 500 / (this.speed.length() * 2 + 100);
+        v *= 120 / (this.speed.length() * 0.2 + 100);
       } else if (this.inRoll || this.afterRollTime) {
-        v *= 1000 / (this.speed.length() * 2 + 100);
+        v *= 160 / (this.speed.length() * 0.1 + 100);
       } else if (this.inJump) {
-        v *= 500 / (this.speed.length() + 100);
+        v *= 150 / (this.speed.length() * 0.25 + 100);
       }
       const vec = this.hitVec.unit();
       vec3.add(this.speed, vec.multiply(v));
@@ -245,30 +259,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.gameLevelZone.doDamageRadialArea(this, opts);
   }
 
-  doJump(data) {
-    if (this.inHit && this.hitStage !== 1) {
-      return;
-    }
-
-    const canJump = this.stamina > 0 &&
-      !this.inJump &&
-      !this.inRoll &&
-      !this.afterJumpTime &&
-      this.speed.length() > 200 &&
-      !this.stunTime;
-    if (canJump) {
-      this.useStamina(8, 1.5);
-
-      this.onJump(data);
-      this.emitPos();
-      this.emitAll('jump', {});
-    }
-  }
   doRoll(data) {
-    if (this.inHit && this.hitStage !== 1) {
-      return;
-    }
-
     const canRoll = this.stamina > 0 &&
       !this.inRoll &&
       !this.afterRollTime &&
@@ -276,11 +267,53 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       !this.stunTime;
 
     if (canRoll) {
-      this.useStamina(4, 0.8);
+      if (this.inHit) {
+        this.useStamina(8, 0.8);
+      } else {
+        this.useStamina(4, 0.8);
+      }
 
-      this.onRoll(data);
+      const rollData = {
+        duration: 0.4,
+        afterTime: 0.2,
+        force: 800,
+        forceInJump: 1100,
+      };
+      if (this.inHit && this.hitStage !== 1) {
+        rollData.force = 500;
+        rollData.forceInJump = 300;
+      }
+      this.onRoll(rollData);
       this.emitPos();
-      this.emitAll('roll', {});
+      this.emitAll('roll', rollData);
+    }
+  }
+  doJump(data) {
+    const canJump = this.stamina > 0 &&
+      !this.inJump &&
+      !this.inRoll &&
+      !this.afterJumpTime &&
+      this.speed.length() > 200 &&
+      !this.stunTime;
+
+    if (canJump) {
+      if (this.inHit) {
+        this.useStamina(16, 1.5);
+      } else {
+        this.useStamina(8, 1.5);
+      }
+
+      const jumpData = {
+        duration: 0.6,
+        afterTime: 0.5,
+        force: 700,
+      };
+      if (this.inHit && this.hitStage !== 1) {
+        jumpData.force = 200;
+      }
+      this.onJump(jumpData);
+      this.emitPos();
+      this.emitAll('jump', jumpData);
     }
   }
 }

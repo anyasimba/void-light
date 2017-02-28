@@ -88,6 +88,10 @@ export class Fighter {
         this.speed.init();
       }
     }
+
+    if (this.speed.length() > 3000) {
+      this.speed = this.speed.unit().multiply(3000);
+    }
     vec3.add(this.pos, this.speed.multiply(dt));
 
     if ((!this.inJump && !this.inRoll && !this.stunTime) || this.inHit) {
@@ -204,29 +208,29 @@ export class Fighter {
   doDamageRadialArea() {}
   afterRoll() {}
 
-  onRoll() {
+  onRoll(data) {
     let input = this.inputMove;
-    if (this.inJump) {
+    if (this.inJump || this.inHit) {
       input = this.look;
     }
     if (this.inJump) {
-      this.speed = input.unit().multiply(1100);
+      this.speed = input.unit().multiply(data.forceInJump);
     } else {
-      this.speed = input.unit().multiply(800);
+      this.speed = input.unit().multiply(data.force);
     }
     this.inRoll = {
       time: 0,
-      duration: 0.4,
-      afterTime: 0.2,
+      duration: data.duration,
+      afterTime: data.afterTime,
     };
     this.look = this.speed.unit();
   }
-  onJump() {
-    this.speed = this.speed.unit().multiply(700);
+  onJump(data) {
+    this.speed = this.speed.unit().multiply(data.force);
     this.inJump = {
       time: 0,
-      duration: 0.6,
-      afterTime: 0.5,
+      duration: data.duration,
+      afterTime: data.afterTime,
     };
     this.look = this.speed.unit();
   }
