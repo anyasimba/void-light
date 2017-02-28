@@ -245,6 +245,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     const angle = this.look.toAngle();
     group.angle = angle;
     group.time = 0;
+    group.scale.x = this.scale;
+    group.scale.y = this.scale;
     group.update = () => {
       group.time += dt;
       if (group.time >= 60) {
@@ -268,13 +270,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.group.x = this.pos.x + sideVec.x * this.moveShift * 3;
     this.group.y = this.pos.y + sideVec.y * this.moveShift * 3;
     this.group.angle = this.look.toAngle();
-    this.group.scale.x = 1;
-    this.group.scale.y = 1;
+    this.group.scale.x = this.scale;
+    this.group.scale.y = this.scale;
     if (this.inJump) {
       const f = Math.sin(
         (this.inJump.time / this.inJump.duration) * Math.PI) * 0.2;
-      this.group.scale.x = 1 + f;
-      this.group.scale.y = 1 + f;
+      this.group.scale.x = this.scale * (1 + f);
+      this.group.scale.y = this.scale * (1 + f);
     }
 
     this.views[0].alpha = 1;

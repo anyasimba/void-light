@@ -13,6 +13,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
       kind: this.kind,
       size: this.size,
+      scale: this.scale,
       name: this.name,
 
       hitSpeed: this.hitSpeed,
@@ -63,6 +64,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       kind: opts.kind,
       name: opts.name,
       size: opts.BODY_SIZE || Fighter.BODY_SIZE,
+      scale: opts.SCALE,
 
       hitSpeed: opts.hitSpeed,
 
@@ -84,7 +86,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     this.body = {
       kind: 'circle',
-      size: this.size,
+      size: this.size * this.scale,
     }
 
     if (this.kind === 'player') {
@@ -185,8 +187,18 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
   }
   addImpulse(v) {
-    vec3.add(this.speed, this.hitVec.unit().multiply(v));
-    this.emitPos();
+    if (this.inHit) {
+      if (this.inRoll && this.inJump) {
+        v *= 500 / (this.speed.length() * 2 + 100);
+      } else if (this.inRoll || this.afterRollTime) {
+        v *= 1000 / (this.speed.length() * 2 + 100);
+      } else if (this.inJump) {
+        v *= 500 / (this.speed.length() + 100);
+      }
+      const vec = this.hitVec.unit();
+      vec3.add(this.speed, vec.multiply(v));
+      this.emitPos();
+    }
   }
   checkNextHit(i) {
     if (this.needNextHit) {
@@ -227,14 +239,20 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     const hitAngle = opts.hitVec.toAngle();
     opts.a1 += hitAngle;
     opts.a2 += hitAngle;
+    opts.r1 *= this.scale;
+    opts.r2 *= this.scale;
 
     this.gameLevelZone.doDamageRadialArea(this, opts);
   }
 
   doJump(data) {
+    if (this.inHit && this.hitStage !== 1) {
+      return;
+    }
+
     const canJump = this.stamina > 0 &&
       !this.inJump &&
-      !this.Roll &&
+      !this.inRoll &&
       !this.afterJumpTime &&
       this.speed.length() > 200 &&
       !this.stunTime;
@@ -247,6 +265,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
   }
   doRoll(data) {
+    if (this.inHit && this.hitStage !== 1) {
+      return;
+    }
+
     const canRoll = this.stamina > 0 &&
       !this.inRoll &&
       !this.afterRollTime &&

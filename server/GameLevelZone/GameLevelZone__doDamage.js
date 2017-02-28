@@ -16,7 +16,7 @@ Object.assign(GameLevelZone.prototype, {
     }
   },
   doDamageRadialArea2Circle(source, opts, other) {
-    if (other.inRoll) {
+    if (other.inRoll && !other.inHit) {
       return;
     }
     if (source.kind === other.kind) {

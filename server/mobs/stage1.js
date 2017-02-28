@@ -17,11 +17,13 @@ export const stage1__mob1 = {
 
   FIGHTER: {
     name: 'stage1__mob1',
-    hitSpeed: 1.4,
+
+    hitSpeed: 3,
 
     ACC: 1300,
     DAMAGE: 100,
     BODY_SIZE: 140,
+    SCALE: 1,
 
     BALANCE: 30,
     HP: 200,

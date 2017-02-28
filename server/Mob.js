@@ -241,7 +241,8 @@ export class Mob {
         }
 
         this.attackDistance = this.attackDistance ||
-          this.opts.HIT_D[0] + this.opts.HIT_D[1] * Math.random();
+          (this.opts.HIT_D[0] + this.opts.HIT_D[1] * Math.random()) *
+          this.fighter.scale;
         if (d < this.attackDistance) {
           canAttack = true;
         }

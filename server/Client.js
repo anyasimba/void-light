@@ -17,12 +17,14 @@ export class Client extends global.Client {
     this.player = new Fighter(this, {
       kind: 'player',
 
+      hitSpeed: 1,
+
       BALANCE: 10,
       HP: 100,
       MP: 100,
       STAMINA: 100,
 
-      hitSpeed: 1,
+      SCALE: 1,
     });
 
     this.emit('playerID', {

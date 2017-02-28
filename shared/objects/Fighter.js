@@ -63,7 +63,9 @@ export class Fighter {
   update() {
     const move = this.inputMove.unit();
     if (!this.inHit && !this.inJump && !this.inRoll && !this.stunTime) {
-      vec3.add(this.speed, move.multiply((this.ACC + this.FRICTION) * dt));
+      vec3.add(
+        this.speed,
+        move.multiply((this.ACC + this.FRICTION) * dt));
     }
 
     if (!this.inJump && !this.inRoll) {
@@ -120,6 +122,7 @@ export class Fighter {
       if (this.inRoll.time >= this.inRoll.duration) {
         this.afterRollTime = this.inRoll.afterTime;
         delete this.inRoll;
+        this.afterRoll();
       }
     }
     if (this.afterRollTime) {
@@ -199,26 +202,31 @@ export class Fighter {
   }
 
   doDamageRadialArea() {}
+  afterRoll() {}
 
+  onRoll() {
+    let input = this.inputMove;
+    if (this.inJump) {
+      input = this.look;
+    }
+    if (this.inJump) {
+      this.speed = input.unit().multiply(1100);
+    } else {
+      this.speed = input.unit().multiply(800);
+    }
+    this.inRoll = {
+      time: 0,
+      duration: 0.4,
+      afterTime: 0.2,
+    };
+    this.look = this.speed.unit();
+  }
   onJump() {
     this.speed = this.speed.unit().multiply(700);
     this.inJump = {
       time: 0,
       duration: 0.6,
       afterTime: 0.5,
-    };
-    this.look = this.speed.unit();
-  }
-  onRoll() {
-    let input = this.inputMove;
-    if (this.inJump) {
-      input = this.look;
-    }
-    this.speed = input.unit().multiply(800);
-    this.inRoll = {
-      time: 0,
-      duration: 0.4,
-      afterTime: 0.2,
     };
     this.look = this.speed.unit();
   }

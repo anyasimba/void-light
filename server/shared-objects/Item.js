@@ -26,11 +26,11 @@ export function ItemSword(parent) {
     parent: parent,
     type: 'weapon',
     kind: 'sword',
+    hand: 1,
     damage: 40,
     balance: 4,
     stamina: 3,
     staminaTime: 1,
-    hand: 1,
     pos: {
       x: -25,
       y: 25,

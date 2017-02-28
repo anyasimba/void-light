@@ -47,7 +47,9 @@ export const game = new Phaser.Game(
       game.load.image('bricks', 'assets/bricks.jpg');
 
       game.load.audio('back',
-        'assets/back__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.mp3');
+        'assets/back__doxent_-_Forgotten_Land.mp3');
+      game.load.audio('boss',
+        'assets/boss__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.mp3');
       game.load.audio('hit',
         'assets/hit__86003__nextmaking__hitting-body-with-blood.mp3');
       game.load.audio('hit1',
