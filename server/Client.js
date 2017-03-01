@@ -18,6 +18,7 @@ export class Client extends global.Client {
       kind: 'player',
 
       hitSpeed: 1,
+      DAMAGE: 40,
 
       BALANCE: 10,
       HP: 100,

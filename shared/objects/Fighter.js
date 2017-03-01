@@ -134,6 +134,14 @@ export class Fighter {
       vec3.add(this.look, lookRel);
     }
 
+    if (this.hpTime) {
+      this.hpTime -= dt;
+      if (this.hpTime <= 0) {
+        delete this.hpTime;
+      }
+    } else {
+      this.hp = Math.min(this.HP, this.hp + dt * 10);
+    }
     if (this.staminaTime) {
       this.staminaTime -= dt;
       if (this.staminaTime <= 0) {
@@ -177,7 +185,7 @@ export class Fighter {
         const hands = this.hands;
         for (const k in hands) {
           const hand = hands[k];
-          if (hand.opts && hand.opts.onStun) {
+          if (hand && hand.opts && hand.opts.onStun) {
             hand.opts.onStun.call(hand);
           }
         }

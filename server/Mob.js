@@ -9,8 +9,12 @@ export class Mob {
     this.fighter = new Fighter(this, Object.assign(opts.FIGHTER, {
       kind: 'mob',
     }));
-    opts.rightHand(this.fighter);
-    opts.leftHand(this.fighter);
+    if (opts.rightHand) {
+      opts.rightHand(this.fighter);
+    }
+    if (opts.leftHand) {
+      opts.leftHand(this.fighter);
+    }
 
     this.reborn();
 

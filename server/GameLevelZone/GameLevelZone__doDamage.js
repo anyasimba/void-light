@@ -75,20 +75,16 @@ Object.assign(GameLevelZone.prototype, {
           source.weapon.staminaTime);
       }
 
-      let damage = 20;
-      if (source.kind === 'player') {
-        damage = 30;
-      }
+      let damage = source.damage;
       if (isInBlock) {
         damage = 0;
       }
       damage *= damageF;
-      other.hp -= damage;
+      other.useHP(damage, 4);
       other.emitAll('otherHit', {
         inBlock: isInBlock,
         damage: damage,
       });
-      other.emitParams();
       if (other.hp <= 0) {
         other.onDie();
       }

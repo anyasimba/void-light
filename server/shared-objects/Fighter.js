@@ -74,6 +74,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       scale: opts.SCALE,
 
       hitSpeed: opts.hitSpeed,
+      damage: opts.DAMAGE,
 
       ACC: opts.ACC || Fighter.ACC,
       RUN_ACC: opts.RUN_ACC || Fighter.RUN_ACC,
@@ -233,6 +234,15 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
   }
 
+  useHP(v, time) {
+    this.hp = Math.max(this.hp - v, 0);
+    this.hpTime = this.hpTime || 0;
+    this.hpTime = Math.max(this.hpTime, time);
+    this.emitAll('useHP', {
+      hp: this.hp,
+      time: this.hpTime,
+    });
+  }
   useStamina(v, time) {
     this.stamina = Math.max(this.stamina - v, 0);
     this.staminaTime = this.staminaTime || 0;

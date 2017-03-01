@@ -4,5 +4,7 @@ export const mapIDs = {
 
   9: 'born',
 
-  14: 'stage1__mob1',
+  13: 'stage1__mob1',
+  14: 'stage1__boss1',
+  15: 'stage1__mob2',
 }
