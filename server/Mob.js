@@ -292,7 +292,7 @@ export class Mob {
           }
 
           this.act = 'hit';
-          this.hitDir = this.target.pos.subtract(this.fighter.pos)
+          this.hitDir = this.fighter.look
             .unit()
             .multiply(300);
           this.actTime = (this.opts.HIT_TIME[0] +
