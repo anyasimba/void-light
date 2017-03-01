@@ -48,7 +48,7 @@ export const stage1__mob1__doHit = {
     });
     time += step2 + 0.1 * this.hitSpeed;
 
-    const step3 = 0.5 * this.hitSpeed;
+    const step3 = 0.9 * this.hitSpeed;
     this.step(time, () => {
       this.checkNextHit(2);
       this.weapon.finalStage(step3, easing.easeInOutCubic);
@@ -111,7 +111,7 @@ export const stage1__mob1__doHit = {
     });
     time += step2 + 0.1 * this.hitSpeed;
 
-    const step3 = 0.5 * this.hitSpeed;
+    const step3 = 0.9 * this.hitSpeed;
     this.step(time, () => {
       this.checkNextHit(3);
       this.weapon2.finalStage(step3, easing.easeInOutCubic);
@@ -175,7 +175,7 @@ export const stage1__mob1__doHit = {
     });
     time += step2 + 0.1 * this.hitSpeed;
 
-    const step3 = 0.5 * this.hitSpeed;
+    const step3 = 0.9 * this.hitSpeed;
     this.step(time, () => {
       this.checkNextHit(2);
       this.weapon.finalStage(step3, easing.easeInOutCubic);
@@ -190,15 +190,15 @@ export const stage1__mob1__doHit = {
 
 export const stage1__mob2__doHit = ia_sword__doHit({
   begin: 0.5,
-  wait: 0.5,
+  wait: 0.2,
   end: 1,
   impulse: 1800,
-  begin2: 0,
-  wait2: 0.3,
+  begin2: 0.3,
+  wait2: 0,
   end2: 1,
   impulse2: 1500,
-  begin3: 0,
-  wait3: 0.5,
+  begin3: 0.5,
+  wait3: 0,
   end3: 1,
   impulse3: 1600,
 });
@@ -206,10 +206,13 @@ export const stage1__boss1__doHit = ia_sword__doHit({
   begin: 1,
   wait: 0.05,
   end: 1,
+  impulse: 2000,
   begin2: 0,
   wait2: 0.1,
   end2: 1,
+  impulse2: 1000,
   begin3: 0,
   wait3: 0.3,
   end3: 1,
+  impulse3: 1000,
 });

@@ -4,10 +4,10 @@ export class Fighter {
   }
 
   static get ACC() {
-    return 1200;
+    return 1100;
   }
   static get RUN_ACC() {
-    return 1800;
+    return 1600;
   }
   static get AIR_FRICTION() {
     return 0.95;
@@ -66,16 +66,20 @@ export class Fighter {
   update() {
     const move = this.inputMove.unit();
     if (!this.inHit && !this.inJump && !this.inRoll && !this.stunTime) {
-      if (this.isRun && this.stamina > 0) {
-        vec3.add(
-          this.speed,
-          move.multiply((this.RUN_ACC + this.FRICTION) * dt));
+      if (this.isRun) {
         if (this.inputMove.length() > 0) {
           this.stamina -= dt * 10;
-          this.staminaTime = Math.max(this.staminaTime || 0, 0.4);
+          this.staminaTime = Math.max(this.staminaTime || 0, 0.05);
           if (this.stamina <= 0) {
             this.stamina = 0;
-            this.staminaTime = Math.max(this.staminaTime, 1);
+            this.staminaTime = Math.max(this.staminaTime, 0.5);
+            vec3.add(
+              this.speed,
+              move.multiply((this.RUN_ACC * 0.5 + this.FRICTION) * dt));
+          } else {
+            vec3.add(
+              this.speed,
+              move.multiply((this.RUN_ACC + this.FRICTION) * dt));
           }
         }
       } else if (this.isBlock) {
@@ -140,7 +144,7 @@ export class Fighter {
         delete this.hpTime;
       }
     } else {
-      this.hp = Math.min(this.HP, this.hp + dt * 10);
+      this.hp = Math.min(this.HP, this.hp + dt * 4);
     }
     if (this.staminaTime) {
       this.staminaTime -= dt;
@@ -148,7 +152,7 @@ export class Fighter {
         delete this.staminaTime;
       }
     } else {
-      this.stamina = Math.min(this.STAMINA, this.stamina + dt * 100);
+      this.stamina = Math.min(this.STAMINA, this.stamina + dt * 50);
     }
     if (this.inRoll) {
       this.inRoll.time += dt;

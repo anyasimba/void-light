@@ -250,18 +250,19 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.afterHitTime = 0.5;
 
       const damageView = new Phaser.Text(
-        game, this.pos.x, this.pos.y, '-' + data.damage, {
+        game, this.pos.x, this.pos.y, data.damage, {
           fontSize: 40,
           fill: '#FF2200',
-          stroke: '#222222',
-          strokeThickness: 5,
+          stroke: '#111111',
+          strokeThickness: 8,
         });
+      damageView.alpha = 0.5;
       damageView.update = () => {
         damageView.y -= dt * 4;
         damageView.time = damageView.time || 0;
         damageView.time += dt;
         if (damageView.time > 1) {
-          damageView.alpha -= dt;
+          damageView.alpha -= dt * 0.5;
           if (damageView.alpha <= 0) {
             damageView.destroy();
           }

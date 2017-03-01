@@ -40,8 +40,8 @@ export const weapon__sword__default = new class {
       color = 0x55FF00;
     }
     const image = new Phaser.Image(game, 0, 0, 'sword');
-    image.scale.x = 0.7;
-    image.scale.y = 1;
+    image.scale.x = 0.8;
+    image.scale.y = 1.2;
     image.anchor.x = 0.5;
     image.anchor.y = 0.8;
     image.smoothed = true;

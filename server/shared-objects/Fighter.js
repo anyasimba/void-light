@@ -62,6 +62,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   constructor(owner, opts) {
     opts = opts || {};
 
+    let hitSpeedF = 1;
+    if (opts.kind === 'mob') {
+      hitSpeedF *= 1.2;
+    } else {
+      hitSpeedF *= 1.5;
+    }
+
     super({
       pos: new vec3,
       speed: new vec3,
@@ -73,7 +80,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       size: opts.BODY_SIZE || Fighter.BODY_SIZE,
       scale: opts.SCALE,
 
-      hitSpeed: opts.hitSpeed,
+      hitSpeed: opts.hitSpeed * hitSpeedF,
       damage: opts.DAMAGE,
 
       ACC: opts.ACC || Fighter.ACC,
@@ -365,20 +372,20 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     if (canRoll) {
       if (this.inHit || this.isBlock) {
-        this.useStamina(8, 0.8);
+        this.useStamina(8, 1);
       } else {
-        this.useStamina(4, 0.8);
+        this.useStamina(4, 1);
       }
 
       const rollData = {
-        duration: 0.4,
-        afterTime: 0.2,
-        force: 800,
-        forceInJump: 1100,
+        duration: 0.6,
+        afterTime: 0.4,
+        force: 700,
+        forceInJump: 800,
       };
       if (this.inHit && this.hitStage !== 1) {
         rollData.force = 500;
-        rollData.forceInJump = 300;
+        rollData.forceInJump = 400;
       }
       this.onRoll(rollData);
       this.emitPos();
@@ -401,12 +408,12 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
 
       const jumpData = {
-        duration: 0.6,
+        duration: 0.7,
         afterTime: 0.5,
         force: 700,
       };
       if (this.inHit && this.hitStage !== 1) {
-        jumpData.force = 200;
+        jumpData.force = 300;
       }
       this.onJump(jumpData);
       this.emitPos();

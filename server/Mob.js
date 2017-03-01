@@ -296,9 +296,9 @@ export class Mob {
           }
 
           this.act = 'hit';
-          this.hitDir = this.fighter.look
+          this.hitDir = this.target.pos.subtract(this.fighter.pos)
             .unit()
-            .multiply(300);
+            .multiply(1000);
           this.actTime = (this.opts.HIT_TIME[0] +
               this.opts.HIT_TIME[1] * Math.random()) *
             this.fighter.hitSpeed;

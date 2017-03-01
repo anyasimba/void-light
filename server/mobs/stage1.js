@@ -1,7 +1,7 @@
 export const stage1__mob1 = {
   AGRO_D: 8,
   RUN_D: 50,
-  HIT_D: [100, 200],
+  HIT_D: [100, 400],
   HIT_VER: 0.6,
   HIT_TIME: [0.5, 1.5],
   JUMP_HIT_VER: 0.02,
@@ -18,7 +18,7 @@ export const stage1__mob1 = {
   FIGHTER: {
     name: 'stage1__mob1',
 
-    hitSpeed: 2,
+    hitSpeed: 2.5,
 
     ACC: 1000,
     RUN_ACC: 1800,
@@ -69,7 +69,7 @@ export const stage1__mob1 = {
 export const stage1__mob2 = {
   AGRO_D: 12,
   RUN_D: 50,
-  HIT_D: [50, 150],
+  HIT_D: [50, 200],
   HIT_VER: 0.9,
   HIT_TIME: [0.5, 2],
   JUMP_HIT_VER: 0.02,
@@ -86,16 +86,16 @@ export const stage1__mob2 = {
   FIGHTER: {
     name: 'stage1__mob2',
 
-    hitSpeed: 1.5,
+    hitSpeed: 1.8,
 
     ACC: 1600,
     RUN_ACC: 2400,
-    DAMAGE: 14,
+    DAMAGE: 30,
     BODY_SIZE: 40,
     SCALE: 3,
 
-    BALANCE: 20,
-    HP: 120,
+    BALANCE: 30,
+    HP: 150,
     MP: 100,
     STAMINA: 30,
   },
@@ -106,9 +106,9 @@ export const stage1__mob2 = {
       type: 'weapon',
       kind: 'stage1__mob2__rightHand',
       hand: 1,
-      balance: 4,
-      stamina: 3,
-      staminaTime: 1,
+      balance: 10,
+      stamina: 20,
+      staminaTime: 1.5,
       pos: {
         x: -25,
         y: 25,
@@ -121,7 +121,7 @@ export const stage1__mob2 = {
 export const stage1__boss1 = {
   AGRO_D: 16,
   RUN_D: 50,
-  HIT_D: [50, 150],
+  HIT_D: [50, 250],
   HIT_VER: 0.9,
   HIT_TIME: [1, 4],
   JUMP_HIT_VER: 0.02,
