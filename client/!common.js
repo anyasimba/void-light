@@ -45,6 +45,7 @@ export const game = new Phaser.Game(
 
       game.load.image('ground', 'assets/ground.jpg');
       game.load.image('bricks', 'assets/bricks.jpg');
+      game.load.image('door', 'assets/door.png');
 
       game.load.audio('back',
         'assets/back__doxent_-_Forgotten_Land.mp3');

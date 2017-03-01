@@ -36,9 +36,10 @@ export class GameLevelZone {
       for (let x = 0; x < this.map.width; ++x) {
         const i = y * this.map.width + x;
         const v = ground.data[i];
+        const slug = mapIDs[v];
         if (v !== 0) {
           this.grid[x] = this.grid[x] || {};
-          this.grid[x][y] = v;
+          this.grid[x][y] = slug;
         }
       }
     }

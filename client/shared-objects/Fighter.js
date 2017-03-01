@@ -180,7 +180,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     } else {
       this.playSound('hit');
     }
-    if (data.damage > 0) {
+    if (data.damage > 0 && this.kind !== 'player') {
       this.afterHitTime = 0.5;
 
       const damageView = new Phaser.Text(

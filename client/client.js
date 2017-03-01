@@ -41,6 +41,10 @@ export class Client extends global.Client {
       .onDown.add(() => {
         this.emit('roll', {});
       });
+    game.input.keyboard.addKey(Phaser.Keyboard.C)
+      .onDown.add(() => {
+        this.emit('c', {});
+      });
 
     game.input.onDown.add(() => {
       this.emit('mouseDown', {
@@ -101,6 +105,7 @@ export class Client extends global.Client {
   onDie(data) {
     game.backSound.restart('', 0, 0.5, true);
     game.deads.removeAll();
+    game.texts.removeAll();
   }
   onMap(data) {
     run(async() => {
@@ -118,10 +123,10 @@ export class Client extends global.Client {
         for (let x = 0; x < this.map.width; ++x) {
           const i = y * this.map.width + x;
           const v = ground.data[i];
-
-          if (v === 1) {
+          const slug = mapIDs[v];
+          if (slug) {
             grid[x] = grid[x] || [];
-            grid[x][y] = true;
+            grid[x][y] = slug;
           }
         }
       }
@@ -143,24 +148,37 @@ export class Client extends global.Client {
 
       const bricksView = new Phaser.TileSprite(
         game, 0, 0, WALL_SIZE, WALL_SIZE, 'bricks');
+      const doorView = new Phaser.TileSprite(
+        game, 0, 0, WALL_SIZE, WALL_SIZE, 'door');
 
       console.log('loading map...');
       for (let y = 0; y < this.map.height; ++y) {
         for (let x = 0; x < this.map.width; ++x) {
           const i = y * this.map.width + x;
           const v = ground.data[i];
+          const slug = mapIDs[v];
 
-          if (v === 1) {
+          let view;
+          switch (slug) {
+            case 'wall':
+              view = bricksView;
+              break;
+            case 'door':
+              view = doorView;
+              break;
+            default:
+          }
+          if (view) {
             const f = 1;
-            bricksView.tilePosition.x = -x * WALL_SIZE / f;
-            bricksView.tilePosition.y = -y * WALL_SIZE / f;
-            bricksView.tileScale.x = f;
-            bricksView.tileScale.y = f;
+            view.tilePosition.x = -x * WALL_SIZE / f;
+            view.tilePosition.y = -y * WALL_SIZE / f;
+            view.tileScale.x = f;
+            view.tileScale.y = f;
 
             const cx = Math.floor(x * WALL_SIZE / ts);
             const cy = Math.floor(y * WALL_SIZE / ts);
             textures[cx][cy].renderXY(
-              bricksView,
+              view,
               x * WALL_SIZE - cx * ts,
               y * WALL_SIZE - cy * ts,
               false);

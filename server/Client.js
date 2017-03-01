@@ -73,6 +73,7 @@ export class Client extends global.Client {
     this.on('mouseDown', data => this.onEventMouseDown(data));
     this.on('jump', data => this.onEventJump(data));
     this.on('roll', data => this.onEventRoll(data));
+    this.on('c', data => this.onEventC(data));
   }
 
   /**
@@ -128,6 +129,14 @@ export class Client extends global.Client {
   onEventRoll(data) {
     try {
       this.player.doRoll(data);
+    } catch (e) {
+      console.log(e, e.stack);
+      process.exit(1);
+    }
+  }
+  onEventC(data) {
+    try {
+      this.player.onKeyC(data);
     } catch (e) {
       console.log(e, e.stack);
       process.exit(1);

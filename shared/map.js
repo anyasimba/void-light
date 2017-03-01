@@ -1,7 +1,8 @@
 export const mapIDs = {
   1: 'wall',
+  2: 'door',
 
-  8: 'born',
+  9: 'born',
 
-  12: 'stage1__mob1',
+  14: 'stage1__mob1',
 }
