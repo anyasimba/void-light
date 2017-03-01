@@ -43,6 +43,7 @@ Object.assign(GameLevelZone.prototype, {
 
     if (isHit) {
       const isInBlock = other.shield &&
+        other.isBlock &&
         other.stamina > 0 &&
         !other.inJump &&
         !other.inHit;

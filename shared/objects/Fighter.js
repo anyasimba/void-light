@@ -4,7 +4,10 @@ export class Fighter {
   }
 
   static get ACC() {
-    return 1400;
+    return 1200;
+  }
+  static get RUN_ACC() {
+    return 1800;
   }
   static get AIR_FRICTION() {
     return 0.95;
@@ -63,9 +66,27 @@ export class Fighter {
   update() {
     const move = this.inputMove.unit();
     if (!this.inHit && !this.inJump && !this.inRoll && !this.stunTime) {
-      vec3.add(
-        this.speed,
-        move.multiply((this.ACC + this.FRICTION) * dt));
+      if (this.isRun && this.stamina > 0) {
+        vec3.add(
+          this.speed,
+          move.multiply((this.RUN_ACC + this.FRICTION) * dt));
+        if (this.inputMove.length() > 0) {
+          this.stamina -= dt * 10;
+          this.staminaTime = Math.max(this.staminaTime || 0, 0.4);
+          if (this.stamina <= 0) {
+            this.stamina = 0;
+            this.staminaTime = Math.max(this.staminaTime, 1);
+          }
+        }
+      } else if (this.isBlock) {
+        vec3.add(
+          this.speed,
+          move.multiply((this.ACC * 0.8 + this.FRICTION) * dt));
+      } else {
+        vec3.add(
+          this.speed,
+          move.multiply((this.ACC + this.FRICTION) * dt));
+      }
     }
 
     if (!this.inJump && !this.inRoll) {
@@ -89,8 +110,8 @@ export class Fighter {
       }
     }
 
-    if (this.speed.length() > 3000) {
-      this.speed = this.speed.unit().multiply(3000);
+    if (this.speed.length() > 2000) {
+      this.speed = this.speed.unit().multiply(2000);
     }
     vec3.add(this.pos, this.speed.multiply(dt));
 
@@ -181,10 +202,12 @@ export class Fighter {
 
     for (const k in this.timeouts) {
       const timeout = this.timeouts[k];
-      timeout.time -= dt;
-      if (timeout.time <= 0) {
-        delete this.timeouts[k];
-        timeout.fn();
+      if (timeout) {
+        timeout.time -= dt;
+        if (timeout.time <= 0) {
+          delete this.timeouts[k];
+          timeout.fn();
+        }
       }
     }
   }

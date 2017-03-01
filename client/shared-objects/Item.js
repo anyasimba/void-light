@@ -15,6 +15,19 @@ export class Item extends mix(global.Item, MixGameObject) {
   update() {
     super.update();
     this.opts.update.call(this);
+
+    if (this.type === 'shield') {
+      let groupAngle = this.sideAngle + 100;
+      const isInBlock = !this.parent.inJump &&
+        this.parent.isBlock &&
+        !this.parent.inHit &&
+        this.parent.stamina > 0
+      if (!isInBlock && !this.parent.inStun) {
+        groupAngle = this.sideAngle;
+      }
+      this.group.angle += (groupAngle - this.group.angle) *
+        (1 - Math.pow(0.1, dt * 5));
+    }
   }
 }
 
@@ -107,16 +120,6 @@ export const shield__default__default = new class {
     this.view.x = this.pos.x + this.parent.moveShift + 1;
     this.view.y = this.pos.y - this.parent.moveShift * 2 + 2;
     this.view.angle = this.angle + 90;
-
-    let groupAngle = this.sideAngle + 100;
-    const isInBlock = !this.parent.inJump &&
-      !this.parent.inHit &&
-      this.parent.stamina > 0
-    if (!isInBlock && !this.parent.inStun) {
-      groupAngle = this.sideAngle;
-    }
-    this.group.angle += (groupAngle - this.group.angle) *
-      (1 - Math.pow(0.1, dt * 5));
   }
   onStun() {
     let time = 0;

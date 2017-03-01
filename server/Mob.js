@@ -213,6 +213,7 @@ export class Mob {
     }
 
     let canAttack;
+    let isRun;
 
     if (this.target) {
       const dx = this.fighter.pos.x - this.target.pos.x;
@@ -232,24 +233,52 @@ export class Mob {
         delete this.path;
         delete this.onWay;
         delete this.fighter.absLook;
+        isRun = false;
         this.fighter.emitPos();
       } else if (this.pathMap[tx] && this.pathMap[px]) {
         const cd = Math.abs(this.pathMap[tx][ty] - this.pathMap[px][py]);
-        if (d <= 600 && cd <= 3) {
+        if (d <= 1200 && cd <= 16 && Math.random() < 0.3) {
           nextX = this.target.pos.x;
           nextY = this.target.pos.y;
+        }
+        if (d <= 700) {
+          nextX = this.target.pos.x;
+          nextY = this.target.pos.y;
+        }
+        if (d > 700) {
+          isRun = true;
         }
 
         this.attackDistance = this.attackDistance ||
           (this.opts.HIT_D[0] + this.opts.HIT_D[1] * Math.random()) *
           this.fighter.scale;
+
+        const needForce = d < this.attackDistance * 3 &&
+          this.target.speed.length() > 100 &&
+          Math.random() < 0.01;
+
         if (d < this.attackDistance) {
           canAttack = true;
+          isRun = false;
+        } else if (needForce) {
+          canAttack = true;
+          isRun = true;
+          if (Math.random() < 0.5) {
+            this.fighter.doRoll();
+          } else {
+            this.fighter.doJump();
+          }
+        } else {
+          delete this.attackDistance;
+          if (Math.random() < 0.05) {
+            isRun = true;
+          }
         }
       }
     }
 
     if (canAttack) {
+      isRun = false;
       if (!this.act) {
         const lastActIsMove =
           this.lastAct !== 'left' && this.lastAct !== 'right';
@@ -263,19 +292,31 @@ export class Mob {
           }
 
           this.act = 'hit';
-          this.actTime = this.opts.HIT_TIME[0] +
-            this.opts.HIT_TIME[1] * Math.random();
+          this.hitDir = this.target.pos.subtract(this.fighter.pos)
+            .unit()
+            .multiply(300);
+          this.actTime = (this.opts.HIT_TIME[0] +
+              this.opts.HIT_TIME[1] * Math.random()) *
+            this.fighter.hitSpeed;
           this.hits = setInterval(() => {
-            if (Math.random() < 0.1) {
+            if (Math.random() < this.opts.ROLL_HIT_VER) {
               this.fighter.doRoll();
             }
+            if (Math.random() < this.opts.JUMP_HIT_VER) {
+              this.fighter.doJump();
+            }
             if (this.target) {
+              if (Math.random() < 0.2) {
+                this.hitDir = this.target.pos.subtract(this.fighter.pos)
+                  .unit()
+                  .multiply(300);
+              }
               this.fighter.doHit({
-                x: this.target.pos.x,
-                y: this.target.pos.y,
+                x: this.fighter.pos.x + this.hitDir.x,
+                y: this.fighter.pos.y + this.hitDir.y,
               });
             }
-          }, 200);
+          }, 500);
         } else if (lastActIsMove && Math.random() < this.opts.MOVE_VER) {
           if (Math.random() < 0.5) {
             this.act = 'left';
@@ -312,7 +353,6 @@ export class Mob {
         nextY = this.fighter.pos.y;
       }
     }
-
     if (this.actTime !== undefined) {
       this.actTime -= dt * 6;
       if (this.actTime <= 0) {
@@ -349,6 +389,7 @@ export class Mob {
 
     const oldX = this.fighter.inputMove.x;
     const oldY = this.fighter.inputMove.y;
+    const oldRun = this.fighter.isRun;
 
     this.fighter.inputMove.x = 0;
     this.fighter.inputMove.y = 0;
@@ -360,10 +401,14 @@ export class Mob {
       if (Math.abs(nextY - this.fighter.pos.y) > 8) {
         this.fighter.inputMove.y = Math.sign(nextY - this.fighter.pos.y);
       }
+      if (isRun !== undefined) {
+        this.fighter.isRun = isRun;
+      }
     }
     const hasChange =
-      oldX != this.fighter.inputMove.x ||
-      oldY != this.fighter.inputMove.y;
+      oldX !== this.fighter.inputMove.x ||
+      oldY !== this.fighter.inputMove.y ||
+      oldRun !== this.fighter.isRun;
     if (hasChange) {
       this.fighter.emitPos();
     }

@@ -107,7 +107,7 @@ export const weapon__sword__default__doHit = {
       }
       this.doDamageRadialArea(damageOpts);
     });
-    time += step2 + 0.1 * this.hitSpeed;
+    time += step2 + 0.2 * this.hitSpeed;
 
     const step3 = 0.2 * this.hitSpeed;
     this.step(time, () => {
@@ -163,7 +163,7 @@ export const weapon__sword__default__doHit = {
         sideAngle: -50,
       });
     });
-    time += step2 + 0.1 * this.hitSpeed;
+    time += step2 + 0.2 * this.hitSpeed;
 
     const step3 = 0.2 * this.hitSpeed;
     this.step(time, () => {
@@ -219,7 +219,7 @@ export const weapon__sword__default__doHit = {
         sideAngle: -200,
       });
     });
-    time += step2 + 0.1 * this.hitSpeed;
+    time += step2 + 0.2 * this.hitSpeed;
 
     const step3 = 0.2 * this.hitSpeed;
     this.step(time, () => {
@@ -261,7 +261,7 @@ export const stage1__mob1__doHit = {
       });
     });
     this.step(time + 0.05, () => {
-      this.addImpulse(600);
+      this.addImpulse(1700);
 
       const damageOpts = {
         r1: 0,
@@ -285,10 +285,10 @@ export const stage1__mob1__doHit = {
     });
     time += step2 + 0.1 * this.hitSpeed;
 
-    const step3 = 0.2 * this.hitSpeed;
+    const step3 = 0.5 * this.hitSpeed;
     this.step(time, () => {
       this.checkNextHit(2);
-      this.weapon.finalStage(0.2 * this.hitSpeed, easing.easeInOutCubic);
+      this.weapon.finalStage(step3, easing.easeInOutCubic);
     });
     time += step3;
 
@@ -301,23 +301,24 @@ export const stage1__mob1__doHit = {
 
     let time = 0;
 
-    const step1 = 0.25 * this.hitSpeed;
+    const step1 = 0.1 * this.hitSpeed;
     this.step(time, () => {
-      this.weapon.finalStage(step1, easing.easeInCubic);
+      this.canNextHit();
+      this.weapon.finalStage(step1 + 0.05 * this.hitSpeed, easing.easeInCubic);
       this.weapon2.stage(step1, easing.easeInCubic, {
         pos: new vec3({
           x: -40,
           y: -40,
         }),
         angle: -135,
-        sideAngle: 10,
+        sideAngle: 50,
       });
     });
     time += step1;
 
     const step2 = 0.1;
     this.step(time + 0.05, () => {
-      this.addImpulse(600);
+      this.addImpulse(1300);
 
       const damageOpts = {
         r1: 0,
@@ -347,7 +348,7 @@ export const stage1__mob1__doHit = {
     });
     time += step2 + 0.1 * this.hitSpeed;
 
-    const step3 = 0.2 * this.hitSpeed;
+    const step3 = 0.5 * this.hitSpeed;
     this.step(time, () => {
       this.checkNextHit(3);
       this.weapon2.finalStage(step3, easing.easeInOutCubic);
@@ -363,23 +364,24 @@ export const stage1__mob1__doHit = {
 
     let time = 0;
 
-    const step1 = 0.25 * this.hitSpeed;
+    const step1 = 0.1 * this.hitSpeed;
     this.step(time, () => {
-      this.weapon2.finalStage(step1, easing.easeInCubic);
+      this.canNextHit();
+      this.weapon2.finalStage(step1 + 0.05 * this.hitSpeed, easing.easeInCubic);
       this.weapon.stage(step1, easing.easeInCubic, {
         pos: new vec3({
           x: -40,
           y: 40,
         }),
         angle: 135,
-        sideAngle: -10,
+        sideAngle: -50,
       });
     });
     time += step1;
 
     const step2 = 0.1;
     this.step(time + 0.05, () => {
-      this.addImpulse(600);
+      this.addImpulse(1500);
 
       const damageOpts = {
         r1: 0,
@@ -402,14 +404,15 @@ export const stage1__mob1__doHit = {
       this.doDamageRadialArea(damageOpts);
     });
     this.step(time, () => {
+      this.weapon2.finalStage(step2, easing.easeInCubic);
       this.playHit();
-      this.weapon.stage(step2, easing.easeOutCubic, {
+      this.weapon.stage(step1, easing.easeOutCubic, {
         sideAngle: -200,
       });
     });
     time += step2 + 0.1 * this.hitSpeed;
 
-    const step3 = 0.2 * this.hitSpeed;
+    const step3 = 0.5 * this.hitSpeed;
     this.step(time, () => {
       this.checkNextHit(2);
       this.weapon.finalStage(step3, easing.easeInOutCubic);

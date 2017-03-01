@@ -142,6 +142,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.inputMove.init(data.inputMove);
     this.look.init(data.look);
     this.absLook = data.absLook;
+    this.isRun = data.isRun;
+    this.isBlock = data.isBlock;
   }
   onParams(data) {
     Object.assign(this, data);

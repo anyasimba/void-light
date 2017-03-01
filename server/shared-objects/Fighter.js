@@ -11,6 +11,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       look: this.look,
       absLook: this.absLook,
 
+      isRun: this.isRun,
+      isBlock: this.isBlock,
+
       kind: this.kind,
       size: this.size,
       scale: this.scale,
@@ -19,6 +22,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       hitSpeed: this.hitSpeed,
 
       ACC: this.ACC,
+      RUN_ACC: this.RUN_ACC,
       AIR_FRICTION: this.AIR_FRICTION,
       FRICTION: this.FRICTION,
 
@@ -39,6 +43,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       inputMove: this.inputMove,
       look: this.look,
       absLook: this.absLook,
+
+      isRun: this.isRun,
+      isBlock: this.isBlock,
     });
   }
   emitParams() {
@@ -69,6 +76,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       hitSpeed: opts.hitSpeed,
 
       ACC: opts.ACC || Fighter.ACC,
+      RUN_ACC: opts.RUN_ACC || Fighter.RUN_ACC,
       AIR_FRICTION: opts.AIR_FRICTION || Fighter.AIR_FRICTION,
       FRICTION: opts.FRICTION || Fighter.FRICTION,
 
@@ -269,7 +277,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       return;
     }
 
-
     const map = this.gameLevelZone.grid;
     const cx = Math.floor(this.pos.x / WALL_SIZE);
     const cy = Math.floor(this.pos.y / WALL_SIZE);
@@ -313,12 +320,30 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
     door.isOpened = true;
     delete map[cx][cy];
-    console.log('delete', cx, cy);
     const doors = this.findDoors(cx, cy);
     for (const k in doors) {
       const nextDoor = doors[k];
       this.openDoor(nextDoor);
     }
+  }
+
+  onKeyF() {
+    this.isRun = !this.isRun;
+    if (this.isRun) {
+      this.isBlock = false;
+    }
+    this.emitPos();
+  }
+  onKeyR() {
+    this.isBlock = !this.isBlock;
+    if (this.isBlock) {
+      this.isRun = false;
+    }
+    this.emitPos();
+  }
+  onKeyE() {
+    this.hp = Math.min(this.HP, this.hp + 50);
+    this.emitParams();
   }
 
   doRoll(data) {
@@ -329,7 +354,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       !this.stunTime;
 
     if (canRoll) {
-      if (this.inHit) {
+      if (this.inHit || this.isBlock) {
         this.useStamina(8, 0.8);
       } else {
         this.useStamina(4, 0.8);
@@ -359,7 +384,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       !this.stunTime;
 
     if (canJump) {
-      if (this.inHit) {
+      if (this.inHit || this.isBlock) {
         this.useStamina(16, 1.5);
       } else {
         this.useStamina(8, 1.5);

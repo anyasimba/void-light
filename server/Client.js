@@ -74,6 +74,10 @@ export class Client extends global.Client {
     this.on('jump', data => this.onEventJump(data));
     this.on('roll', data => this.onEventRoll(data));
     this.on('c', data => this.onEventC(data));
+    this.on('r', data => this.onEventR(data));
+    this.on('f', data => this.onEventF(data));
+    this.on('q', data => this.onEventQ(data));
+    this.on('e', data => this.onEventE(data));
   }
 
   /**
@@ -137,6 +141,38 @@ export class Client extends global.Client {
   onEventC(data) {
     try {
       this.player.onKeyC(data);
+    } catch (e) {
+      console.log(e, e.stack);
+      process.exit(1);
+    }
+  }
+  onEventR(data) {
+    try {
+      this.player.onKeyR(data);
+    } catch (e) {
+      console.log(e, e.stack);
+      process.exit(1);
+    }
+  }
+  onEventF(data) {
+    try {
+      this.player.onKeyF(data);
+    } catch (e) {
+      console.log(e, e.stack);
+      process.exit(1);
+    }
+  }
+  onEventQ(data) {
+    try {
+      this.player.onKeyQ(data);
+    } catch (e) {
+      console.log(e, e.stack);
+      process.exit(1);
+    }
+  }
+  onEventE(data) {
+    try {
+      this.player.onKeyE(data);
     } catch (e) {
       console.log(e, e.stack);
       process.exit(1);
