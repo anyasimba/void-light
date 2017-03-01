@@ -200,7 +200,7 @@ export class Client extends global.Client {
               false);
           }
         }
-        //await sleep(0);
+        await sleep(0);
       }
       console.log('done');
 
