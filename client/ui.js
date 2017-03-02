@@ -45,6 +45,7 @@ export function makeSuperMessage(text, color) {
   const group = new Phaser.Group(game);
 
   const textView = new Phaser.Text(game, 0, 0, text, {
+    font: 'Revalia',
     fontSize: 140,
     fill: color,
     boundsAlignH: 'center',
@@ -53,6 +54,7 @@ export function makeSuperMessage(text, color) {
   textView.setTextBounds(0, game.h * 0.5 - 100, game.w, 0);
   textView.alpha = 0.5;
   const textView2 = new Phaser.Text(game, 0, 0, text, {
+    font: 'Revalia',
     fontSize: 180,
     fill: color,
     boundsAlignH: 'center',

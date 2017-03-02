@@ -17,6 +17,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     const text = new Phaser.Text(
       game, 0, 0, lang, {
+        font: 'Revalia',
         fontSize: 26,
         fill: '#CCAAAA',
         stroke: '#111111',
@@ -167,6 +168,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     if (this.id === client.playerID) {
       client.player = this;
+
+      makeSuperMessage('все будет напрасно', '#2299FF');
     }
 
     this.moveTime = 0;

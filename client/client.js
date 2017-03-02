@@ -231,6 +231,10 @@ export class Client extends global.Client {
     });
   }
 
+  onOpenDoor() {
+    makeSuperMessage('ОТКРЫТО', '#2299FF');
+  }
+
   mainTheme() {
     game.bossBackSound.stop();
     game.youDiedSound.stop();

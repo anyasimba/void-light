@@ -347,6 +347,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     if (doors.length > 0) {
       this.openDoor(doors[0]);
       this.wait(5);
+      if (this.owner.emit) {
+        this.owner.emit('openDoor');
+      }
     }
   }
   findDoors(cx, cy) {
