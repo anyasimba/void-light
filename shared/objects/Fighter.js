@@ -4,23 +4,23 @@ export class Fighter {
   }
 
   static get ACC() {
-    return 1100;
+    return 1300;
   }
   static get RUN_ACC() {
     return 1600;
   }
   static get AIR_FRICTION() {
-    return 0.95;
+    return 0.955;
   }
   static get FRICTION() {
-    return 2200;
+    return 2500;
   }
 
   static get LOOK_ROTATE_F() {
-    return 0.95;
+    return 0.9;
   }
   static get LOOK_ROTATE_IN_HIT_F() {
-    return 0.98;
+    return 0.95;
   }
 
   static get BODY_SIZE() {
@@ -65,10 +65,15 @@ export class Fighter {
 
   update() {
     const move = this.inputMove.unit();
-    if (!this.inHit && !this.inJump && !this.inRoll && !this.stunTime) {
+    const canMove = !this.inHit &&
+      !this.inJump &&
+      !this.inRoll &&
+      !this.stunTime &&
+      !this.waitTime;
+    if (canMove) {
       if (this.isRun) {
         if (this.inputMove.length() > 0) {
-          this.stamina -= dt * 10;
+          this.stamina -= dt * 7;
           this.staminaTime = Math.max(this.staminaTime || 0, 0.05);
           if (this.stamina <= 0) {
             this.stamina = 0;
@@ -119,7 +124,8 @@ export class Fighter {
     }
     vec3.add(this.pos, this.speed.multiply(dt));
 
-    if ((!this.inJump && !this.inRoll && !this.stunTime) || this.inHit) {
+    if ((!this.inJump && !this.inRoll && !this.stunTime && !this.waitTime) ||
+      this.inHit) {
       let lookInput = this.inputMove;
       let lookF = Fighter.LOOK_ROTATE_F;
       if (this.absLook && !gameObjects[this.absLook]) {
@@ -152,7 +158,7 @@ export class Fighter {
         delete this.staminaTime;
       }
     } else {
-      this.stamina = Math.min(this.STAMINA, this.stamina + dt * 50);
+      this.stamina = Math.min(this.STAMINA, this.stamina + dt * 30);
     }
     if (this.inRoll) {
       this.inRoll.time += dt;
@@ -209,6 +215,26 @@ export class Fighter {
             }
           }
         }
+      }
+    }
+    if (this.waitTime) {
+      if (!this.inWait) {
+        this.inWait = true;
+        delete this.needNextHit;
+
+        this.clearSteps();
+        const hands = this.hands;
+        for (const k in hands) {
+          const hand = hands[k];
+          if (hand) {
+            hand.finalStage(0.2, easing.easeInOutCubic);
+          }
+        }
+      }
+      this.waitTime -= dt;
+      if (this.waitTime <= 0) {
+        delete this.waitTime;
+        delete this.inWait;
       }
     }
 

@@ -33,7 +33,7 @@ export class Item extends mix(global.Item, MixGameObject) {
 
 export const weapon__sword__default = new class {
   createView(isHost, kind) {
-    let color = 0xAA3300;
+    let color = 0xFFFFFF;
     if (isHost) {
       color = 0xFFFFFF;
     } else if (kind === 'player') {
@@ -44,6 +44,7 @@ export const weapon__sword__default = new class {
     image.scale.y = 1.2;
     image.anchor.x = 0.5;
     image.anchor.y = 0.8;
+    image.tint = color;
     image.smoothed = true;
     return image;
   }
@@ -101,7 +102,7 @@ export const weapon__sword__default = new class {
 
 export const shield__default__default = new class {
   createView(isHost, kind) {
-    let color = 0xAA3300;
+    let color = 0xFFFFFF;
     if (isHost) {
       color = 0xFFFFFF;
     } else if (kind === 'player') {

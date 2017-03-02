@@ -16,6 +16,8 @@ export const stage1__mob1 = {
   JUMP_TIME: [10, 15],
 
   FIGHTER: {
+    LANG_RU: 'Обыденный грех',
+
     name: 'stage1__mob1',
 
     hitSpeed: 2.5,
@@ -84,6 +86,7 @@ export const stage1__mob2 = {
   JUMP_TIME: [10, 15],
 
   FIGHTER: {
+    LANG_RU: 'Высосанный',
     name: 'stage1__mob2',
 
     hitSpeed: 1.8,
@@ -119,6 +122,8 @@ export const stage1__mob2 = {
 };
 //
 export const stage1__boss1 = {
+  IS_BOSS: true,
+
   AGRO_D: 16,
   RUN_D: 50,
   HIT_D: [50, 250],
@@ -136,6 +141,7 @@ export const stage1__boss1 = {
   JUMP_TIME: [10, 15],
 
   FIGHTER: {
+    LANG_RU: 'Истяженная оболочка',
     name: 'stage1__boss1',
 
     hitSpeed: 2,

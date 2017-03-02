@@ -5,6 +5,8 @@ preMain(async() => {
 export class Fighter extends mix(global.Fighter, MixGameObject) {
   get state() {
     return {
+      lang: this.lang,
+
       pos: this.pos,
       speed: this.speed,
       inputMove: this.inputMove,
@@ -70,6 +72,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
 
     super({
+      lang: opts.LANG_RU,
+
       pos: new vec3,
       speed: new vec3,
       inputMove: new vec3,
@@ -111,6 +115,15 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
   }
   reborn() {
+    this.clearSteps();
+    delete this.stunTime;
+    delete this.inStun;
+    delete this.waitTime;
+    delete this.inWait;
+
+    this.finishHit();
+    delete this.needNextHit;
+
     this.balance = this.BALANCE;
     this.hp = this.HP;
     this.mp = this.MP;
@@ -119,26 +132,35 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.speed.x = 0;
     this.speed.y = 0;
 
+    delete this.area;
+
     for (const k in this.children) {
       const child = this.children[k];
       if (child.reborn) {
         child.reborn();
       }
     }
+
+    if (!this.isAlive) {
+      this.isAlive = true;
+      this.owner.gameLevelZone.addObject(this);
+    }
   }
   onDie() {
+    delete this.isAlive;
     this.finishHit();
     this.clearSteps();
     this.emitPos();
     this.emitAll('die', {});
     this.owner.onDie();
+    this.owner.gameLevelZone.removeObject(this);
   }
 
   doHit(opts) {
     if (this.stamina <= 0) {
       return;
     }
-    if (this.stunTime) {
+    if (this.stunTime || this.waitTime) {
       return;
     }
     if (this.inHit && this.isCanNextHit) {
@@ -209,12 +231,36 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
   stun(time) {
     if (this.stunTime === undefined) {
+      if (this.waitTime) {
+        delete this.waitTime;
+        delete this.inWait;
+      }
+      if (this.inHit) {
+        this.breakHit();
+      }
+      this.clearSteps();
       this.stunTime = time;
       this.emitPos();
       this.emitAll('stun', {
         time: time,
       });
     }
+  }
+  wait(time) {
+    if (this.stunTime) {
+      delete this.stunTime;
+      delete this.inStun;
+    }
+    delete this.inWait;
+    if (this.inHit) {
+      this.breakHit();
+    }
+    this.clearSteps();
+    this.waitTime = Math.max(this.waitTime || 0, time);
+    this.emitPos();
+    this.emitAll('wait', {
+      time: time,
+    });
   }
   addImpulse(v) {
     if (this.inHit) {
@@ -300,6 +346,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     const doors = this.findDoors(cx, cy);
     if (doors.length > 0) {
       this.openDoor(doors[0]);
+      this.wait(5);
     }
   }
   findDoors(cx, cy) {
@@ -368,7 +415,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       !this.inRoll &&
       !this.afterRollTime &&
       this.speed.length() > 0 &&
-      !this.stunTime;
+      !this.stunTime &&
+      !this.waitTime;
 
     if (canRoll) {
       if (this.inHit || this.isBlock) {
@@ -380,8 +428,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       const rollData = {
         duration: 0.6,
         afterTime: 0.4,
-        force: 700,
-        forceInJump: 800,
+        force: 800,
+        forceInJump: 900,
       };
       if (this.inHit && this.hitStage !== 1) {
         rollData.force = 500;
@@ -398,7 +446,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       !this.inRoll &&
       !this.afterJumpTime &&
       this.speed.length() > 200 &&
-      !this.stunTime;
+      !this.stunTime &&
+      !this.waitTime;
 
     if (canJump) {
       if (this.inHit || this.isBlock) {

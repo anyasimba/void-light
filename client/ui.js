@@ -40,3 +40,51 @@ export function initUI() {
     };
   });
 }
+
+export function makeSuperMessage(text, color) {
+  const group = new Phaser.Group(game);
+
+  const textView = new Phaser.Text(game, 0, 0, text, {
+    fontSize: 140,
+    fill: color,
+    boundsAlignH: 'center',
+    boundsAlignV: 'center',
+  });
+  textView.setTextBounds(0, game.h * 0.5 - 100, game.w, 0);
+  textView.alpha = 0.5;
+  const textView2 = new Phaser.Text(game, 0, 0, text, {
+    fontSize: 180,
+    fill: color,
+    boundsAlignH: 'center',
+    boundsAlignV: 'center',
+  });
+  textView2.setTextBounds(0, game.h * 0.5 - 100, game.w, 0);
+  textView2.alpha = 0.4;
+
+  const inner = new Phaser.Graphics(game, 0, game.h * 0.5 - 200);
+  inner.beginFill(0x000000, 0.8);
+  inner.drawRect(0, 0, game.w, 400);
+  inner.endFill();
+
+  let time = 0;
+  group.update = () => {
+    textView2.blendMode = PIXI.blendModes.ADD;
+    textView2.scale.x = 1.05;
+    textView2.scale.y = 1.05;
+    textView2.x = textView.x - 180 + time * 40;
+    textView2.y = textView.y - 60;
+    time += dt / 3;
+    group.alpha = time;
+    if (time >= 1) {
+      group.alpha = 2 - time;
+    }
+    if (time >= 2) {
+      group.destroy();
+    }
+  };
+
+  group.add(inner);
+  group.add(textView);
+  group.add(textView2);
+  game.ui.add(group);
+}

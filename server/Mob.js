@@ -44,10 +44,7 @@ export class Mob {
 
     this.fighter.reborn();
 
-    if (!this.isAlive) {
-      this.isAlive = true;
-      this.gameLevelZone.addObject(this.fighter);
-    }
+    this.fighter.area = this.area;
   }
 
   genGrid(x, y) {
@@ -153,30 +150,44 @@ export class Mob {
       delete this.onWay;
       return;
     }
-    if (this.target || this.pathMap[x][y] <= this.opts.AGRO_D) {
-      this.target = player;
-      this.fighter.absLook = this.target.id;
-      this.fighter.emitPos();
-      this.path = [];
-      delete this.onWay;
+    if (this.target === player || this.pathMap[x][y] <= this.opts.AGRO_D) {
+      const setTarget = () => {
+        if (this.opts.IS_BOSS && player.area !== this.area) {
+          return;
+        }
+        this.target = player;
+        this.fighter.absLook = this.target.id;
+        this.fighter.emitPos();
+        this.path = [];
+        delete this.onWay;
 
-      let p = {
-        x: x,
-        y: y
+        let p = {
+          x: x,
+          y: y
+        };
+        while (true) {
+          this.path.push(p);
+          x = p.x;
+          y = p.y;
+
+          p = this.getNextPoint(x, y);
+          if (!p) {
+            break;
+          }
+          if (Math.abs(p.x - tx) + Math.abs(p.y - ty) <= 2) {
+            this.onWay = true;
+            break;
+          }
+        }
       };
-      while (true) {
-        this.path.push(p);
-        x = p.x;
-        y = p.y;
-
-        p = this.getNextPoint(x, y);
-        if (!p) {
-          break;
+      if (this.target) {
+        const d1 = this.target.pos.subtract(this.fighter.pos).length();
+        const d2 = player.pos.subtract(this.fighter.pos).length();
+        if (d2 < d1) {
+          setTarget();
         }
-        if (Math.abs(p.x - tx) + Math.abs(p.y - ty) <= 2) {
-          this.onWay = true;
-          break;
-        }
+      } else {
+        setTarget();
       }
     }
   }
@@ -358,7 +369,7 @@ export class Mob {
       }
     }
     if (this.actTime !== undefined) {
-      this.actTime -= dt * 6;
+      this.actTime -= dt * 30;
       if (this.actTime <= 0) {
         this.lastAct = this.act;
         delete this.actTime;
@@ -419,7 +430,16 @@ export class Mob {
   }
 
   onDie() {
-    this.gameLevelZone.removeObject(this.fighter);
-    delete this.isAlive;
+    if (this.area) {
+      const clients = this.gameLevelZone.clients;
+      for (const k in clients) {
+        const client = clients[k];
+        if (client.player && client.player.area === this.area) {
+          delete client.player.area;
+          client.emit('bossDead', {});
+        }
+      }
+      this.gameLevelZone.restartTime = 6;
+    }
   }
 }

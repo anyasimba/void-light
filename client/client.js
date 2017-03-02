@@ -118,8 +118,8 @@ export class Client extends global.Client {
   onPlayerID(data) {
     this.playerID = data.playerID;
   }
-  onDie(data) {
-    game.backSound.restart('', 0, 0.5, true);
+  onRestart(data) {
+    this.mainTheme();
     game.deads.removeAll();
     game.texts.removeAll();
   }
@@ -229,5 +229,30 @@ export class Client extends global.Client {
 
       bricksView.destroy();
     });
+  }
+
+  mainTheme() {
+    game.bossBackSound.stop();
+    game.youDiedSound.stop();
+    game.backSound.restart('', 0, 0.5, true);
+  }
+  bossTheme() {
+    game.backSound.stop();
+    game.youDiedSound.stop();
+    game.bossBackSound.restart('', 0, 1, true);
+  }
+  diedTheme() {
+    game.backSound.stop();
+    game.bossBackSound.stop();
+    game.youDiedSound.play('', 0, 1, false);
+  }
+  onBossArea() {
+    game.bossAreaSound.play();
+    this.bossTheme();
+  }
+  onBossDead() {
+    game.bossDeadSound.play();
+    this.mainTheme();
+    makeSuperMessage('ПОБЕДА', '#FFFF22');
   }
 }

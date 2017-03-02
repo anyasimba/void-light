@@ -7,6 +7,7 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
     state.bottomGroup = new Phaser.Group(game);
     state.middleGroup = new Phaser.Group(game);
     state.topGroup = new Phaser.Group(game);
+    state.infoGroup = new Phaser.Group(game);
     state.group = new Phaser.Group(game);
 
     super(data.id, state, ...args);
@@ -17,6 +18,7 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
       this.group.add(this.middleGroup);
       this.group.add(this.topGroup);
       this.parent.middleGroup.add(this.group);
+      this.parent.infoGroup.add(this.infoGroup);
     } else {
       this.group.update = () => {
         this.update();
@@ -35,11 +37,14 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
           g.angle = this.group.angle;
           g.setAll('tint', this.group.tint);
         }
+        this.infoGroup.x = this.group.x;
+        this.infoGroup.y = this.group.y;
       }
 
       game.bottom.add(this.bottomGroup);
       game.middle.add(this.middleGroup);
       game.top.add(this.topGroup);
+      game.info.add(this.infoGroup);
     }
   }
   update() {
@@ -68,10 +73,12 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
 
     if (this.parent) {
       this.parent.middleGroup.remove(this.group);
+      this.parent.infoGroup.remove(this.infoGroup);
     } else {
       game.bottom.remove(this.bottomGroup);
       game.middle.remove(this.middleGroup);
       game.top.remove(this.topGroup);
+      game.info.remove(this.infoGroup);
     }
   }
 }

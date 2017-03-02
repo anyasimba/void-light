@@ -49,6 +49,9 @@ export const game = new Phaser.Game(
 
       game.load.audio('back',
         'assets/back__doxent_-_Forgotten_Land.mp3');
+      game.load.audio('bossBack',
+        'assets/bossBack__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.mp3');
+
       game.load.audio('boss',
         'assets/boss__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.mp3');
       game.load.audio('hit',
@@ -75,6 +78,13 @@ export const game = new Phaser.Game(
 
       game.load.audio('mob1Die',
         'assets/mob1Die__76964__michel88__grunt2.mp3');
+      game.load.audio('youDied',
+        'assets/youDied__onlymeith_-_Quiet_Rain.mp3');
+
+      game.load.audio('bossArea',
+        'assets/bossArea__377887__debsound__monster-072.mp3');
+      game.load.audio('bossDead',
+        'assets/bossDead__56304__syna-max__monster-death-scream.mp3');
 
       game.stage.backgroundColor = 0x101010;
 
@@ -121,6 +131,8 @@ export const game = new Phaser.Game(
         }
 
         const s = Math.min(w / 2560, h / 1440);
+        game.w = game.width / s;
+        game.h = game.height / s;
         game.scene.scale.set(s);
         game.scaleFactor = s;
       }
@@ -148,13 +160,21 @@ export const game = new Phaser.Game(
       game.middle = game.scene.add(new Phaser.Group(game));
       game.top = game.scene.add(new Phaser.Group(game));
       game.walls = game.scene.add(new Phaser.Group(game));
+      game.info = game.scene.add(new Phaser.Group(game));
       game.texts = game.scene.add(new Phaser.Group(game));
+      game.textEvents1 = game.scene.add(new Phaser.Group(game));
+      game.textEvents2 = game.scene.add(new Phaser.Group(game));
 
       game.ui = game.scene.add(new Phaser.Group(game));
       initUI();
 
       game.backSound = game.add.sound('back', 0.5, true);
       game.backSound.play();
+      game.bossBackSound = game.add.sound('bossBack', 1, true);
+      game.youDiedSound = game.add.sound('youDied', 1, false);
+
+      game.bossAreaSound = game.add.sound('bossArea', 1, false);
+      game.bossDeadSound = game.add.sound('bossDead', 1, false);
 
       isCreated = true;
     },

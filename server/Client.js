@@ -18,7 +18,7 @@ export class Client extends global.Client {
       kind: 'player',
 
       hitSpeed: 1,
-      DAMAGE: 40,
+      DAMAGE: 400,
 
       BALANCE: 10,
       HP: 100,
@@ -32,10 +32,11 @@ export class Client extends global.Client {
       playerID: this.player.id,
     });
 
-    gameLevelZone.addClient(this);
+    this.gameLevelZone = gameLevelZone;
+    this.gameLevelZone.addClient(this);
 
     this.emit('map', {
-      name: gameLevelZone.mapName,
+      name: this.gameLevelZone.mapName,
     });
 
     this.registerEvents();
@@ -63,10 +64,7 @@ export class Client extends global.Client {
   }
 
   onDie() {
-    this.emit('die', {});
-    this.run(() => {
-      this.player.gameLevelZone.restart();
-    });
+    this.gameLevelZone.restartTime = 6;
   }
 
   registerEvents() {
