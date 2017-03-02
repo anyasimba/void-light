@@ -64,7 +64,17 @@ export class Client extends global.Client {
   }
 
   onDie() {
-    this.gameLevelZone.restartTime = 6;
+    if (!this.player.invade) {
+      this.gameLevelZone.restartTime = 6;
+    } else {
+      delete this.player.invade;
+      this.gameLevelZone.rebornPlayer(this.player);
+      this.player.isAlive = true;
+      this.player.reborn();
+      this.emit('restart', {});
+      this.player.emitParams();
+      this.player.emitPos();
+    }
   }
 
   registerEvents() {
@@ -77,6 +87,7 @@ export class Client extends global.Client {
     this.on('f', data => this.onEventF(data));
     this.on('q', data => this.onEventQ(data));
     this.on('e', data => this.onEventE(data));
+    this.on('h', data => this.onEventH(data));
   }
 
   /**
@@ -172,6 +183,14 @@ export class Client extends global.Client {
   onEventE(data) {
     try {
       this.player.onKeyE(data);
+    } catch (e) {
+      console.log(e, e.stack);
+      process.exit(1);
+    }
+  }
+  onEventH(data) {
+    try {
+      this.player.onKeyH(data);
     } catch (e) {
       console.log(e, e.stack);
       process.exit(1);

@@ -19,7 +19,8 @@ Object.assign(GameLevelZone.prototype, {
     if (other.inRoll && !other.inHit) {
       return;
     }
-    if (source.kind === other.kind) {
+    const isInvade = source.invade || other.invade;
+    if (source.kind === other.kind && !isInvade) {
       return;
     }
 

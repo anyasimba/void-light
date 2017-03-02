@@ -61,6 +61,10 @@ export class Client extends global.Client {
       .onDown.add(() => {
         this.emit('e', {});
       });
+    game.input.keyboard.addKey(Phaser.Keyboard.H)
+      .onDown.add(() => {
+        this.emit('h', {});
+      });
 
     game.input.onDown.add(() => {
       this.emit('mouseDown', {

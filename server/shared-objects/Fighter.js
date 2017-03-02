@@ -153,7 +153,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.emitPos();
     this.emitAll('die', {});
     this.owner.onDie();
-    this.owner.gameLevelZone.removeObject(this);
+    if (!this.isAlive) {
+      this.owner.gameLevelZone.removeObject(this);
+    }
   }
 
   doHit(opts) {
@@ -408,9 +410,14 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
     this.emitPos();
   }
+  onKeyQ() {}
   onKeyE() {
     this.hp = Math.min(this.HP, this.hp + 50);
     this.emitParams();
+  }
+  onKeyH() {
+    this.invade = true;
+    this.emitAll('invade', {});
   }
 
   doRoll(data) {

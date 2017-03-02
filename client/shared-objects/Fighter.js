@@ -300,7 +300,28 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
   }
 
+  onInvade(data) {
+    this.invade = true;
+    if (this.id !== client.playerID) {
+      makeSuperMessage('ВТОРЖЕНИЕ', '#FF7700');
+      this.baseTint = 0xFF8811;
+      this.color = HEXtoRGB(this.baseTint);
+      this.group.tint = this.baseTint;
+      this.weapon.view.tint = 0xFF7700;
+      this.shield.view.tint = 0xFF7700;
+    } else {
+      makeSuperMessage('ВЫ ВТОРГАЕТЕСЬ', '#FF7700');
+    }
+  }
+
   onDie() {
+    if (this.id !== client.playerID) {
+      this.baseTint = 0x88FF33;
+      this.color = HEXtoRGB(this.baseTint);
+      this.group.tint = this.baseTint;
+      this.weapon.view.tint = 0x55FF00;
+      this.shield.view.tint = 0x55FF00;
+    }
     this.speed.init();
     this.inputMove.init();
     delete this.stunTime;
@@ -315,7 +336,11 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       client.diedTheme();
       makeSuperMessage('ВЫ ПОГИБЛИ', '#991100');
     } else if (this.kind === 'player') {
-      makeSuperMessage('СОЮЗНИК ПОГИБ', '#991100');
+      if (this.invade) {
+        makeSuperMessage('ВТОРЖЕНИЕ ЗАВЕРШЕНО', '#991100');
+      } else {
+        makeSuperMessage('СОЮЗНИК ПОГИБ', '#991100');
+      }
     }
 
     const group = new Phaser.Group(game);
