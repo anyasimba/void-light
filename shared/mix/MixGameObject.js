@@ -55,22 +55,8 @@ export const MixGameObject = base => class extends base {
     this.animations = {};
   }
 
-  async waitAnimation(k) {
-    return new Promise(async r => {
-      while (this.animations[k]) {
-        await sleep(0);
-      }
-      return r();
-    });
-  }
-
-  async animate(k, opts) {
+  animate(k, opts) {
     this.animations[k] = opts;
-    return await this.waitAnimation(k);
-  }
-
-  async sleep(time) {
-    return await sleep(time * 1000 / this.calcTimeSpeed());
   }
 
   calcTimeSpeed() {

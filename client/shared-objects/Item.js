@@ -13,6 +13,9 @@ export class Item extends mix(global.Item, MixGameObject) {
   }
 
   update() {
+    if (!this.parent.visible) {
+      return;
+    }
     super.update();
     this.opts.update.call(this);
 

@@ -168,6 +168,10 @@ export const game = new Phaser.Game(
       game.ui = game.scene.add(new Phaser.Group(game));
       initUI();
 
+      //   game.bottom.visible = false;
+      //   game.middle.visible = false;
+      //   game.top.visible = false;
+
       game.backSound = game.add.sound('back', 0.5, true);
       game.backSound.play();
       game.bossBackSound = game.add.sound('bossBack', 1, true);
@@ -181,6 +185,108 @@ export const game = new Phaser.Game(
     update() {
       if (!isCreated) {
         return;
+      }
+
+      if (client.needLoadMap) {
+        delete client.needLoadMap;
+
+        client.w = client.map.width * WALL_SIZE;
+        client.h = client.map.height * WALL_SIZE;
+
+        const ground = client.map.layers[0];
+        const grid = [];
+        for (let y = 0; y < client.map.height; ++y) {
+          for (let x = 0; x < client.map.width; ++x) {
+            const i = y * client.map.width + x;
+            const v = ground.data[i];
+            const slug = mapIDs[v];
+            if (slug) {
+              grid[x] = grid[x] || [];
+              grid[x][y] = slug;
+            }
+          }
+        }
+
+        const ts = WALL_SIZE * 20;
+        const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
+        const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
+        const textures = [];
+
+        for (let x = 0; x < xn; ++x) {
+          for (let y = 0; y < yn; ++y) {
+            const tex = new Phaser.RenderTexture(
+              game, ts, ts, null, null, 1);
+
+            textures[x] = textures[x] || [];
+            textures[x][y] = tex;
+          }
+        }
+
+        const bricksView = new Phaser.TileSprite(
+          game, 0, 0, WALL_SIZE, WALL_SIZE, 'bricks');
+        const doorView = new Phaser.TileSprite(
+          game, 0, 0, WALL_SIZE, WALL_SIZE, 'door');
+
+        console.log('loading map...');
+        for (let y = 0; y < client.map.height; ++y) {
+          for (let x = 0; x < client.map.width; ++x) {
+            const i = y * client.map.width + x;
+            const v = ground.data[i];
+            const slug = mapIDs[v];
+
+            let view;
+            switch (slug) {
+              case 'wall':
+                view = bricksView;
+                break;
+              case 'door':
+                view = doorView;
+                break;
+              default:
+            }
+            if (view) {
+              const f = 1;
+              view.tilePosition.x = -x * WALL_SIZE / f;
+              view.tilePosition.y = -y * WALL_SIZE / f;
+              view.tileScale.x = f;
+              view.tileScale.y = f;
+
+              const cx = Math.floor(x * WALL_SIZE / ts);
+              const cy = Math.floor(y * WALL_SIZE / ts);
+              textures[cx][cy].renderXY(
+                view,
+                x * WALL_SIZE - cx * ts,
+                y * WALL_SIZE - cy * ts,
+                false);
+            }
+          }
+        }
+        console.log('done', xn * yn);
+
+        for (let x = 0; x < xn; ++x) {
+          for (let y = 0; y < yn; ++y) {
+            const sprite = new Phaser.Sprite(
+              game, x * ts, y * ts,
+              textures[x][y]);
+            sprite.visible = false;
+            sprite.update = () => {
+              if (global.client && global.client.player) {
+                const cx = sprite.x + ts * 0.5;
+                const cy = sprite.y + ts * 0.5;
+                const dx = Math.abs(cx - client.player.pos.x);
+                const dy = Math.abs(cy - client.player.pos.y);
+                if (dx < ts * 1.5 && dy < ts) {
+                  sprite.visible = true;
+                } else {
+                  sprite.visible = false;
+                }
+              }
+            };
+            game.walls.add(sprite);
+          }
+        }
+
+        bricksView.destroy();
       }
 
       global.mx = (game.input.x - game.scene.x) / game.scaleFactor;

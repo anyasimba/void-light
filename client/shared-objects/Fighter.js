@@ -331,6 +331,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     } else if (this.kind === 'player') {
       if (this.invade) {
         makeSuperMessage('ВТОРЖЕНИЕ ЗАВЕРШЕНО', '#991100');
+      } else if (client.player.invade) {
+        makeSuperMessage('ВТОРЖЕНИЕ ЗАВЕРШЕНО', '#991100');
       } else {
         makeSuperMessage('СОЮЗНИК ПОГИБ', '#991100');
       }
@@ -379,15 +381,31 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
 
   update() {
-    super.update();
-
     const sideVec = new vec3(this.look.y, -this.look.x, this.look.z).unit();
+
+    this.moveTime += this.speed.length() * dt * 0.01;
+    this.moveShift = Math.sin(this.moveTime) *
+      (this.speed.length() + 100) / (this.speed.length() + 200);
+    if (this.inJump || this.inRoll) {
+      this.moveShift = 0;
+    }
+    if (this.kind === 'mob') {
+      this.moveTime += this.speed.length() * dt * 0.01;
+      this.moveShift *= 2;
+    }
 
     this.group.x = this.pos.x + sideVec.x * this.moveShift * 3;
     this.group.y = this.pos.y + sideVec.y * this.moveShift * 3;
     this.group.angle = this.look.toAngle();
     this.group.scale.x = this.scale;
     this.group.scale.y = this.scale;
+
+    super.update();
+
+    if (!this.visible) {
+      return;
+    }
+
     if (this.inJump) {
       const f = Math.sin(
         (this.inJump.time / this.inJump.duration) * Math.PI) * 0.2;
@@ -406,17 +424,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         this.views[0].alpha = 0;
         this.views[1].alpha = 1;
       }
-    }
-
-    this.moveTime += this.speed.length() * dt * 0.01;
-    this.moveShift = Math.sin(this.moveTime) *
-      (this.speed.length() + 100) / (this.speed.length() + 200);
-    if (this.inJump || this.inRoll) {
-      this.moveShift = 0;
-    }
-    if (this.kind === 'mob') {
-      this.moveTime += this.speed.length() * dt * 0.01;
-      this.moveShift *= 2;
     }
 
     if (this.inStun) {

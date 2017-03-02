@@ -67,13 +67,14 @@ export class Client extends global.Client {
     if (!this.player.invade) {
       this.gameLevelZone.restartTime = 6;
     } else {
-      delete this.player.invade;
-      this.gameLevelZone.rebornPlayer(this.player);
-      this.player.isAlive = true;
-      this.player.reborn();
-      this.emit('restart', {});
-      this.player.emitParams();
-      this.player.emitPos();
+      setTimeout(() => {
+        delete this.player.invade;
+        this.gameLevelZone.rebornPlayer(this.player);
+        this.player.reborn();
+        this.emit('restart', {});
+        this.player.emitParams();
+        this.player.emitPos();
+      }, 6000);
     }
   }
 

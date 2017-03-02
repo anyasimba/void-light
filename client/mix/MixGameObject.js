@@ -1,6 +1,10 @@
+export let objectsNum = 0;
+
 const MixGameObjectBase = global.MixGameObject;
 export const MixGameObject = base => class extends mix(base, MixGameObjectBase) {
   constructor(data, state, ...args) {
+    ++global.objectsNum;
+
     if (data.parentID) {
       state.parent = gameObjects[data.parentID];
     }
@@ -57,18 +61,24 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
       const cy = this.group.y;
       const dx = Math.abs(cx - client.player.pos.x);
       const dy = Math.abs(cy - client.player.pos.y);
-      if (dx < ts * 2 && dy < ts) {
+      if (dx < ts * 1.5 && dy < ts) {
+        this.visible = true;
         this.bottomGroup.visible = true;
         this.middleGroup.visible = true;
         this.topGroup.visible = true;
+        this.infoGroup.visible = true;
       } else {
+        this.visible = false;
         this.bottomGroup.visible = false;
         this.middleGroup.visible = false;
         this.topGroup.visible = false;
+        this.infoGroup.visible = false;
       }
     }
   }
   destructor() {
+    --global.objectsNum;
+
     super.destructor();
 
     if (this.parent) {

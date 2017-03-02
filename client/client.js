@@ -94,7 +94,8 @@ export class Client extends global.Client {
     let name = packet.data[0];
 
     if (name === 'new') {
-      return new global[packet.data[1]['class']](packet.data[1]);
+      const className = packet.data[1]['class'];
+      return new global[className](packet.data[1]);
     }
     if (name === 'delete') {
       const object = gameObjects[id];
@@ -127,112 +128,13 @@ export class Client extends global.Client {
     game.deads.removeAll();
     game.texts.removeAll();
   }
-  onMap(data) {
-    run(async() => {
-      this.mapName = data.name;
+  async onMap(data) {
+    this.mapName = data.name;
 
-      const mapData = await httpGet('maps/' + this.mapName + '.json');
-      this.map = JSON.parse(mapData);
+    const mapData = await httpGet('maps/' + this.mapName + '.json');
+    this.map = JSON.parse(mapData);
 
-      this.w = this.map.width * WALL_SIZE;
-      this.h = this.map.height * WALL_SIZE;
-
-      const ground = this.map.layers[0];
-      const grid = [];
-      for (let y = 0; y < this.map.height; ++y) {
-        for (let x = 0; x < this.map.width; ++x) {
-          const i = y * this.map.width + x;
-          const v = ground.data[i];
-          const slug = mapIDs[v];
-          if (slug) {
-            grid[x] = grid[x] || [];
-            grid[x][y] = slug;
-          }
-        }
-      }
-
-      const ts = WALL_SIZE * 20;
-      const xn = Math.ceil(this.map.width * WALL_SIZE / ts);
-      const yn = Math.ceil(this.map.height * WALL_SIZE / ts);
-      const textures = [];
-
-      for (let x = 0; x < xn; ++x) {
-        for (let y = 0; y < yn; ++y) {
-          const tex = new Phaser.RenderTexture(
-            game, ts, ts, null, null, 1);
-
-          textures[x] = textures[x] || [];
-          textures[x][y] = tex;
-        }
-      }
-
-      const bricksView = new Phaser.TileSprite(
-        game, 0, 0, WALL_SIZE, WALL_SIZE, 'bricks');
-      const doorView = new Phaser.TileSprite(
-        game, 0, 0, WALL_SIZE, WALL_SIZE, 'door');
-
-      console.log('loading map...');
-      for (let y = 0; y < this.map.height; ++y) {
-        for (let x = 0; x < this.map.width; ++x) {
-          const i = y * this.map.width + x;
-          const v = ground.data[i];
-          const slug = mapIDs[v];
-
-          let view;
-          switch (slug) {
-            case 'wall':
-              view = bricksView;
-              break;
-            case 'door':
-              view = doorView;
-              break;
-            default:
-          }
-          if (view) {
-            const f = 1;
-            view.tilePosition.x = -x * WALL_SIZE / f;
-            view.tilePosition.y = -y * WALL_SIZE / f;
-            view.tileScale.x = f;
-            view.tileScale.y = f;
-
-            const cx = Math.floor(x * WALL_SIZE / ts);
-            const cy = Math.floor(y * WALL_SIZE / ts);
-            textures[cx][cy].renderXY(
-              view,
-              x * WALL_SIZE - cx * ts,
-              y * WALL_SIZE - cy * ts,
-              false);
-          }
-        }
-        await sleep(0);
-      }
-      console.log('done');
-
-      for (let x = 0; x < xn; ++x) {
-        for (let y = 0; y < yn; ++y) {
-          const sprite = new Phaser.Sprite(
-            game, x * ts, y * ts,
-            textures[x][y]);
-          sprite.visible = false;
-          sprite.update = () => {
-            if (global.client && global.client.player) {
-              const cx = sprite.x + ts * 0.5;
-              const cy = sprite.y + ts * 0.5;
-              const dx = Math.abs(cx - client.player.pos.x);
-              const dy = Math.abs(cy - client.player.pos.y);
-              if (dx < ts * 2 && dy < ts) {
-                sprite.visible = true;
-              } else {
-                sprite.visible = false;
-              }
-            }
-          };
-          game.walls.add(sprite);
-        }
-      }
-
-      bricksView.destroy();
-    });
+    this.needLoadMap = true;
   }
 
   onOpenDoor() {
