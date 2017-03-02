@@ -79,7 +79,7 @@ export const game = new Phaser.Game(
       game.load.audio('mob1Die',
         'assets/mob1Die__76964__michel88__grunt2.mp3');
       game.load.audio('youDied',
-        'assets/youDied__onlymeith_-_Quiet_Rain.mp3');
+        'assets/youDied__onlymeith_-_Toward_Isolation.mp3');
 
       game.load.audio('bossArea',
         'assets/bossArea__377887__debsound__monster-072.mp3');

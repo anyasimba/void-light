@@ -18,7 +18,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     const text = new Phaser.Text(
       game, 0, 0, lang, {
         font: 'Revalia',
-        fontSize: 26,
+        fontSize: 32,
         fill: '#CCAAAA',
         stroke: '#111111',
         strokeThickness: 2,
