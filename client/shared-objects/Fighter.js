@@ -315,13 +315,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
 
   onDie() {
-    if (this.id !== client.playerID) {
-      this.baseTint = 0x88FF33;
-      this.color = HEXtoRGB(this.baseTint);
-      this.group.tint = this.baseTint;
-      this.weapon.view.tint = 0x55FF00;
-      this.shield.view.tint = 0x55FF00;
-    }
     this.speed.init();
     this.inputMove.init();
     delete this.stunTime;
@@ -375,6 +368,14 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       group.alpha = 1 - group.time / 60;
     };
     game.deads.add(group);
+
+    if (this.kind === 'player' && this.id !== client.playerID) {
+      this.baseTint = 0x88FF33;
+      this.color = HEXtoRGB(this.baseTint);
+      this.group.tint = this.baseTint;
+      this.weapon.view.tint = 0x55FF00;
+      this.shield.view.tint = 0x55FF00;
+    }
   }
 
   update() {
