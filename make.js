@@ -11,6 +11,8 @@ switch (goal) {
         runServer();
       });
     break;
+  case 'run':
+    runServer();
   default:
 }
 
