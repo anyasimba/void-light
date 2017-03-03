@@ -30,7 +30,7 @@ export const uiThemes = {
 let isCreated = false;
 let time;
 export const game = new Phaser.Game(
-  "100%", "100%", Phaser.AUTO, '', {
+  "100%", "100%", Phaser.CANVAS, '', {
     async preload() {
       game.load.image('shield', 'assets/shield.png');
       game.load.image('sword', 'assets/sword.png');
@@ -86,7 +86,7 @@ export const game = new Phaser.Game(
       game.load.audio('bossDead',
         'assets/bossDead__56304__syna-max__monster-death-scream.mp3');
 
-      game.stage.backgroundColor = 0x101010;
+      game.stage.backgroundColor = 0x000000;
 
       game.stage.disableVisibilityChange = true;
       game.time.advancedTiming = true;
@@ -126,9 +126,7 @@ export const game = new Phaser.Game(
         game.width = w;
         game.height = h;
 
-        if (game.renderType === Phaser.WEBGL) {
-          game.renderer.resize(w, h);
-        }
+        game.renderer.resize(w, h);
 
         const s = Math.min(w / 2560, h / 1440);
         game.w = game.width / s;
@@ -152,9 +150,6 @@ export const game = new Phaser.Game(
       global.client = new Client;
 
       game.ground = game.scene.add(new Phaser.Group(game));
-      game.ground.add(new Phaser.TileSprite(
-        game, -100000, -100000, 200000, 200000, 'ground'));
-
       game.deads = game.scene.add(new Phaser.Group(game));
       game.bottom = game.scene.add(new Phaser.Group(game));
       game.middle = game.scene.add(new Phaser.Group(game));
@@ -167,10 +162,6 @@ export const game = new Phaser.Game(
 
       game.ui = game.scene.add(new Phaser.Group(game));
       initUI();
-
-      //   game.bottom.visible = false;
-      //   game.middle.visible = false;
-      //   game.top.visible = false;
 
       game.backSound = game.add.sound('back', 0.5, true);
       game.backSound.play();
@@ -189,7 +180,6 @@ export const game = new Phaser.Game(
 
       if (client.needLoadMap) {
         delete client.needLoadMap;
-
         client.w = client.map.width * WALL_SIZE;
         client.h = client.map.height * WALL_SIZE;
 
@@ -207,7 +197,7 @@ export const game = new Phaser.Game(
           }
         }
 
-        const ts = WALL_SIZE * 20;
+        const ts = WALL_SIZE * 10;
         const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
         const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
         const textures = [];
@@ -263,6 +253,9 @@ export const game = new Phaser.Game(
         }
         console.log('done', xn * yn);
 
+        game.ground.add(new Phaser.TileSprite(
+          game, 0, 0, client.w, client.h, 'ground'));
+
         for (let x = 0; x < xn; ++x) {
           for (let y = 0; y < yn; ++y) {
             const sprite = new Phaser.Sprite(
@@ -275,7 +268,7 @@ export const game = new Phaser.Game(
                 const cy = sprite.y + ts * 0.5;
                 const dx = Math.abs(cx - client.player.pos.x);
                 const dy = Math.abs(cy - client.player.pos.y);
-                if (dx < ts * 1.5 && dy < ts) {
+                if (dx < ts * 2 && dy < ts * 1.5) {
                   sprite.visible = true;
                 } else {
                   sprite.visible = false;

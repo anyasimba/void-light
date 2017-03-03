@@ -56,12 +56,12 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
       super.update();
     }
     if (!this.parent && global.client && global.client.player) {
-      const ts = WALL_SIZE * 20;
+      const ts = WALL_SIZE * 10;
       const cx = this.group.x;
       const cy = this.group.y;
       const dx = Math.abs(cx - client.player.pos.x);
       const dy = Math.abs(cy - client.player.pos.y);
-      if (dx < ts * 1.5 && dy < ts) {
+      if (dx < ts * 2 && dy < ts * 1.5) {
         this.visible = true;
         this.bottomGroup.visible = true;
         this.middleGroup.visible = true;

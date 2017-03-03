@@ -4,10 +4,10 @@ export class Fighter {
   }
 
   static get ACC() {
-    return 1300;
+    return 1400;
   }
   static get RUN_ACC() {
-    return 1600;
+    return 1900;
   }
   static get AIR_FRICTION() {
     return 0.955;
@@ -271,7 +271,7 @@ export class Fighter {
 
   onRoll(data) {
     let input = this.inputMove;
-    if (this.inJump || this.inHit) {
+    if (this.inJump || this.inHit || this.speed.length() === 0) {
       input = this.look;
     }
     if (this.inJump) {
@@ -287,7 +287,11 @@ export class Fighter {
     this.look = this.speed.unit();
   }
   onJump(data) {
-    this.speed = this.speed.unit().multiply(data.force);
+    if (this.speed.length() === 0) {
+      this.speed = this.look.unit().multiply(data.force);
+    } else {
+      this.speed = this.speed.unit().multiply(data.force);
+    }
     this.inJump = {
       time: 0,
       duration: data.duration,

@@ -37,35 +37,18 @@ Object.assign(GameLevelZone.prototype, {
     const dx = object.pos.x - x;
     const dy = object.pos.y - y;
 
-    const imp = 0.5;
-
+    let hasCollision = false;
     if (Math.abs(dy) <= WALL_SIZE * 0.5) {
       if (dx > 0 && dx < bodyDX) {
-        object.pos.x = x + bodyDX;
-        const force = object.speed.length();
-        object.speed.x += force * imp;
-
-        object.emitPos();
+        hasCollision = true;
       } else if (dx < 0 && -dx < bodyDX) {
-        object.pos.x = x - bodyDX;
-        const force = object.speed.length();
-        object.speed.x -= force * imp;
-
-        object.emitPos();
+        hasCollision = true;
       }
     } else if (Math.abs(dx) <= WALL_SIZE * 0.5) {
       if (dy > 0 && dy < bodyDY) {
-        object.pos.y = y + bodyDY;
-        const force = object.speed.length();
-        object.speed.y += force * imp;
-
-        object.emitPos();
+        hasCollision = true;
       } else if (dy < 0 && -dy < bodyDY) {
-        object.pos.y = y - bodyDY;
-        const force = object.speed.length();
-        object.speed.y -= force * imp;
-
-        object.emitPos();
+        hasCollision = true;
       }
     }
 
@@ -81,67 +64,100 @@ Object.assign(GameLevelZone.prototype, {
 
     const d1 = Math.sqrt(dx1 + dy1);
     if (d1 < object.body.size * 0.5) {
-      const dx = (object.pos.x - x1) / d1;
-      const dy = (object.pos.y - y1) / d1;
-      object.pos.x = x1 + dx * object.body.size * 0.5;
-      object.pos.y = y1 + dy * object.body.size * 0.5;
-
-      const force = object.speed.length();
-      vec3.add(object.speed, {
-        x: dx * force * imp,
-        y: dy * force * imp,
-        z: 0,
-      });
-
-      object.emitPos();
+      hasCollision = true;
     }
     const d2 = Math.sqrt(dx1 + dy2);
     if (d2 < object.body.size * 0.5) {
-      const dx = (object.pos.x - x1) / d2;
-      const dy = (object.pos.y - y2) / d2;
-      object.pos.x = x1 + dx * object.body.size * 0.5;
-      object.pos.y = y2 + dy * object.body.size * 0.5;
-
-      const force = object.speed.length();
-      vec3.add(object.speed, {
-        x: dx * force * imp,
-        y: dy * force * imp,
-        z: 0,
-      });
-
-      object.emitPos();
+      hasCollision = true;
     }
     const d3 = Math.sqrt(dx2 + dy1);
     if (d3 < object.body.size * 0.5) {
-      const dx = (object.pos.x - x2) / d3;
-      const dy = (object.pos.y - y1) / d3;
-      object.pos.x = x2 + dx * object.body.size * 0.5;
-      object.pos.y = y1 + dy * object.body.size * 0.5;
-
-      const force = object.speed.length();
-      vec3.add(object.speed, {
-        x: dx * force * imp,
-        y: dy * force * imp,
-        z: 0,
-      });
-
-      object.emitPos();
+      hasCollision = true;
     }
     const d4 = Math.sqrt(dx2 + dy2);
     if (d4 < object.body.size * 0.5) {
-      const dx = (object.pos.x - x2) / d4;
-      const dy = (object.pos.y - y2) / d4;
-      object.pos.x = x2 + dx * object.body.size * 0.5;
-      object.pos.y = y2 + dy * object.body.size * 0.5;
+      hasCollision = true;
+    }
 
-      const force = object.speed.length();
-      vec3.add(object.speed, {
-        x: dx * force * imp,
-        y: dy * force * imp,
-        z: 0,
-      });
+    if (hasCollision) {
+      const dx = object.prevPos.x - x;
+      const dy = object.prevPos.y - y;
 
-      object.emitPos();
+      const imp = 0.5;
+      if (Math.abs(dy) <= WALL_SIZE * 0.5) {
+        if (dx > 0) {
+          object.pos.x = x + bodyDX;
+          object.speed.x = Math.abs(object.speed.x * imp);
+          object.emitPos();
+        } else {
+          object.pos.x = x - bodyDX;
+          object.speed.x = -Math.abs(object.speed.x * imp);
+          object.emitPos();
+        }
+      } else if (Math.abs(dx) <= WALL_SIZE * 0.5) {
+        if (dy > 0) {
+          object.pos.y = y + bodyDY;
+          object.speed.y = Math.abs(object.speed.y * imp);
+          object.emitPos();
+        } else {
+          object.pos.y = y - bodyDY;
+          object.speed.y = -Math.abs(object.speed.y * imp);
+          object.emitPos();
+        }
+      } else {
+        if (dx < 0 && dy < 0) {
+          const dx = (object.pos.x - x1) / d1;
+          const dy = (object.pos.y - y1) / d1;
+          object.pos.x = x1 + dx * object.body.size * 0.5;
+          object.pos.y = y1 + dy * object.body.size * 0.5;
+          const force = object.speed.length();
+          vec3.add(object.speed, {
+            x: dx * force * imp,
+            y: dy * force * imp,
+            z: 0,
+          });
+          object.emitPos();
+        }
+        if (dx < 0 && dy >= 0) {
+          const dx = (object.pos.x - x1) / d2;
+          const dy = (object.pos.y - y2) / d2;
+          object.pos.x = x1 + dx * object.body.size * 0.5;
+          object.pos.y = y2 + dy * object.body.size * 0.5;
+          const force = object.speed.length();
+          vec3.add(object.speed, {
+            x: dx * force * imp,
+            y: dy * force * imp,
+            z: 0,
+          });
+          object.emitPos();
+        }
+        if (dx >= 0 && dy < 0) {
+          const dx = (object.pos.x - x2) / d3;
+          const dy = (object.pos.y - y1) / d3;
+          object.pos.x = x2 + dx * object.body.size * 0.5;
+          object.pos.y = y1 + dy * object.body.size * 0.5;
+          const force = object.speed.length();
+          vec3.add(object.speed, {
+            x: dx * force * imp,
+            y: dy * force * imp,
+            z: 0,
+          });
+          object.emitPos();
+        }
+        if (dx >= 0 && dy >= 0) {
+          const dx = (object.pos.x - x2) / d4;
+          const dy = (object.pos.y - y2) / d4;
+          object.pos.x = x2 + dx * object.body.size * 0.5;
+          object.pos.y = y2 + dy * object.body.size * 0.5;
+          const force = object.speed.length();
+          vec3.add(object.speed, {
+            x: dx * force * imp,
+            y: dy * force * imp,
+            z: 0,
+          });
+          object.emitPos();
+        }
+      }
     }
   },
 });

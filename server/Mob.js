@@ -174,13 +174,13 @@ export class Mob {
           if (!p) {
             break;
           }
-          if (Math.abs(p.x - tx) + Math.abs(p.y - ty) <= 2) {
+          if (Math.abs(p.x - tx) + Math.abs(p.y - ty) <= 4) {
             this.onWay = true;
             break;
           }
         }
       };
-      if (this.target) {
+      if (this.target && this.target !== player) {
         const d1 = this.target.pos.subtract(this.fighter.pos).length();
         const d2 = player.pos.subtract(this.fighter.pos).length();
         if (d2 < d1) {
@@ -204,13 +204,17 @@ export class Mob {
           (next.x * WALL_SIZE + WALL_SIZE * 0.5));
         const dy = Math.abs(this.fighter.pos.y -
           (next.y * WALL_SIZE + WALL_SIZE * 0.5));
-        if (dx + dy < 20 + this.fighter.speed.length() * 0.1) {
+        if (dx + dy < 10 + this.fighter.speed.length() * 0.05) {
           this.path.pop();
           next = this.path[this.path.length - 1];
         }
       }
     }
-    next = next || this.getNextPoint(tx, ty);
+    let toHome;
+    if (!next) {
+      toHome = true;
+      next = this.getNextPoint(tx, ty);
+    }
 
     let nextX;
     let nextY;
@@ -242,7 +246,6 @@ export class Mob {
         this.pathMap[px][py] === undefined ||
         this.pathMap[px][py] > this.opts.RUN_D ||
         this.target.isDestroyed;
-
       if (needGoHome) {
         delete this.target;
         delete this.path;
@@ -252,14 +255,6 @@ export class Mob {
         this.fighter.emitPos();
       } else if (this.pathMap[tx] && this.pathMap[px]) {
         const cd = Math.abs(this.pathMap[tx][ty] - this.pathMap[px][py]);
-        if (d <= 1200 && cd <= 16 && Math.random() < 0.3) {
-          nextX = this.target.pos.x;
-          nextY = this.target.pos.y;
-        }
-        if (d <= 700) {
-          nextX = this.target.pos.x;
-          nextY = this.target.pos.y;
-        }
         if (d > 700) {
           isRun = true;
         }
@@ -269,12 +264,11 @@ export class Mob {
           this.fighter.scale;
 
         const needForce = d < this.attackDistance * 3 &&
-          this.target.speed.length() > 100 &&
-          Math.random() < 0.01;
+          this.target.speed.length() > 50 &&
+          Math.random() < 0.02;
 
         if (d < this.attackDistance) {
           canAttack = true;
-          isRun = false;
         } else if (needForce) {
           canAttack = true;
           isRun = true;
@@ -285,7 +279,7 @@ export class Mob {
           }
         } else {
           delete this.attackDistance;
-          if (Math.random() < 0.05) {
+          if (Math.random() < 0.3) {
             isRun = true;
           }
         }

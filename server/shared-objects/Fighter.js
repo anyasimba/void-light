@@ -212,6 +212,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
 
   update() {
+    this.prevPos = this.pos.clone();
     super.update();
 
     if (this.balanceTime) {
@@ -221,6 +222,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
     } else {
       this.balance = Math.min(this.BALANCE, this.balance + dt * 40);
+    }
+
+    if (this.rollBlockTime) {
+      this.rollBlockTime -= dt;
+      if (this.rollBlockTime <= 0) {
+        delete this.rollBlockTime;
+      }
     }
   }
 
@@ -267,7 +275,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   addImpulse(v) {
     if (this.inHit) {
       if (this.inRoll && this.inJump) {
-        v *= 120 / (this.speed.length() * 0.2 + 100);
+        v *= 80 / (this.speed.length() * 0.2 + 100);
       } else if (this.inRoll || this.afterRollTime) {
         v *= 160 / (this.speed.length() * 0.1 + 100);
       } else if (this.inJump) {
@@ -424,7 +432,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     const canRoll = this.stamina > 0 &&
       !this.inRoll &&
       !this.afterRollTime &&
-      this.speed.length() > 0 &&
       !this.stunTime &&
       !this.waitTime;
 
@@ -439,15 +446,18 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         duration: 0.6,
         afterTime: 0.4,
         force: 800,
-        forceInJump: 900,
+        forceInJump: 800,
       };
       if (this.inHit && this.hitStage !== 1) {
-        rollData.force = 500;
-        rollData.forceInJump = 400;
+        rollData.force = 400;
+        rollData.forceInJump = 300;
       }
+      rollData.force *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
+      rollData.forceInJump *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
+      this.rollBlockTime = rollData.duration + rollData.afterTime * 0.5;
       this.onRoll(rollData);
-      this.emitPos();
       this.emitAll('roll', rollData);
+      this.emitPos();
     }
   }
   doJump(data) {
@@ -455,7 +465,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       !this.inJump &&
       !this.inRoll &&
       !this.afterJumpTime &&
-      this.speed.length() > 200 &&
       !this.stunTime &&
       !this.waitTime;
 
@@ -467,16 +476,17 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
 
       const jumpData = {
-        duration: 0.7,
-        afterTime: 0.5,
+        duration: 0.6,
+        afterTime: 0.3,
         force: 700,
       };
       if (this.inHit && this.hitStage !== 1) {
         jumpData.force = 300;
       }
+      jumpData.force *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
       this.onJump(jumpData);
-      this.emitPos();
       this.emitAll('jump', jumpData);
+      this.emitPos();
     }
   }
 }

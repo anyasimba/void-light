@@ -151,6 +151,16 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     } else {
       if (this.id !== client.playerID) {
         this.baseTint = 0x88FF33;
+
+        const barGroup = new Phaser.Group(game);
+        this.infoGroup.add(barGroup);
+        const bar = Fighter.createBar(
+          'Иная пустота', 0xFF3300, -125, -100, 250, 10, (inner) => {
+            inner.scale.x = this.hp / this.HP;
+          });
+        barGroup.add(bar[1]);
+        barGroup.add(bar[0]);
+        barGroup.add(bar[2]);
       }
     }
 
@@ -419,6 +429,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       const f = Math.sin(
         (this.inRoll.time / this.inRoll.duration * 2 + 0.5) * Math.PI);
       this.group.scale.x *= f;
+      if (this.inHit) {
+        this.group.scale.x = 1;
+        this.group.scale.y *= f;
+      }
 
       if (f < 0) {
         this.views[0].alpha = 0;
