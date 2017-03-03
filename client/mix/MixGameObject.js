@@ -16,7 +16,6 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
 
     super(data.id, state, ...args);
 
-
     if (data.parentID) {
       this.group.add(this.bottomGroup);
       this.group.add(this.middleGroup);
@@ -39,7 +38,6 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
           g.scale.x = this.group.scale.x;
           g.scale.y = this.group.scale.y;
           g.angle = this.group.angle;
-          g.setAll('tint', this.group.tint);
         }
         this.infoGroup.x = this.group.x;
         this.infoGroup.y = this.group.y;

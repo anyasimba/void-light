@@ -37,14 +37,20 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       if (!opts.CAN_MIRROR_VIEW) {
         orient = 0;
       }
+      const hitView = new Phaser.Image(game, 0, 0, opts.HIT_VIEW || opts.VIEW);
+      hitView.tint = 0xFF3300;
       images = [
         new Phaser.Image(game, 0, 0, opts.VIEW),
         new Phaser.Image(game, 0, 0, opts.BACK_VIEW),
+        hitView,
       ];
     } else {
+      const hitView = new Phaser.Image(game, 0, 0, 'player');
+      hitView.tint = 0xFF3300;
       images = [
         new Phaser.Image(game, 0, 0, 'player'),
         new Phaser.Image(game, 0, 0, 'player-back'),
+        hitView,
       ];
     }
     for (const k in images) {
@@ -124,15 +130,34 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     super(data, data);
 
+    this.viewsForTint = [];
+
     [this.views, this.orient] = Fighter.createView(
       this.id === client.playerID, this.kind, this.name, this.size);
-    this.views[1].alpha = 0;
+    this.views[1].visible = false;
+    this.views[2].visible = false;
     if (this.kind === 'player') {
       this.middleGroup.add(this.views[0]);
+      this.middleGroup.add(this.views[2]);
     } else {
       this.topGroup.add(this.views[0]);
+      this.topGroup.add(this.views[2]);
     }
     this.bottomGroup.add(this.views[1]);
+    this.viewsForTint.push(this.views[0]);
+    this.viewsForTint.push(this.views[1]);
+    this.viewsForTint.push(this.views[2]);
+
+    this.footViews = Fighter.createFootView(
+      this.id === client.playerID, this.kind, this.name, this.size);
+    if (this.footViews) {
+      this.footViewsRoot = new Phaser.Group(game);
+      this.bottomGroup.add(this.footViewsRoot);
+      this.footViewsRoot.add(this.footViews[0]);
+      this.footViewsRoot.add(this.footViews[1]);
+      this.viewsForTint.push(this.footViews[0]);
+      this.viewsForTint.push(this.footViews[1]);
+    }
 
     this.baseTint = 0xFFFFFF;
     if (this.kind === 'mob') {
@@ -167,13 +192,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.color = HEXtoRGB(this.baseTint);
     this.group.tint = this.baseTint;
 
-    this.footViews = Fighter.createFootView(
-      this.id === client.playerID, this.kind, this.name, this.size);
-    if (this.footViews) {
-      this.footViewsRoot = new Phaser.Group(game);
-      this.bottomGroup.add(this.footViewsRoot);
-      this.footViewsRoot.add(this.footViews[0]);
-      this.footViewsRoot.add(this.footViews[1]);
+    for (const k in this.viewsForTint) {
+      const v = this.viewsForTint[k];
+      const rgb = HEXtoRGB(v.tint || 0xFFFFFF);
+      rgb.r = Math.floor(rgb.r * this.color.r / 255);
+      rgb.g = Math.floor(rgb.g * this.color.g / 255);
+      rgb.b = Math.floor(rgb.b * this.color.b / 255);
+      v.tint = RGBtoHEX(rgb.r, rgb.g, rgb.b);
     }
 
     if (this.id === client.playerID) {
@@ -317,6 +342,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.baseTint = 0xFF8811;
       this.color = HEXtoRGB(this.baseTint);
       this.group.tint = this.baseTint;
+      for (const k in this.viewsForTint) {
+        const v = this.viewsForTint[k];
+        v.tint = this.baseTint;
+      }
       this.weapon.view.tint = 0xFF7700;
       this.shield.view.tint = 0xFF7700;
     } else {
@@ -423,8 +452,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.group.scale.y = this.scale * (1 + f);
     }
 
-    this.views[0].alpha = 1;
-    this.views[1].alpha = 0;
+    this.views[0].visible = true;
+    this.views[1].visible = false;
     if (this.inRoll) {
       const f = Math.sin(
         (this.inRoll.time / this.inRoll.duration * 2 + 0.5) * Math.PI);
@@ -435,8 +464,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
 
       if (f < 0) {
-        this.views[0].alpha = 0;
-        this.views[1].alpha = 1;
+        this.views[0].visible = false;
+        this.views[1].visible = true;
       }
     }
 
@@ -501,17 +530,14 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     if (this.afterHitTime) {
       this.afterHitTime -= dt;
-      const f = 1 - this.afterHitTime * 2;
-      this.group.tint = RGBtoHEX(
-        this.color.r,
-        this.color.g * (f * 0.8 + 0.2),
-        this.color.b * f);
+
+      this.views[2].visible = true;
+      this.views[2].alpha = this.afterHitTime * 2;
+
       if (this.afterHitTime <= 0) {
         delete this.afterHitTime;
-        this.group.tint = this.baseTint;
+        this.views[2].visible = false;
       }
-    } else {
-      this.group.tint = this.baseTint;
     }
   }
 }

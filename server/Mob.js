@@ -141,9 +141,6 @@ export class Mob {
     const tx = Math.floor(this.fighter.pos.x / WALL_SIZE);
     const ty = Math.floor(this.fighter.pos.y / WALL_SIZE);
 
-    if (this.target && this.target !== player) {
-      return;
-    }
     if (!this.pathMap[x] || this.pathMap[x][y] === undefined) {
       delete this.target;
       delete this.path;

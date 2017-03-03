@@ -2,6 +2,7 @@ export const stage1__mob1 = {
   VIEW: 'stage1__mob1',
   CAN_MIRROR_VIEW: true,
   BACK_VIEW: 'stage1__mob1--back',
+  HIT_VIEW: 'stage1__mob1--hit',
   DEAD_VIEW: 'stage1__mob1--dead',
   LEFT_FOOT_VIEW: 'stage1__mob1--foot',
   RIGHT_FOOT_VIEW: 'stage1__mob1--foot',

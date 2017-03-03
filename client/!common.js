@@ -39,6 +39,7 @@ export const game = new Phaser.Game(
 
       game.load.image('stage1__mob1', 'assets/stage1__mob1.png');
       game.load.image('stage1__mob1--back', 'assets/stage1__mob1--back.png');
+      game.load.image('stage1__mob1--hit', 'assets/stage1__mob1--hit.png');
       game.load.image('stage1__mob1--dead', 'assets/stage1__mob1--dead.png');
       game.load.image('stage1__mob1--foot', 'assets/stage1__mob1--foot.png');
       game.load.image('stage1__mob1--hand', 'assets/stage1__mob1--hand.png');
@@ -102,9 +103,9 @@ export const game = new Phaser.Game(
             0.5;
 
           const dx = -targetX *
-            game.scaleFactor + game.width / 2 - game.scene.x;
+            game.scaleFactor + game.width * game.resF / 2 - game.scene.x;
           const dy = -targetY *
-            game.scaleFactor + game.height / 2 - game.scene.y;
+            game.scaleFactor + game.height * game.resF / 2 - game.scene.y;
 
           const f = (1 - Math.pow(0.1, dt));
           game.scene.x += dx * f;
@@ -125,10 +126,11 @@ export const game = new Phaser.Game(
         const h = window.innerHeight;
         game.width = w;
         game.height = h;
+        game.resF = 1;
 
-        game.renderer.resize(w, h);
+        game.renderer.resize(w * game.resF, h * game.resF);
 
-        const s = Math.min(w / 2560, h / 1440);
+        const s = Math.min(w / 2560, h / 1440) * game.resF;
         game.w = game.width / s;
         game.h = game.height / s;
         game.scene.scale.set(s);
@@ -282,8 +284,8 @@ export const game = new Phaser.Game(
         bricksView.destroy();
       }
 
-      global.mx = (game.input.x - game.scene.x) / game.scaleFactor;
-      global.my = (game.input.y - game.scene.y) / game.scaleFactor;
+      global.mx = (game.input.x * game.resF - game.scene.x) / game.scaleFactor;
+      global.my = (game.input.y * game.resF - game.scene.y) / game.scaleFactor;
       global.dt = game.time.elapsed * 0.001;
     },
 

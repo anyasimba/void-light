@@ -44,24 +44,25 @@ export function initUI() {
 export function makeSuperMessage(text, color) {
   const group = new Phaser.Group(game);
 
-  const textView = new Phaser.Text(game, 0, 0, text, {
+  const textView = new Phaser.Text(game, game.w * 0.5, game.h * 0.5, text, {
     font: 'Revalia',
     fontSize: 140,
     fill: color,
     boundsAlignH: 'center',
     boundsAlignV: 'center',
   });
-  textView.setTextBounds(0, game.h * 0.5 - 100, game.w, 0);
-  textView.alpha = 0.5;
-  const textView2 = new Phaser.Text(game, 0, 0, text, {
+  textView.alpha = 1;
+  textView.anchor.set(0.5);
+  const textView2 = new Phaser.Text(game, game.w * 0.5, game.h * 0.5, text, {
     font: 'Revalia',
     fontSize: 180,
     fill: color,
     boundsAlignH: 'center',
     boundsAlignV: 'center',
   });
-  textView2.setTextBounds(0, game.h * 0.5 - 100, game.w, 0);
-  textView2.alpha = 0.4;
+  textView2.alpha = 0;
+  textView2.anchor.set(0.5);
+  textView2.blendMode = PIXI.blendModes.ADD;
 
   const inner = new Phaser.Graphics(game, 0, game.h * 0.5 - 200);
   inner.beginFill(0x000000, 0.8);
@@ -70,11 +71,9 @@ export function makeSuperMessage(text, color) {
 
   let time = 0;
   group.update = () => {
-    textView2.blendMode = PIXI.blendModes.ADD;
     textView2.scale.x = 1.05;
     textView2.scale.y = 1.05;
-    textView2.x = textView.x - 180 + time * 40;
-    textView2.y = textView.y - 60;
+    textView2.x = game.w * 0.5 - 20 + time * 40;
     time += dt / 3;
     group.alpha = time;
     if (time >= 1) {
@@ -83,6 +82,7 @@ export function makeSuperMessage(text, color) {
     if (time >= 2) {
       group.destroy();
     }
+    textView2.alpha = group.alpha * 0.4;
   };
 
   group.add(inner);
