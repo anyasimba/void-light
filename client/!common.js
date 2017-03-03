@@ -146,8 +146,8 @@ export const game = new Phaser.Game(
       console.log('Game preloaded');
     },
     async create() {
-      EZGUI.renderer = game.renderer;
-      await new Promise(r => EZGUI.Theme.load(uiThemePaths, r));
+      // EZGUI.renderer = game.renderer;
+      // await new Promise(r => EZGUI.Theme.load(uiThemePaths, r));
 
       global.client = new Client;
 
@@ -172,6 +172,10 @@ export const game = new Phaser.Game(
 
       game.bossAreaSound = game.add.sound('bossArea', 1, false);
       game.bossDeadSound = game.add.sound('bossDead', 1, false);
+
+      this.game.onPause.add(() => {
+        console.log('PAUSE');
+      });
 
       isCreated = true;
     },
