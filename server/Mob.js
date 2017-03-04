@@ -142,9 +142,6 @@ export class Mob {
     const ty = Math.floor(this.fighter.pos.y / WALL_SIZE);
 
     if (!this.pathMap[x] || this.pathMap[x][y] === undefined) {
-      delete this.target;
-      delete this.path;
-      delete this.onWay;
       return;
     }
     if (this.target === player || this.pathMap[x][y] <= this.opts.AGRO_D) {
@@ -171,8 +168,11 @@ export class Mob {
           if (!p) {
             break;
           }
-          if (Math.abs(p.x - tx) + Math.abs(p.y - ty) <= 4) {
-            this.onWay = true;
+          const cost = this.onWay || 6;
+          const d = Math.abs(p.x - tx) + Math.abs(p.y - ty);
+          if (d > 0 && d < cost) {
+            this.onWay = d;
+          } else if (this.onWay) {
             break;
           }
         }
@@ -194,16 +194,18 @@ export class Mob {
     const ty = Math.floor(this.fighter.pos.y / WALL_SIZE);
 
     let next;
-    if (this.onWay) {
+    if (this.onWay !== undefined) {
       next = this.path[this.path.length - 1];
-      if (next) {
+      while (next) {
         const dx = Math.abs(this.fighter.pos.x -
           (next.x * WALL_SIZE + WALL_SIZE * 0.5));
         const dy = Math.abs(this.fighter.pos.y -
           (next.y * WALL_SIZE + WALL_SIZE * 0.5));
-        if (dx + dy < 10 + this.fighter.speed.length() * 0.05) {
+        if (dx + dy < WALL_SIZE) {
           this.path.pop();
           next = this.path[this.path.length - 1];
+        } else {
+          break;
         }
       }
     }
@@ -212,20 +214,15 @@ export class Mob {
       toHome = true;
       next = this.getNextPoint(tx, ty);
     }
-
+    if (this.target) {
+      console.log(this.onWay, next, toHome);
+    }
     let nextX;
     let nextY;
 
     if (next) {
-      const dx = Math.abs(this.fighter.pos.x -
-        (next.x * WALL_SIZE + WALL_SIZE * 0.5));
-      const dy = Math.abs(this.fighter.pos.y -
-        (next.y * WALL_SIZE + WALL_SIZE * 0.5));
-
-      if (dx + dy > 20 + this.fighter.speed.length() * 0.1) {
-        nextX = next.x * WALL_SIZE + WALL_SIZE * 0.5;
-        nextY = next.y * WALL_SIZE + WALL_SIZE * 0.5;
-      }
+      nextX = next.x * WALL_SIZE + WALL_SIZE * 0.5;
+      nextY = next.y * WALL_SIZE + WALL_SIZE * 0.5;
     }
 
     let canAttack;
@@ -236,10 +233,8 @@ export class Mob {
       const dy = this.fighter.pos.y - this.target.pos.y;
       const d = Math.sqrt(dx * dx + dy * dy);
 
-      const px = Math.floor(
-        (this.target.pos.x + this.target.speed.x) / WALL_SIZE);
-      const py = Math.floor(
-        (this.target.pos.y + this.target.speed.y) / WALL_SIZE);
+      const px = Math.floor(this.target.pos.x / WALL_SIZE);
+      const py = Math.floor(this.target.pos.y / WALL_SIZE);
 
       const needGoHome = !this.pathMap[px] ||
         this.pathMap[px][py] === undefined ||
@@ -405,10 +400,10 @@ export class Mob {
     this.fighter.inputMove.y = 0;
 
     if (nextX) {
-      if (Math.abs(nextX - this.fighter.pos.x) > 8) {
+      if (Math.abs(nextX - this.fighter.pos.x) > 20) {
         this.fighter.inputMove.x = Math.sign(nextX - this.fighter.pos.x);
       }
-      if (Math.abs(nextY - this.fighter.pos.y) > 8) {
+      if (Math.abs(nextY - this.fighter.pos.y) > 20) {
         this.fighter.inputMove.y = Math.sign(nextY - this.fighter.pos.y);
       }
       if (isRun !== undefined) {

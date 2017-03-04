@@ -337,10 +337,8 @@ export class GameLevelZone {
       const clients = this.clients;
       for (const k in clients) {
         const client = clients[k];
-        const x = Math.floor(
-          (client.player.pos.x + client.player.speed.x) / WALL_SIZE);
-        const y = Math.floor(
-          (client.player.pos.y + client.player.speed.y) / WALL_SIZE);
+        const x = Math.floor(client.player.pos.x / WALL_SIZE);
+        const y = Math.floor(client.player.pos.y / WALL_SIZE);
 
         const mobs = this.mobs;
         for (const k in mobs) {

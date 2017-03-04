@@ -1,6 +1,14 @@
 export function Server() {
   const server = express();
 
+  server.all('*', function (req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods',
+      'PUT, GET, POST, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+  });
+
   Object.assign(server, {
     useStaticFile(route, path) {
       path = path || ('.' + route);
@@ -48,12 +56,11 @@ export function Server() {
     .useStaticFolder('/maps/')
     .useStaticFolder('/shared/');
 
-  server.listen(3000, '0.0.0.0');
-
-  const socksServer = http.createServer();
-  const ioListener = io.listen(socksServer);
-  socksServer.listen(8080);
-
+  const socksServer = http.createServer(server);
+  const ioListener = io(socksServer, {
+    origins: 'http://localhost:* http://127.0.0.1:*',
+  });
+  socksServer.listen(3000, '0.0.0.0');
   ioListener.sockets.on('connection', server.onUserConnect);
 
   return server;

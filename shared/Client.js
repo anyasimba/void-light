@@ -3,7 +3,7 @@ export class Client {
     if (sock) {
       this.__sock = sock;
     } else {
-      this.__sock = io.connect('http://' + location.hostname + ':8080');
+      this.__sock = io.connect('http://' + location.hostname + ':3000');
     }
 
     this

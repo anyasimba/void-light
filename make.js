@@ -38,7 +38,7 @@ function buildClientJS() {
       plugins: [
         'transform-async-to-generator', ['transform-runtime', {
           'helpers': false,
-          'polyfill': false,
+          'polyfill': true,
         }],
       ],
       compact: true,
