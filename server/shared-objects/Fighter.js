@@ -446,7 +446,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         duration: 0.6,
         afterTime: 0.4,
         force: 800,
-        forceInJump: 800,
+        forceInJump: 750,
       };
       if (this.inHit && this.hitStage !== 1) {
         rollData.force = 400;

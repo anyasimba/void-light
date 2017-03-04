@@ -4,23 +4,23 @@ export class Fighter {
   }
 
   static get ACC() {
-    return 1400;
+    return 400;
   }
   static get RUN_ACC() {
-    return 1900;
+    return 600;
   }
   static get AIR_FRICTION() {
-    return 0.955;
+    return 0.02;
   }
   static get FRICTION() {
-    return 2500;
+    return 400;
   }
 
   static get LOOK_ROTATE_F() {
-    return 0.9;
+    return 0.93;
   }
   static get LOOK_ROTATE_IN_HIT_F() {
-    return 0.95;
+    return 0.97;
   }
 
   static get BODY_SIZE() {
@@ -28,10 +28,12 @@ export class Fighter {
   }
 
   get CELL_SIZE() {
-    return 400;
+    return 300;
   }
 
   constructor() {
+    this.type = 'Fighter';
+
     this.ACC = Fighter.ACC;
     this.AIR_FRICTION = Fighter.AIR_FRICTION;
     this.FRICTION = Fighter.FRICTION;
@@ -64,56 +66,52 @@ export class Fighter {
   }
 
   update() {
-    const move = this.inputMove.unit();
-    const canMove = !this.inHit &&
+    let FRICTION_F = 1;
+    if (this.inJump || this.inRoll) {
+      FRICTION_F *= 0.1;
+    }
+    const AIR_FRICTION = Math.pow(this.AIR_FRICTION, FRICTION_F);
+    const AIR_F = Math.pow(AIR_FRICTION, dt);
+    const A_AIR_F = (1 - AIR_F) / (1 - AIR_FRICTION);
+
+    vec3.multiply(this.speed, AIR_F);
+
+    const isMove = this.inputMove.length() > 0 &&
+      !this.inHit &&
       !this.inJump &&
       !this.inRoll &&
       !this.stunTime &&
       !this.waitTime;
-    if (canMove) {
+    if (isMove) {
+      let a = 0;
       if (this.isRun) {
-        if (this.inputMove.length() > 0) {
-          this.stamina -= dt * 7;
-          this.staminaTime = Math.max(this.staminaTime || 0, 0.05);
-          if (this.stamina <= 0) {
-            this.stamina = 0;
-            this.staminaTime = Math.max(this.staminaTime, 0.5);
-            vec3.add(
-              this.speed,
-              move.multiply((this.RUN_ACC * 0.5 + this.FRICTION) * dt));
-          } else {
-            vec3.add(
-              this.speed,
-              move.multiply((this.RUN_ACC + this.FRICTION) * dt));
-          }
+        this.stamina -= dt * 7;
+        this.staminaTime = Math.max(this.staminaTime || 0, 0.05);
+        if (this.stamina <= 0) {
+          this.stamina = 0;
+          this.staminaTime = Math.max(this.staminaTime, 0.5);
+          a = this.RUN_ACC * 0.5;
+        } else {
+          a = this.RUN_ACC;
         }
       } else if (this.isBlock) {
-        vec3.add(
-          this.speed,
-          move.multiply((this.ACC * 0.8 + this.FRICTION) * dt));
+        a = this.ACC * 0.8;
       } else {
-        vec3.add(
-          this.speed,
-          move.multiply((this.ACC + this.FRICTION) * dt));
+        a = this.ACC;
       }
+
+      vec3.add(this.speed,
+        this.inputMove
+        .unit()
+        .multiply((a + this.FRICTION) * A_AIR_F));
     }
 
-    if (!this.inJump && !this.inRoll) {
-      vec3.multiply(this.speed, Math.pow(this.AIR_FRICTION, dt * 60));
-      if (this.speed.length() > this.FRICTION * dt) {
-        vec3.subtract(this.speed, this.speed
+    if (!this.inJump) {
+      if (this.speed.length() > this.FRICTION * A_AIR_F) {
+        vec3.subtract(this.speed,
+          this.speed
           .unit()
-          .multiply(this.FRICTION * dt));
-      } else {
-        this.speed.init();
-      }
-    } else {
-      const lowDT = dt * 0.1;
-      vec3.multiply(this.speed, Math.pow(this.AIR_FRICTION, lowDT * 60));
-      if (this.speed.length() > this.FRICTION * lowDT) {
-        vec3.subtract(this.speed, this.speed
-          .unit()
-          .multiply(this.FRICTION * lowDT));
+          .multiply(this.FRICTION * A_AIR_F));
       } else {
         this.speed.init();
       }

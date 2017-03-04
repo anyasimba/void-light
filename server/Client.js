@@ -56,7 +56,9 @@ export class Client extends global.Client {
   }
 
   onDisconnect() {
-    gameLevelZone.removeClient(this);
+    if (this.gameLevelZone) {
+      this.gameLevelZone.removeClient(this);
+    }
 
     this.player.pendingDestroy = true;
 

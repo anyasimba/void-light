@@ -31,12 +31,14 @@ export class GameLevelZone {
     this.w = this.map.width * WALL_SIZE;
     this.h = this.map.height * WALL_SIZE;
 
+    const dictionary = loadMapDictionary(this.map);
+
     const ground = this.map.layers[0];
     for (let y = 0; y < this.map.height; ++y) {
       for (let x = 0; x < this.map.width; ++x) {
         const i = y * this.map.width + x;
         const v = ground.data[i];
-        const slug = mapIDs[v];
+        const slug = dictionary[v];
         if (v !== 0) {
           this.grid[x] = this.grid[x] || {};
           this.grid[x][y] = slug;
@@ -49,20 +51,20 @@ export class GameLevelZone {
     const objects = this.map.layers[1];
     for (const k in objects.objects) {
       const o = objects.objects[k];
-      const slug = mapIDs[o.gid];
+      const slug = dictionary[o.gid] || o.name;
       const x = o.x / 32 * WALL_SIZE + WALL_SIZE * 0.5;
       const y = o.y / 32 * WALL_SIZE + WALL_SIZE * 0.5;
       const data = {
         mapID: o.id,
-        mapX: o.x / 32 * WALL_SIZE,
-        mapY: o.y / 32 * WALL_SIZE,
+        mapX: (o.x + o.width * 0.5) / 32 * WALL_SIZE,
+        mapY: (o.y + o.height * 0.5) / 32 * WALL_SIZE,
         mapW: o.width / 32 * WALL_SIZE,
         mapH: o.height / 32 * WALL_SIZE,
         x: x,
         y: y,
         slug: slug,
       };
-      if (slug) {
+      if (slug && !o.name) {
         switch (slug) {
           case 'born':
             this.playerPoints.push(data);
@@ -70,10 +72,17 @@ export class GameLevelZone {
           default:
             this.enemyPoints.push(data);
         }
-      } else {
-        if (o.properties && o.properties.bossID) {
-          data.bossID = o.properties.bossID;
-          this.bossAreas.push(data);
+      } else if (o.name) {
+        Object.assign(data, o.properties);
+
+        switch (o.name) {
+          case 'Door':
+            this.mapObjects[data.mapID] = new Door(this, data);
+            break;
+          case 'BossArea':
+            this.bossAreas.push(data);
+            break;
+          default:
         }
       }
     }
@@ -82,7 +91,7 @@ export class GameLevelZone {
     for (const k in this.enemyPoints) {
       const p = this.enemyPoints[k];
       Object.assign(p, global[p.slug]);
-      const mob = new Mob(this, p, k);
+      const mob = new Mob(this, p);
       this.mapObjects[p.mapID] = mob;
       for (const k in this.bossAreas) {
         const area = this.bossAreas[k];
@@ -104,6 +113,7 @@ export class GameLevelZone {
 
     if (object.body) {
       this.bodies[object.id] = object;
+      object.prevPos = object.pos.clone();
     }
 
     for (const client of this.clients) {
@@ -118,10 +128,12 @@ export class GameLevelZone {
     delete this.objects[object.id];
     delete this.bodies[object.id];
 
-    object.cells = object.cells || [];
-    for (const k in object.cells) {
-      const cell = object.cells[k];
-      delete this.cells[cell.x][cell.y][object.id];
+    if (object.cells) {
+      for (const k in object.cells) {
+        const cell = object.cells[k];
+        delete this.cells[cell.x][cell.y][object.id];
+      }
+      delete object.cells;
     }
   }
 
@@ -154,7 +166,8 @@ export class GameLevelZone {
     this.clients.push(client);
   }
   removeClient(client) {
-    this.clients.slice(this.clients.indexOf(client), 1);
+    const i = this.clients.indexOf(client);
+    this.clients = this.clients.slice(i, i);
     this.removeObject(client.player);
   }
   rebornPlayer(player) {
@@ -175,8 +188,8 @@ export class GameLevelZone {
   resolveBounds(object) {
     if (object.body.kind === 'circle') {
       this.resolveCircleBounds(object, {
-        x: 0,
-        y: 0,
+        x: this.w * 0.5,
+        y: this.h * 0.5,
         w: this.w,
         h: this.h,
       });
@@ -193,24 +206,24 @@ export class GameLevelZone {
   }
   resolveCircleBounds(object, rect) {
     const size = object.body.size;
-    if (object.pos.x < rect.x + size * 0.5) {
-      object.pos.x = rect.x + size * 0.5;
-      object.speed.x = Math.abs(object.speed.x);
+    if (object.pos.x < rect.x - rect.w * 0.5 + size * 0.5) {
+      object.pos.x = rect.x - rect.w * 0.5 + size * 0.5;
+      object.speed.x = Math.abs(object.speed.x) * 0.5;
       object.emitPos();
     }
-    if (object.pos.x > rect.x + rect.w - size * 0.5) {
-      object.pos.x = rect.x + rect.w - size * 0.5;
-      object.speed.x = -Math.abs(object.speed.x);
+    if (object.pos.x > rect.x + rect.w * 0.5 - size * 0.5) {
+      object.pos.x = rect.x + rect.w * 0.5 - size * 0.5;
+      object.speed.x = -Math.abs(object.speed.x) * 0.5;
       object.emitPos();
     }
-    if (object.pos.y < rect.y + size * 0.5) {
-      object.pos.y = rect.y + size * 0.5;
-      object.speed.y = Math.abs(object.speed.y);
+    if (object.pos.y < rect.y - rect.h * 0.5 + size * 0.5) {
+      object.pos.y = rect.y - rect.h * 0.5 + size * 0.5;
+      object.speed.y = Math.abs(object.speed.y) * 0.5;
       object.emitPos();
     }
-    if (object.pos.y > rect.y + rect.h - size * 0.5) {
-      object.pos.y = rect.y + rect.h - size * 0.5;
-      object.speed.y = -Math.abs(object.speed.y);
+    if (object.pos.y > rect.y + rect.h * 0.5 - size * 0.5) {
+      object.pos.y = rect.y + rect.h * 0.5 - size * 0.5;
+      object.speed.y = -Math.abs(object.speed.y) * 0.5;
       object.emitPos();
     }
   }
@@ -234,20 +247,34 @@ export class GameLevelZone {
       for (let x = -2; x <= 2; ++x) {
         for (let y = -2; y <= 2; ++y) {
           if (this.grid[x + cx] && this.grid[x + cx][y + cy]) {
+            const rx = (x + cx + 0.5) * WALL_SIZE;
+            const ry = (y + cy + 0.5) * WALL_SIZE;
             this.resolveCircle2StaticRectCollision(
-              object, x + cx + 0.5, y + cy + 0.5);
+              object, rx, ry, WALL_SIZE, WALL_SIZE);
           }
         }
       }
     }
+
     for (const k in objectsWithBody) {
       const object = objectsWithBody[k];
-      this.updateObjectWithBodyCollisions(object);
+      if (!object.body.checked) {
+        object.body.checked = true;
+        this.updateObjectWithBodyCollisions(object);
+      }
+    }
+    for (const k in objectsWithBody) {
+      const object = objectsWithBody[k];
+      delete object.body.checked;
     }
 
     this.updateMobs();
   }
   updateObjectWithBodyCells(object) {
+    if (object.isStatic && object.cells) {
+      return;
+    }
+
     object.cells = object.cells || [];
     for (const k in object.cells) {
       const cell = object.cells[k];
@@ -277,7 +304,7 @@ export class GameLevelZone {
       }
     }
   }
-  objectWithBodyOthers(object, log) {
+  objectWithBodyOthers(object) {
     const others = {};
     for (const k in object.cells) {
       const cellID = object.cells[k];
@@ -310,8 +337,10 @@ export class GameLevelZone {
       const clients = this.clients;
       for (const k in clients) {
         const client = clients[k];
-        const x = Math.floor(client.player.pos.x / WALL_SIZE);
-        const y = Math.floor(client.player.pos.y / WALL_SIZE);
+        const x = Math.floor(
+          (client.player.pos.x + client.player.speed.x) / WALL_SIZE);
+        const y = Math.floor(
+          (client.player.pos.y + client.player.speed.y) / WALL_SIZE);
 
         const mobs = this.mobs;
         for (const k in mobs) {
@@ -323,8 +352,8 @@ export class GameLevelZone {
 
     this.updateMobsTime2 = this.updateMobsTime2 || 0;
     this.updateMobsTime2 += dt;
-    if (this.updateMobsTime2 >= 0.5) {
-      this.updateMobsTime2 -= 0.5;
+    if (this.updateMobsTime2 >= 0.33) {
+      this.updateMobsTime2 -= 0.33;
 
       const mobs = this.mobs;
       for (const k in mobs) {
@@ -342,11 +371,9 @@ export class GameLevelZone {
         for (const k in this.clients) {
           const client = this.clients[k];
           if (client.player && client.player.hp > 0 && !client.player.area) {
-            const inArea = client.player.pos.x > area.mapX &&
-              client.player.pos.y > area.mapY &&
-              client.player.pos.x < area.mapX + area.mapW &&
-              client.player.pos.y < area.mapY + area.mapH;
-            if (inArea) {
+            const dx = Math.abs(client.player.pos.x - area.mapX);
+            const dy = Math.abs(client.player.pos.y - area.mapY);
+            if (dx < area.mapW * 0.5 && dy < area.mapH * 0.5) {
               client.player.area = area;
               client.emit('bossArea', {});
             }

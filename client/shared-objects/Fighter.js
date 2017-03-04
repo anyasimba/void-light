@@ -457,10 +457,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     if (this.inRoll) {
       const f = Math.sin(
         (this.inRoll.time / this.inRoll.duration * 2 + 0.5) * Math.PI);
-      this.group.scale.x *= f;
       if (this.inHit) {
-        this.group.scale.x = 1;
         this.group.scale.y *= f;
+      } else {
+        this.group.scale.x *= f;
       }
 
       if (f < 0) {
@@ -485,11 +485,11 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         .multiply(1 - Math.pow(0.95, dt)))
       if (this.speed.length() > 10 && this.footSpeed.length() > 2) {
         const l = 200;
-        let footTime = this.moveTime * 100 / l * 0.5;
+        let footTime = this.moveTime * 100 / l * 0.5 / this.scale;
 
         let sign = Math.sign((footTime % 2) - 1);
         let step = footTime % 1;
-        this.footViewsRoot.angle = this.footSpeed.toAngle() - this.look.toAngle();
+        this.footViewsRoot.angle = this.speed.toAngle() - this.look.toAngle();
 
         if (!isAngleInRange(this.footViewsRoot.angle, -90, 90)) {
           sign = -sign;

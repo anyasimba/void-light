@@ -1,5 +1,5 @@
 export class Mob {
-  constructor(gameLevelZone, opts, i) {
+  constructor(gameLevelZone, opts) {
     this.gameLevelZone = gameLevelZone;
 
     let size = 40;
@@ -236,8 +236,10 @@ export class Mob {
       const dy = this.fighter.pos.y - this.target.pos.y;
       const d = Math.sqrt(dx * dx + dy * dy);
 
-      const px = Math.floor(this.target.pos.x / WALL_SIZE);
-      const py = Math.floor(this.target.pos.y / WALL_SIZE);
+      const px = Math.floor(
+        (this.target.pos.x + this.target.speed.x) / WALL_SIZE);
+      const py = Math.floor(
+        (this.target.pos.y + this.target.speed.y) / WALL_SIZE);
 
       const needGoHome = !this.pathMap[px] ||
         this.pathMap[px][py] === undefined ||
@@ -298,7 +300,9 @@ export class Mob {
           }
 
           this.act = 'hit';
-          this.hitDir = this.target.pos.subtract(this.fighter.pos)
+          this.hitDir = this.target.pos
+            .add(this.target.speed.multiply(0.5))
+            .subtract(this.fighter.pos)
             .unit()
             .multiply(1000);
           this.actTime = (this.opts.HIT_TIME[0] +

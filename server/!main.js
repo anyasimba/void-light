@@ -33,7 +33,7 @@ function initUpdate() {
           client.tasks = [];
         }
 
-        await sleep(Math.max(1000.0 / 60.0 - performance.now() + b, 0));
+        await sleep(Math.max(1000.0 / 30.0 - performance.now() + b, 0));
       }
     } catch (e) {
       console.log(e, e.stack);

@@ -5,6 +5,12 @@ Object.assign(GameLevelZone.prototype, {
     if (object.body.kind === 'circle' && other.body.kind === 'circle') {
       this.resolveCircle2CircleCollision(object, other);
     }
+    if (object.body.kind === 'circle' && other.body.kind === 'staticRect') {
+      this.resolveCircle2StaticRectCollision(object, other);
+    }
+    if (object.body.kind === 'staticRect' && other.body.kind === 'circle') {
+      this.resolveCircle2StaticRectCollision(other, object);
+    }
   },
   resolveCircle2CircleCollision(object, other) {
     const bodyD = (object.body.size + other.body.size) * 0.5;
@@ -29,22 +35,20 @@ Object.assign(GameLevelZone.prototype, {
       other.emitPos();
     }
   },
-  resolveCircle2StaticRectCollision(object, x, y) {
-    const bodyDX = (object.body.size + WALL_SIZE) * 0.5;
-    const bodyDY = (object.body.size + WALL_SIZE) * 0.5;
-    x = x * WALL_SIZE;
-    y = y * WALL_SIZE;
+  resolveCircle2StaticRectCollision(object, x, y, w, h) {
+    const bodyDX = (object.body.size + w) * 0.5;
+    const bodyDY = (object.body.size + h) * 0.5;
     const dx = object.pos.x - x;
     const dy = object.pos.y - y;
 
     let hasCollision = false;
-    if (Math.abs(dy) <= WALL_SIZE * 0.5) {
+    if (Math.abs(dy) <= h * 0.5) {
       if (dx > 0 && dx < bodyDX) {
         hasCollision = true;
       } else if (dx < 0 && -dx < bodyDX) {
         hasCollision = true;
       }
-    } else if (Math.abs(dx) <= WALL_SIZE * 0.5) {
+    } else if (Math.abs(dx) <= w * 0.5) {
       if (dy > 0 && dy < bodyDY) {
         hasCollision = true;
       } else if (dy < 0 && -dy < bodyDY) {
@@ -52,10 +56,10 @@ Object.assign(GameLevelZone.prototype, {
       }
     }
 
-    const x1 = (x - WALL_SIZE * 0.5);
-    const y1 = (y - WALL_SIZE * 0.5);
-    const x2 = (x + WALL_SIZE * 0.5);
-    const y2 = (y + WALL_SIZE * 0.5);
+    const x1 = (x - w * 0.5);
+    const y1 = (y - h * 0.5);
+    const x2 = (x + w * 0.5);
+    const y2 = (y + h * 0.5);
 
     const dx1 = (object.pos.x - x1) * (object.pos.x - x1);
     const dy1 = (object.pos.y - y1) * (object.pos.y - y1);
@@ -84,7 +88,7 @@ Object.assign(GameLevelZone.prototype, {
       const dy = object.prevPos.y - y;
 
       const imp = 0.5;
-      if (Math.abs(dy) <= WALL_SIZE * 0.5) {
+      if (Math.abs(dy) <= h * 0.5) {
         if (dx > 0) {
           object.pos.x = x + bodyDX;
           object.speed.x = Math.abs(object.speed.x * imp);
@@ -94,7 +98,7 @@ Object.assign(GameLevelZone.prototype, {
           object.speed.x = -Math.abs(object.speed.x * imp);
           object.emitPos();
         }
-      } else if (Math.abs(dx) <= WALL_SIZE * 0.5) {
+      } else if (Math.abs(dx) <= w * 0.5) {
         if (dy > 0) {
           object.pos.y = y + bodyDY;
           object.speed.y = Math.abs(object.speed.y * imp);

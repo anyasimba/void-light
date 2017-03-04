@@ -189,13 +189,15 @@ export const game = new Phaser.Game(
         client.w = client.map.width * WALL_SIZE;
         client.h = client.map.height * WALL_SIZE;
 
+        const dictionary = loadMapDictionary(client.map);
+
         const ground = client.map.layers[0];
         const grid = [];
         for (let y = 0; y < client.map.height; ++y) {
           for (let x = 0; x < client.map.width; ++x) {
             const i = y * client.map.width + x;
             const v = ground.data[i];
-            const slug = mapIDs[v];
+            const slug = dictionary[v];
             if (slug) {
               grid[x] = grid[x] || [];
               grid[x][y] = slug;
@@ -228,15 +230,12 @@ export const game = new Phaser.Game(
           for (let x = 0; x < client.map.width; ++x) {
             const i = y * client.map.width + x;
             const v = ground.data[i];
-            const slug = mapIDs[v];
+            const slug = dictionary[v];
 
             let view;
             switch (slug) {
               case 'wall':
                 view = bricksView;
-                break;
-              case 'door':
-                view = doorView;
                 break;
               default:
             }

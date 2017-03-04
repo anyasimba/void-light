@@ -5,13 +5,22 @@ Object.assign(GameLevelZone.prototype, {
     const others = this.objectWithBodyOthers(source);
     for (const k in others) {
       const other = others[k];
-      switch (other.body.kind) {
-        case 'circle':
-          {
-            this.doDamageRadialArea2Circle(source, opts, other);
-          }
-        default:
+      let canDamage;
+      switch (other.type) {
+        case 'Door':
           break;
+        default:
+          canDamage = true;
+      }
+      if (canDamage) {
+        switch (other.body.kind) {
+          case 'circle':
+            {
+              this.doDamageRadialArea2Circle(source, opts, other);
+            }
+          default:
+            break;
+        }
       }
     }
   },

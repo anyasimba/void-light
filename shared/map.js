@@ -1,10 +1,18 @@
-export const mapIDs = {
-  1: 'wall',
-  2: 'door',
+export function loadMapDictionary(map) {
+  const prefix = '../_editor-assets/';
 
-  9: 'born',
-
-  13: 'stage1__mob1',
-  14: 'stage1__boss1',
-  15: 'stage1__mob2',
+  const layers = map.layers;
+  const tilesets = map.tilesets;
+  const tiles = {};
+  for (const k in tilesets) {
+    const set = tilesets[k];
+    const firstgid = set.firstgid;
+    for (const k in set.tiles) {
+      const tile = set.tiles[k];
+      const id = firstgid + parseInt(k);
+      const slug = tile.image.slice(prefix.length, -4);
+      tiles[id] = slug;
+    }
+  }
+  return tiles;
 }

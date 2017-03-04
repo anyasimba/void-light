@@ -22,11 +22,11 @@ export const stage1__mob1 = {
 
     hitSpeed: 2.5,
 
-    ACC: 1000,
-    RUN_ACC: 1800,
+    ACC: 400,
+    RUN_ACC: 700,
     DAMAGE: 24,
     BODY_SIZE: 140,
-    SCALE: 1,
+    SCALE: 1.2,
 
     BALANCE: 50,
     HP: 200,
@@ -91,8 +91,8 @@ export const stage1__mob2 = {
 
     hitSpeed: 1.8,
 
-    ACC: 1600,
-    RUN_ACC: 2400,
+    ACC: 500,
+    RUN_ACC: 800,
     DAMAGE: 30,
     BODY_SIZE: 40,
     SCALE: 3,
@@ -146,8 +146,8 @@ export const stage1__boss1 = {
 
     hitSpeed: 2,
 
-    ACC: 1000,
-    RUN_ACC: 2600,
+    ACC: 300,
+    RUN_ACC: 500,
     DAMAGE: 30,
     BODY_SIZE: 40,
     SCALE: 4,
