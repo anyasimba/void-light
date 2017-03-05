@@ -211,6 +211,19 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     });
   }
 
+  checkNear(player) {
+    if (this.kind !== 'mob' || !this.owner.opts.IS_NPC) {
+      return;
+    }
+
+    const D = (this.body.size + player.body.size) * 0.5 + WALL_SIZE * 2;
+    const d = this.pos.subtract(player.pos).length();
+    if (d < D) {
+      player.canTalk = this;
+      console.log('can talk');
+    }
+  }
+
   update() {
     this.prevPos = this.pos.clone();
     super.update();

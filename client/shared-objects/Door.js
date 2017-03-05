@@ -22,7 +22,11 @@ export class Door extends mix(global.Door, MixGameObject) {
   }
 
   onOpen(data) {
-    this.isOpening = data.time;
+    if (this.isOpened && !this.isClosing) {
+      this.isClosing = data.time;
+    } else if (!this.isOpening) {
+      this.isOpening = data.time;
+    }
   }
 
   update() {

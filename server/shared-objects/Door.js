@@ -40,6 +40,7 @@ export class Door extends mix(global.Door, MixGameObject) {
       const dy = Math.abs(this.pos.y - object.pos.y);
       const dw = this.size.x * 0.5 + WALL_SIZE;
       const dh = this.size.y * 0.5 + WALL_SIZE;
+      console.log(dx, dw, dy, dh);
       if (dx < dw && dy < dh) {
         object.canOpenDoor = this;
       }
@@ -47,9 +48,13 @@ export class Door extends mix(global.Door, MixGameObject) {
   }
 
   open(player) {
-    this.isOpening = 15;
+    if (this.isOpened && !this.isClosing) {
+      this.isClosing = 10;
+    } else if (!this.isOpening) {
+      this.isOpening = 10;
+    }
     this.emitAll('open', {
-      time: this.isOpening,
+      time: this.isOpening || this.isClosing,
     });
   }
 }

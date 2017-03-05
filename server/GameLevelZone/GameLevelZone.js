@@ -331,14 +331,13 @@ export class GameLevelZone {
   }
   updateObjectNears(object) {
     delete object.canOpenDoor;
+    delete object.canTalk;
 
     const others = object.others;
     for (const k in others) {
       const other = others[k];
-      switch (other.type) {
-        case 'Door':
-          other.checkNear(object);
-        default:
+      if (other.checkNear) {
+        other.checkNear(object);
       }
     }
   }
