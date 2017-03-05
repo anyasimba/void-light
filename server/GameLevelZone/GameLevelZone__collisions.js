@@ -6,10 +6,12 @@ Object.assign(GameLevelZone.prototype, {
       this.resolveCircle2CircleCollision(object, other);
     }
     if (object.body.kind === 'circle' && other.body.kind === 'staticRect') {
-      this.resolveCircle2StaticRectCollision(object, other);
+      this.resolveCircle2StaticRectCollision(object,
+        other.pos.x, other.pos.y, other.body.w, other.body.h);
     }
     if (object.body.kind === 'staticRect' && other.body.kind === 'circle') {
-      this.resolveCircle2StaticRectCollision(other, object);
+      this.resolveCircle2StaticRectCollision(other,
+        object.pos.x, object.pos.y, object.body.w, object.body.h);
     }
   },
   resolveCircle2CircleCollision(object, other) {

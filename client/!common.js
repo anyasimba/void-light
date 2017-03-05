@@ -184,6 +184,19 @@ export const game = new Phaser.Game(
         return;
       }
 
+      const makeLayer3D = (layer, f) => {
+        const p = client.player.pos;
+        layer.scale.set(f);
+        layer.x = -p.x * (f - 1);
+        layer.y = -p.y * (f - 1);
+      };
+
+      if (global.client && client.player) {
+        makeLayer3D(game.middle, 1.01);
+        makeLayer3D(game.top, 1.02);
+        makeLayer3D(game.walls, 1.02);
+      }
+
       if (client.needLoadMap) {
         delete client.needLoadMap;
         client.w = client.map.width * WALL_SIZE;
@@ -222,8 +235,6 @@ export const game = new Phaser.Game(
 
         const bricksView = new Phaser.TileSprite(
           game, 0, 0, WALL_SIZE, WALL_SIZE, 'bricks');
-        const doorView = new Phaser.TileSprite(
-          game, 0, 0, WALL_SIZE, WALL_SIZE, 'door');
 
         console.log('loading map...');
         for (let y = 0; y < client.map.height; ++y) {

@@ -240,7 +240,13 @@ export class GameLevelZone {
     const objectsWithBody = this.bodies;
     for (const k in objectsWithBody) {
       const object = objectsWithBody[k];
+
       this.updateObjectWithBodyCells(object);
+      object.others = this.objectWithBodyOthers(object);
+
+      if (object.isStatic) {
+        continue;
+      }
 
       const cx = Math.floor(object.pos.x / WALL_SIZE);
       const cy = Math.floor(object.pos.y / WALL_SIZE);
@@ -258,13 +264,16 @@ export class GameLevelZone {
 
     for (const k in objectsWithBody) {
       const object = objectsWithBody[k];
-      if (!object.body.checked) {
+      if (!object.isStatic) {
         object.body.checked = true;
+        this.updateObjectNears(object);
         this.updateObjectWithBodyCollisions(object);
       }
     }
+
     for (const k in objectsWithBody) {
       const object = objectsWithBody[k];
+      delete object.others;
       delete object.body.checked;
     }
 
@@ -284,13 +293,13 @@ export class GameLevelZone {
 
     const CELL_SIZE = GameLevelZone.CELL_SIZE;
     const xb = Math.floor(
-      (object.pos.x - object.CELL_SIZE * 0.5) / CELL_SIZE);
+      (object.pos.x - object.CELL_SIZE_W * 0.5) / CELL_SIZE);
     const xe = Math.ceil(
-      (object.pos.x + object.CELL_SIZE * 0.5) / CELL_SIZE);
+      (object.pos.x + object.CELL_SIZE_W * 0.5) / CELL_SIZE);
     const yb = Math.floor(
-      (object.pos.y - object.CELL_SIZE * 0.5) / CELL_SIZE);
+      (object.pos.y - object.CELL_SIZE_H * 0.5) / CELL_SIZE);
     const ye = Math.ceil(
-      (object.pos.y + object.CELL_SIZE * 0.5) / CELL_SIZE);
+      (object.pos.y + object.CELL_SIZE_H * 0.5) / CELL_SIZE);
 
     for (let x = xb; x <= xe; ++x) {
       for (let y = yb; y <= ye; ++y) {
@@ -303,6 +312,8 @@ export class GameLevelZone {
         });
       }
     }
+
+    if (object.isStatic) {}
   }
   objectWithBodyOthers(object) {
     const others = {};
@@ -318,8 +329,22 @@ export class GameLevelZone {
     }
     return others;
   }
+  updateObjectNears(object) {
+    delete object.canOpenDoor;
+
+    const others = object.others;
+    for (const k in others) {
+      const other = others[k];
+      switch (other.type) {
+        case 'Door':
+          other.checkNear(object);
+        default:
+      }
+    }
+  }
   updateObjectWithBodyCollisions(object) {
-    const others = this.objectWithBodyOthers(object);
+    const others = object.others;
+
     for (const k in others) {
       const other = others[k];
       this.resolveCollision(object, other);

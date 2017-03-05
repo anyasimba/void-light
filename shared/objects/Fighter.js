@@ -27,7 +27,10 @@ export class Fighter {
     return 40;
   }
 
-  get CELL_SIZE() {
+  get CELL_SIZE_W() {
+    return 300;
+  }
+  get CELL_SIZE_H() {
     return 300;
   }
 

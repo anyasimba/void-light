@@ -350,57 +350,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       return;
     }
 
-    const map = this.gameLevelZone.grid;
-    const cx = Math.floor(this.pos.x / WALL_SIZE);
-    const cy = Math.floor(this.pos.y / WALL_SIZE);
-    const doors = this.findDoors(cx, cy);
-    if (doors.length > 0) {
-      this.openDoor(doors[0]);
-      this.wait(5);
-      if (this.owner.emit) {
-        this.owner.emit('openDoor', {});
-      }
-    }
-  }
-  findDoors(cx, cy) {
-    const doors = [];
-    const map = this.gameLevelZone.grid;
-    if (map[cx + 1] && map[cx + 1][cy] === 'door') {
-      doors.push([cx + 1, cy]);
-    }
-    if (map[cx - 1] && map[cx - 1][cy] === 'door') {
-      doors.push([cx - 1, cy]);
-    }
-    if (map[cx] && map[cx][cy + 1] === 'door') {
-      doors.push([cx, cy + 1]);
-    }
-    if (map[cx] && map[cx][cy - 1] === 'door') {
-      doors.push([cx, cy - 1]);
-    }
-    return doors;
-  }
-  openDoor(door) {
-    const cx = door[0];
-    const cy = door[1];
-    const map = this.gameLevelZone.grid;
-    this.gameLevelZone.doorsMap = this.gameLevelZone.doorsMap || {};
-    const doorsMap = this.gameLevelZone.doorsMap;
-    doorsMap[cx] = doorsMap[cx] || {};
-    doorsMap[cx][cy] = doorsMap[cx][cy] || {
-      cx: cx,
-      cy: cy,
-    };
-    door = doorsMap[cx][cy];
-
-    if (door.isOpening || door.isOpened) {
-      return;
-    }
-    door.isOpened = true;
-    delete map[cx][cy];
-    const doors = this.findDoors(cx, cy);
-    for (const k in doors) {
-      const nextDoor = doors[k];
-      this.openDoor(nextDoor);
+    if (this.canOpenDoor) {
+      this.canOpenDoor.open(this);
     }
   }
 

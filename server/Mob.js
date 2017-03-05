@@ -214,9 +214,6 @@ export class Mob {
       toHome = true;
       next = this.getNextPoint(tx, ty);
     }
-    if (this.target) {
-      console.log(this.onWay, next, toHome);
-    }
     let nextX;
     let nextY;
 
