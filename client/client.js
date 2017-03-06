@@ -170,7 +170,7 @@ export class Client extends global.Client {
     }
 
     const dialog = global[data.name][data.talking];
-    const lang = dialog.LANG_RU.replace(/ +/g, ' ').slice(0, -2);
+    const lang = dialog.LANG_RU.replace(/ +/g, ' ').slice(1, -2);
     makeMessage(lang, '#AAEEFF', 'Neucha');
     const answers = [];
     for (let i = 1; i <= 6; ++i) {

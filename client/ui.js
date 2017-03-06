@@ -94,6 +94,18 @@ export function makeSuperMessage(text, color) {
 export function makeMessage(text, color, font) {
   const group = new Phaser.Group(game);
 
+  const inner = new Phaser.Graphics(game, 0, 0);
+  inner.beginFill(0x000000, 0.8);
+  inner.drawRect(game.w * 0.5 - 1000, 0, 2000, 1);
+  inner.endFill();
+  group.add(inner);
+
+  const inner2 = new Phaser.Graphics(game, 0, game.h - 250);
+  inner2.beginFill(0x202020, 0.5);
+  inner2.drawRect(game.w * 0.5 - 1000, 0, 2000, 10);
+  inner2.endFill();
+  group.add(inner2);
+
   const textView = new Phaser.Text(game, game.w * 0.5, game.h - 250, text, {
     font: font || 'Tinos',
     fontSize: 45,
@@ -107,13 +119,12 @@ export function makeMessage(text, color, font) {
   group.add(textView);
   game.ui.add(group);
 
-
   let time = 0;
-  group.update = () => {
-    if (group.needShow) {
+  group.preUpdate = () => {
+    if (group.needHide) {
+      time -= dt * 10;
+    } else if (group.needShow) {
       time += dt;
-    } else if (group.needHide) {
-      time -= dt * 2;
     }
     if (time > 1) {
       time = 1;
@@ -123,6 +134,9 @@ export function makeMessage(text, color, font) {
     if (time < 0) {
       group.destroy();
     }
+
+    inner.y = textView.y - textView.height - 100;
+    inner.scale.y = textView.height + 200;
   };
   group.needShow = true;
 
