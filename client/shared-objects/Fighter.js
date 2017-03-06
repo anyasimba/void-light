@@ -21,7 +21,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         fontSize: 34,
         fontWeight: 'bold',
         fill: '#CCCCCC',
-        stroke: '#111111',
+        stroke: '#050505',
         strokeThickness: 6,
         boundsAlignH: 'center',
       });
@@ -284,9 +284,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         game, this.pos.x, this.pos.y, data.damage, {
           font: 'Neucha',
           fontWeight: 'bold',
-          fontSize: 40,
+          fontSize: 45,
           fill: '#FF2200',
-          stroke: '#111111',
+          stroke: '#050505',
           strokeThickness: 8,
         });
       damageView.alpha = 0.7;

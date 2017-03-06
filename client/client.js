@@ -141,6 +141,30 @@ export class Client extends global.Client {
     makeSuperMessage('ОТКРЫТО', '#2299FF');
   }
 
+  onCanOpenDoor() {
+    makeMessage('Нажмите [C] чтобы открыть..', '#2299FF');
+  }
+  onCanCloseDoor() {
+    makeMessage('Нажмите [C] чтобы закрыть..', '#2299FF');
+  }
+  onCanTalk() {
+    makeMessage('Нажмите [C] чтобы говорить..', '#2299FF');
+  }
+  onStopCan() {
+    disableMessage();
+  }
+
+  onTalk(data) {
+    const dialog = global[data.name][data.talking];
+    dialog.LANG_RU = dialog.LANG_RU.replace(/ +/g, ' ');
+    if (this.message) {
+      disableMessage();
+    }
+    makeMessage(dialog.LANG_RU, '#AAEEFF', 'Neucha');
+    makeMessageOption('Да', '#AAEEFF', 'Neucha', 0);
+    makeMessageOption('Нет', '#AAEEFF', 'Neucha', 1);
+  }
+
   mainTheme() {
     game.bossBackSound.stop();
     game.youDiedSound.stop();

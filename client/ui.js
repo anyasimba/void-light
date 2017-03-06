@@ -90,3 +90,42 @@ export function makeSuperMessage(text, color) {
   group.add(textView2);
   game.ui.add(group);
 }
+
+export function makeMessage(text, color, font) {
+  const group = new Phaser.Group(game);
+
+  const textView = new Phaser.Text(game, game.w * 0.5, game.h - 150, text, {
+    font: font || 'Tinos',
+    fontSize: 45,
+    fill: color,
+    stroke: '#050505',
+    strokeThickness: 6,
+  });
+  textView.anchor.x = 0.5;
+  textView.anchor.y = 1;
+
+  group.add(textView);
+  game.ui.add(group);
+
+  client.message = group;
+}
+export function disableMessage() {
+  client.message.destroy();
+  delete client.message;
+}
+
+export function makeMessageOption(text, color, font, i) {
+  const textView = new Phaser.Text(
+    game, game.w * 0.5 - 300 + i * 600, game.h - 140, text, {
+      font: font || 'Tinos',
+      fontSize: 50,
+      fontWeight: bold,
+      fill: color,
+      stroke: '#050505',
+      strokeThickness: 6,
+    });
+  textView.anchor.x = 0.5;
+  textView.anchor.y = 0;
+
+  client.message.add(textView);
+}

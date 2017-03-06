@@ -35,6 +35,9 @@ export class Door extends mix(global.Door, MixGameObject) {
   }
 
   checkNear(object) {
+    if (this.isOpening || this.isClosing) {
+      return;
+    }
     if (object.type === 'Fighter' && object.kind === 'player') {
       const dx = Math.abs(this.pos.x - object.pos.x);
       const dy = Math.abs(this.pos.y - object.pos.y);
@@ -47,6 +50,9 @@ export class Door extends mix(global.Door, MixGameObject) {
   }
 
   open(player) {
+    if (this.isOpening || this.isClosing) {
+      return;
+    }
     if (this.isOpened && !this.isClosing) {
       this.isClosing = 10;
     } else if (!this.isOpening) {

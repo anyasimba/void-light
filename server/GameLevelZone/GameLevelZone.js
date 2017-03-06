@@ -212,22 +212,18 @@ export class GameLevelZone {
     if (object.pos.x < rect.x - rect.w * 0.5 + size * 0.5) {
       object.pos.x = rect.x - rect.w * 0.5 + size * 0.5;
       object.speed.x = Math.abs(object.speed.x) * 0.5;
-      object.emitPos();
     }
     if (object.pos.x > rect.x + rect.w * 0.5 - size * 0.5) {
       object.pos.x = rect.x + rect.w * 0.5 - size * 0.5;
       object.speed.x = -Math.abs(object.speed.x) * 0.5;
-      object.emitPos();
     }
     if (object.pos.y < rect.y - rect.h * 0.5 + size * 0.5) {
       object.pos.y = rect.y - rect.h * 0.5 + size * 0.5;
       object.speed.y = Math.abs(object.speed.y) * 0.5;
-      object.emitPos();
     }
     if (object.pos.y > rect.y + rect.h * 0.5 - size * 0.5) {
       object.pos.y = rect.y + rect.h * 0.5 - size * 0.5;
       object.speed.y = -Math.abs(object.speed.y) * 0.5;
-      object.emitPos();
     }
   }
 
@@ -243,6 +239,10 @@ export class GameLevelZone {
     const objectsWithBody = this.bodies;
     for (const k in objectsWithBody) {
       const object = objectsWithBody[k];
+      if (!object.isStatic) {
+        object.beforePos = object.pos.clone();
+        object.beforeSpeed = object.speed.clone();
+      }
 
       this.updateObjectWithBodyCells(object);
       object.others = this.objectWithBodyOthers(object);
@@ -278,6 +278,18 @@ export class GameLevelZone {
       const object = objectsWithBody[k];
       delete object.others;
       delete object.body.checked;
+
+      if (!object.isStatic) {
+        const hasChange = object.beforePos.x !== object.pos.x ||
+          object.beforePos.y !== object.pos.y ||
+          object.beforeSpeed.x !== object.speed.x ||
+          object.beforeSpeed.y !== object.speed.y;
+        delete object.beforePos;
+        delete object.beforeSpeed;
+        if (hasChange) {
+          object.emitPos();
+        }
+      }
     }
 
     this.updateMobs();
@@ -348,11 +360,23 @@ export class GameLevelZone {
     }
 
     if (!canOpenDoor && object.canOpenDoor) {
-      object.owner.emit('canOpenDoor', {});
+      if (object.canOpenDoor.isOpened) {
+        object.owner.emit('canCloseDoor', {});
+      } else {
+        object.owner.emit('canOpenDoor', {});
+      }
       return;
     }
     if (!canTalk && object.canTalk) {
       object.owner.emit('canTalk', {});
+      return;
+    }
+    if (canOpenDoor && !object.canOpenDoor) {
+      object.owner.emit('stopCan', {});
+      return;
+    }
+    if (canTalk && !object.canTalk) {
+      object.owner.emit('stopCan', {});
       return;
     }
   }
@@ -361,6 +385,9 @@ export class GameLevelZone {
 
     for (const k in others) {
       const other = others[k];
+      if (other.checked) {
+        continue;
+      }
       this.resolveCollision(object, other);
     }
 

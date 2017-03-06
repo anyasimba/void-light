@@ -220,8 +220,16 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     const d = this.pos.subtract(player.pos).length();
     if (d < D) {
       player.canTalk = this;
-      console.log('can talk');
     }
+  }
+  talk(player) {
+    if (!player.talking) {
+      player.talking = 1;
+    }
+    player.owner.emit('talk', {
+      name: this.name + '__' + this.gameLevelZone.mapName,
+      talking: player.talking,
+    });
   }
 
   update() {
@@ -358,6 +366,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     this.gameLevelZone.doDamageRadialArea(this, opts);
   }
+
   onKeyC(opts) {
     if (!this.isInGameLevelZone()) {
       return;
@@ -366,8 +375,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     if (this.canOpenDoor) {
       this.canOpenDoor.open(this);
     }
+    if (this.canTalk) {
+      this.canTalk.talk(this);
+    }
   }
-
   onKeyF() {
     this.isRun = !this.isRun;
     if (this.isRun) {
