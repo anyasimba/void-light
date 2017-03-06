@@ -293,7 +293,6 @@ export class Mob {
 
           this.act = 'hit';
           this.hitDir = this.target.pos
-            .add(this.target.speed.multiply(0.5))
             .subtract(this.fighter.pos)
             .unit()
             .multiply(1000);

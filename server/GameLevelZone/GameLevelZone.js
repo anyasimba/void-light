@@ -123,6 +123,9 @@ export class GameLevelZone {
   removeObject(object) {
     object.emitAll('delete', {});
 
+    delete object.canOpenDoor;
+    delete object.canTalk;
+
     delete object.gameLevelZone;
 
     delete this.objects[object.id];
@@ -330,6 +333,9 @@ export class GameLevelZone {
     return others;
   }
   updateObjectNears(object) {
+    const canOpenDoor = object.canOpenDoor;
+    const canTalk = object.canTalk;
+
     delete object.canOpenDoor;
     delete object.canTalk;
 
@@ -339,6 +345,15 @@ export class GameLevelZone {
       if (other.checkNear) {
         other.checkNear(object);
       }
+    }
+
+    if (!canOpenDoor && object.canOpenDoor) {
+      object.owner.emit('canOpenDoor', {});
+      return;
+    }
+    if (!canTalk && object.canTalk) {
+      object.owner.emit('canTalk', {});
+      return;
     }
   }
   updateObjectWithBodyCollisions(object) {

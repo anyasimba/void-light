@@ -23,7 +23,7 @@ export class Client extends global.Client {
       BALANCE: 10,
       HP: 100,
       MP: 100,
-      STAMINA: 50,
+      STAMINA: 500,
 
       SCALE: 1,
     });

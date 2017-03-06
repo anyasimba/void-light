@@ -40,7 +40,6 @@ export class Door extends mix(global.Door, MixGameObject) {
       const dy = Math.abs(this.pos.y - object.pos.y);
       const dw = this.size.x * 0.5 + WALL_SIZE;
       const dh = this.size.y * 0.5 + WALL_SIZE;
-      console.log(dx, dw, dy, dh);
       if (dx < dw && dy < dh) {
         object.canOpenDoor = this;
       }

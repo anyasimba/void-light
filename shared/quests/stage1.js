@@ -1,9 +1,8 @@
 export const stage1__1 = [
-  'luna'
+  'npc__luna'
 ];
 
-export const stage1__1__luna = {
-  LANG_RU: 'Хранитель лунного света',
+export const npc__luna__stage1__1 = {
   1: {
     LANG_RU: '\
       Ты вернулся.\

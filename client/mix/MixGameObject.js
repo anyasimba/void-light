@@ -89,4 +89,18 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
       game.info.remove(this.infoGroup);
     }
   }
+
+  playSound(name) {
+    const sound = game.add.sound(name);
+    sound.volume = this.soundVolume();
+    sound.play();
+    return sound;
+  }
+  soundVolume() {
+    if (game.cameraPos) {
+      const d = this.pos.subtract(game.cameraPos).length();
+      return 100000 / (100000 + d * d);
+    }
+    return 0;
+  }
 }

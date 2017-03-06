@@ -7,4 +7,5 @@ globally(require('./mobs/stage1'));
 globally(require('./shared-objects/+'));
 globally(require('./assets'));
 globally(require('./client'));
+globally(require('./NPC'));
 globally(require('./ui'));

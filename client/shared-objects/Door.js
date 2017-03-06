@@ -27,6 +27,9 @@ export class Door extends mix(global.Door, MixGameObject) {
     } else if (!this.isOpening) {
       this.isOpening = data.time;
     }
+
+    this.sound = game.add.sound('door', this.soundVolume() * 0.3, true);
+    this.sound.play();
   }
 
   update() {
@@ -36,5 +39,13 @@ export class Door extends mix(global.Door, MixGameObject) {
     this.view.height = this.size.y;
     this.view.tilePosition.x = this.size.x - this.baseSize.x;
     this.view.tilePosition.y = this.size.y - this.baseSize.y;
+
+    if (this.sound && !this.isOpening && !this.isClosing) {
+      this.sound.stop();
+      this.sound.destroy();
+      delete this.sound;
+    } else if (this.sound) {
+      this.sound.volume = this.soundVolume() * 0.3;
+    }
   }
 }

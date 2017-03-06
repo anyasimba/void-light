@@ -29,20 +29,39 @@ export const uiThemes = {
 
 let isCreated = false;
 let time;
+
+global.WebFontConfig = {
+  active: () => {
+    game.time.events.add(Phaser.Timer.SECOND, create);
+  },
+
+  google: {
+    families: ['Neucha', 'Poiret+One'],
+  },
+};
+
 export const game = new Phaser.Game(
   "100%", "100%", Phaser.CANVAS, '', {
     async preload() {
+      game.load.script('webfont',
+        '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
+
       game.load.image('shield', 'assets/shield.png');
       game.load.image('sword', 'assets/sword.png');
       game.load.image('player', 'assets/player.png');
       game.load.image('player-back', 'assets/player-back.png');
 
       game.load.image('stage1__mob1', 'assets/stage1__mob1.png');
-      game.load.image('stage1__mob1--back', 'assets/stage1__mob1--back.png');
-      game.load.image('stage1__mob1--hit', 'assets/stage1__mob1--hit.png');
-      game.load.image('stage1__mob1--dead', 'assets/stage1__mob1--dead.png');
-      game.load.image('stage1__mob1--foot', 'assets/stage1__mob1--foot.png');
-      game.load.image('stage1__mob1--hand', 'assets/stage1__mob1--hand.png');
+      game.load.image('stage1__mob1--back',
+        'assets/stage1__mob1--back.png');
+      game.load.image('stage1__mob1--hit',
+        'assets/stage1__mob1--hit.png');
+      game.load.image('stage1__mob1--dead',
+        'assets/stage1__mob1--dead.png');
+      game.load.image('stage1__mob1--foot',
+        'assets/stage1__mob1--foot.png');
+      game.load.image('stage1__mob1--hand',
+        'assets/stage1__mob1--hand.png');
 
       game.load.image('ground', 'assets/ground.jpg');
       game.load.image('bricks', 'assets/bricks.jpg');
@@ -51,12 +70,17 @@ export const game = new Phaser.Game(
       game.load.audio('back',
         'assets/back__doxent_-_Forgotten_Land.mp3');
       game.load.audio('bossBack',
-        'assets/bossBack__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.mp3');
+        'assets/bossBack__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.mp3'
+      );
+
+      game.load.audio('door',
+        'assets/door__233389__laiaoreka__automatic-door.mp3');
 
       game.load.audio('boss',
         'assets/boss__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.mp3');
       game.load.audio('hit',
-        'assets/hit__86003__nextmaking__hitting-body-with-blood.mp3');
+        'assets/hit__86003__nextmaking__hitting-body-with-blood.mp3'
+      );
       game.load.audio('hit1',
         'assets/hit1__351754__urupin__whistle-of-a-twig-in-air.mp3');
       game.load.audio('hit2',
@@ -75,7 +99,8 @@ export const game = new Phaser.Game(
         'assets/jump__260188__splicesound__young-boy-grunts-for-body-impact.mp3'
       );
       game.load.audio('mobJump',
-        'assets/mob1Jump__181068__lolamadeus__zombie-vocals-grunts.mp3');
+        'assets/mob1Jump__181068__lolamadeus__zombie-vocals-grunts.mp3'
+      );
 
       game.load.audio('mob1Die',
         'assets/mob1Die__76964__michel88__grunt2.mp3');
@@ -85,7 +110,8 @@ export const game = new Phaser.Game(
       game.load.audio('bossArea',
         'assets/bossArea__377887__debsound__monster-072.mp3');
       game.load.audio('bossDead',
-        'assets/bossDead__56304__syna-max__monster-death-scream.mp3');
+        'assets/bossDead__56304__syna-max__monster-death-scream.mp3'
+      );
 
       game.stage.backgroundColor = 0x000000;
 
@@ -103,9 +129,11 @@ export const game = new Phaser.Game(
             0.5;
 
           const dx = -targetX *
-            game.scaleFactor + game.width * game.resF / 2 - game.scene.x;
+            game.scaleFactor + game.width * game.resF / 2 - game.scene
+            .x;
           const dy = -targetY *
-            game.scaleFactor + game.height * game.resF / 2 - game.scene.y;
+            game.scaleFactor + game.height * game.resF / 2 - game.scene
+            .y;
 
           const f = (1 - Math.pow(0.1, dt));
           game.scene.x += dx * f;
@@ -144,40 +172,6 @@ export const game = new Phaser.Game(
       }
 
       console.log('Game preloaded');
-    },
-    async create() {
-      // EZGUI.renderer = game.renderer;
-      // await new Promise(r => EZGUI.Theme.load(uiThemePaths, r));
-
-      global.client = new Client;
-
-      game.ground = game.scene.add(new Phaser.Group(game));
-      game.deads = game.scene.add(new Phaser.Group(game));
-      game.bottom = game.scene.add(new Phaser.Group(game));
-      game.middle = game.scene.add(new Phaser.Group(game));
-      game.top = game.scene.add(new Phaser.Group(game));
-      game.walls = game.scene.add(new Phaser.Group(game));
-      game.info = game.scene.add(new Phaser.Group(game));
-      game.texts = game.scene.add(new Phaser.Group(game));
-      game.textEvents1 = game.scene.add(new Phaser.Group(game));
-      game.textEvents2 = game.scene.add(new Phaser.Group(game));
-
-      game.ui = game.scene.add(new Phaser.Group(game));
-      initUI();
-
-      game.backSound = game.add.sound('back', 0.5, true);
-      game.backSound.play();
-      game.bossBackSound = game.add.sound('bossBack', 1, true);
-      game.youDiedSound = game.add.sound('youDied', 1, false);
-
-      game.bossAreaSound = game.add.sound('bossArea', 1, false);
-      game.bossDeadSound = game.add.sound('bossDead', 1, false);
-
-      this.game.onPause.add(() => {
-        console.log('PAUSE');
-      });
-
-      isCreated = true;
     },
     update() {
       if (!isCreated) {
@@ -307,3 +301,31 @@ export const game = new Phaser.Game(
       game.debug.text(game.time.fps, 20, 20, '#FFFFFF');
     },
   });
+
+export function create() {
+  global.client = new Client;
+
+  game.ground = game.scene.add(new Phaser.Group(game));
+  game.deads = game.scene.add(new Phaser.Group(game));
+  game.bottom = game.scene.add(new Phaser.Group(game));
+  game.middle = game.scene.add(new Phaser.Group(game));
+  game.top = game.scene.add(new Phaser.Group(game));
+  game.walls = game.scene.add(new Phaser.Group(game));
+  game.info = game.scene.add(new Phaser.Group(game));
+  game.texts = game.scene.add(new Phaser.Group(game));
+  game.textEvents1 = game.scene.add(new Phaser.Group(game));
+  game.textEvents2 = game.scene.add(new Phaser.Group(game));
+
+  game.ui = game.scene.add(new Phaser.Group(game));
+  initUI();
+
+  game.backSound = game.add.sound('back', 0.5, true);
+  game.backSound.play();
+  game.bossBackSound = game.add.sound('bossBack', 1, true);
+  game.youDiedSound = game.add.sound('youDied', 1, false);
+
+  game.bossAreaSound = game.add.sound('bossArea', 1, false);
+  game.bossDeadSound = game.add.sound('bossDead', 1, false);
+
+  isCreated = true;
+}
