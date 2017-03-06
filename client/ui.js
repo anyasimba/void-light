@@ -107,10 +107,29 @@ export function makeMessage(text, color, font) {
   group.add(textView);
   game.ui.add(group);
 
+
+  let time = 0;
+  group.update = () => {
+    if (group.needShow) {
+      time += dt;
+    } else if (group.needHide) {
+      time -= dt * 2;
+    }
+    if (time > 1) {
+      time = 1;
+      delete group.needShow;
+    }
+    group.alpha = time;
+    if (time < 0) {
+      group.destroy();
+    }
+  };
+  group.needShow = true;
+
   client.message = group;
 }
 export function disableMessage() {
-  client.message.destroy();
+  client.message.needHide = true;
   delete client.message;
 }
 
