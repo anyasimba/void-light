@@ -226,7 +226,7 @@ export class Client extends global.Client {
       if (typeof data.variant !== 'number') {
         return;
       }
-      if (!this.player.canTalk) {
+      if (!this.player.canTalk || !this.player.talking) {
         return;
       }
       const npc = global[this.player.canTalk.talkName];
