@@ -125,6 +125,7 @@ export class GameLevelZone {
 
     delete object.canOpenDoor;
     delete object.canTalk;
+    delete object.talking;
 
     delete object.gameLevelZone;
 
@@ -377,6 +378,13 @@ export class GameLevelZone {
     }
     if (canTalk && !object.canTalk) {
       object.owner.emit('stopCan', {});
+      delete object.talking;
+      return;
+    }
+    if (canTalk !== object.canTalk) {
+      object.owner.emit('stopCan', {});
+      object.owner.emit('canTalk', {});
+      delete object.talking;
       return;
     }
   }

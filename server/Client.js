@@ -91,6 +91,7 @@ export class Client extends global.Client {
     this.on('q', data => this.onEventQ(data));
     this.on('e', data => this.onEventE(data));
     this.on('h', data => this.onEventH(data));
+    this.on('talk', data => this.onTalk(data));
   }
 
   /**
@@ -194,6 +195,34 @@ export class Client extends global.Client {
   onEventH(data) {
     try {
       this.player.onKeyH(data);
+    } catch (e) {
+      console.log(e, e.stack);
+      process.exit(1);
+    }
+  }
+
+  onTalk(data) {
+    try {
+      if (typeof data.variant !== 'number') {
+        return;
+      }
+      if (!this.player.canTalk) {
+        return;
+      }
+      const npc = global[this.player.canTalk.talkName];
+      if (!npc || !npc[this.player.talking + ''][data.variant + '']) {
+        return;
+      }
+      const answer = npc[this.player.talking + ''][data.variant + ''];
+      this.player.talking = answer[1];
+      if (!this.player.talking) {
+        delete this.player.talking;
+        delete this.player.canTalk;
+        delete this.player.canDoor;
+        this.emit('stopCan', {});
+      } else {
+        this.player.canTalk.talk(this.player);
+      }
     } catch (e) {
       console.log(e, e.stack);
       process.exit(1);

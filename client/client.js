@@ -67,6 +67,10 @@ export class Client extends global.Client {
       });
 
     game.input.onDown.add(() => {
+      if (global.mouseCapture) {
+        global.mouseCapture();
+        return;
+      }
       this.emit('mouseDown', {
         'x': mx,
         'y': my,
@@ -142,27 +146,45 @@ export class Client extends global.Client {
   }
 
   onCanOpenDoor() {
-    makeMessage('Нажмите [C] чтобы открыть..', '#2299FF');
+    makeMessage('Нажмите [C] чтобы открыть..', '#AAEEFF');
   }
   onCanCloseDoor() {
-    makeMessage('Нажмите [C] чтобы закрыть..', '#2299FF');
+    makeMessage('Нажмите [C] чтобы закрыть..', '#AAEEFF');
   }
   onCanTalk() {
-    makeMessage('Нажмите [C] чтобы говорить..', '#2299FF');
+    makeMessage('Нажмите [C] чтобы говорить..', '#AAEEFF');
   }
   onStopCan() {
     disableMessage();
   }
 
   onTalk(data) {
-    const dialog = global[data.name][data.talking];
-    dialog.LANG_RU = dialog.LANG_RU.replace(/ +/g, ' ');
     if (this.message) {
       disableMessage();
     }
-    makeMessage(dialog.LANG_RU, '#AAEEFF', 'Neucha');
-    makeMessageOption('Да', '#AAEEFF', 'Neucha', 0);
-    makeMessageOption('Нет', '#AAEEFF', 'Neucha', 1);
+
+    const dialog = global[data.name][data.talking];
+    const lang = dialog.LANG_RU.replace(/ +/g, ' ').slice(0, -2);
+    makeMessage(lang, '#AAEEFF', 'Neucha');
+    const answers = [];
+    for (let i = 1; i <= 6; ++i) {
+      if (dialog[i]) {
+        answers.push(dialog[i]);
+      }
+    }
+    const n = answers.length - 1;
+    for (const k in answers) {
+      const a = dialog[parseInt(k) + 1];
+      let i = 0;
+      if (n > 0) {
+        i = k / n;
+      }
+      makeMessageOption(a[0], '#AAEEFF', 'Neucha', i, () => {
+        this.emit('talk', {
+          variant: parseInt(k) + 1,
+        })
+      });
+    }
   }
 
   mainTheme() {

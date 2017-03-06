@@ -94,7 +94,7 @@ export function makeSuperMessage(text, color) {
 export function makeMessage(text, color, font) {
   const group = new Phaser.Group(game);
 
-  const textView = new Phaser.Text(game, game.w * 0.5, game.h - 150, text, {
+  const textView = new Phaser.Text(game, game.w * 0.5, game.h - 250, text, {
     font: font || 'Tinos',
     fontSize: 45,
     fill: color,
@@ -114,18 +114,35 @@ export function disableMessage() {
   delete client.message;
 }
 
-export function makeMessageOption(text, color, font, i) {
+export function makeMessageOption(text, color, font, i, fn) {
   const textView = new Phaser.Text(
-    game, game.w * 0.5 - 300 + i * 600, game.h - 140, text, {
+    game, game.w * 0.5 - 300 + i * 600, game.h - 240, text, {
       font: font || 'Tinos',
       fontSize: 50,
-      fontWeight: bold,
+      fontWeight: 'bold',
       fill: color,
       stroke: '#050505',
       strokeThickness: 6,
     });
-  textView.anchor.x = 0.5;
+  textView.anchor.x = i;
   textView.anchor.y = 0;
+  textView.update = () => {
+    textView.fill = color;
+    textView.stroke = '#050505';
+
+    const PAD = 40;
+    const dx = mx - game.ui.x -
+      (textView.x - textView.width * textView.anchor.x - PAD);
+    const dy = my - game.ui.y -
+      (textView.y - textView.height * textView.anchor.y - PAD);
+    if (dx > 0 && dx < textView.width + PAD * 2) {
+      if (dy > 0 && dy < textView.height + PAD * 2) {
+        textView.fill = '#FFFFFF';
+        textView.stroke = '#AAAAAA';
+        global.mouseCapture = fn;
+      }
+    }
+  }
 
   client.message.add(textView);
 }

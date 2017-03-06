@@ -222,12 +222,16 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       player.canTalk = this;
     }
   }
+
+  get talkName() {
+    return this.name + '__' + this.gameLevelZone.mapName;
+  }
   talk(player) {
     if (!player.talking) {
       player.talking = 1;
     }
     player.owner.emit('talk', {
-      name: this.name + '__' + this.gameLevelZone.mapName,
+      name: this.talkName,
       talking: player.talking,
     });
   }
