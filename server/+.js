@@ -4,6 +4,7 @@ global.preMain = cb => {
 }
 
 global.express = require('express');
+global.cookieParser = require('cookie-parser')
 global.io = require('socket.io');
 global.http = require('http');
 global.fs = require('fs');

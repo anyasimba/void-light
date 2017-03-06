@@ -126,7 +126,7 @@ export const stage1__boss1 = {
 
   AGRO_D: 16,
   RUN_D: 50,
-  HIT_D: [50, 250],
+  HIT_D: [50, 150],
   HIT_VER: 0.9,
   HIT_TIME: [1, 4],
   JUMP_HIT_VER: 0.02,

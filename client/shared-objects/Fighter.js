@@ -181,7 +181,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         const barGroup = new Phaser.Group(game);
         this.infoGroup.add(barGroup);
         const bar = Fighter.createBar(
-          'Иная пустота', 0xFF3300, -125, -100, 250, 10, (inner) => {
+          this.name, 0xFF3300, -125, -100, 250, 10, (inner) => {
             inner.scale.x = this.hp / this.HP;
           });
         barGroup.add(bar[1]);

@@ -13,6 +13,10 @@ export class Client extends global.Client {
       }
     };
 
+    this.emit('login', {
+      username: getCookie('username'),
+    });
+
     let keys = [
       ['w', Phaser.Keyboard.W],
       ['a', Phaser.Keyboard.A],
@@ -89,7 +93,9 @@ export class Client extends global.Client {
       object.destructor();
     }
 
-    window.location.reload();
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
   }
 
   readPacket(packet) {

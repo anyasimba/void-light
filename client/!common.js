@@ -17,6 +17,43 @@ export function httpGet(url) {
   });
 }
 
+export function getCookie(name) {
+  let matches = document.cookie.match(new RegExp(
+    "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') +
+    "=([^;]*)"
+  ));
+  return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+export function setCookie(name, value, options) {
+  options = options || {};
+
+  let expires = options.expires;
+
+  if (typeof expires === 'number' && expires) {
+    var d = new Date();
+    d.setTime(d.getTime() + expires * 1000);
+    expires = options.expires = d;
+  }
+  if (expires && expires.toUTCString) {
+    options.expires = expires.toUTCString();
+  }
+
+  value = encodeURIComponent(value);
+
+  let updatedCookie = name + "=" + value;
+
+  for (let propName in options) {
+    updatedCookie += "; " + propName;
+    let propValue = options[propName];
+    if (propValue !== true) {
+      updatedCookie += "=" + propValue;
+    }
+  }
+
+  document.cookie = updatedCookie;
+}
+
 //
 WebFont.load({
   custom: {
@@ -46,7 +83,22 @@ $(window).on('load', function () {
 
 function checkIfBothReady() {
   if (windowReady && fontReady) {
-    createGame();
+    if (getCookie('enter') === 'true') {
+      setCookie('enter', '');
+      createGame();
+    } else {
+      $('.login').css('display', 'block');
+      $('.login-button').click(e => {
+        const username = $('.username').val();
+        if (username.length > 24) {
+          alert('Не более 16 символов');
+          return;
+        }
+        setCookie('username', username);
+        setCookie('enter', 'true');
+        window.location.reload();
+      });
+    }
   }
 };
 
@@ -218,7 +270,7 @@ function createGame() {
           return;
         }
         delete global.mouseCapture;
-        
+
         const makeLayer3D = (layer, f) => {
           const p = client.player.pos;
           layer.scale.set(f);

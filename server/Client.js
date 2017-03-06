@@ -14,8 +14,24 @@ export class Client extends global.Client {
 
     this.tasks = [];
 
+    this.on('login', data => this.onLogin(data));
+  }
+
+  onLogin(data) {
+    if (this.username || !data.username) {
+      return;
+    }
+    if (data.username.length > 24) {
+      return;
+    }
+    this.username = data.username;
+    this.login();
+  }
+
+  login() {
     this.player = new Fighter(this, {
       kind: 'player',
+      name: this.username,
 
       hitSpeed: 1,
       DAMAGE: 40,
@@ -40,6 +56,8 @@ export class Client extends global.Client {
     });
 
     this.registerEvents();
+
+    console.log('User login', this.username);
   }
 
   emit(event, data) {
@@ -60,9 +78,11 @@ export class Client extends global.Client {
       this.gameLevelZone.removeClient(this);
     }
 
-    this.player.pendingDestroy = true;
+    if (this.player) {
+      this.player.pendingDestroy = true;
+    }
 
-    console.log('User disconnected');
+    console.log('User disconnected', this.username);
   }
 
   onDie() {

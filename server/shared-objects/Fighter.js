@@ -7,10 +7,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     return {
       lang: this.lang,
 
-      pos: this.pos,
-      speed: this.speed,
-      inputMove: this.inputMove,
-      look: this.look,
+      pos: this.pos.clone(),
+      speed: this.speed.clone(),
+      inputMove: this.inputMove.clone(),
+      look: this.look.clone(),
       absLook: this.absLook,
 
       isRun: this.isRun,

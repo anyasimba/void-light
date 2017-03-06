@@ -171,7 +171,7 @@ export class GameLevelZone {
   }
   removeClient(client) {
     const i = this.clients.indexOf(client);
-    this.clients = this.clients.slice(i, i);
+    this.clients.splice(i, 1);
     this.removeObject(client.player);
   }
   rebornPlayer(player) {
@@ -270,7 +270,9 @@ export class GameLevelZone {
       const object = objectsWithBody[k];
       if (!object.isStatic) {
         object.body.checked = true;
-        this.updateObjectNears(object);
+        if (object.type === 'Fighter' && object.kind === 'player') {
+          this.updateObjectNears(object);
+        }
         this.updateObjectWithBodyCollisions(object);
       }
     }
@@ -345,46 +347,46 @@ export class GameLevelZone {
     }
     return others;
   }
-  updateObjectNears(object) {
-    const canOpenDoor = object.canOpenDoor;
-    const canTalk = object.canTalk;
+  updateObjectNears(player) {
+    const canOpenDoor = player.canOpenDoor;
+    const canTalk = player.canTalk;
 
-    delete object.canOpenDoor;
-    delete object.canTalk;
+    delete player.canOpenDoor;
+    delete player.canTalk;
 
-    const others = object.others;
+    const others = player.others;
     for (const k in others) {
       const other = others[k];
       if (other.checkNear) {
-        other.checkNear(object);
+        other.checkNear(player);
       }
     }
 
-    if (!canOpenDoor && object.canOpenDoor) {
-      if (object.canOpenDoor.isOpened) {
-        object.owner.emit('canCloseDoor', {});
+    if (!canOpenDoor && player.canOpenDoor) {
+      if (player.canOpenDoor.isOpened) {
+        player.owner.emit('canCloseDoor', {});
       } else {
-        object.owner.emit('canOpenDoor', {});
+        player.owner.emit('canOpenDoor', {});
       }
       return;
     }
-    if (!canTalk && object.canTalk) {
-      object.owner.emit('canTalk', {});
+    if (!canTalk && player.canTalk) {
+      player.owner.emit('canTalk', {});
       return;
     }
-    if (canOpenDoor && !object.canOpenDoor) {
-      object.owner.emit('stopCan', {});
+    if (canOpenDoor && !player.canOpenDoor) {
+      player.owner.emit('stopCan', {});
       return;
     }
-    if (canTalk && !object.canTalk) {
-      object.owner.emit('stopCan', {});
-      delete object.talking;
+    if (canTalk && !player.canTalk) {
+      player.owner.emit('stopCan', {});
+      delete player.talking;
       return;
     }
-    if (canTalk !== object.canTalk) {
-      object.owner.emit('stopCan', {});
-      object.owner.emit('canTalk', {});
-      delete object.talking;
+    if (canTalk !== player.canTalk) {
+      player.owner.emit('stopCan', {});
+      player.owner.emit('canTalk', {});
+      delete player.talking;
       return;
     }
   }
