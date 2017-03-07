@@ -32,4 +32,13 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
       }
     }
   }
+
+  use(player) {
+    player.owner.saveParam('checkpoint', 'pos', {
+      x: this.pos.x,
+      y: this.pos.y,
+    });
+    player.owner.emit('useCheckpoint', {});
+    this.gameLevelZone.restart();
+  }
 }

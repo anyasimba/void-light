@@ -378,9 +378,14 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     if (this.canOpenDoor) {
       this.canOpenDoor.open(this);
+      return;
     }
     if (this.canTalk) {
       this.canTalk.talk(this);
+      return;
+    }
+    if (this.canCheckpoint) {
+      this.canCheckpoint.use(this);
     }
   }
   onKeyF() {

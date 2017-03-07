@@ -194,6 +194,10 @@ export class Client extends global.Client {
     }
   }
 
+  onUseCheckpoint() {
+    makeMessage('Душа прикреплена к кольцу', '#AAEEFF', 'Neucha');
+  }
+
   mainTheme() {
     game.bossBackSound.stop();
     game.youDiedSound.stop();

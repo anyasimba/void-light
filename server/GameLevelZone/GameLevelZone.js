@@ -64,7 +64,7 @@ export class GameLevelZone {
         y: y,
         slug: slug,
       };
-        Object.assign(data, o.properties);
+      Object.assign(data, o.properties);
 
       if (slug && !o.name) {
         switch (slug) {
@@ -162,13 +162,10 @@ export class GameLevelZone {
   }
 
   addClient(client) {
-    const i = Math.floor(Math.random() * this.playerPoints.length);
-    const p = this.playerPoints[i];
-    client.player.pos.x = p.x;
-    client.player.pos.y = p.y;
+    this.rebornPlayer(client.player);
     client.player.isAlive = true;
-
     this.addObject(client.player);
+
     this.emitTo(client);
     this.clients.push(client);
   }
@@ -178,6 +175,13 @@ export class GameLevelZone {
     this.removeObject(client.player);
   }
   rebornPlayer(player) {
+    if (player.owner.params['checkpoint']) {
+      const p = player.owner.params['checkpoint'].pos;
+      const a = Math.random() * Math.PI * 2;
+      player.pos.x = p.x + Math.cos(a) * WALL_SIZE * 2;
+      player.pos.y = p.y + Math.sin(a) * WALL_SIZE * 2;
+      return;
+    }
     const i = Math.floor(Math.random() * this.playerPoints.length);
     const p = this.playerPoints[i];
     player.pos.x = p.x;

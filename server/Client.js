@@ -24,6 +24,7 @@ export class Client extends global.Client {
     const cookies = parseCookies(sock.request.headers.cookie);
     if (cookies.params) {
       cookies.params = cookies.params.split('%3A').join(':');
+      cookies.params = cookies.params.split('%2C').join(',');
     }
     this.params = JSON.parse(cookies.params || '{}');
     console.log(this.params);

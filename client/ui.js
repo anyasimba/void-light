@@ -92,9 +92,7 @@ export function makeSuperMessage(text, color) {
 }
 
 export function makeMessage(text, color, font) {
-  if (client.message) {
-    disableMessage();
-  }
+  disableMessage();
 
   const group = new Phaser.Group(game);
 
@@ -153,6 +151,9 @@ export function makeMessage(text, color, font) {
   client.message = group;
 }
 export function disableMessage() {
+  if (!client.message) {
+    return;
+  }
   client.message.needHide = true;
   delete client.message;
 }
