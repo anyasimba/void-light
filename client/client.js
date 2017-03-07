@@ -165,10 +165,6 @@ export class Client extends global.Client {
   }
 
   onTalk(data) {
-    if (this.message) {
-      disableMessage();
-    }
-
     const dialog = global[data.name][data.talking];
     const lang = dialog.LANG_RU.replace(/ +/g, ' ').slice(1, -2);
     makeMessage(lang, '#AAEEFF', 'Neucha');

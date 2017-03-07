@@ -92,6 +92,10 @@ export function makeSuperMessage(text, color) {
 }
 
 export function makeMessage(text, color, font) {
+  if (client.message) {
+    disableMessage();
+  }
+
   const group = new Phaser.Group(game);
 
   const inner = new Phaser.Graphics(game, 0, 0);
@@ -119,24 +123,30 @@ export function makeMessage(text, color, font) {
   group.add(textView);
   game.ui.add(group);
 
-  let time = 0;
+  group.time = 0;
   group.preUpdate = () => {
     if (group.needHide) {
-      time -= dt * 10;
+      group.time -= dt;
     } else if (group.needShow) {
-      time += dt;
+      group.time += dt;
     }
-    if (time > 1) {
-      time = 1;
+    if (group.time > 1) {
+      group.time = 1;
       delete group.needShow;
     }
-    group.alpha = time;
-    if (time < 0) {
+    if (group.time < 0) {
       group.destroy();
     }
 
+    group.alpha = group.time;
+
     inner.y = textView.y - textView.height - 100;
     inner.scale.y = textView.height + 200;
+    if (group.isExpanded) {
+      textView.y = game.h - 300;
+      inner.y = textView.y - textView.height - 75;
+      inner.scale.y = textView.height + 250;
+    }
   };
   group.needShow = true;
 
@@ -149,7 +159,7 @@ export function disableMessage() {
 
 export function makeMessageOption(text, color, font, i, fn) {
   const textView = new Phaser.Text(
-    game, game.w * 0.5 - 300 + i * 600, game.h - 240, text, {
+    game, game.w * 0.5 - 300 + i * 600, game.h - 230, text, {
       font: font || 'Tinos',
       fontSize: 50,
       fontWeight: 'bold',
@@ -177,5 +187,6 @@ export function makeMessageOption(text, color, font, i, fn) {
     }
   }
 
+  client.message.isExpanded = true;
   client.message.add(textView);
 }

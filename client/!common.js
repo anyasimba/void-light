@@ -83,22 +83,18 @@ $(window).on('load', function () {
 
 function checkIfBothReady() {
   if (windowReady && fontReady) {
-    if (getCookie('enter') === 'true') {
-      setCookie('enter', '');
+    $('.username').val(getCookie('username'));
+    $('.login').css('display', 'block');
+    $('.login-button').click(e => {
+      const username = $('.username').val();
+      if (username.length > 24) {
+        alert('Не более 24 символов');
+        return;
+      }
+      setCookie('username', username);
+      $('.login').css('display', 'none');
       createGame();
-    } else {
-      $('.login').css('display', 'block');
-      $('.login-button').click(e => {
-        const username = $('.username').val();
-        if (username.length > 24) {
-          alert('Не более 16 символов');
-          return;
-        }
-        setCookie('username', username);
-        setCookie('enter', 'true');
-        window.location.reload();
-      });
-    }
+    });
   }
 };
 
@@ -204,7 +200,7 @@ function createGame() {
           'assets/bossDead__56304__syna-max__monster-death-scream.mp3'
         );
 
-        game.stage.backgroundColor = 0x000000;
+        game.stage.backgroundColor = 0x101010;
 
         game.stage.disableVisibilityChange = true;
         game.time.advancedTiming = true;
