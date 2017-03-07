@@ -103,10 +103,11 @@ function create() {
 
   game.ground = game.scene.add(new Phaser.Group(game));
   game.deads = game.scene.add(new Phaser.Group(game));
+  game.walls = game.scene.add(new Phaser.Group(game));
   game.bottom = game.scene.add(new Phaser.Group(game));
   game.middle = game.scene.add(new Phaser.Group(game));
   game.top = game.scene.add(new Phaser.Group(game));
-  game.walls = game.scene.add(new Phaser.Group(game));
+
   game.info = game.scene.add(new Phaser.Group(game));
   game.texts = game.scene.add(new Phaser.Group(game));
   game.textEvents1 = game.scene.add(new Phaser.Group(game));
@@ -130,9 +131,6 @@ function createGame() {
   global.game = new Phaser.Game(
     "100%", "100%", Phaser.CANVAS, '', {
       async preload() {
-        game.load.script('webfont',
-          '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
-
         game.load.image('shield', 'assets/shield.png');
         game.load.image('sword', 'assets/sword.png');
         game.load.image('player', 'assets/player.png');
@@ -207,7 +205,6 @@ function createGame() {
         game.scaleMode = Phaser.FILL_WINDOW_FIXED_ASPECT;
 
         game.scene = game.add.group();
-
         game.scene.postUpdate = () => {
           if (global.client && client.player) {
             const targetX = client.player.pos.x + client.player.speed.x *
@@ -301,6 +298,7 @@ function createGame() {
             }
           }
 
+          const scaleF = Math.ceil(game.scaleFactor * 10) * 0.1;
           const ts = WALL_SIZE * 10;
           const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
           const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
@@ -309,7 +307,9 @@ function createGame() {
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
               const tex = new Phaser.RenderTexture(
-                game, ts, ts, null, null, 1);
+                game,
+                ts * scaleF, ts * scaleF,
+                null, null, 1);
 
               textures[x] = textures[x] || [];
               textures[x][y] = tex;
@@ -317,7 +317,8 @@ function createGame() {
           }
 
           const bricksView = new Phaser.TileSprite(
-            game, 0, 0, WALL_SIZE, WALL_SIZE, 'bricks');
+            game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
+            'bricks');
 
           console.log('loading map...');
           for (let y = 0; y < client.map.height; ++y) {
@@ -334,9 +335,9 @@ function createGame() {
                 default:
               }
               if (view) {
-                const f = 1;
-                view.tilePosition.x = -x * WALL_SIZE / f;
-                view.tilePosition.y = -y * WALL_SIZE / f;
+                const f = scaleF;
+                view.tilePosition.x = -x * WALL_SIZE;
+                view.tilePosition.y = -y * WALL_SIZE;
                 view.tileScale.x = f;
                 view.tileScale.y = f;
 
@@ -344,8 +345,8 @@ function createGame() {
                 const cy = Math.floor(y * WALL_SIZE / ts);
                 textures[cx][cy].renderXY(
                   view,
-                  x * WALL_SIZE - cx * ts,
-                  y * WALL_SIZE - cy * ts,
+                  (x * WALL_SIZE - cx * ts) * scaleF,
+                  (y * WALL_SIZE - cy * ts) * scaleF,
                   false);
               }
             }
@@ -361,6 +362,7 @@ function createGame() {
                 game, x * ts, y * ts,
                 textures[x][y]);
               sprite.visible = false;
+              sprite.scale.set(1 / scaleF);
               sprite.update = () => {
                 if (global.client && global.client.player) {
                   const cx = sprite.x + ts * 0.5;
