@@ -64,6 +64,8 @@ export class GameLevelZone {
         y: y,
         slug: slug,
       };
+        Object.assign(data, o.properties);
+
       if (slug && !o.name) {
         switch (slug) {
           case 'born':
@@ -76,8 +78,6 @@ export class GameLevelZone {
             this.enemyPoints.push(data);
         }
       } else if (o.name) {
-        Object.assign(data, o.properties);
-
         switch (o.name) {
           case 'Door':
             this.mapObjects[data.mapID] = new Door(this, data);

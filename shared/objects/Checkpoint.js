@@ -4,10 +4,10 @@ export class Checkpoint {
   }
 
   get CELL_SIZE_W() {
-    return this.size.x;
+    return this.size;
   }
   get CELL_SIZE_H() {
-    return this.size.y;
+    return this.size;
   }
 
   constructor() {
