@@ -69,6 +69,9 @@ export class GameLevelZone {
           case 'born':
             this.playerPoints.push(data);
             break;
+          case 'checkpoint':
+            this.mapObjects[data.mapID] = new Checkpoint(this, data);
+            break;
           default:
             this.enemyPoints.push(data);
         }
@@ -350,9 +353,11 @@ export class GameLevelZone {
   updateObjectNears(player) {
     const canOpenDoor = player.canOpenDoor;
     const canTalk = player.canTalk;
+    const canCheckpoint = player.canCheckpoint;
 
     delete player.canOpenDoor;
     delete player.canTalk;
+    delete player.canCheckpoint;
 
     const others = player.others;
     for (const k in others) {
@@ -374,6 +379,10 @@ export class GameLevelZone {
       player.owner.emit('canTalk', {});
       return;
     }
+    if (!canCheckpoint && player.canCheckpoint) {
+      player.owner.emit('canCheckpoint', {});
+      return;
+    }
     if (canOpenDoor && !player.canOpenDoor) {
       player.owner.emit('stopCan', {});
       return;
@@ -387,6 +396,10 @@ export class GameLevelZone {
       player.owner.emit('stopCan', {});
       player.owner.emit('canTalk', {});
       delete player.talking;
+      return;
+    }
+    if (canCheckpoint && !player.canCheckpoint) {
+      player.owner.emit('stopCan', {});
       return;
     }
   }

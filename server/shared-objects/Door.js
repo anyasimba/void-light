@@ -1,9 +1,12 @@
 export class Door extends mix(global.Door, MixGameObject) {
   get state() {
     return {
-      pos: this.pos,
-      size: this.size,
+      pos: this.pos.clone(),
+      size: this.size.clone(),
 
+      isOpened: this.isOpened,
+      isOpening: this.isOpening,
+      isClosing: this.isClosing,
       progress: this.progress,
     };
   }

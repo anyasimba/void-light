@@ -7,7 +7,7 @@ export class Item extends mix(global.Item, MixGameObject) {
 
       hand: this.hand,
 
-      pos: this.pos,
+      pos: this.pos.clone(),
       angle: this.angle,
       sideAngle: this.sideAngle,
     };

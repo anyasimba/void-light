@@ -159,7 +159,7 @@ export function disableMessage() {
 
 export function makeMessageOption(text, color, font, i, fn) {
   const textView = new Phaser.Text(
-    game, game.w * 0.5 - 300 + i * 600, game.h - 230, text, {
+    game, game.w * 0.5 - 300 + i * 600, game.h - 220, text, {
       font: font || 'Tinos',
       fontSize: 50,
       fontWeight: 'bold',

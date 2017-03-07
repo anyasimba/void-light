@@ -162,6 +162,9 @@ export class Client extends global.Client {
   onCanTalk() {
     makeMessage('Нажмите [C] чтобы говорить..', '#AAEEFF');
   }
+  onCanCheckpoint() {
+    makeMessage('Нажмите [C] чтобы отдохнуть..', '#AAEEFF');
+  }
   onStopCan() {
     disableMessage();
   }
@@ -179,7 +182,7 @@ export class Client extends global.Client {
     const n = answers.length - 1;
     for (const k in answers) {
       const a = dialog[parseInt(k) + 1];
-      let i = 0;
+      let i = 0.5;
       if (n > 0) {
         i = k / n;
       }

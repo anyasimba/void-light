@@ -133,6 +133,7 @@ function createGame() {
       async preload() {
         game.load.image('shield', 'assets/shield.png');
         game.load.image('sword', 'assets/sword.png');
+
         game.load.image('player', 'assets/player.png');
         game.load.image('player-back', 'assets/player-back.png');
 
@@ -147,6 +148,8 @@ function createGame() {
           'assets/stage1__mob1--foot.png');
         game.load.image('stage1__mob1--hand',
           'assets/stage1__mob1--hand.png');
+
+        game.load.image('checkpoint', 'assets/checkpoint.png');
 
         game.load.image('ground', 'assets/ground.jpg');
         game.load.image('bricks', 'assets/bricks.jpg');
@@ -343,6 +346,7 @@ function createGame() {
 
                 const cx = Math.floor(x * WALL_SIZE / ts);
                 const cy = Math.floor(y * WALL_SIZE / ts);
+                textures[cx][cy].isUsed = true;
                 textures[cx][cy].renderXY(
                   view,
                   (x * WALL_SIZE - cx * ts) * scaleF,
@@ -353,11 +357,15 @@ function createGame() {
           }
           console.log('done', xn * yn);
 
-          game.ground.add(new Phaser.TileSprite(
+          const groundSprite = game.ground.add(new Phaser.TileSprite(
             game, 0, 0, client.w, client.h, 'ground'));
 
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
+              if (!textures[x][y].isUsed) {
+                continue;
+              }
+
               const sprite = new Phaser.Sprite(
                 game, x * ts, y * ts,
                 textures[x][y]);
