@@ -1,8 +1,6 @@
 export function Server() {
   const app = express();
 
-  app.use(cookieParser());
-
   app.all('*', function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods',
@@ -16,9 +14,6 @@ export function Server() {
       path = path || ('.' + route);
       app
         .get(route, (req, res) => {
-          if (fn) {
-            fn(req, res);
-          }
           res.sendFile(path, {
             'root': './',
           });
@@ -51,9 +46,7 @@ export function Server() {
   });
 
   app
-    .useStaticFile('/', 'client/views/layout.html', (req, path) => {
-      console.log('Cookies: ', req.cookies);
-    })
+    .useStaticFile('/', 'client/views/layout.html')
     .useStaticFile('/client.js')
     .useStaticFile('/client.min.js')
     .useStaticFile('/client.dev.js')

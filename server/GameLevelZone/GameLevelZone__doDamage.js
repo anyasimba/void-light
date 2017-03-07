@@ -25,7 +25,7 @@ Object.assign(GameLevelZone.prototype, {
     }
   },
   doDamageRadialArea2Circle(source, opts, other) {
-    if (other.rollBlockTime && !other.inHit) {
+    if (other.rollBlockTime && !other.inHit && !other.inJump) {
       return;
     }
     const isInvade = source.invade || other.invade;

@@ -6,15 +6,43 @@ preMain(async() => {
   }
 })
 
+export function parseCookies(rc) {
+  const list = {};
+
+  rc && rc.split(';').forEach(cookie => {
+    const parts = cookie.split('=');
+    list[parts.shift().trim()] = decodeURI(parts.join('='));
+  });
+
+  return list;
+}
+
 export class Client extends global.Client {
   constructor(sock) {
     super(sock);
+
+    const cookies = parseCookies(sock.request.headers.cookie);
+    if (cookies.params) {
+      cookies.params = cookies.params.split('%3A').join(':');
+    }
+    this.params = JSON.parse(cookies.params || '{}');
+    console.log(this.params);
 
     this.netID = Client.createID();
 
     this.tasks = [];
 
     this.on('login', data => this.onLogin(data));
+  }
+
+  saveParam(slug, key, value) {
+    this.params[slug] = this.params[slug] || {};
+    this.params[slug][key] = value;
+    this.emit('saveParam', {
+      slug: slug,
+      key: key,
+      value: value,
+    });
   }
 
   onLogin(data) {
@@ -29,6 +57,8 @@ export class Client extends global.Client {
   }
 
   login() {
+    this.saveParam('items', 'heal__regular', 3);
+
     this.player = new Fighter(this, {
       kind: 'player',
       name: this.username,

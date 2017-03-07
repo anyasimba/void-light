@@ -80,6 +80,8 @@ export class Client extends global.Client {
         'y': my,
       });
     });
+
+    this.params = {};
   }
 
   onConnect() {
@@ -212,5 +214,11 @@ export class Client extends global.Client {
     game.bossDeadSound.play();
     this.mainTheme();
     makeSuperMessage('ПОБЕДА', '#FFFF22');
+  }
+
+  onSaveParam(data) {
+    this.params[data.slug] = this.params[data.slug] || {};
+    this.params[data.slug][data.key] = data.value;
+    setCookie('params', JSON.stringify(this.params));
   }
 }
