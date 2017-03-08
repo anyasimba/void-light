@@ -15,16 +15,18 @@ export const stage1__mob1 = {
   ROLL_TIME: [5, 15],
   JUMP_TIME: [10, 15],
 
+  VOIDS_COUNT: 300,
+
   FIGHTER: {
     LANG_RU: 'Обыденный грех',
 
     name: 'stage1__mob1',
 
     hitSpeed: 2.5,
+    damage: 24,
 
     ACC: 400,
     RUN_ACC: 700,
-    DAMAGE: 24,
     BODY_SIZE: 140,
     SCALE: 1.2,
 
@@ -85,15 +87,17 @@ export const stage1__mob2 = {
   ROLL_TIME: [5, 15],
   JUMP_TIME: [10, 15],
 
+  VOIDS_COUNT: 200,
+
   FIGHTER: {
     LANG_RU: 'Высосанный',
     name: 'stage1__mob2',
 
     hitSpeed: 1.8,
+    damage: 30,
 
     ACC: 500,
     RUN_ACC: 800,
-    DAMAGE: 30,
     BODY_SIZE: 40,
     SCALE: 3,
 
@@ -140,15 +144,17 @@ export const stage1__boss1 = {
   ROLL_TIME: [5, 15],
   JUMP_TIME: [10, 15],
 
+  VOIDS_COUNT: 3000,
+
   FIGHTER: {
     LANG_RU: 'Истяженная оболочка',
     name: 'stage1__boss1',
 
     hitSpeed: 2,
+    damage: 30,
 
     ACC: 300,
     RUN_ACC: 500,
-    DAMAGE: 30,
     BODY_SIZE: 40,
     SCALE: 4,
 

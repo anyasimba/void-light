@@ -175,8 +175,8 @@ export class GameLevelZone {
     this.removeObject(client.player);
   }
   rebornPlayer(player) {
-    if (player.owner.params['checkpoint']) {
-      const p = player.owner.params['checkpoint'].pos;
+    if (player.owner.params.checkpoint) {
+      const p = player.owner.params.checkpoint.pos;
       const a = Math.random() * Math.PI * 2;
       player.pos.x = p.x + Math.cos(a) * WALL_SIZE * 2;
       player.pos.y = p.y + Math.sin(a) * WALL_SIZE * 2;

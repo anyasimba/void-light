@@ -58,18 +58,12 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       mp: this.mp,
       STAMINA: this.STAMINA,
       stamina: this.stamina,
+      hitSpeed: this.hitSpeed,
     });
   }
 
   constructor(owner, opts) {
     opts = opts || {};
-
-    let hitSpeedF = 1;
-    if (opts.kind === 'mob') {
-      hitSpeedF *= 1.2;
-    } else {
-      hitSpeedF *= 1.5;
-    }
 
     super({
       lang: opts.LANG_RU,
@@ -84,8 +78,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       size: opts.BODY_SIZE || Fighter.BODY_SIZE,
       scale: opts.SCALE,
 
-      hitSpeed: opts.hitSpeed * hitSpeedF,
-      damage: opts.DAMAGE,
+      hitSpeed: opts.hitSpeed,
+      damage: opts.damage,
 
       ACC: opts.ACC || Fighter.ACC,
       RUN_ACC: opts.RUN_ACC || Fighter.RUN_ACC,
@@ -146,13 +140,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.owner.gameLevelZone.addObject(this);
     }
   }
-  onDie() {
+  onDie(source) {
     delete this.isAlive;
     this.finishHit();
     this.clearSteps();
     this.emitPos();
     this.emitAll('die', {});
-    this.owner.onDie();
+    this.owner.onDie(source);
     if (!this.isAlive) {
       this.owner.gameLevelZone.removeObject(this);
     }
@@ -403,10 +397,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.emitPos();
   }
   onKeyQ() {}
-  onKeyE() {
-    this.hp = Math.min(this.HP, this.hp + 50);
-    this.emitParams();
-  }
+  onKeyE() {}
   onKeyH() {
     this.invade = true;
     this.emitAll('invade', {});

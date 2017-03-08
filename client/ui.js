@@ -1,26 +1,99 @@
 const PAD = 40;
 
-function makeBar(innerColor, x, y, w, h, update) {
-  const outer = new Phaser.Graphics(game, 0, 0);
-  outer.beginFill(0x000000, 0);
-  outer.lineStyle(3, innerColor, 0.8);
-  outer.drawRect(0, 0, w, h);
-  outer.endFill();
-  outer.x = PAD + x;
-  outer.y = PAD + y;
-  game.ui.add(outer);
+export function makeButton(text, color, font, fontSize, x, y, PAD, fn) {
+  const textView = new Phaser.Text(
+    game, x, y, text, {
+      font: font || 'Tinos',
+      fontSize: fontSize,
+      fontWeight: 'bold',
+      fill: color,
+      stroke: '#050505',
+      strokeThickness: 6,
+    });
+  textView.update = () => {
+    textView.fill = textView.baseFill || color;
+    textView.stroke = '#050505';
 
-  const inner = new Phaser.Graphics(game, 0, 0);
-  inner.beginFill(innerColor, 0.5);
-  inner.lineStyle(0, 0x000000, 0);
-  inner.drawRect(0, 0, w, h);
-  inner.endFill();
-  inner.x = PAD + x;
-  inner.y = PAD + y;
-  inner.update = () => {
-    update(inner);
-  };
-  game.ui.add(inner);
+    let dx = mx - game.ui.x -
+      (textView.x - textView.width * textView.anchor.x - PAD);
+    let dy = my - game.ui.y -
+      (textView.y - textView.height * textView.anchor.y - PAD);
+
+    let parentGroup = textView.parentGroup;
+    while (parentGroup) {
+      dx -= parentGroup.x;
+      dy -= parentGroup.y;
+      parentGroup = parentGroup.parentGroup;
+    }
+    if (dx > 0 && dx < textView.width + PAD * 2) {
+      if (dy > 0 && dy < textView.height + PAD * 2) {
+        textView.fill = '#FFFFFF';
+        textView.stroke = '#AAAAAA';
+        global.mouseCapture = fn;
+      }
+    }
+  }
+
+  return textView;
+}
+
+export function makeRect(
+  fillColor, fillA, lineColor, lineA, lw, x, y, w, h, update) {
+
+  const g = new Phaser.Graphics(game, x, y);
+  g.beginFill(fillColor, fillA);
+  g.lineStyle(lw, lineColor, lineA);
+  g.drawRect(0, 0, w, h);
+  g.endFill();
+  if (update) {
+    g.update = () => {
+      update(g);
+    };
+  }
+  return g;
+}
+
+export function makeBar(innerColor, x, y, w, h, update) {
+  const outer = game.ui.add(makeRect(
+    0x000000, 0,
+    innerColor, 0.8, 3,
+    PAD + x, PAD + y, w, h));
+  const inner = game.ui.add(makeRect(
+    innerColor, 0.5,
+    0, 0x000000, 0,
+    PAD + x, PAD + y, w, h, () => {
+      update(inner);
+      inner.scale.x = Math.min(inner.scale.x, 1);
+    }));
+}
+
+export function makeVoidsCount() {
+  const getParams = () => {
+    if (client.params && client.params.fighter && client.params.fighter.params) {
+      return client.params.fighter.params;
+    }
+  }
+  makeBar(0x999999, 0, game.h - 100, 300, 10, (inner) => {
+    if (global.client && global.client.player) {
+      const params = getParams();
+      if (params) {
+        inner.scale.x = params.voidsCount / levelLimit(params.level);
+      }
+    };
+  });
+  const voidsCountView = new Phaser.Text(game, 300 + PAD, game.h - 120, '', {
+    font: 'Tinos',
+    fontSize: 40,
+    fill: '#AAAAAA',
+  });
+  voidsCountView.anchor.x = 1;
+  voidsCountView.update = () => {
+    const params = getParams();
+    if (params) {
+      voidsCountView.text = params.voidsCount + ' пустоты';
+    }
+  }
+  game.ui.add(voidsCountView);
 }
 
 export function initUI() {
@@ -39,6 +112,8 @@ export function initUI() {
       inner.scale.x = client.player.mp / client.player.MP;
     };
   });
+
+  makeVoidsCount();
 }
 
 export function makeSuperMessage(text, color) {
@@ -48,8 +123,6 @@ export function makeSuperMessage(text, color) {
     font: 'Tinos',
     fontSize: 140,
     fill: color,
-    boundsAlignH: 'center',
-    boundsAlignV: 'center',
   });
   textView.alpha = 1;
   textView.anchor.set(0.5);
@@ -57,8 +130,6 @@ export function makeSuperMessage(text, color) {
     font: 'Tinos',
     fontSize: 180,
     fill: color,
-    boundsAlignH: 'center',
-    boundsAlignV: 'center',
   });
   textView2.alpha = 0;
   textView2.anchor.set(0.5);
@@ -159,34 +230,15 @@ export function disableMessage() {
 }
 
 export function makeMessageOption(text, color, font, i, fn) {
-  const textView = new Phaser.Text(
-    game, game.w * 0.5 - 300 + i * 600, game.h - 220, text, {
-      font: font || 'Tinos',
-      fontSize: 50,
-      fontWeight: 'bold',
-      fill: color,
-      stroke: '#050505',
-      strokeThickness: 6,
-    });
+  const textView = makeButton(
+    text,
+    color,
+    font,
+    50,
+    game.w * 0.5 - 300 + i * 600, game.h - 220, 40,
+    fn);
   textView.anchor.x = i;
   textView.anchor.y = 0;
-  textView.update = () => {
-    textView.fill = color;
-    textView.stroke = '#050505';
-
-    const PAD = 40;
-    const dx = mx - game.ui.x -
-      (textView.x - textView.width * textView.anchor.x - PAD);
-    const dy = my - game.ui.y -
-      (textView.y - textView.height * textView.anchor.y - PAD);
-    if (dx > 0 && dx < textView.width + PAD * 2) {
-      if (dy > 0 && dy < textView.height + PAD * 2) {
-        textView.fill = '#FFFFFF';
-        textView.stroke = '#AAAAAA';
-        global.mouseCapture = fn;
-      }
-    }
-  }
 
   client.message.isExpanded = true;
   client.message.add(textView);

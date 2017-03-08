@@ -70,6 +70,11 @@ export class Client extends global.Client {
         this.emit('h', {});
       });
 
+    game.input.keyboard.addKey(Phaser.Keyboard.ESC)
+      .onDown.add(() => {
+        showGameMenu();
+      });
+
     game.input.onDown.add(() => {
       if (global.mouseCapture) {
         global.mouseCapture();
@@ -81,7 +86,7 @@ export class Client extends global.Client {
       });
     });
 
-    this.params = {};
+    this.params = JSON.parse(getCookie('params') || '{}');
   }
 
   onConnect() {
@@ -167,6 +172,10 @@ export class Client extends global.Client {
   }
   onStopCan() {
     disableMessage();
+    if (this.nextMessage) {
+      clearTimeout(this.nextMessage);
+      delete this.nextMessage;
+    }
   }
 
   onTalk(data) {
@@ -196,6 +205,37 @@ export class Client extends global.Client {
 
   onUseCheckpoint() {
     makeMessage('Душа прикреплена к кольцу', '#AAEEFF', 'Neucha');
+    makeMessageOption('Переместиться', '#AAAAAA', 'Neucha', -1, () => {});
+
+    makeMessageOption('Повысить уровень', '#AAEEFF', 'Neucha', 0.5, () => {
+      const voidsCount = levelLimit(this.params.fighter.params.level);
+      makeMessage(`Повысить уровень за ${voidsCount} пустоты?`,
+        '#AAEEFF', 'Neucha');
+      makeMessageOption('Да', '#AAEEFF', 'Neucha', 0, () => {
+        if (voidsCount > this.params.fighter.params.voidsCount) {
+          makeMessage('Недостаточно пустоты..', '#FFAAAA',
+            'Neucha');
+          this.nextMessage = setTimeout(() => {
+            delete this.nextMessage;
+            this.onUseCheckpoint();
+          }, 1500);
+          return;
+        }
+
+        this.emit('upLevel', {});
+        showGameMenu(true);
+        makeMessage('Повышен уровень..', '#FFEEAA', 'Neucha');
+        this.nextMessage = setTimeout(() => {
+          delete this.nextMessage;
+          this.onUseCheckpoint();
+        }, 800);
+      });
+      makeMessageOption('Нет', '#AAEEFF', 'Neucha', 1, () => {
+        this.onUseCheckpoint();
+      });
+    });
+
+    makeMessageOption('Отдать свету', '#AAAAAA', 'Neucha', 2, () => {});
   }
 
   mainTheme() {

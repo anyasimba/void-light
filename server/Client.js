@@ -27,6 +27,38 @@ export class Client extends global.Client {
       cookies.params = cookies.params.split('%2C').join(',');
     }
     this.params = JSON.parse(cookies.params || '{}');
+
+    if (!this.params.items) {
+      this.saveParam('items', 'heal__regular', 3);
+    }
+
+    let hasChange;
+    let fighterParams = this.params.fighter || {};
+    fighterParams = fighterParams.params || {};
+
+    if (fighterParams.username !== cookies.username) {
+      hasChange = true;
+      fighterParams.username = cookies.username;
+    }
+    for (const k in PLAYER_PARAMS) {
+      const param = PLAYER_PARAMS[k];
+      if (!fighterParams[param]) {
+        hasChange = true;
+        fighterParams[param] = 0;
+      }
+    }
+    if (!fighterParams.level) {
+      hasChange = true;
+      fighterParams.level = 1;
+    }
+    if (!fighterParams.voidsCount) {
+      hasChange = true;
+      fighterParams.voidsCount = 0;
+    }
+    if (hasChange) {
+      this.saveParam('fighter', 'params', fighterParams);
+    }
+
     console.log(this.params);
 
     this.netID = Client.createID();
@@ -58,22 +90,17 @@ export class Client extends global.Client {
   }
 
   login() {
-    this.saveParam('items', 'heal__regular', 3);
-
-    this.player = new Fighter(this, {
+    this.player = {};
+    this.updateFighter();
+    this.player = new Fighter(this, Object.assign({
       kind: 'player',
       name: this.username,
 
-      hitSpeed: 1,
-      DAMAGE: 40,
-
       BALANCE: 10,
-      HP: 100,
       MP: 100,
-      STAMINA: 50,
 
       SCALE: 1,
-    });
+    }, this.player));
 
     this.emit('playerID', {
       playerID: this.player.id,
@@ -116,8 +143,11 @@ export class Client extends global.Client {
     console.log('User disconnected', this.username);
   }
 
-  onDie() {
+  onDie(source) {
     if (!this.player.invade) {
+      this.params.fighter.params.voidsCount = 0;
+      this.saveParam('fighter', 'params', this.params.fighter.params);
+
       this.gameLevelZone.restartTime = 6;
     } else {
       setTimeout(() => {
@@ -143,6 +173,8 @@ export class Client extends global.Client {
     this.on('e', data => this.onEventE(data));
     this.on('h', data => this.onEventH(data));
     this.on('talk', data => this.onTalk(data));
+    this.on('upLevel', data => this.onUpLevel(data));
+    this.on('incParam', data => this.onIncParam(data));
   }
 
   /**
@@ -278,5 +310,72 @@ export class Client extends global.Client {
       console.log(e, e.stack);
       process.exit(1);
     }
+  }
+
+  onUpLevel(data) {
+    try {
+      if (!this.player.canCheckpoint) {
+        return;
+      }
+      const params = this.params.fighter.params;
+      const need = levelLimit(params.level);
+      const exists = params.voidsCount;
+      if (exists < need) {
+        return;
+      }
+      params.voidsCount -= need;
+      params.level += 1;
+      this.saveParam('fighter', 'params', params);
+    } catch (e) {
+      console.log(e, e.stack);
+      process.exit(1);
+    }
+  }
+
+  onIncParam(data) {
+    try {
+      if (!PLAYER_PARAMS[data.i]) {
+        return;
+      }
+      const params = this.params.fighter.params;
+      let total = 0;
+      for (let i = 0; i < PLAYER_PARAMS.length; ++i) {
+        const param = PLAYER_PARAMS[i];
+        total += params[param];
+      }
+      if (total < params.level - 1) {
+        params[PLAYER_PARAMS[data.i]] += 1;
+        this.saveParam('fighter', 'params', params);
+        this.updateFighter();
+      }
+    } catch (e) {
+      console.log(e, e.stack);
+      process.exit(1);
+    }
+  }
+
+  updateFighter() {
+    const params = this.params.fighter.params;
+    this.player.HP = 60 + params.Health * 4;
+    this.player.STAMINA = 20 + params.Endurance * 2;
+    this.player.damage = 10 + this.getStep(
+      params.Strength, 10, 2, 30, 1, 50, 0.5, 0.25);
+    this.player.hitSpeed = 0.9 + 0.5 / (this.getStep(
+      params.Dexterity, 10, 0.1, 30, 0.3, 50, 0.5, 1) * 0.1 + 1);
+    if (this.player.emitParams) {
+      this.player.emitParams();
+    }
+  }
+  getStep(x, l1, f1, l2, f2, l3, f3, f4) {
+    if (x <= l1) {
+      return x * f1;
+    }
+    if (x <= l2) {
+      return x * f2 + l1 * f1;
+    }
+    if (x <= l3) {
+      return x * f3 + (l2 - l1) * f2 + l1 * f1;
+    }
+    return x * f4 + (l3 - l2) * f3 + (l2 - l1) * f2 + l1 * f1;
   }
 }

@@ -415,7 +415,14 @@ export class Mob {
     }
   }
 
-  onDie() {
+  onDie(source) {
+    if (source.kind === 'player' && this.opts.VOIDS_COUNT) {
+      source.owner.params.fighter.params.voidsCount +=
+        this.opts.VOIDS_COUNT;
+      source.owner.saveParam('fighter', 'params',
+        source.owner.params.fighter.params);
+    }
+
     if (this.area) {
       const clients = this.gameLevelZone.clients;
       for (const k in clients) {
@@ -425,7 +432,6 @@ export class Mob {
           client.emit('bossDead', {});
         }
       }
-      this.gameLevelZone.restartTime = 6;
     }
   }
 }

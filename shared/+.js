@@ -5,3 +5,4 @@ globally(require('./objects/+'));
 globally(require('./quests/stage1'));
 globally(require('./Client'));
 globally(require('./map'));
+globally(require('./params'));

@@ -96,7 +96,7 @@ Object.assign(GameLevelZone.prototype, {
         damage: damage,
       });
       if (other.hp <= 0) {
-        other.onDie();
+        other.onDie(source);
       }
       if (other.inHit && other.balance <= other.BALANCE * 0.5) {
         other.breakHit();
@@ -108,6 +108,7 @@ Object.assign(GameLevelZone.prototype, {
         other.stun(0.2);
       } else if (isInBlock && other.stamina <= 0) {
         other.stun(source.weapon.staminaTime * 2);
+        other.balance = other.BALANCE;
       }
 
       if (other.speed.length > 200) {
