@@ -13,6 +13,9 @@ export function makeButton(text, color, font, fontSize, x, y, PAD, fn) {
   textView.update = () => {
     textView.fill = textView.baseFill || color;
     textView.stroke = '#050505';
+    if (textView.disabled) {
+      return;
+    }
 
     let dx = mx - game.ui.x -
       (textView.x - textView.width * textView.anchor.x - PAD);
@@ -21,6 +24,9 @@ export function makeButton(text, color, font, fontSize, x, y, PAD, fn) {
 
     let parentGroup = textView.parentGroup;
     while (parentGroup) {
+      if (parentGroup.needHide || !parentGroup.visible) {
+        return;
+      }
       dx -= parentGroup.x;
       dy -= parentGroup.y;
       parentGroup = parentGroup.parentGroup;
@@ -239,6 +245,7 @@ export function makeMessageOption(text, color, font, i, fn) {
     fn);
   textView.anchor.x = i;
   textView.anchor.y = 0;
+  textView.parentGroup = client.message;
 
   client.message.isExpanded = true;
   client.message.add(textView);

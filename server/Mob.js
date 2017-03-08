@@ -33,7 +33,6 @@ export class Mob {
     delete this.rollTime;
     delete this.jumpTime;
     delete this.fighter.absLook;
-    this.fighter.emitPos();
     if (this.hits) {
       clearInterval(this.hits);
       delete this.hits;
@@ -43,6 +42,9 @@ export class Mob {
     this.fighter.pos.y = this.opts.y;
 
     this.fighter.reborn();
+    this.fighter.look = new vec3(0, 1, 0);
+    this.fighter.emitPos();
+    this.fighter.stun(0);
 
     this.fighter.area = this.area;
   }

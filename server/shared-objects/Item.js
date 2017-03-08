@@ -29,7 +29,7 @@ export function ItemSword(parent) {
     hand: 1,
     damage: 40,
     balance: 4,
-    stamina: 3,
+    stamina: 6,
     staminaTime: 1,
     pos: {
       x: -25,

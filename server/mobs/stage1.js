@@ -22,6 +22,8 @@ export const stage1__mob1 = {
 
     name: 'stage1__mob1',
 
+    moveTimeF: 0.5,
+
     hitSpeed: 3,
     damage: 15,
 
@@ -93,6 +95,8 @@ export const stage1__mob2 = {
     LANG_RU: 'Высосанный',
     name: 'stage1__mob2',
 
+    moveTimeF: 0.75,
+
     hitSpeed: 2,
     damage: 20,
 
@@ -149,6 +153,8 @@ export const stage1__boss1 = {
   FIGHTER: {
     LANG_RU: 'Истяженная оболочка',
     name: 'stage1__boss1',
+
+    moveTimeF: 0.6,
 
     hitSpeed: 2,
     damage: 30,

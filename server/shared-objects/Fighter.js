@@ -16,6 +16,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       isRun: this.isRun,
       isBlock: this.isBlock,
 
+      moveTimeF: this.moveTimeF,
+
       kind: this.kind,
       size: this.size,
       scale: this.scale,
@@ -77,6 +79,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       name: opts.name,
       size: opts.BODY_SIZE || Fighter.BODY_SIZE,
       scale: opts.SCALE,
+
+      moveTimeF: opts.moveTimeF,
 
       hitSpeed: opts.hitSpeed,
       damage: opts.damage,
@@ -268,7 +272,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         this.breakHit();
       }
       this.clearSteps();
-      this.stunTime = time;
+      this.stunTime = time / this.moveTimeF;
       this.emitPos();
       this.emitAll('stun', {
         time: time,
@@ -319,7 +323,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   useHP(v, time) {
     this.hp = Math.max(this.hp - v, 0);
     this.hpTime = this.hpTime || 0;
-    this.hpTime = Math.max(this.hpTime, time);
+    this.hpTime = Math.max(this.hpTime, time / this.moveTimeF);
     this.emitAll('useHP', {
       hp: this.hp,
       time: this.hpTime,
@@ -328,7 +332,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   useStamina(v, time) {
     this.stamina = Math.max(this.stamina - v, 0);
     this.staminaTime = this.staminaTime || 0;
-    this.staminaTime = Math.max(this.staminaTime, time);
+    this.staminaTime = Math.max(this.staminaTime, time / this.moveTimeF);
     this.emitAll('useStamina', {
       stamina: this.stamina,
       time: this.staminaTime,
@@ -337,7 +341,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   useBalance(v, time) {
     this.balance = Math.max(this.balance - v, 0);
     this.balanceTime = this.balanceTime || 0;
-    this.balanceTime = Math.max(this.balanceTime, time);
+    this.balanceTime = Math.max(this.balanceTime, time / this.moveTimeF);
   }
 
   isInGameLevelZone() {
@@ -418,8 +422,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
 
       const rollData = {
-        duration: 0.6,
-        afterTime: 0.4,
+        duration: 0.8 / this.moveTimeF,
+        afterTime: 0.6 / this.moveTimeF,
         force: 800,
         forceInJump: 750,
       };
@@ -429,7 +433,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
       rollData.force *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
       rollData.forceInJump *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
-      this.rollBlockTime = rollData.duration + rollData.afterTime * 0.5;
+      this.rollBlockTime = rollData.duration + 0.2;
       this.onRoll(rollData);
       this.emitAll('roll', rollData);
       this.emitPos();
@@ -452,7 +456,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
       const jumpData = {
         duration: 0.6,
-        afterTime: 0.3,
+        afterTime: 0.3 / this.moveTimeF,
         force: 700,
       };
       if (this.inHit && this.hitStage !== 1) {

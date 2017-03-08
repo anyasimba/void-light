@@ -7,7 +7,7 @@ export class Fighter {
     return 400;
   }
   static get RUN_ACC() {
-    return 600;
+    return 550;
   }
   static get AIR_FRICTION() {
     return 0.02;
@@ -71,7 +71,7 @@ export class Fighter {
   update() {
     let FRICTION_F = 1;
     if (this.inJump || this.inRoll) {
-      FRICTION_F *= 0.1;
+      FRICTION_F *= 0.1 / this.moveTimeF;
     }
     const AIR_FRICTION = Math.pow(this.AIR_FRICTION, FRICTION_F);
     const AIR_F = Math.pow(AIR_FRICTION, dt);
@@ -88,7 +88,7 @@ export class Fighter {
     if (isMove) {
       let a = 0;
       if (this.isRun) {
-        this.stamina -= dt * 7;
+        this.stamina -= dt * 5;
         this.staminaTime = Math.max(this.staminaTime || 0, 0.05);
         if (this.stamina <= 0) {
           this.stamina = 0;
@@ -164,7 +164,7 @@ export class Fighter {
         delete this.staminaTime;
       }
     } else {
-      this.stamina = Math.min(this.STAMINA, this.stamina + dt * 30);
+      this.stamina = Math.min(this.STAMINA, this.stamina + dt * 15 * this.moveTimeF);
     }
     if (this.inRoll) {
       this.inRoll.time += dt;
@@ -193,9 +193,10 @@ export class Fighter {
         delete this.afterJumpTime;
       }
     }
-    if (this.stunTime) {
+    if (this.stunTime !== undefined) {
       if (!this.inStun) {
         this.inStun = true;
+        delete this.staminaTime;
         delete this.needNextHit;
 
         const hands = this.hands;
@@ -210,7 +211,6 @@ export class Fighter {
       if (this.stunTime <= 0) {
         delete this.stunTime;
         delete this.inStun;
-
         if (!this.inHit) {
           this.clearSteps();
           const hands = this.hands;

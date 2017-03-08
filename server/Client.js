@@ -49,7 +49,7 @@ export class Client extends global.Client {
     }
     if (!fighterParams.level) {
       hasChange = true;
-      fighterParams.level = 16;
+      fighterParams.level = 30;
     }
     if (!fighterParams.voidsCount) {
       hasChange = true;
@@ -357,10 +357,12 @@ export class Client extends global.Client {
 
   updateFighter() {
     const params = this.params.fighter.params;
+    this.player.moveTimeF = 1 + this.getStep(
+      params.Endurance, 10, 4, 30, 2, 50, 1, 0.25) * 0.005;
     this.player.HP = 60 + params.Health * 4;
-    this.player.STAMINA = 20 + params.Endurance * 2;
+    this.player.STAMINA = 30 + params.Willpower * 4;
     this.player.damage = 10 + this.getStep(
-      params.Strength, 10, 2, 30, 1, 50, 0.5, 0.25);
+      params.Strength, 10, 2, 30, 1, 50, 0.5, 0.25) * 0.3;
     this.player.hitSpeed = 0.9 + 0.5 / (this.getStep(
       params.Dexterity, 10, 0.1, 30, 0.3, 50, 0.5, 1) * 0.1 + 1);
     if (this.player.emitParams) {

@@ -90,6 +90,7 @@ Object.assign(GameLevelZone.prototype, {
         damage = 0;
       }
       damage *= damageF;
+      damage = Math.floor(damage);
       other.useHP(damage, 8);
       other.emitAll('otherHit', {
         inBlock: isInBlock,

@@ -30,17 +30,13 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
     this.view4.scale.x = 1.2 * f;
     this.view4.scale.y = 1.2 * f;
 
-    this.view.alpha = 0.5;
-    this.view2.alpha = 0.6;
-    this.view3.alpha = 0.7;
+    this.view.alpha = 1;
+    this.view2.alpha = 1;
+    this.view3.alpha = 1;
     this.view4.alpha = 1;
 
     this.view3.angle += 45;
     this.view4.angle -= 45;
-
-    this.view.blendMode = PIXI.blendModes.ADD;
-    this.view2.blendMode = PIXI.blendModes.ADD;
-    this.view3.blendMode = PIXI.blendModes.ADD;
 
     this.bottomGroup.add(this.view);
     this.middleGroup.add(this.view2);
