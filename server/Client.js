@@ -149,6 +149,7 @@ export class Client extends global.Client {
       this.saveParam('fighter', 'params', this.params.fighter.params);
 
       this.gameLevelZone.restartTime = 6;
+      this.gameLevelZone.restartFull = true;
     } else {
       setTimeout(() => {
         delete this.player.invade;

@@ -147,9 +147,18 @@ export class GameLevelZone {
   restart() {
     for (const k in this.clients) {
       const client = this.clients[k];
-      this.rebornPlayer(client.player);
       client.player.reborn();
-      client.emit('restart', {});
+    }
+    if (this.restartFull) {
+      delete this.restartFull;
+      for (const k in this.clients) {
+        const client = this.clients[k];
+        this.rebornPlayer(client.player);
+        client.emit('restart', {});
+      }
+    }
+    for (const k in this.clients) {
+      const client = this.clients[k];
       client.player.emitParams();
       client.player.emitPos();
     }
