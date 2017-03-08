@@ -24,15 +24,15 @@ export function ia_sword__doHit(opts) {
         this.weapon.stage(step2, easing.easeOutCubic, {
           sideAngle: -200,
         });
+        this.addImpulse(opts.impulse || 600);
       });
       this.step(time + 0.075, () => {
-        this.addImpulse(opts.impulse || 600);
-
         const damageOpts = {
           r1: 0,
           r2: 320,
           a1: -90,
           a2: 90,
+          impulse: opts.impulse || 600,
         }
         if (this.inRoll) {
           damageOpts.a1 = -140;
@@ -76,13 +76,12 @@ export function ia_sword__doHit(opts) {
 
       const step2 = 0.15;
       this.step(time + 0.075, () => {
-        this.addImpulse(opts.impulse2 || 600);
-
         const damageOpts = {
           r1: 0,
           r2: 320,
           a1: -90,
           a2: 90,
+          impulse: opts.impulse2 || 600,
         }
         if (this.inRoll) {
           damageOpts.a1 = -140;
@@ -99,6 +98,7 @@ export function ia_sword__doHit(opts) {
         this.doDamageRadialArea(damageOpts);
       });
       this.step(time, () => {
+        this.addImpulse(opts.impulse2 || 600);
         this.playHit();
         this.weapon.stage(step2, easing.easeOutCubic, {
           sideAngle: -50,
@@ -132,13 +132,12 @@ export function ia_sword__doHit(opts) {
 
       const step2 = 0.15;
       this.step(time + 0.075, () => {
-        this.addImpulse(opts.impulse3 || 600);
-
         const damageOpts = {
           r1: 0,
           r2: 320,
           a1: -90,
           a2: 90,
+          impulse: opts.impulse3 || 600,
         }
         if (this.inRoll) {
           damageOpts.a1 = -140;
@@ -155,6 +154,7 @@ export function ia_sword__doHit(opts) {
         this.doDamageRadialArea(damageOpts);
       });
       this.step(time, () => {
+        this.addImpulse(opts.impulse3 || 600);
         this.playHit();
         this.weapon.stage(step2, easing.easeOutCubic, {
           sideAngle: -200,

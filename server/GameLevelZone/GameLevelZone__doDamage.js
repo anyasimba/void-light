@@ -25,7 +25,7 @@ Object.assign(GameLevelZone.prototype, {
     }
   },
   doDamageRadialArea2Circle(source, opts, other) {
-    if (other.rollBlockTime && !other.inHit) {
+    if (other.rollBlockTime && !other.inHit && !other.inJump) {
       return;
     }
     const isInvade = source.invade || other.invade;
@@ -56,6 +56,7 @@ Object.assign(GameLevelZone.prototype, {
         other.isBlock &&
         other.stamina > 0 &&
         !other.inJump &&
+        !other.inStun &&
         !other.inHit;
 
       let balanceF = 1;
@@ -90,13 +91,14 @@ Object.assign(GameLevelZone.prototype, {
         damage = 0;
       }
       damage *= damageF;
+      damage = Math.floor(damage);
       other.useHP(damage, 8);
       other.emitAll('otherHit', {
         inBlock: isInBlock,
         damage: damage,
       });
       if (other.hp <= 0) {
-        other.onDie();
+        other.onDie(source);
       }
       if (other.inHit && other.balance <= other.BALANCE * 0.5) {
         other.breakHit();
@@ -108,6 +110,7 @@ Object.assign(GameLevelZone.prototype, {
         other.stun(0.2);
       } else if (isInBlock && other.stamina <= 0) {
         other.stun(source.weapon.staminaTime * 2);
+        other.balance = other.BALANCE;
       }
 
       if (other.speed.length > 200) {
@@ -116,9 +119,9 @@ Object.assign(GameLevelZone.prototype, {
         other.speed.init();
       }
       if (isJumpHit) {
-        vec3.add(other.speed, opts.hitVec.multiply(1800));
+        vec3.add(other.speed, opts.hitVec.multiply(opts.impulse * 3));
       } else {
-        vec3.add(other.speed, opts.hitVec.multiply(600));
+        vec3.add(other.speed, opts.hitVec.multiply(opts.impulse));
       }
       other.emitPos();
     }

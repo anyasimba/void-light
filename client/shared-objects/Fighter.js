@@ -17,14 +17,15 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     const text = new Phaser.Text(
       game, 0, 0, lang, {
-        font: 'Revalia',
-        fontSize: 32,
-        fill: '#CCAAAA',
-        stroke: '#111111',
-        strokeThickness: 2,
+        font: 'Neucha',
+        fontSize: 34,
+        fontWeight: 'bold',
+        fill: '#CCCCCC',
+        stroke: '#050505',
+        strokeThickness: 6,
         boundsAlignH: 'center',
       });
-    text.setTextBounds(x, y - 40, w, 20);
+    text.setTextBounds(x, y - 50, w, 20);
 
     return [outer, inner, text];
   }
@@ -180,7 +181,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         const barGroup = new Phaser.Group(game);
         this.infoGroup.add(barGroup);
         const bar = Fighter.createBar(
-          'Иная пустота', 0xFF3300, -125, -100, 250, 10, (inner) => {
+          this.name, 0xFF3300, -125, -100, 250, 10, (inner) => {
             inner.scale.x = this.hp / this.HP;
           });
         barGroup.add(bar[1]);
@@ -208,15 +209,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
 
     this.moveTime = 0;
-  }
-
-  playSound(name) {
-    if (game.cameraPos) {
-      const d = this.pos.subtract(game.cameraPos).length();
-      const sound = game.add.sound(name);
-      sound.volume = 100000 / (100000 + d * d);
-      sound.play();
-    }
   }
 
   playHit() {
@@ -290,12 +282,14 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
       const damageView = new Phaser.Text(
         game, this.pos.x, this.pos.y, data.damage, {
-          fontSize: 40,
+          font: 'Neucha',
+          fontWeight: 'bold',
+          fontSize: 45,
           fill: '#FF2200',
-          stroke: '#111111',
+          stroke: '#050505',
           strokeThickness: 8,
         });
-      damageView.alpha = 0.5;
+      damageView.alpha = 0.7;
       damageView.update = () => {
         damageView.y -= dt * 4;
         damageView.time = damageView.time || 0;
@@ -457,7 +451,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     if (this.inRoll) {
       const f = Math.sin(
         (this.inRoll.time / this.inRoll.duration * 2 + 0.5) * Math.PI);
-      if (this.inHit) {
+      if (this.inHit || this.inJump) {
         this.group.scale.y *= f;
       } else {
         this.group.scale.x *= f;

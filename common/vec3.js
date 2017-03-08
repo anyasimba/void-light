@@ -68,6 +68,9 @@ export class vec3 {
     return Math.max(Math.max(this.x, this.y), this.z);
   }
   toAngle() {
+    if (this.x === 0 && this.y === 0) {
+      return 0;
+    }
     return Math.atan2(this.y, this.x) * 180 / Math.PI;
   }
   toAngles() {

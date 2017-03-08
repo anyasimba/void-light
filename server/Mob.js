@@ -33,7 +33,6 @@ export class Mob {
     delete this.rollTime;
     delete this.jumpTime;
     delete this.fighter.absLook;
-    this.fighter.emitPos();
     if (this.hits) {
       clearInterval(this.hits);
       delete this.hits;
@@ -43,6 +42,9 @@ export class Mob {
     this.fighter.pos.y = this.opts.y;
 
     this.fighter.reborn();
+    this.fighter.look = new vec3(0, 1, 0);
+    this.fighter.emitPos();
+    this.fighter.stun(0);
 
     this.fighter.area = this.area;
   }
@@ -130,12 +132,12 @@ export class Mob {
     return p;
   }
   checkPlayer(x, y, player) {
-    if (this.target && (this.target.hp <= 0 || this.target.isDestroyed)) {
+    if (this.target && (!this.target.isAlive || this.target.isDestroyed)) {
       delete this.target;
       delete this.path;
       delete this.onWay;
     }
-    if (player.hp <= 0 || player.isDestroyed) {
+    if (!player.isAlive || player.isDestroyed) {
       return;
     }
     const tx = Math.floor(this.fighter.pos.x / WALL_SIZE);
@@ -236,7 +238,8 @@ export class Mob {
       const needGoHome = !this.pathMap[px] ||
         this.pathMap[px][py] === undefined ||
         this.pathMap[px][py] > this.opts.RUN_D ||
-        this.target.isDestroyed;
+        this.target.isDestroyed ||
+        !this.target.isAlive;
       if (needGoHome) {
         delete this.target;
         delete this.path;
@@ -293,7 +296,6 @@ export class Mob {
 
           this.act = 'hit';
           this.hitDir = this.target.pos
-            .add(this.target.speed.multiply(0.5))
             .subtract(this.fighter.pos)
             .unit()
             .multiply(1000);
@@ -416,7 +418,14 @@ export class Mob {
     }
   }
 
-  onDie() {
+  onDie(source) {
+    if (source.kind === 'player' && this.opts.VOIDS_COUNT) {
+      source.owner.params.fighter.params.voidsCount +=
+        this.opts.VOIDS_COUNT;
+      source.owner.saveParam('fighter', 'params',
+        source.owner.params.fighter.params);
+    }
+
     if (this.area) {
       const clients = this.gameLevelZone.clients;
       for (const k in clients) {
@@ -426,7 +435,6 @@ export class Mob {
           client.emit('bossDead', {});
         }
       }
-      this.gameLevelZone.restartTime = 6;
     }
   }
 }

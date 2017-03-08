@@ -7,7 +7,7 @@ export class Fighter {
     return 400;
   }
   static get RUN_ACC() {
-    return 600;
+    return 550;
   }
   static get AIR_FRICTION() {
     return 0.02;
@@ -17,10 +17,10 @@ export class Fighter {
   }
 
   static get LOOK_ROTATE_F() {
-    return 0.93;
+    return 0.94;
   }
   static get LOOK_ROTATE_IN_HIT_F() {
-    return 0.97;
+    return 0.99;
   }
 
   static get BODY_SIZE() {
@@ -71,7 +71,7 @@ export class Fighter {
   update() {
     let FRICTION_F = 1;
     if (this.inJump || this.inRoll) {
-      FRICTION_F *= 0.1;
+      FRICTION_F *= 0.1 / this.moveTimeF;
     }
     const AIR_FRICTION = Math.pow(this.AIR_FRICTION, FRICTION_F);
     const AIR_F = Math.pow(AIR_FRICTION, dt);
@@ -88,7 +88,7 @@ export class Fighter {
     if (isMove) {
       let a = 0;
       if (this.isRun) {
-        this.stamina -= dt * 7;
+        this.stamina -= dt * 5;
         this.staminaTime = Math.max(this.staminaTime || 0, 0.05);
         if (this.stamina <= 0) {
           this.stamina = 0;
@@ -125,8 +125,11 @@ export class Fighter {
     }
     vec3.add(this.pos, this.speed.multiply(dt));
 
-    if ((!this.inJump && !this.inRoll && !this.stunTime && !this.waitTime) ||
-      this.inHit) {
+    const isChangeLook =
+      (!this.inJump && !this.inRoll && !this.stunTime && !this.waitTime) ||
+      this.inHit;
+
+    if (isChangeLook) {
       let lookInput = this.inputMove;
       let lookF = Fighter.LOOK_ROTATE_F;
       if (this.absLook && !gameObjects[this.absLook]) {
@@ -139,10 +142,12 @@ export class Fighter {
         lookInput = this.hitVec;
         lookF = Fighter.LOOK_ROTATE_IN_HIT_F;
       }
-      const lookRel = lookInput
-        .subtract(this.look)
-        .multiply(1 - Math.pow(1 - lookF, dt));
-      vec3.add(this.look, lookRel);
+      if (lookInput.length() > 0.05) {
+        const lookRel = lookInput
+          .subtract(this.look)
+          .multiply(1 - Math.pow(1 - lookF, dt));
+        vec3.add(this.look, lookRel);
+      }
     }
 
     if (this.hpTime) {
@@ -151,7 +156,7 @@ export class Fighter {
         delete this.hpTime;
       }
     } else {
-      this.hp = Math.min(this.HP, this.hp + dt * 4);
+      this.hp = Math.min(this.HP, this.hp + dt);
     }
     if (this.staminaTime) {
       this.staminaTime -= dt;
@@ -159,7 +164,7 @@ export class Fighter {
         delete this.staminaTime;
       }
     } else {
-      this.stamina = Math.min(this.STAMINA, this.stamina + dt * 30);
+      this.stamina = Math.min(this.STAMINA, this.stamina + dt * 15 * this.moveTimeF);
     }
     if (this.inRoll) {
       this.inRoll.time += dt;
@@ -188,9 +193,10 @@ export class Fighter {
         delete this.afterJumpTime;
       }
     }
-    if (this.stunTime) {
+    if (this.stunTime !== undefined) {
       if (!this.inStun) {
         this.inStun = true;
+        this.staminaTime = this.stunTime * 0.9;
         delete this.needNextHit;
 
         const hands = this.hands;
@@ -205,7 +211,6 @@ export class Fighter {
       if (this.stunTime <= 0) {
         delete this.stunTime;
         delete this.inStun;
-
         if (!this.inHit) {
           this.clearSteps();
           const hands = this.hands;

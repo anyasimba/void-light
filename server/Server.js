@@ -1,7 +1,7 @@
 export function Server() {
-  const server = express();
+  const app = express();
 
-  server.all('*', function (req, res, next) {
+  app.all('*', function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods',
       'PUT, GET, POST, DELETE, OPTIONS');
@@ -9,10 +9,10 @@ export function Server() {
     next();
   });
 
-  Object.assign(server, {
-    useStaticFile(route, path) {
+  Object.assign(app, {
+    useStaticFile(route, path, fn) {
       path = path || ('.' + route);
-      server
+      app
         .get(route, (req, res) => {
           res.sendFile(path, {
             'root': './',
@@ -27,7 +27,7 @@ export function Server() {
     useStaticFolder(route, path) {
       path = path || ('.' + route);
       route += '*';
-      server
+      app
         .get(route, (req, res) => {
           res.sendFile(path + req.params[0], {
             'root': './',
@@ -45,7 +45,7 @@ export function Server() {
     }
   });
 
-  server
+  app
     .useStaticFile('/', 'client/views/layout.html')
     .useStaticFile('/client.js')
     .useStaticFile('/client.min.js')
@@ -56,12 +56,12 @@ export function Server() {
     .useStaticFolder('/maps/')
     .useStaticFolder('/shared/');
 
-  const socksServer = http.createServer(server);
-  const ioListener = io(socksServer, {
+  const socks = http.createServer(app);
+  const ioListener = io(socks, {
     origins: 'http://localhost:* http://127.0.0.1:*',
   });
-  socksServer.listen(3000, '0.0.0.0');
-  ioListener.sockets.on('connection', server.onUserConnect);
+  socks.listen(3000, '0.0.0.0');
+  ioListener.sockets.on('connection', app.onUserConnect);
 
-  return server;
+  return app;
 }

@@ -32,9 +32,6 @@ Object.assign(GameLevelZone.prototype, {
       const imp = 0.5;
       vec3.add(object.speed, v.multiply(force * imp));
       vec3.subtract(other.speed, v.multiply(force * imp));
-
-      object.emitPos();
-      other.emitPos();
     }
   },
   resolveCircle2StaticRectCollision(object, x, y, w, h) {
@@ -94,21 +91,17 @@ Object.assign(GameLevelZone.prototype, {
         if (dx > 0) {
           object.pos.x = x + bodyDX;
           object.speed.x = Math.abs(object.speed.x * imp);
-          object.emitPos();
         } else {
           object.pos.x = x - bodyDX;
           object.speed.x = -Math.abs(object.speed.x * imp);
-          object.emitPos();
         }
       } else if (Math.abs(dx) <= w * 0.5) {
         if (dy > 0) {
           object.pos.y = y + bodyDY;
           object.speed.y = Math.abs(object.speed.y * imp);
-          object.emitPos();
         } else {
           object.pos.y = y - bodyDY;
           object.speed.y = -Math.abs(object.speed.y * imp);
-          object.emitPos();
         }
       } else {
         if (dx < 0 && dy < 0) {
@@ -122,7 +115,6 @@ Object.assign(GameLevelZone.prototype, {
             y: dy * force * imp,
             z: 0,
           });
-          object.emitPos();
         }
         if (dx < 0 && dy >= 0) {
           const dx = (object.pos.x - x1) / d2;
@@ -135,7 +127,6 @@ Object.assign(GameLevelZone.prototype, {
             y: dy * force * imp,
             z: 0,
           });
-          object.emitPos();
         }
         if (dx >= 0 && dy < 0) {
           const dx = (object.pos.x - x2) / d3;
@@ -148,7 +139,6 @@ Object.assign(GameLevelZone.prototype, {
             y: dy * force * imp,
             z: 0,
           });
-          object.emitPos();
         }
         if (dx >= 0 && dy >= 0) {
           const dx = (object.pos.x - x2) / d4;
@@ -161,7 +151,6 @@ Object.assign(GameLevelZone.prototype, {
             y: dy * force * imp,
             z: 0,
           });
-          object.emitPos();
         }
       }
     }

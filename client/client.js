@@ -13,6 +13,10 @@ export class Client extends global.Client {
       }
     };
 
+    this.emit('login', {
+      username: getCookie('username'),
+    });
+
     let keys = [
       ['w', Phaser.Keyboard.W],
       ['a', Phaser.Keyboard.A],
@@ -66,12 +70,23 @@ export class Client extends global.Client {
         this.emit('h', {});
       });
 
+    game.input.keyboard.addKey(Phaser.Keyboard.ESC)
+      .onDown.add(() => {
+        showGameMenu();
+      });
+
     game.input.onDown.add(() => {
+      if (global.mouseCapture) {
+        global.mouseCapture();
+        return;
+      }
       this.emit('mouseDown', {
         'x': mx,
         'y': my,
       });
     });
+
+    this.params = JSON.parse(getCookie('params') || '{}');
   }
 
   onConnect() {
@@ -85,7 +100,9 @@ export class Client extends global.Client {
       object.destructor();
     }
 
-    window.location.reload();
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
   }
 
   readPacket(packet) {
@@ -141,6 +158,86 @@ export class Client extends global.Client {
     makeSuperMessage('ОТКРЫТО', '#2299FF');
   }
 
+  onCanOpenDoor() {
+    makeMessage('Нажмите [C] чтобы открыть..', '#AAEEFF');
+  }
+  onCanCloseDoor() {
+    makeMessage('Нажмите [C] чтобы закрыть..', '#AAEEFF');
+  }
+  onCanTalk() {
+    makeMessage('Нажмите [C] чтобы говорить..', '#AAEEFF');
+  }
+  onCanCheckpoint() {
+    makeMessage('Нажмите [C] чтобы отдохнуть..', '#AAEEFF');
+  }
+  onStopCan() {
+    disableMessage();
+    if (this.nextMessage) {
+      clearTimeout(this.nextMessage);
+      delete this.nextMessage;
+    }
+  }
+
+  onTalk(data) {
+    const dialog = global[data.name][data.talking];
+    const lang = dialog.LANG_RU.replace(/ +/g, ' ').slice(1, -2);
+    makeMessage(lang, '#AAEEFF', 'Neucha');
+    const answers = [];
+    for (let i = 1; i <= 6; ++i) {
+      if (dialog[i]) {
+        answers.push(dialog[i]);
+      }
+    }
+    const n = answers.length - 1;
+    for (const k in answers) {
+      const a = dialog[parseInt(k) + 1];
+      let i = 0.5;
+      if (n > 0) {
+        i = k / n;
+      }
+      makeMessageOption(a[0], '#AAEEFF', 'Neucha', i, () => {
+        this.emit('talk', {
+          variant: parseInt(k) + 1,
+        })
+      });
+    }
+  }
+
+  onUseCheckpoint() {
+    makeMessage('Душа прикреплена к кольцу', '#AAEEFF', 'Neucha');
+    makeMessageOption('Переместиться', '#AAAAAA', 'Neucha', -1, () => {});
+
+    makeMessageOption('Повысить уровень', '#AAEEFF', 'Neucha', 0.5, () => {
+      const voidsCount = levelLimit(this.params.fighter.params.level);
+      makeMessage(`Повысить уровень за ${voidsCount} пустоты?`,
+        '#AAEEFF', 'Neucha');
+      makeMessageOption('Да', '#AAEEFF', 'Neucha', 0, () => {
+        if (voidsCount > this.params.fighter.params.voidsCount) {
+          makeMessage('Недостаточно пустоты..', '#FFAAAA',
+            'Neucha');
+          this.nextMessage = setTimeout(() => {
+            delete this.nextMessage;
+            this.onUseCheckpoint();
+          }, 1500);
+          return;
+        }
+
+        this.emit('upLevel', {});
+        showGameMenu(true);
+        makeMessage('Повышен уровень..', '#FFEEAA', 'Neucha');
+        this.nextMessage = setTimeout(() => {
+          delete this.nextMessage;
+          this.onUseCheckpoint();
+        }, 800);
+      });
+      makeMessageOption('Нет', '#AAEEFF', 'Neucha', 1, () => {
+        this.onUseCheckpoint();
+      });
+    });
+
+    makeMessageOption('Отдать свету', '#AAAAAA', 'Neucha', 2, () => {});
+  }
+
   mainTheme() {
     game.bossBackSound.stop();
     game.youDiedSound.stop();
@@ -164,5 +261,11 @@ export class Client extends global.Client {
     game.bossDeadSound.play();
     this.mainTheme();
     makeSuperMessage('ПОБЕДА', '#FFFF22');
+  }
+
+  onSaveParam(data) {
+    this.params[data.slug] = this.params[data.slug] || {};
+    this.params[data.slug][data.key] = data.value;
+    setCookie('params', JSON.stringify(this.params));
   }
 }

@@ -17,8 +17,8 @@ export const npc__luna = {
   JUMP_TIME: [10, 15],
 
   FIGHTER: {
-    LANG_RU: '...',
-    name: 'stage1__mob2',
+    LANG_RU: 'Хранитель лунного света',
+    name: 'npc__luna',
 
     hitSpeed: 1.8,
 
@@ -29,25 +29,8 @@ export const npc__luna = {
     SCALE: 1.5,
 
     BALANCE: 30,
-    HP: 150,
+    HP: 10000,
     MP: 100,
     STAMINA: 30,
-  },
-
-  rightHand(parent) {
-    return new global.Item({
-      parent: parent,
-      type: 'weapon',
-      kind: 'stage1__mob2__rightHand',
-      hand: 1,
-      balance: 10,
-      stamina: 20,
-      staminaTime: 1.5,
-      pos: {
-        x: -25,
-        y: 25,
-      },
-      angle: 15,
-    });
   },
 };

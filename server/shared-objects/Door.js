@@ -1,9 +1,12 @@
 export class Door extends mix(global.Door, MixGameObject) {
   get state() {
     return {
-      pos: this.pos,
-      size: this.size,
+      pos: this.pos.clone(),
+      size: this.size.clone(),
 
+      isOpened: this.isOpened,
+      isOpening: this.isOpening,
+      isClosing: this.isClosing,
       progress: this.progress,
     };
   }
@@ -35,12 +38,14 @@ export class Door extends mix(global.Door, MixGameObject) {
   }
 
   checkNear(object) {
+    if (this.isOpening || this.isClosing) {
+      return;
+    }
     if (object.type === 'Fighter' && object.kind === 'player') {
       const dx = Math.abs(this.pos.x - object.pos.x);
       const dy = Math.abs(this.pos.y - object.pos.y);
       const dw = this.size.x * 0.5 + WALL_SIZE;
       const dh = this.size.y * 0.5 + WALL_SIZE;
-      console.log(dx, dw, dy, dh);
       if (dx < dw && dy < dh) {
         object.canOpenDoor = this;
       }
@@ -48,6 +53,9 @@ export class Door extends mix(global.Door, MixGameObject) {
   }
 
   open(player) {
+    if (this.isOpening || this.isClosing) {
+      return;
+    }
     if (this.isOpened && !this.isClosing) {
       this.isClosing = 10;
     } else if (!this.isOpening) {

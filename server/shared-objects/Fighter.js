@@ -7,14 +7,16 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     return {
       lang: this.lang,
 
-      pos: this.pos,
-      speed: this.speed,
-      inputMove: this.inputMove,
-      look: this.look,
+      pos: this.pos.clone(),
+      speed: this.speed.clone(),
+      inputMove: this.inputMove.clone(),
+      look: this.look.clone(),
       absLook: this.absLook,
 
       isRun: this.isRun,
       isBlock: this.isBlock,
+
+      moveTimeF: this.moveTimeF,
 
       kind: this.kind,
       size: this.size,
@@ -58,18 +60,12 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       mp: this.mp,
       STAMINA: this.STAMINA,
       stamina: this.stamina,
+      hitSpeed: this.hitSpeed,
     });
   }
 
   constructor(owner, opts) {
     opts = opts || {};
-
-    let hitSpeedF = 1;
-    if (opts.kind === 'mob') {
-      hitSpeedF *= 1.2;
-    } else {
-      hitSpeedF *= 1.5;
-    }
 
     super({
       lang: opts.LANG_RU,
@@ -84,8 +80,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       size: opts.BODY_SIZE || Fighter.BODY_SIZE,
       scale: opts.SCALE,
 
-      hitSpeed: opts.hitSpeed * hitSpeedF,
-      damage: opts.DAMAGE,
+      moveTimeF: opts.moveTimeF,
+
+      hitSpeed: opts.hitSpeed,
+      damage: opts.damage,
 
       ACC: opts.ACC || Fighter.ACC,
       RUN_ACC: opts.RUN_ACC || Fighter.RUN_ACC,
@@ -146,13 +144,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.owner.gameLevelZone.addObject(this);
     }
   }
-  onDie() {
+  onDie(source) {
     delete this.isAlive;
     this.finishHit();
     this.clearSteps();
     this.emitPos();
     this.emitAll('die', {});
-    this.owner.onDie();
+    this.owner.onDie(source);
     if (!this.isAlive) {
       this.owner.gameLevelZone.removeObject(this);
     }
@@ -220,8 +218,20 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     const d = this.pos.subtract(player.pos).length();
     if (d < D) {
       player.canTalk = this;
-      console.log('can talk');
     }
+  }
+
+  get talkName() {
+    return this.name + '__' + this.gameLevelZone.mapName;
+  }
+  talk(player) {
+    if (!player.talking) {
+      player.talking = 1;
+    }
+    player.owner.emit('talk', {
+      name: this.talkName,
+      talking: player.talking,
+    });
   }
 
   update() {
@@ -262,7 +272,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         this.breakHit();
       }
       this.clearSteps();
-      this.stunTime = time;
+      this.stunTime = time / this.moveTimeF;
       this.emitPos();
       this.emitAll('stun', {
         time: time,
@@ -313,7 +323,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   useHP(v, time) {
     this.hp = Math.max(this.hp - v, 0);
     this.hpTime = this.hpTime || 0;
-    this.hpTime = Math.max(this.hpTime, time);
+    this.hpTime = Math.max(this.hpTime, time / this.moveTimeF);
     this.emitAll('useHP', {
       hp: this.hp,
       time: this.hpTime,
@@ -322,7 +332,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   useStamina(v, time) {
     this.stamina = Math.max(this.stamina - v, 0);
     this.staminaTime = this.staminaTime || 0;
-    this.staminaTime = Math.max(this.staminaTime, time);
+    this.staminaTime = Math.max(this.staminaTime, time / this.moveTimeF);
     this.emitAll('useStamina', {
       stamina: this.stamina,
       time: this.staminaTime,
@@ -331,7 +341,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   useBalance(v, time) {
     this.balance = Math.max(this.balance - v, 0);
     this.balanceTime = this.balanceTime || 0;
-    this.balanceTime = Math.max(this.balanceTime, time);
+    this.balanceTime = Math.max(this.balanceTime, time / this.moveTimeF);
   }
 
   isInGameLevelZone() {
@@ -358,6 +368,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     this.gameLevelZone.doDamageRadialArea(this, opts);
   }
+
   onKeyC(opts) {
     if (!this.isInGameLevelZone()) {
       return;
@@ -365,9 +376,16 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     if (this.canOpenDoor) {
       this.canOpenDoor.open(this);
+      return;
+    }
+    if (this.canTalk) {
+      this.canTalk.talk(this);
+      return;
+    }
+    if (this.canCheckpoint) {
+      this.canCheckpoint.use(this);
     }
   }
-
   onKeyF() {
     this.isRun = !this.isRun;
     if (this.isRun) {
@@ -383,10 +401,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.emitPos();
   }
   onKeyQ() {}
-  onKeyE() {
-    this.hp = Math.min(this.HP, this.hp + 50);
-    this.emitParams();
-  }
+  onKeyE() {}
   onKeyH() {
     this.invade = true;
     this.emitAll('invade', {});
@@ -407,8 +422,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
 
       const rollData = {
-        duration: 0.6,
-        afterTime: 0.4,
+        duration: 0.8 / this.moveTimeF,
+        afterTime: 0.6 / this.moveTimeF,
         force: 800,
         forceInJump: 750,
       };
@@ -418,7 +433,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
       rollData.force *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
       rollData.forceInJump *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
-      this.rollBlockTime = rollData.duration + rollData.afterTime * 0.5;
+      this.rollBlockTime = rollData.duration + 0.2;
       this.onRoll(rollData);
       this.emitAll('roll', rollData);
       this.emitPos();
@@ -441,7 +456,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
       const jumpData = {
         duration: 0.6,
-        afterTime: 0.3,
+        afterTime: 0.3 / this.moveTimeF,
         force: 700,
       };
       if (this.inHit && this.hitStage !== 1) {

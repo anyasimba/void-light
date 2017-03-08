@@ -46,6 +46,7 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
       game.bottom.add(this.bottomGroup);
       game.middle.add(this.middleGroup);
       game.top.add(this.topGroup);
+      game.info.add(this.group);
       game.info.add(this.infoGroup);
     }
   }
@@ -79,14 +80,24 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
 
     super.destructor();
 
-    if (this.parent) {
-      this.parent.middleGroup.remove(this.group);
-      this.parent.infoGroup.remove(this.infoGroup);
-    } else {
-      game.bottom.remove(this.bottomGroup);
-      game.middle.remove(this.middleGroup);
-      game.top.remove(this.topGroup);
-      game.info.remove(this.infoGroup);
+    this.bottomGroup.destroy();
+    this.middleGroup.destroy();
+    this.topGroup.destroy();
+    this.group.destroy();
+    this.infoGroup.destroy();
+  }
+
+  playSound(name) {
+    const sound = game.add.sound(name);
+    sound.volume = this.soundVolume();
+    sound.play();
+    return sound;
+  }
+  soundVolume() {
+    if (game.cameraPos) {
+      const d = this.pos.subtract(game.cameraPos).length();
+      return 100000 / (100000 + d * d);
     }
+    return 0;
   }
 }
