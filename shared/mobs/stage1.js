@@ -76,7 +76,6 @@ export const stage1__mob1__doHit = {
         angle: -135,
         sideAngle: 50,
       });
-      this.addImpulse(1300);
     });
     time += step1;
 
@@ -104,6 +103,7 @@ export const stage1__mob1__doHit = {
       this.doDamageRadialArea(damageOpts);
     });
     this.step(time, () => {
+      this.addImpulse(1300);
       this.playHit();
       this.weapon2.stage(step2, easing.easeOutCubic, {
         sideAngle: 200,
@@ -139,7 +139,6 @@ export const stage1__mob1__doHit = {
         angle: 135,
         sideAngle: -50,
       });
-      this.addImpulse(1500);
     });
     time += step1;
 
@@ -167,6 +166,7 @@ export const stage1__mob1__doHit = {
       this.doDamageRadialArea(damageOpts);
     });
     this.step(time, () => {
+      this.addImpulse(1500);
       this.weapon2.finalStage(step2, easing.easeInCubic);
       this.playHit();
       this.weapon.stage(step1, easing.easeOutCubic, {

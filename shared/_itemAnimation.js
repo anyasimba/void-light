@@ -71,7 +71,6 @@ export function ia_sword__doHit(opts) {
         this.weapon.stage(step1, easing.easeInCubic, {
           sideAngle: -240,
         });
-        this.addImpulse(opts.impulse2 || 600);
       });
       time += step1;
 
@@ -99,6 +98,7 @@ export function ia_sword__doHit(opts) {
         this.doDamageRadialArea(damageOpts);
       });
       this.step(time, () => {
+        this.addImpulse(opts.impulse2 || 600);
         this.playHit();
         this.weapon.stage(step2, easing.easeOutCubic, {
           sideAngle: -50,
@@ -127,7 +127,6 @@ export function ia_sword__doHit(opts) {
         this.weapon.stage(step1, easing.easeInCubic, {
           sideAngle: -10,
         });
-        this.addImpulse(opts.impulse3 || 600);
       });
       time += step1;
 
@@ -155,6 +154,7 @@ export function ia_sword__doHit(opts) {
         this.doDamageRadialArea(damageOpts);
       });
       this.step(time, () => {
+        this.addImpulse(opts.impulse3 || 600);
         this.playHit();
         this.weapon.stage(step2, easing.easeOutCubic, {
           sideAngle: -200,
