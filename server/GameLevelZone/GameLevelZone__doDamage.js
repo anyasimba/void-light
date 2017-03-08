@@ -56,6 +56,7 @@ Object.assign(GameLevelZone.prototype, {
         other.isBlock &&
         other.stamina > 0 &&
         !other.inJump &&
+        !other.inStun &&
         !other.inHit;
 
       let balanceF = 1;
