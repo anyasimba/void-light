@@ -77,13 +77,13 @@ function makeGameMenuTab1() {
       '#AAEEFF',
       'Neucha',
       50,
-      300, 170 + i * 60, 40,
+      300, 170 + i * 60, -10,
       () => {
         client.emit('incParam', {
           i: i
         });
       }));
-    paramViews[i].incView.parentGroup = gameMenuView;
+    paramViews[i].incView.parentGroup = contentView;
   }
 
   const contentViewUpdate = contentView.update;

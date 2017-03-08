@@ -49,7 +49,7 @@ export class Client extends global.Client {
     }
     if (!fighterParams.level) {
       hasChange = true;
-      fighterParams.level = 1;
+      fighterParams.level = 16;
     }
     if (!fighterParams.voidsCount) {
       hasChange = true;
