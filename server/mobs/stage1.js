@@ -22,7 +22,7 @@ export const stage1__mob1 = {
 
     name: 'stage1__mob1',
 
-    moveTimeF: 0.5,
+    moveTimeF: 0.8,
 
     hitSpeed: 3,
     damage: 15,
@@ -95,7 +95,7 @@ export const stage1__mob2 = {
     LANG_RU: 'Высосанный',
     name: 'stage1__mob2',
 
-    moveTimeF: 0.75,
+    moveTimeF: 1.2,
 
     hitSpeed: 2,
     damage: 20,
@@ -154,9 +154,9 @@ export const stage1__boss1 = {
     LANG_RU: 'Истяженная оболочка',
     name: 'stage1__boss1',
 
-    moveTimeF: 0.6,
+    moveTimeF: 1.1,
 
-    hitSpeed: 2,
+    hitSpeed: 1.5,
     damage: 30,
 
     ACC: 300,
@@ -167,7 +167,7 @@ export const stage1__boss1 = {
     BALANCE: 100,
     HP: 1000,
     MP: 100,
-    STAMINA: 100,
+    STAMINA: 200,
   },
 
   rightHand(parent) {
@@ -177,7 +177,7 @@ export const stage1__boss1 = {
       kind: 'stage1__boss1__rightHand',
       hand: 1,
       balance: 20,
-      stamina: 20,
+      stamina: 10,
       staminaTime: 1,
       pos: {
         x: -25,
