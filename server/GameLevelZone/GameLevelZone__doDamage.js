@@ -118,9 +118,9 @@ Object.assign(GameLevelZone.prototype, {
         other.speed.init();
       }
       if (isJumpHit) {
-        vec3.add(other.speed, opts.hitVec.multiply(1800));
+        vec3.add(other.speed, opts.hitVec.multiply(opts.impulse * 3));
       } else {
-        vec3.add(other.speed, opts.hitVec.multiply(600));
+        vec3.add(other.speed, opts.hitVec.multiply(opts.impulse));
       }
       other.emitPos();
     }

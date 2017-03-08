@@ -22,15 +22,15 @@ export const stage1__mob1__doHit = {
       this.weapon.stage(step2, easing.easeOutCubic, {
         sideAngle: -200,
       });
+      this.addImpulse(1700);
     });
     this.step(time + 0.05, () => {
-      this.addImpulse(1700);
-
       const damageOpts = {
         r1: 0,
         r2: 300,
         a1: -90,
         a2: 90,
+        impulse: 1700,
       }
       if (this.inRoll) {
         damageOpts.a1 = -140;
@@ -76,18 +76,18 @@ export const stage1__mob1__doHit = {
         angle: -135,
         sideAngle: 50,
       });
+      this.addImpulse(1300);
     });
     time += step1;
 
     const step2 = 0.1;
     this.step(time + 0.05, () => {
-      this.addImpulse(1300);
-
       const damageOpts = {
         r1: 0,
         r2: 300,
         a1: -90,
         a2: 90,
+        impulse: 1300,
       }
       if (this.inRoll) {
         damageOpts.a1 = -140;
@@ -139,18 +139,18 @@ export const stage1__mob1__doHit = {
         angle: 135,
         sideAngle: -50,
       });
+      this.addImpulse(1500);
     });
     time += step1;
 
     const step2 = 0.1;
     this.step(time + 0.05, () => {
-      this.addImpulse(1500);
-
       const damageOpts = {
         r1: 0,
         r2: 300,
         a1: -90,
         a2: 90,
+        impulse: 1500,
       }
       if (this.inRoll) {
         damageOpts.a1 = -140;
