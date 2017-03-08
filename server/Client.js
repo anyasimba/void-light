@@ -358,7 +358,7 @@ export class Client extends global.Client {
   updateFighter() {
     const params = this.params.fighter.params;
     this.player.moveTimeF = 1 + this.getStep(
-      params.Endurance, 10, 4, 30, 2, 50, 1, 0.25) * 0.005;
+      params.Endurance, 10, 4, 30, 2, 50, 1, 0.25) * 0.003;
     this.player.HP = 60 + params.Health * 4;
     this.player.STAMINA = 30 + params.Willpower * 4;
     this.player.damage = 10 + this.getStep(

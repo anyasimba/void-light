@@ -132,12 +132,12 @@ export class Mob {
     return p;
   }
   checkPlayer(x, y, player) {
-    if (this.target && (this.target.hp <= 0 || this.target.isDestroyed)) {
+    if (this.target && (!this.target.isAlive || this.target.isDestroyed)) {
       delete this.target;
       delete this.path;
       delete this.onWay;
     }
-    if (player.hp <= 0 || player.isDestroyed) {
+    if (!player.isAlive || player.isDestroyed) {
       return;
     }
     const tx = Math.floor(this.fighter.pos.x / WALL_SIZE);
@@ -238,7 +238,8 @@ export class Mob {
       const needGoHome = !this.pathMap[px] ||
         this.pathMap[px][py] === undefined ||
         this.pathMap[px][py] > this.opts.RUN_D ||
-        this.target.isDestroyed;
+        this.target.isDestroyed ||
+        !this.target.isAlive;
       if (needGoHome) {
         delete this.target;
         delete this.path;
