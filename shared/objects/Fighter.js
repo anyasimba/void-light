@@ -196,7 +196,7 @@ export class Fighter {
     if (this.stunTime !== undefined) {
       if (!this.inStun) {
         this.inStun = true;
-        delete this.staminaTime;
+        this.staminaTime = this.stunTime * 0.9;
         delete this.needNextHit;
 
         const hands = this.hands;
