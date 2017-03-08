@@ -63,7 +63,7 @@ function makeGameMenuTab1() {
   for (let i = 0; i < PLAYER_PARAMS.length; ++i) {
     const param = PLAYER_PARAMS[i];
     paramViews.push(contentView.add(new Phaser.Text(
-      game, 0, 180 + i * 60, '', {
+      game, 0, 180 + i * 70, '', {
         font: 'Neucha',
         fontSize: 40,
         fontWeight: 'bold',
@@ -76,8 +76,8 @@ function makeGameMenuTab1() {
       '+',
       '#AAEEFF',
       'Neucha',
-      50,
-      300, 170 + i * 60, -10,
+      40,
+      300, 180 + i * 70, 0,
       () => {
         client.emit('incParam', {
           i: i
