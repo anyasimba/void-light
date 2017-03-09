@@ -549,7 +549,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
           this.light.scale.set(0.8);
           this.light.alpha = 0.6;
         } else {
-          this.light.scale.set(1.5);
+          this.light.scale.set(1.2);
           this.light.alpha = 0.5;
         }
         this.light.tint = this.baseTint;

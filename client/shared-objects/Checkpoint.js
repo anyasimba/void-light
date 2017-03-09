@@ -59,13 +59,13 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
       this.view2.x + Math.cos(this.view2.angle * Math.PI / 180) * 140;
     this.view3.y =
       this.view2.y + Math.sin(this.view2.angle * Math.PI / 180) * 140;
-    this.view3.angle -= dt * 3;
+    this.view3.angle += dt * 3;
 
     this.view4.x =
       this.view3.x + Math.cos(this.view3.angle * Math.PI / 180) * 200;
     this.view4.y =
       this.view3.y + Math.sin(this.view3.angle * Math.PI / 180) * 200;
-    this.view4.angle += dt * 2;
+    this.view4.angle -= dt * 2;
 
     if (game.layer.sub.light) {
       const light = game.layer.sub.light;
@@ -77,8 +77,10 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
         rt.renderXY(image, 0, 0, true);
         rt.renderXY(image, 0, 0, false);
         rt.renderXY(image, 0, 0, false);
+        rt.renderXY(image, 0, 0, false);
+        rt.renderXY(image, 0, 0, false);
         this.light = new Phaser.Image(game, 0, 0, rt);
-        this.light.tint = 0x3388FF;
+        this.light.tint = 0x2266FF;
         this.light.blendMode = PIXI.blendModes.ADD;
         this.light.anchor.set(0.5);
       }
@@ -88,7 +90,7 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
       const y = (this.pos.y - game.ui.y) * f;
 
       this.light.scale.set(0.2);
-      this.light.alpha = 0.5;
+      this.light.alpha = 0.7;
       light.texture.renderXY(
         this.light, x + this.view.x * f, y + this.view.y * f, false);
       this.light.scale.set(0.3);
@@ -99,7 +101,7 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
       this.light.alpha = 0.8;
       light.texture.renderXY(
         this.light, x + this.view3.x * f, y + this.view3.y * f, false);
-      this.light.scale.set(1.5);
+      this.light.scale.set(1);
       this.light.alpha = 1;
       light.texture.renderXY(
         this.light, x + this.view4.x * f, y + this.view4.y * f, false);
