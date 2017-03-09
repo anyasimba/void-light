@@ -20,10 +20,10 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
     this.view4 = Checkpoint.createView();
 
     const f = 0.8;
-    this.view.scale.x = 0.4 * f;
-    this.view.scale.y = 0.4 * f;
-    this.view2.scale.x = -0.6 * f;
-    this.view2.scale.y = 0.6 * f;
+    this.view.scale.x = 0.8 * f;
+    this.view.scale.y = 0.8 * f;
+    this.view2.scale.x = -1.2 * f;
+    this.view2.scale.y = 1.2 * f;
 
     this.view3.scale.x = -1.9 * f;
     this.view3.scale.y = 1.9 * f;
@@ -51,8 +51,8 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
 
     this.view.angle += dt * 5;
 
-    this.view2.x = Math.cos(this.view.angle * Math.PI / 180) * 40;
-    this.view2.y = Math.sin(this.view.angle * Math.PI / 180) * 40;
+    this.view2.x = Math.cos(this.view.angle * Math.PI / 180) * 80;
+    this.view2.y = Math.sin(this.view.angle * Math.PI / 180) * 80;
     this.view2.angle -= dt * 4;
 
     this.view3.x =
@@ -99,8 +99,8 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
       this.light.alpha = 0.8;
       light.texture.renderXY(
         this.light, x + this.view3.x * f, y + this.view3.y * f, false);
-      this.light.scale.set(1);
-      this.light.alpha = 0.5;
+      this.light.scale.set(1.5);
+      this.light.alpha = 1;
       light.texture.renderXY(
         this.light, x + this.view4.x * f, y + this.view4.y * f, false);
     }
