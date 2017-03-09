@@ -164,7 +164,9 @@ export class Fighter {
         delete this.staminaTime;
       }
     } else {
-      this.stamina = Math.min(this.STAMINA, this.stamina + dt * 15 * this.moveTimeF);
+      this.stamina = Math.min(this.STAMINA,
+        this.stamina + dt * 15 * this.moveTimeF * (1 + this.STAMINA * 0.01)
+      );
     }
     if (this.inRoll) {
       this.inRoll.time += dt;

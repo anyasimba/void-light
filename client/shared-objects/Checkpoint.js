@@ -66,5 +66,37 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
     this.view4.y =
       this.view3.y + Math.sin(this.view3.angle * Math.PI / 180) * 200;
     this.view4.angle += dt * 2;
+
+    if (game.layer.sub.light) {
+      const light = game.layer.sub.light;
+      if (!this.light) {
+        const rt = new Phaser.RenderTexture(
+          game, 128, 128, null, null, 1);
+        const image = new Phaser.Image(game, 0, 0, 'light');
+        image.blendMode = PIXI.blendModes.ADD;
+        rt.renderXY(image, 0, 0, true);
+        rt.renderXY(image, 0, 0, false);
+        rt.renderXY(image, 0, 0, false);
+        this.light = new Phaser.Image(game, 0, 0, rt);
+        this.light.tint = 0x3388FF;
+        this.light.blendMode = PIXI.blendModes.ADD;
+        this.light.anchor.set(0.5);
+      }
+      const x = (this.pos.x - game.ui.x) / light.scale.x;
+      const y = (this.pos.y - game.ui.y) / light.scale.y;
+
+      this.light.scale.set(0.5);
+      this.light.alpha = 0.5;
+      light.texture.renderXY(this.light, view.x, view.y, false);
+      this.light.scale.set(0.8);
+      this.light.alpha = 0.7;
+      light.texture.renderXY(this.light, view2.x, view2.y, false);
+      this.light.scale.set(1.2);
+      this.light.alpha = 1;
+      light.texture.renderXY(this.light, view3.x, view3.y, false);
+      this.light.scale.set(1.7);
+      this.light.alpha = 0.5;
+      light.texture.renderXY(this.light, view4.x, view4.y, false);
+    }
   }
 }

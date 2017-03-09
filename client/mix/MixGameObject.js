@@ -43,11 +43,11 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
         this.infoGroup.y = this.group.y;
       }
 
-      game.bottom.add(this.bottomGroup);
-      game.middle.add(this.middleGroup);
-      game.top.add(this.topGroup);
-      game.info.add(this.group);
-      game.info.add(this.infoGroup);
+      game.layer.sub.bottom.add(this.bottomGroup);
+      game.layer.sub.middle.add(this.middleGroup);
+      game.layer.sub.top.add(this.topGroup);
+      game.layer.sub.info.add(this.group);
+      game.layer.sub.info.add(this.infoGroup);
     }
   }
   update() {

@@ -422,14 +422,14 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
 
       const rollData = {
-        duration: 0.8 / this.moveTimeF,
-        afterTime: 0.6 / this.moveTimeF,
-        force: 800,
-        forceInJump: 750,
+        duration: 0.7 / this.moveTimeF,
+        afterTime: 0.3 / this.moveTimeF,
+        force: 800 * (this.moveTimeF * 0.4 + 0.6),
+        forceInJump: 750 * (this.moveTimeF * 0.4 + 0.6),
       };
       if (this.inHit && this.hitStage !== 1) {
-        rollData.force = 400;
-        rollData.forceInJump = 300;
+        rollData.force = 400 * (this.moveTimeF * 0.4 + 0.6);
+        rollData.forceInJump = 300 * (this.moveTimeF * 0.4 + 0.6);
       }
       rollData.force *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
       rollData.forceInJump *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
@@ -457,7 +457,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       const jumpData = {
         duration: 0.6,
         afterTime: 0.3 / this.moveTimeF,
-        force: 700,
+        force: 700 * (this.moveTimeF * 0.4 + 0.6),
       };
       if (this.inHit && this.hitStage !== 1) {
         jumpData.force = 300;

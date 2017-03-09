@@ -98,17 +98,30 @@ function checkIfBothReady() {
   }
 };
 
+function createLayer() {
+  const layer = new Phaser.Group(game);
+  layer.sub = {};
+  layer.sub.ground = layer.add(new Phaser.Group(game));
+  layer.sub.deads = layer.add(new Phaser.Group(game));
+  layer.sub.bottom = layer.add(new Phaser.Group(game));
+  layer.sub.middle = layer.add(new Phaser.Group(game));
+  layer.sub.walls = layer.add(new Phaser.Group(game));
+  layer.sub.top = layer.add(new Phaser.Group(game));
+  layer.sub.info = layer.add(new Phaser.Group(game));
+  const q = 0.1;
+  const rt = new Phaser.RenderTexture(
+    game, Math.ceil(game.w * q), Math.ceil(game.h * q), null, null);
+  layer.sub.light = layer.add(new Phaser.Sprite(game, 0, 0, rt));
+  layer.sub.light.scale.set(1 / q);
+  layer.sub.light.blendMode = PIXI.blendModes.MULTIPLY;
+  return layer;
+}
+
 function create() {
   global.client = new Client;
 
-  game.ground = game.scene.add(new Phaser.Group(game));
-  game.deads = game.scene.add(new Phaser.Group(game));
-  game.walls = game.scene.add(new Phaser.Group(game));
-  game.bottom = game.scene.add(new Phaser.Group(game));
-  game.middle = game.scene.add(new Phaser.Group(game));
-  game.top = game.scene.add(new Phaser.Group(game));
+  game.layer = game.scene.add(createLayer());
 
-  game.info = game.scene.add(new Phaser.Group(game));
   game.texts = game.scene.add(new Phaser.Group(game));
   game.textEvents1 = game.scene.add(new Phaser.Group(game));
   game.textEvents2 = game.scene.add(new Phaser.Group(game));
@@ -131,6 +144,8 @@ function createGame() {
   global.game = new Phaser.Game(
     "100%", "100%", Phaser.CANVAS, '', {
       async preload() {
+        game.load.image('light', 'assets/light.png');
+
         game.load.image('shield', 'assets/shield.png');
         game.load.image('sword', 'assets/sword.png');
 
@@ -208,7 +223,10 @@ function createGame() {
         game.scaleMode = Phaser.FILL_WINDOW_FIXED_ASPECT;
 
         game.scene = game.add.group();
-        game.scene.postUpdate = () => {
+        const preUpdate = game.scene.preUpdate;
+        game.scene.preUpdate = () => {
+          preUpdate.call(game.scene);
+
           if (global.client && client.player) {
             const targetX = client.player.pos.x + client.player.speed.x *
               0.5;
@@ -233,6 +251,9 @@ function createGame() {
               x: client.player.pos.x,
               y: client.player.pos.y,
             });
+
+            game.layer.sub.light.x = game.ui.x;
+            game.layer.sub.light.y = game.ui.y;
           }
         };
 
@@ -267,17 +288,33 @@ function createGame() {
         }
         delete global.mouseCapture;
 
-        const makeLayer3D = (layer, f) => {
+        if (game.layer.sub.light) {
+          const light = game.layer.sub.light;
+          if (!game.lightClear) {
+            game.lightClear = new Phaser.Graphics(game);
+            game.lightClear.beginFill(0x000000, 1);
+            const w = light.width * light.scale.x;
+            const h = light.height * light.scale.y;
+            game.lightClear.drawRect(0, 0, w, h);
+            game.lightClear.endFill();
+          }
+          light.texture.renderXY(game.lightClear, 0, 0, true);
+        }
+
+        const makeSubLayer3D = (layer, f) => {
           const p = client.player.pos;
           layer.scale.set(f);
           layer.x = -p.x * (f - 1);
           layer.y = -p.y * (f - 1);
         };
+        const makeLayer3D = layer => {
+          makeSubLayer3D(layer.sub.middle, 1.01);
+          makeSubLayer3D(layer.sub.top, 1.02);
+          makeSubLayer3D(layer.sub.walls, 1.02);
+        }
 
         if (global.client && client.player) {
-          makeLayer3D(game.middle, 1.01);
-          makeLayer3D(game.top, 1.02);
-          makeLayer3D(game.walls, 1.02);
+          makeLayer3D(game.layer);
         }
 
         if (client.needLoadMap) {
@@ -357,7 +394,7 @@ function createGame() {
           }
           console.log('done', xn * yn);
 
-          const groundSprite = game.ground.add(new Phaser.TileSprite(
+          const groundSprite = game.layer.sub.ground.add(new Phaser.TileSprite(
             game, 0, 0, client.w, client.h, 'ground'));
 
           for (let x = 0; x < xn; ++x) {
@@ -384,7 +421,7 @@ function createGame() {
                   }
                 }
               };
-              game.walls.add(sprite);
+              game.layer.sub.walls.add(sprite);
             }
           }
 
