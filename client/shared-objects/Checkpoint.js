@@ -51,14 +51,14 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
 
     this.view.angle += dt * 5;
 
-    this.view2.x = Math.cos(this.view.angle * Math.PI / 180) * 80;
-    this.view2.y = Math.sin(this.view.angle * Math.PI / 180) * 80;
+    this.view2.x = Math.cos(this.view.angle * Math.PI / 180) * 90;
+    this.view2.y = Math.sin(this.view.angle * Math.PI / 180) * 90;
     this.view2.angle -= dt * 4;
 
     this.view3.x =
-      this.view2.x + Math.cos(this.view2.angle * Math.PI / 180) * 70;
+      this.view2.x + Math.cos(this.view2.angle * Math.PI / 180) * 140;
     this.view3.y =
-      this.view2.y + Math.sin(this.view2.angle * Math.PI / 180) * 70;
+      this.view2.y + Math.sin(this.view2.angle * Math.PI / 180) * 140;
     this.view3.angle -= dt * 3;
 
     this.view4.x =
