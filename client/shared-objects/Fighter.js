@@ -546,10 +546,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         rt.renderXY(image, 0, 0, false);
         this.light = new Phaser.Image(game, 0, 0, rt);
         if (this.kind === 'player' && client.playerID === this.id) {
-          this.light.scale.set(1.2);
-          this.light.alpha = 1;
+          this.light.scale.set(0.8);
+          this.light.alpha = 0.6;
         } else {
-          this.light.scale.set(2);
+          this.light.scale.set(1.5);
           this.light.alpha = 0.5;
         }
         this.light.tint = this.baseTint;

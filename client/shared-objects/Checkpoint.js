@@ -82,21 +82,27 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
         this.light.blendMode = PIXI.blendModes.ADD;
         this.light.anchor.set(0.5);
       }
-      const x = (this.pos.x - game.ui.x) / light.scale.x;
-      const y = (this.pos.y - game.ui.y) / light.scale.y;
 
-      this.light.scale.set(0.5);
+      const f = 1 / light.scale.x;
+      const x = (this.pos.x - game.ui.x) * f;
+      const y = (this.pos.y - game.ui.y) * f;
+
+      this.light.scale.set(0.2);
       this.light.alpha = 0.5;
-      light.texture.renderXY(this.light, view.x, view.y, false);
-      this.light.scale.set(0.8);
+      light.texture.renderXY(
+        this.light, x + this.view.x * f, y + this.view.y * f, false);
+      this.light.scale.set(0.3);
       this.light.alpha = 0.7;
-      light.texture.renderXY(this.light, view2.x, view2.y, false);
-      this.light.scale.set(1.2);
-      this.light.alpha = 1;
-      light.texture.renderXY(this.light, view3.x, view3.y, false);
-      this.light.scale.set(1.7);
+      light.texture.renderXY(
+        this.light, x + this.view2.x * f, y + this.view2.y * f, false);
+      this.light.scale.set(0.5);
+      this.light.alpha = 0.8;
+      light.texture.renderXY(
+        this.light, x + this.view3.x * f, y + this.view3.y * f, false);
+      this.light.scale.set(1);
       this.light.alpha = 0.5;
-      light.texture.renderXY(this.light, view4.x, view4.y, false);
+      light.texture.renderXY(
+        this.light, x + this.view4.x * f, y + this.view4.y * f, false);
     }
   }
 }
