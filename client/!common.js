@@ -289,16 +289,19 @@ function createGame() {
         delete global.mouseCapture;
 
         if (game.layer.sub.light) {
+          global.lightAlpha = 0.1;
+
           const light = game.layer.sub.light;
           if (!game.lightClear) {
             game.lightClear = new Phaser.Graphics(game);
-            game.lightClear.beginFill(0x000000, 1);
+            game.lightClear.beginFill(0x000000, lightAlpha);
             const w = light.width * light.scale.x;
             const h = light.height * light.scale.y;
             game.lightClear.drawRect(0, 0, w, h);
             game.lightClear.endFill();
+            game.lightClear.blendMode = PIXI.blendModes.MULTIPLY;
           }
-          light.texture.renderXY(game.lightClear, 0, 0, true);
+          light.texture.renderXY(game.lightClear, 0, 0, false);
         }
 
         const makeSubLayer3D = (layer, f) => {
@@ -339,7 +342,7 @@ function createGame() {
           }
 
           const scaleF = Math.ceil(game.scaleFactor * 10) * 0.1;
-          const ts = WALL_SIZE * 10;
+          global.ts = WALL_SIZE * 10;
           const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
           const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
           const textures = [];
@@ -350,7 +353,6 @@ function createGame() {
                 game,
                 ts * scaleF, ts * scaleF,
                 null, null, 1);
-
               textures[x] = textures[x] || [];
               textures[x][y] = tex;
             }
@@ -380,7 +382,6 @@ function createGame() {
                 view.tilePosition.y = -y * WALL_SIZE;
                 view.tileScale.x = f;
                 view.tileScale.y = f;
-
                 const cx = Math.floor(x * WALL_SIZE / ts);
                 const cy = Math.floor(y * WALL_SIZE / ts);
                 textures[cx][cy].isUsed = true;
@@ -395,33 +396,39 @@ function createGame() {
           console.log('done', xn * yn);
 
           const groundSprite = game.layer.sub.ground.add(new Phaser.TileSprite(
-            game, 0, 0, client.w, client.h, 'ground'));
+            game, 0, 0, game.w, game.h, 'ground'));
+          groundSprite.update = () => {
+            groundSprite.x = game.ui.x;
+            groundSprite.y = game.ui.y;
+            groundSprite.tilePosition.x = -game.ui.x;
+            groundSprite.tilePosition.y = -game.ui.y;
+          };
 
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
-              if (!textures[x][y].isUsed) {
-                continue;
-              }
-
-              const sprite = new Phaser.Sprite(
-                game, x * ts, y * ts,
-                textures[x][y]);
-              sprite.visible = false;
-              sprite.scale.set(1 / scaleF);
-              sprite.update = () => {
-                if (global.client && global.client.player) {
-                  const cx = sprite.x + ts * 0.5;
-                  const cy = sprite.y + ts * 0.5;
-                  const dx = Math.abs(cx - client.player.pos.x);
-                  const dy = Math.abs(cy - client.player.pos.y);
-                  if (dx < ts * 2 && dy < ts * 1.5) {
-                    sprite.visible = true;
-                  } else {
-                    sprite.visible = false;
+              if (textures[x][y].isUsed) {
+                const sprite = new Phaser.Sprite(
+                  game, x * ts, y * ts,
+                  textures[x][y]);
+                sprite.visible = false;
+                sprite.scale.set(1 / scaleF);
+                sprite.update = () => {
+                  if (global.client && global.client.player) {
+                    const cx = sprite.x + ts * 0.5;
+                    const cy = sprite.y + ts * 0.5;
+                    const dx = Math.abs(cx - client.player.pos.x);
+                    const dy = Math.abs(cy - client.player.pos.y);
+                    const w = (game.w + ts) * 0.5;
+                    const h = (game.h + ts) * 0.5;
+                    if (dx <= w && dy <= h) {
+                      sprite.visible = true;
+                    } else {
+                      sprite.visible = false;
+                    }
                   }
-                }
-              };
-              game.layer.sub.walls.add(sprite);
+                };
+                game.layer.sub.walls.add(sprite);
+              }
             }
           }
 

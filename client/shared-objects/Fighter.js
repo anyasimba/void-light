@@ -555,6 +555,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         this.light.tint = this.baseTint;
         this.light.blendMode = PIXI.blendModes.ADD;
         this.light.anchor.set(0.5);
+        this.light.alpha *= lightAlpha;
       }
       const x = (this.pos.x - game.ui.x) / light.scale.x;
       const y = (this.pos.y - game.ui.y) / light.scale.y;

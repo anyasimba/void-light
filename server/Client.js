@@ -44,12 +44,12 @@ export class Client extends global.Client {
       const param = PLAYER_PARAMS[k];
       if (!fighterParams[param]) {
         hasChange = true;
-        fighterParams[param] = 50;
+        fighterParams[param] = 0;
       }
     }
     if (!fighterParams.level) {
       hasChange = true;
-      fighterParams.level = 400;
+      fighterParams.level = 16;
     }
     if (!fighterParams.voidsCount) {
       hasChange = true;
