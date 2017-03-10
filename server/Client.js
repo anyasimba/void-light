@@ -69,7 +69,7 @@ export class Client extends global.Client {
     }
     if (!fighterParams.level) {
       hasChange = true;
-      fighterParams.level = 1000;
+      fighterParams.level = 1;
     }
     if (!fighterParams.voidsCount) {
       hasChange = true;
