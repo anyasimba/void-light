@@ -156,6 +156,11 @@ export class GameLevelZone {
         this.rebornPlayer(client.player);
         client.emit('restart', {});
       }
+    } else {
+      for (const k in this.clients) {
+        const client = this.clients[k];
+        client.emit('softRestart', {});
+      }
     }
     for (const k in this.clients) {
       const client = this.clients[k];

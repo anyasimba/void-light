@@ -148,7 +148,7 @@ export class Client extends global.Client {
       this.params.fighter.params.voidsCount = 0;
       this.saveParam('fighter', 'params', this.params.fighter.params);
 
-      this.gameLevelZone.restartTime = 6;
+      this.gameLevelZone.restartTime = 5;
       this.gameLevelZone.restartFull = true;
     } else {
       setTimeout(() => {

@@ -187,49 +187,49 @@ function createGame() {
         game.load.image('door', 'assets/door.png');
 
         game.load.audio('back',
-          'assets/back__doxent_-_Forgotten_Land.mp3');
+          'assets/back__doxent_-_Forgotten_Land.ogg');
         game.load.audio('bossBack',
-          'assets/bossBack__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.mp3'
+          'assets/bossBack__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.ogg'
         );
 
         game.load.audio('door',
-          'assets/door__233389__laiaoreka__automatic-door.mp3');
+          'assets/door__233389__laiaoreka__automatic-door.ogg');
 
         game.load.audio('boss',
-          'assets/boss__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.mp3');
+          'assets/boss__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.ogg');
         game.load.audio('hit',
-          'assets/hit__86003__nextmaking__hitting-body-with-blood.mp3'
+          'assets/hit__86003__nextmaking__hitting-body-with-blood.ogg'
         );
         game.load.audio('hit1',
-          'assets/hit1__351754__urupin__whistle-of-a-twig-in-air.mp3');
+          'assets/hit1__351754__urupin__whistle-of-a-twig-in-air.ogg');
         game.load.audio('hit2',
-          'assets/hit2__351754__urupin__whistle-of-a-twig-in-air.mp3');
+          'assets/hit2__351754__urupin__whistle-of-a-twig-in-air.ogg');
         game.load.audio('hit3',
-          'assets/hit3__351754__urupin__whistle-of-a-twig-in-air.mp3');
+          'assets/hit3__351754__urupin__whistle-of-a-twig-in-air.ogg');
         game.load.audio('hit4',
-          'assets/hit4__351754__urupin__whistle-of-a-twig-in-air.mp3');
+          'assets/hit4__351754__urupin__whistle-of-a-twig-in-air.ogg');
         game.load.audio('hit5',
-          'assets/hit5__351754__urupin__whistle-of-a-twig-in-air.mp3');
+          'assets/hit5__351754__urupin__whistle-of-a-twig-in-air.ogg');
 
         game.load.audio('block',
-          'assets/block__326845__johnbuhr__sword-clash-25.mp3');
+          'assets/block__326845__johnbuhr__sword-clash-25.ogg');
 
         game.load.audio('jump',
-          'assets/jump__260188__splicesound__young-boy-grunts-for-body-impact.mp3'
+          'assets/jump__260188__splicesound__young-boy-grunts-for-body-impact.ogg'
         );
         game.load.audio('mobJump',
-          'assets/mob1Jump__181068__lolamadeus__zombie-vocals-grunts.mp3'
+          'assets/mob1Jump__181068__lolamadeus__zombie-vocals-grunts.ogg'
         );
 
         game.load.audio('mob1Die',
-          'assets/mob1Die__76964__michel88__grunt2.mp3');
+          'assets/mob1Die__76964__michel88__grunt2.ogg');
         game.load.audio('youDied',
-          'assets/youDied__onlymeith_-_Toward_Isolation.mp3');
+          'assets/youDied__onlymeith_-_Toward_Isolation.ogg');
 
         game.load.audio('bossArea',
-          'assets/bossArea__377887__debsound__monster-072.mp3');
+          'assets/bossArea__377887__debsound__monster-072.ogg');
         game.load.audio('bossDead',
-          'assets/bossDead__56304__syna-max__monster-death-scream.mp3'
+          'assets/bossDead__56304__syna-max__monster-death-scream.ogg'
         );
 
         game.stage.backgroundColor = 0x101010;

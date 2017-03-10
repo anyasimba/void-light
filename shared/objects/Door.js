@@ -13,10 +13,6 @@ export class Door {
   constructor() {
     this.type = 'Door';
   }
-  onCreate() {
-    this.basePos = this.pos.clone();
-    this.baseSize = this.size.clone();
-  }
   update() {
     if (this.isOpening) {
       this.isOpening -= dt;
@@ -50,7 +46,6 @@ export class Door {
         this.size.y = this.baseSize.y * (1 - this.isClosing / 10);
         this.pos.y = this.basePos.y - (this.baseSize.y - this.size.y) * 0.5;
       }
-      console.log(this.size, this.pos);
 
       if (this.isClosing <= 0) {
         delete this.isClosing;

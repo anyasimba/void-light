@@ -1,4 +1,4 @@
-const tabsN = 3;
+let tabsN = 3;
 
 function tabPos(i) {
   if (tabsN === 0) {
@@ -7,14 +7,9 @@ function tabPos(i) {
   return i / tabsN;
 }
 
-function makeGameMenuTabTitle(i, text) {
-  const textView = makeButton(
-    text,
-    '#AAEEFF',
-    'Neucha',
-    50,
-    0, 30, 40,
-    () => {
+function makeGameMenuTabTitle(i, text, fn) {
+  if (!fn) {
+    fn = () => {
       if (textView.contentView) {
         gameMenuView.contentView.visible = false;
         gameMenuView.contentView = textView.contentView;
@@ -27,7 +22,16 @@ function makeGameMenuTabTitle(i, text) {
 
         textView.baseFill = '#FFEEAA';
       }
-    });
+    };
+  }
+
+  const textView = makeButton(
+    text,
+    '#AAEEFF',
+    'Neucha',
+    50,
+    0, 30, 40,
+    fn);
   textView.parentGroup = gameMenuView;
 
   textView.contentView = new Phaser.Group(game);
@@ -124,6 +128,15 @@ function makeGameMenuTab3() {
 function makeGameMenuTab4() {
   return makeGameMenuTabTitle(3, 'Опции');
 }
+
+function makeGameMenuTab5() {
+  if (window.close) {
+    ++tabsN;
+    return makeGameMenuTabTitle(4, 'Выход', () => {
+      window.close();
+    });
+  }
+}
 //
 let isGameMenuShowed = false;
 
@@ -152,13 +165,19 @@ function makeGameMenu() {
     gameMenuView.add(makeGameMenuTab3()),
     gameMenuView.add(makeGameMenuTab4()),
   ];
+  const exit = makeGameMenuTab5();
+  if (exit) {
+    tabs.push(gameMenuView.add(exit));
+  }
   gameMenuView.tabs = tabs;
   for (const k in tabs) {
     const tab = tabs[k];
-    gameMenuView.add(tab.contentView);
-    tab.contentView.visible = false;
-    tab.contentView.x = 50;
-    tab.contentView.y = 150;
+    if (tab.contentView) {
+      gameMenuView.add(tab.contentView);
+      tab.contentView.visible = false;
+      tab.contentView.x = 50;
+      tab.contentView.y = 150;
+    }
   }
   tabs[0].contentView.visible = true;
   gameMenuView.contentView = tabs[0].contentView;

@@ -145,6 +145,10 @@ export class Client extends global.Client {
     game.layer.sub.deads.removeAll();
     game.texts.removeAll();
   }
+  onSoftRestart(data) {
+    game.layer.sub.deads.removeAll();
+    game.texts.removeAll();
+  }
   async onMap(data) {
     this.mapName = data.name;
 

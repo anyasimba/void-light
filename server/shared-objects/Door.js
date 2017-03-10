@@ -3,6 +3,8 @@ export class Door extends mix(global.Door, MixGameObject) {
     return {
       pos: this.pos.clone(),
       size: this.size.clone(),
+      basePos: this.basePos.clone(),
+      baseSize: this.baseSize.clone(),
 
       isOpened: this.isOpened,
       isOpening: this.isOpening,
@@ -17,6 +19,8 @@ export class Door extends mix(global.Door, MixGameObject) {
 
       pos: new vec3(opts.mapX, opts.mapY),
       size: new vec3(opts.mapW, opts.mapH),
+      basePos: new vec3(opts.mapX, opts.mapY),
+      baseSize: new vec3(opts.mapW, opts.mapH),
 
       progress: 0,
     });
