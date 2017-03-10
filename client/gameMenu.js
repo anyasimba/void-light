@@ -210,7 +210,7 @@ function onItems(items, filter) {
 }
 
 function addItem(item, clientItem, data, i, k) {
-  const w = 220;
+  const w = 250;
   const h = 160;
   const g = new Phaser.Group(game);
   g.x = i * w + w / 2;
