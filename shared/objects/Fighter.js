@@ -263,7 +263,7 @@ export class Fighter {
         const eff = this.effects[i];
         eff.time = eff.time || eff.DURATION;
         eff.time -= dt;
-        if (eff.DURATION <= 0) {
+        if (eff.time <= 0) {
           this.effects.splice(i, 1);
         } else {
           ++i;
