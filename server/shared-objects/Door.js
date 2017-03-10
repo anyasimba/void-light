@@ -56,15 +56,30 @@ export class Door extends mix(global.Door, MixGameObject) {
     }
   }
 
+  breakAction() {
+    if (this.isOpening) {
+      this.isClosing = 4 - this.isOpening;
+      delete this.isOpening;
+    } else if (this.isClosing) {
+      this.isOpening = 4 - this.isClosing;
+      delete this.isClosing;
+    }
+    this.emitAll('break', {
+      time: this.isOpening || this.isClosing,
+    });
+  }
+
   open(player) {
     if (this.isOpening || this.isClosing) {
       return;
     }
     if (this.isOpened && !this.isClosing) {
-      this.isClosing = 10;
+      this.isClosing = 4;
     } else if (!this.isOpening) {
-      this.isOpening = 10;
+      this.isOpening = 4;
     }
+    player.wait(4);
+    player.waitFor = this;
     this.emitAll('open', {
       time: this.isOpening || this.isClosing,
     });

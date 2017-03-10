@@ -273,6 +273,19 @@ export class GameLevelZone {
         continue;
       }
 
+      object.body.checked = true;
+      if (object.type === 'Fighter' && object.kind === 'player') {
+        this.updateObjectNears(object);
+      }
+      this.updateObjectWithBodyCollisions(object);
+    }
+
+    for (const k in objectsWithBody) {
+      const object = objectsWithBody[k];
+      if (object.isStatic) {
+        continue;
+      }
+
       const cx = Math.floor(object.pos.x / WALL_SIZE);
       const cy = Math.floor(object.pos.y / WALL_SIZE);
       for (let x = -2; x <= 2; ++x) {
@@ -284,17 +297,6 @@ export class GameLevelZone {
               object, rx, ry, WALL_SIZE, WALL_SIZE);
           }
         }
-      }
-    }
-
-    for (const k in objectsWithBody) {
-      const object = objectsWithBody[k];
-      if (!object.isStatic) {
-        object.body.checked = true;
-        if (object.type === 'Fighter' && object.kind === 'player') {
-          this.updateObjectNears(object);
-        }
-        this.updateObjectWithBodyCollisions(object);
       }
     }
 

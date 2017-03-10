@@ -36,6 +36,26 @@ export class Door extends mix(global.Door, MixGameObject) {
       this.isOpening = data.time;
     }
 
+    if (this.sound) {
+      this.sound.stop();
+      this.sound.destroy();
+    }
+    this.sound = game.add.sound('door', this.soundVolume() * 0.3, true);
+    this.sound.play();
+  }
+  onBreak(data) {
+    if (this.isOpening) {
+      delete this.isOpening;
+      this.isClosing = data.time;
+    } else if (this.isClosing) {
+      delete this.isClosing;
+      this.isOpening = data.time;
+    }
+
+    if (this.sound) {
+      this.sound.stop();
+      this.sound.destroy();
+    }
     this.sound = game.add.sound('door', this.soundVolume() * 0.3, true);
     this.sound.play();
   }

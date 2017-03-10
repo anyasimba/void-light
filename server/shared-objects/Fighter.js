@@ -118,6 +118,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     delete this.inStun;
     delete this.waitTime;
     delete this.inWait;
+    delete this.waitFor;
 
     this.finishHit();
     delete this.needNextHit;
@@ -265,6 +266,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   stun(time) {
     if (this.stunTime === undefined) {
       if (this.waitTime) {
+        if (this.waitFor) {
+          this.waitFor.breakAction();
+        }
         delete this.waitTime;
         delete this.inWait;
       }
@@ -285,6 +289,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       delete this.inStun;
     }
     delete this.inWait;
+    delete this.waitFor;
     if (this.inHit) {
       this.breakHit();
     }
