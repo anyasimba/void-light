@@ -140,6 +140,22 @@ function create() {
   game.isCreated = true;
 }
 
+export function makeDarken(view) {
+  const v = new Phaser.Sprite(game, 0, 0, view.texture);
+  const rt = new Phaser.RenderTexture(
+    game, v.width, v.height, null, null, 1);
+  console.log(v.width, v.height);
+
+  const filter = new Phaser.Graphics(game, 0, 0);
+  filter.beginFill(0x888888, 1);
+  filter.drawRect(0, 0, v.width, v.height);
+  filter.endFill();
+  filter.blendMode = PIXI.blendModes.MULTIPLY;
+  rt.renderXY(v, 0, 0, true);
+  rt.renderXY(filter, 0, 0, false);
+  return rt;
+}
+
 function createGame() {
   global.game = new Phaser.Game(
     "100%", "100%", Phaser.CANVAS, '', {
@@ -345,22 +361,32 @@ function createGame() {
           global.ts = WALL_SIZE * 10;
           const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
           const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
+
+          const ln = 2;
           const textures = [];
+          for (let i = 0; i < ln; ++i) {
+            textures[i] = [];
+          }
 
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
-              const tex = new Phaser.RenderTexture(
-                game,
-                ts * scaleF, ts * scaleF,
-                null, null, 1);
-              textures[x] = textures[x] || [];
-              textures[x][y] = tex;
+              for (let i = 0; i < ln; ++i) {
+                const tex = new Phaser.RenderTexture(
+                  game,
+                  ts * scaleF, ts * scaleF,
+                  null, null, 1);
+                textures[i][x] = textures[i][x] || [];
+                textures[i][x][y] = tex;
+              }
             }
           }
 
           const bricksView = new Phaser.TileSprite(
             game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
             'bricks');
+          bricksView.darken = new Phaser.TileSprite(
+            game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
+            makeDarken(bricksView));
 
           console.log('loading map...');
           for (let y = 0; y < client.map.height; ++y) {
@@ -378,17 +404,68 @@ function createGame() {
               }
               if (view) {
                 const f = scaleF;
-                view.tilePosition.x = -x * WALL_SIZE;
-                view.tilePosition.y = -y * WALL_SIZE;
-                view.tileScale.x = f;
-                view.tileScale.y = f;
+                let pad;
+                let px;
+                let py;
+
+                pad = 0;
+                px = 0;
+                py = 0;
+                if (!grid[x - 1] || !grid[x - 1][y]) {
+                  px = pad;
+                }
+                if (!grid[x] || !grid[x][y - 1]) {
+                  py = pad;
+                }
+                view.darken.width = (WALL_SIZE - px) * scaleF;
+                view.darken.height = (WALL_SIZE - py) * scaleF;
+                if (!grid[x + 1] || !grid[x + 1][y]) {
+                  view.darken.width -= pad * scaleF;
+                }
+                if (!grid[x] || !grid[x][y + 1]) {
+                  view.darken.height -= pad * scaleF;
+                }
+                view.darken.tilePosition.x = -x * WALL_SIZE +
+                  view.width * i / ln - px;
+                view.darken.tilePosition.y = -y * WALL_SIZE +
+                  view.height * i / ln - py;
+                view.darken.tileScale.x = f * 0.5;
+                view.darken.tileScale.y = f * 0.5;
                 const cx = Math.floor(x * WALL_SIZE / ts);
                 const cy = Math.floor(y * WALL_SIZE / ts);
-                textures[cx][cy].isUsed = true;
-                textures[cx][cy].renderXY(
+                textures[0][cx][cy].isUsed = true;
+                textures[0][cx][cy].renderXY(
+                  view.darken,
+                  (x * WALL_SIZE - cx * ts + px) * scaleF,
+                  (y * WALL_SIZE - cy * ts + py) * scaleF,
+                  false);
+
+                pad = 10;
+                px = 0;
+                py = 0;
+                if (!grid[x - 1] || !grid[x - 1][y]) {
+                  px = pad;
+                }
+                if (!grid[x] || !grid[x][y - 1]) {
+                  py = pad;
+                }
+                view.width = (WALL_SIZE - px) * scaleF;
+                view.height = (WALL_SIZE - py) * scaleF;
+                if (!grid[x + 1] || !grid[x + 1][y]) {
+                  view.width -= pad * scaleF;
+                }
+                if (!grid[x] || !grid[x][y + 1]) {
+                  view.height -= pad * scaleF;
+                }
+                view.tilePosition.x = -x * WALL_SIZE - px;
+                view.tilePosition.y = -y * WALL_SIZE - py;
+                view.tileScale.x = f;
+                view.tileScale.y = f;
+                textures[1][cx][cy].isUsed = true;
+                textures[1][cx][cy].renderXY(
                   view,
-                  (x * WALL_SIZE - cx * ts) * scaleF,
-                  (y * WALL_SIZE - cy * ts) * scaleF,
+                  (x * WALL_SIZE - cx * ts + px) * scaleF,
+                  (y * WALL_SIZE - cy * ts + py) * scaleF,
                   false);
               }
             }
@@ -406,33 +483,44 @@ function createGame() {
 
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
-              if (textures[x][y].isUsed) {
-                const sprite = new Phaser.Sprite(
-                  game, x * ts, y * ts,
-                  textures[x][y]);
-                sprite.visible = false;
-                sprite.scale.set(1 / scaleF);
-                sprite.update = () => {
-                  if (global.client && global.client.player) {
-                    const cx = sprite.x + ts * 0.5;
-                    const cy = sprite.y + ts * 0.5;
-                    const dx = Math.abs(cx - client.player.pos.x);
-                    const dy = Math.abs(cy - client.player.pos.y);
-                    const w = (game.w + ts) * 0.5;
-                    const h = (game.h + ts) * 0.5;
-                    if (dx <= w && dy <= h) {
-                      sprite.visible = true;
-                    } else {
-                      sprite.visible = false;
+              for (let i = 0; i < ln; ++i) {
+                if (textures[i][x][y].isUsed) {
+                  const sprite = new Phaser.Sprite(
+                    game, x * ts, y * ts,
+                    textures[i][x][y]);
+                  sprite.visible = false;
+                  sprite.scale.set(1 / scaleF);
+                  sprite.update = () => {
+                    if (global.client && global.client.player) {
+                      const cx = sprite.x + ts * 0.5;
+                      const cy = sprite.y + ts * 0.5;
+                      const dx = Math.abs(cx - client.player.pos.x);
+                      const dy = Math.abs(cy - client.player.pos.y);
+                      const w = (game.w + ts) * 0.5;
+                      const h = (game.h + ts) * 0.5;
+                      if (dx <= w && dy <= h) {
+                        sprite.visible = true;
+                      } else {
+                        sprite.visible = false;
+                      }
                     }
+                  };
+                  switch (i) {
+                    case 0:
+                      game.layer.sub.ground.add(sprite);
+                      break;
+                    case 1:
+                      game.layer.sub.walls.add(sprite);
+                      break;
+                    default:
                   }
-                };
-                game.layer.sub.walls.add(sprite);
+                }
               }
             }
           }
 
           bricksView.destroy();
+          bricksView.darken.destroy();
         }
 
         global.mx = (game.input.x * game.resF - game.scene.x) / game.scaleFactor;
