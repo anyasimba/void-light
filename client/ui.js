@@ -139,7 +139,7 @@ export function setBarItem(g, i, mainI) {
   if (item.count) {
     if (mainI !== undefined) {
       g.add(new Phaser.Text(
-        game, 16, -5, item.count, {
+        game, -32, -5, item.count, {
           font: 'Neucha',
           fontSize: 30,
           fontWeight: 'bold',
@@ -149,7 +149,7 @@ export function setBarItem(g, i, mainI) {
         }));
     } else {
       g.add(new Phaser.Text(
-        game, 8, -6, item.count, {
+        game, -16, -6, item.count, {
           font: 'Neucha',
           fontSize: 20,
           fontWeight: 'bold',

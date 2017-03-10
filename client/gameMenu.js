@@ -127,7 +127,7 @@ function makeGameMenuTab1() {
 
             if (item.count) {
               g.add(new Phaser.Text(
-                game, 16, -5, item.count, {
+                game, -32, -5, item.count, {
                   font: 'Neucha',
                   fontSize: 30,
                   fontWeight: 'bold',
