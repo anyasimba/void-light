@@ -118,11 +118,15 @@ function makeGameMenuTab1() {
 }
 
 function makeGameMenuTab2() {
-  return makeGameMenuTabTitle(1, 'Предметы');
+  const titleView = makeGameMenuTabTitle(1, 'Предметы');
+  const contentView = titleView.contentView;
+  const menuView = contentView.add(
+    new Phaser.Group(game));
+  return titleView;
 }
 
 function makeGameMenuTab3() {
-  return makeGameMenuTabTitle(2, 'Квестовые предметы');
+  return makeGameMenuTabTitle(2, 'Ключи');
 }
 
 function makeGameMenuTab4() {
