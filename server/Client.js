@@ -300,7 +300,7 @@ export class Client extends global.Client {
           }
         }
       }
-      if (item.count === undefned || item.count > 0) {
+      if (item.count === undefined || item.count > 0) {
         this.saveParam('items', 'list', this.params.items.list);
         this.saveParam('items', 'clothed', this.params.items.clothed);
         this.emit('items', this.params.items);
