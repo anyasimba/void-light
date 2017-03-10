@@ -138,7 +138,7 @@ export function setBarItem(g, i, mainI) {
 
   if (item.count) {
     if (mainI !== undefined) {
-      g.add(new Phaser.Text(
+      g.textView = g.add(new Phaser.Text(
         game, -32, -5, item.count, {
           font: 'Neucha',
           fontSize: 30,
@@ -148,7 +148,7 @@ export function setBarItem(g, i, mainI) {
           strokeThickness: 6,
         }));
     } else {
-      g.add(new Phaser.Text(
+      g.textView = g.add(new Phaser.Text(
         game, -16, -6, item.count, {
           font: 'Neucha',
           fontSize: 20,
@@ -166,13 +166,25 @@ export function updateBarItems() {
     barItems.g1.itemView.destroy();
     delete barItems.g1.itemView;
   }
+  if (barItems.g1.textView) {
+    barItems.g1.textView.destroy();
+    delete barItems.g1.textView;
+  }
   if (barItems.g2.itemView) {
     barItems.g2.itemView.destroy();
     delete barItems.g2.itemView;
   }
+  if (barItems.g2.textView) {
+    barItems.g2.textView.destroy();
+    delete barItems.g2.textView;
+  }
   if (barItems.g3.itemView) {
     barItems.g3.itemView.destroy();
     delete barItems.g3.itemView;
+  }
+  if (barItems.g3.textView) {
+    barItems.g3.textView.destroy();
+    delete barItems.g3.textView;
   }
   if (!client || !client.params) {
     return;
