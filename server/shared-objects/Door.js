@@ -79,6 +79,8 @@ export class Door extends mix(global.Door, MixGameObject) {
       this.isOpening = 4;
     }
     player.wait(4);
+    player.speed.init();
+    player.emitPos();
     player.waitFor = this;
     this.emitAll('open', {
       time: this.isOpening || this.isClosing,
