@@ -288,7 +288,11 @@ export class Client extends global.Client {
       const item = this.params.items.list[i];
       const itemData = global[item.slug];
 
-      if (item.count && item.count > 0) {
+      let canUse = true;
+      if (item.count === 0) {
+        canUse = false;
+      }
+      if (item.count !== undefined && item.count > 0) {
         --item.count;
       } else if (!itemData.IS_KEEP) {
         this.params.items.list.splice(i, 1);
@@ -300,11 +304,11 @@ export class Client extends global.Client {
           }
         }
       }
-      if (item.count === undefined || item.count > 0) {
-        this.saveParam('items', 'list', this.params.items.list);
-        this.saveParam('items', 'clothed', this.params.items.clothed);
-        this.emit('items', this.params.items);
+      this.saveParam('items', 'list', this.params.items.list);
+      this.saveParam('items', 'clothed', this.params.items.clothed);
+      this.emit('items', this.params.items);
 
+      if (canUse) {
         const isEffect = itemData.HP !== undefined ||
           itemData.MP !== undefined ||
           itemData.STAMINA !== undefined;
