@@ -13,7 +13,7 @@ export function ia_sword__doHit(opts) {
             y: 60,
           }),
           angle: 135,
-          sideAngle: -50,
+          sideAngle: -60,
         });
       });
       time += step1;
@@ -101,7 +101,7 @@ export function ia_sword__doHit(opts) {
         this.addImpulse(opts.impulse2 || 600);
         this.playHit();
         this.weapon.stage(step2, easing.easeOutCubic, {
-          sideAngle: -50,
+          sideAngle: -60,
         });
       });
       time += step2 + (opts.wait2 || 0.1) * this.hitSpeed;
@@ -125,7 +125,7 @@ export function ia_sword__doHit(opts) {
       const step1 = (opts.begin3 || 0.2) * this.hitSpeed;
       this.step(time, () => {
         this.weapon.stage(step1, easing.easeInCubic, {
-          sideAngle: -10,
+          sideAngle: -20,
         });
       });
       time += step1;

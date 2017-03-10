@@ -87,6 +87,10 @@ function checkIfBothReady() {
     $('.login').css('display', 'block');
     $('.login-button').click(e => {
       const username = $('.username').val();
+      if (username.length <= 0) {
+        alert('Введите имя для игры');
+        return;
+      }
       if (username.length > 24) {
         alert('Не более 24 символов');
         return;
@@ -144,7 +148,6 @@ export function makeDarken(view) {
   const v = new Phaser.Sprite(game, 0, 0, view.texture);
   const rt = new Phaser.RenderTexture(
     game, v.width, v.height, null, null, 1);
-  console.log(v.width, v.height);
 
   const filter = new Phaser.Graphics(game, 0, 0);
   filter.beginFill(0x888888, 1);

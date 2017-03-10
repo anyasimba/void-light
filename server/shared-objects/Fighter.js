@@ -38,6 +38,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       mp: this.mp,
       STAMINA: this.STAMINA,
       stamina: this.stamina,
+
+      effects: this.effects,
     };
   }
   emitPos() {
@@ -62,6 +64,11 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       stamina: this.stamina,
       hitSpeed: this.hitSpeed,
     });
+  }
+  emitEffects() {
+    this.emitAll('effects', {
+          effects: this.effects,
+        });
   }
 
   constructor(owner, opts) {
@@ -98,6 +105,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       mp: opts.MP,
       STAMINA: opts.STAMINA,
       stamina: opts.STAMINA,
+
+      effects: [],
     });
 
     this.owner = owner;
@@ -120,6 +129,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     delete this.inWait;
     delete this.waitFor;
 
+    this.effects = [];
+
+
     this.finishHit();
     delete this.needNextHit;
 
@@ -128,8 +140,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.mp = this.MP;
     this.stamina = this.STAMINA;
 
-    this.speed.x = 0;
-    this.speed.y = 0;
+    this.inputMove.init();
+    this.look.init(0, 1, 0);
+    this.speed.init();
 
     delete this.area;
 
@@ -335,15 +348,20 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     });
   }
   useStamina(v, time) {
+    if (this.stunTime) {
+      time = 0;
+    }
     this.stamina = Math.max(this.stamina - v, 0);
-    this.staminaTime = this.staminaTime || 0;
-    this.staminaTime = Math.max(this.staminaTime, time / this.moveTimeF);
+    this.staminaTime = Math.max(this.staminaTime || 0, time / this.moveTimeF);
     this.emitAll('useStamina', {
       stamina: this.stamina,
       time: this.staminaTime,
     });
   }
   useBalance(v, time) {
+    if (this.stunTime) {
+      return;
+    }
     this.balance = Math.max(this.balance - v, 0);
     this.balanceTime = this.balanceTime || 0;
     this.balanceTime = Math.max(this.balanceTime, time / this.moveTimeF);
@@ -379,6 +397,38 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       return;
     }
 
+    if (this.canItem) {
+      const item = this.canItem;
+      item.destructor();
+      delete this.canItem;
+      this.owner.emit('stopCan', {});
+
+      const itemData = global[item.slug];
+      if (itemData.IS_UNIQUE) {
+        this.owner.params.items.list.push({
+          slug: item.slug,
+        });
+      } else {
+        let exists = false;
+        for (const k in this.owner.params.items.list) {
+          const subItem = this.owner.params.items.list[k];
+          if (subItem.slug === item.slug) {
+            ++subItem.count;
+            exists = true;
+            break;
+          }
+        }
+        if (!exists) {
+          this.owner.params.items.list.push({
+            slug: item.slug,
+            count: item.count || 1,
+          });
+        }
+      }
+
+      this.owner.saveParam('items', 'list', this.owner.params.items.list);
+      this.owner.emit('items', this.owner.params.items);
+    }
     if (this.canOpenDoor) {
       this.canOpenDoor.open(this);
       return;
@@ -391,7 +441,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.canCheckpoint.use(this);
     }
   }
-  onKeyF() {
+  onKeyG() {
     this.isRun = !this.isRun;
     if (this.isRun) {
       this.isBlock = false;
@@ -438,7 +488,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
       rollData.force *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
       rollData.forceInJump *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
-      this.rollBlockTime = rollData.duration + 0.2;
+      this.rollBlockTime = rollData.duration + 0.1;
       this.onRoll(rollData);
       this.emitAll('roll', rollData);
       this.emitPos();

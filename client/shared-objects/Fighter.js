@@ -347,6 +347,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
   }
 
+  onEffects(data) {
+    this.effects = data.effects;
+  }
+
   onDie() {
     this.speed.init();
     this.inputMove.init();

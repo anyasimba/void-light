@@ -198,7 +198,7 @@ export class Fighter {
     if (this.stunTime !== undefined) {
       if (!this.inStun) {
         this.inStun = true;
-        this.staminaTime = this.stunTime * 0.9;
+        this.staminaTime = this.stunTime * 0.5;
         delete this.needNextHit;
 
         const hands = this.hands;
@@ -253,6 +253,35 @@ export class Fighter {
         if (timeout.time <= 0) {
           delete this.timeouts[k];
           timeout.fn();
+        }
+      }
+    }
+
+    if (this.effects) {
+      let i = 0;
+      while (this.effects[i]) {
+        const eff = this.effects[i];
+        eff.DURATION -= dt;
+        if (eff.DURATION <= 0) {
+          this.effects.splice(i, 1);
+        } else {
+          ++i;
+
+          if (eff.HP) {
+            this.hp = Math.min(
+              this.HP,
+              this.hp + dt * eff.HP / eff.DURATION);
+          }
+          if (eff.MP) {
+            this.mp = Math.min(
+              this.MP,
+              this.mp + dt * eff.MP / eff.DURATION);
+          }
+          if (eff.STAMINA) {
+            this.stamina = Math.min(
+              this.STAMINA,
+              this.stamina + dt * eff.STAMINA / eff.DURATION);
+          }
         }
       }
     }

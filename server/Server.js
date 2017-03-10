@@ -57,9 +57,7 @@ export function Server() {
     .useStaticFolder('/shared/');
 
   const socks = http.createServer(app);
-  const ioListener = io(socks, {
-    origins: 'http://localhost:* http://127.0.0.1:*',
-  });
+  const ioListener = io(socks);
   socks.listen(3000, '0.0.0.0');
   ioListener.sockets.on('connection', app.onUserConnect);
 

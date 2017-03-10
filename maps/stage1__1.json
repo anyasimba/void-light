@@ -758,6 +758,54 @@
                  "width":32,
                  "x":864,
                  "y":896
+                }, 
+                {
+                 "gid":17,
+                 "height":32,
+                 "id":126,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":864,
+                 "y":1536
+                }, 
+                {
+                 "gid":18,
+                 "height":32,
+                 "id":127,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1376,
+                 "y":1088
+                }, 
+                {
+                 "gid":18,
+                 "height":32,
+                 "id":128,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1504,
+                 "y":1504
+                }, 
+                {
+                 "gid":18,
+                 "height":32,
+                 "id":129,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":2176,
+                 "y":1088
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -766,7 +814,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":126,
+ "nextobjectid":130,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tileheight":32,
@@ -866,6 +914,27 @@
              "0":
                 {
                  "image":"..\/_editor-assets\/npc__luna.png"
+                }
+            },
+         "tilewidth":32
+        }, 
+        {
+         "columns":0,
+         "firstgid":17,
+         "margin":0,
+         "name":"Items",
+         "spacing":0,
+         "tilecount":2,
+         "tileheight":32,
+         "tiles":
+            {
+             "0":
+                {
+                 "image":"..\/_editor-assets\/item__sword.bmp"
+                },
+             "1":
+                {
+                 "image":"..\/_editor-assets\/item__heal__stone.bmp"
                 }
             },
          "tilewidth":32
