@@ -113,10 +113,9 @@ function makeGameMenuTab1() {
         client.params.items.clothed;
       if (hasClothe) {
         const clothed = client.params.items.clothed;
-        const item1 = client.params.items.list[g.clothed];
-        const item2 = client.params.items.list[clothed[i]];
+        const newItem = client.params.items.list[clothed[i]];
         let diffByCount = false;
-        if (item1 && item2 && item1.count !== item2.count) {
+        if (newItem && g.textView && newItem.count + '' !== g.textView.text) {
           diffByCount = true;
         }
         if (clothed[i] !== g.clothed || diffByCount) {
