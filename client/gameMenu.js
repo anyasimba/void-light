@@ -113,9 +113,20 @@ function makeGameMenuTab1() {
         client.params.items.clothed;
       if (hasClothe) {
         const clothed = client.params.items.clothed;
-        if (clothed[i] !== g.clothed) {
+        const item1 = client.params.items.list[g.clothed];
+        const item2 = client.params.items.list[clothed[i]];
+        let diffByCount = false;
+        if (item1 && item2 && item1.count !== item2.count) {
+          diffByCount = true;
+        }
+        if (clothed[i] !== g.clothed || diffByCount) {
           if (g.itemView) {
             g.itemView.destroy();
+            delete g.itemView;
+          }
+          if (g.textView) {
+            g.textView.destroy();
+            delete g.textView;
           }
           g.clothed = clothed[i];
           if (clothed[i] !== undefined) {
@@ -125,8 +136,8 @@ function makeGameMenuTab1() {
             itemView.scale.set(0.5);
             g.itemView = g.add(itemView);
 
-            if (item.count) {
-              g.add(new Phaser.Text(
+            if (item.count !== undefined) {
+              g.textView = g.add(new Phaser.Text(
                 game, -32, -5, item.count, {
                   font: 'Neucha',
                   fontSize: 30,
@@ -241,7 +252,7 @@ function addItem(item, clientItem, data, i, k) {
   }
 
   let title = clientItem.LANG_RU;
-  if (data.count) {
+  if (data.count !== undefined) {
     title += ', ' + data.count + ' шт.';
   }
   const slugView = g.add(new Phaser.Text(

@@ -136,7 +136,7 @@ export function setBarItem(g, i, mainI) {
   g.itemView = v;
   g.add(v);
 
-  if (item.count) {
+  if (item.count !== undefined) {
     if (mainI !== undefined) {
       g.textView = g.add(new Phaser.Text(
         game, -32, -5, item.count, {
