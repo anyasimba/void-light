@@ -288,7 +288,7 @@ export class Client extends global.Client {
       const item = this.params.items.list[i];
       const itemData = global[item.slug];
 
-      if (item.count && item.count > 1) {
+      if (item.count && item.count > 0) {
         --item.count;
       } else if (!itemData.IS_KEEP) {
         this.params.items.list.splice(i, 1);
