@@ -156,7 +156,7 @@ export class Fighter {
         delete this.hpTime;
       }
     } else {
-      this.hp = Math.min(this.HP, this.hp + dt);
+      this.hp = Math.min(this.HP, this.hp + dt * 0.25);
     }
     if (this.staminaTime) {
       this.staminaTime -= dt;

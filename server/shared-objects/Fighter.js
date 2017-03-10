@@ -67,8 +67,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
   emitEffects() {
     this.emitAll('effects', {
-          effects: this.effects,
-        });
+      effects: this.effects,
+    });
   }
 
   constructor(owner, opts) {
