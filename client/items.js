@@ -60,13 +60,13 @@ export const client__item__sword = {
   LANG_RU: 'Меч',
 
   createView() {
-    const graphics = new Phaser.Graphics(game, 0, 0);
-
-    graphics.beginFill(0xFFFFFF, 0.5);
-    graphics.lineStyle(4, 0xFFFFFF, 1);
-    graphics.drawCircle(0, 0, 60);
-    graphics.endFill();
-
-    return graphics;
+    const image = new Phaser.Image(game, 0, 0, 'sword');
+    image.scale.x = 0.8;
+    image.scale.y = 1.2;
+    image.angle = 45;
+    image.anchor.x = 0.5;
+    image.anchor.y = 0.5;
+    image.smoothed = true;
+    return image;
   },
 };

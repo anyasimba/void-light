@@ -242,39 +242,6 @@ function createGame() {
         game.scaleMode = Phaser.FILL_WINDOW_FIXED_ASPECT;
 
         game.scene = game.add.group();
-        const preUpdate = game.scene.preUpdate;
-        game.scene.preUpdate = () => {
-          preUpdate.call(game.scene);
-
-          if (global.client && client.player) {
-            const targetX = client.player.pos.x + client.player.speed.x *
-              0.5;
-            const targetY = client.player.pos.y + client.player.speed.y *
-              0.5;
-
-            const dx = -targetX *
-              game.scaleFactor + game.width * game.resF / 2 - game.scene
-              .x;
-            const dy = -targetY *
-              game.scaleFactor + game.height * game.resF / 2 - game.scene
-              .y;
-
-            const f = (1 - Math.pow(0.1, dt));
-            game.scene.x += dx * f;
-            game.scene.y += dy * f;
-
-            game.ui.x = -game.scene.x / game.scaleFactor;
-            game.ui.y = -game.scene.y / game.scaleFactor;
-
-            game.cameraPos = new vec3({
-              x: client.player.pos.x,
-              y: client.player.pos.y,
-            });
-
-            game.layer.sub.light.x = game.ui.x;
-            game.layer.sub.light.y = game.ui.y;
-          }
-        };
 
         function resize(e) {
           const w = window.innerWidth;
@@ -307,13 +274,45 @@ function createGame() {
         }
         delete global.mouseCapture;
 
+        if (client && client.player) {
+          const targetX = client.player.pos.x + client.player.speed.x *
+            0.5;
+          const targetY = client.player.pos.y + client.player.speed.y *
+            0.5;
+
+          const dx = -targetX *
+            game.scaleFactor + game.width * game.resF / 2 - game.scene
+            .x;
+          const dy = -targetY *
+            game.scaleFactor + game.height * game.resF / 2 - game.scene
+            .y;
+
+          const f = (1 - Math.pow(0.1, dt));
+          game.scene.x += dx * f;
+          game.scene.y += dy * f;
+
+          game.ui.x = -game.scene.x / game.scaleFactor;
+          game.ui.y = -game.scene.y / game.scaleFactor;
+
+          game.cameraPos = new vec3({
+            x: targetX,
+            y: targetY,
+          });
+
+          if (game.layer.sub.light) {
+            game.layer.sub.light.x = game.ui.x;
+            game.layer.sub.light.y = game.ui.y;
+          }
+        }
+
         if (game.layer.sub.light) {
           global.lightAlpha = 0.1;
 
           const light = game.layer.sub.light;
+          const light2 = game.layer.sub.light2;
           if (!game.lightClear) {
             game.lightClear = new Phaser.Graphics(game);
-            game.lightClear.beginFill(0x000000, lightAlpha);
+            game.lightClear.beginFill(0x995555, lightAlpha);
             const w = light.width * light.scale.x;
             const h = light.height * light.scale.y;
             game.lightClear.drawRect(0, 0, w, h);
@@ -345,6 +344,20 @@ function createGame() {
           client.h = client.map.height * WALL_SIZE;
 
           const dictionary = loadMapDictionary(client.map);
+
+          const lights = client.map.layers[2];
+          if (lights) {
+            game.mapLights = [];
+            for (const k in lights.objects) {
+              const o = lights.objects[k];
+              game.mapLights.push({
+                x: (o.x + o.width * 0.5) / 32 * WALL_SIZE,
+                y: (o.y + o.height * 0.5) / 32 * WALL_SIZE,
+                rx: o.width / 64 * WALL_SIZE,
+                ry: o.height / 64 * WALL_SIZE,
+              });
+            }
+          }
 
           const ground = client.map.layers[0];
           const grid = [];

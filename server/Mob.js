@@ -132,6 +132,7 @@ export class Mob {
     return p;
   }
   checkPlayer(x, y, player) {
+    return;
     if (this.target && (!this.target.isAlive || this.target.isDestroyed)) {
       delete this.target;
       delete this.path;
