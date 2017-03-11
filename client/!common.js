@@ -311,15 +311,22 @@ function createGame() {
           const light = game.layer.sub.light;
           const light2 = game.layer.sub.light2;
           if (!game.lightClear) {
-            game.lightClear = new Phaser.Graphics(game);
-            game.lightClear.beginFill(0x995555, lightAlpha);
             const w = light.width * light.scale.x;
             const h = light.height * light.scale.y;
+            game.lightClear = new Phaser.Graphics(game);
+            game.lightClear.beginFill(0x000000, lightAlpha);
             game.lightClear.drawRect(0, 0, w, h);
             game.lightClear.endFill();
             game.lightClear.blendMode = PIXI.blendModes.MULTIPLY;
+
+            game.lightClear2 = new Phaser.Graphics(game);
+            game.lightClear2.beginFill(0x452025, lightAlpha);
+            game.lightClear2.drawRect(0, 0, w, h);
+            game.lightClear2.endFill();
+            game.lightClear2.blendMode = PIXI.blendModes.ADD;
           }
           light.texture.renderXY(game.lightClear, 0, 0, false);
+          light.texture.renderXY(game.lightClear2, 0, 0, false);
         }
 
         const makeSubLayer3D = (layer, f) => {
