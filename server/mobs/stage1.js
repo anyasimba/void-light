@@ -33,7 +33,7 @@ export const stage1__mob1 = {
     SCALE: 1.2,
 
     BALANCE: 50,
-    HP: 80,
+    HP: 40,
     MP: 100,
     STAMINA: 50,
   },
@@ -106,7 +106,7 @@ export const stage1__mob2 = {
     SCALE: 3,
 
     BALANCE: 30,
-    HP: 50,
+    HP: 30,
     MP: 100,
     STAMINA: 120,
   },
@@ -165,7 +165,7 @@ export const stage1__boss1 = {
     SCALE: 4,
 
     BALANCE: 100,
-    HP: 1000,
+    HP: 400,
     MP: 100,
     STAMINA: 200,
   },

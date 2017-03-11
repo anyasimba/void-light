@@ -1,5 +1,33 @@
 const PAD = 40;
 
+export function checkMouse(view, PAD) {
+  if (typeof PAD !== 'object') {
+    PAD = {
+      x: PAD,
+      y: PAD,
+    };
+  }
+  let dx = mx - game.ui.x -
+    (view.x - view.width * view.anchor.x - PAD.x);
+  let dy = my - game.ui.y -
+    (view.y - view.height * view.anchor.y - PAD.y);
+
+  let parentGroup = view.parentGroup;
+  while (parentGroup) {
+    if (parentGroup.needHide || !parentGroup.visible) {
+      return;
+    }
+    dx -= parentGroup.x;
+    dy -= parentGroup.y;
+    parentGroup = parentGroup.parentGroup;
+  }
+  if (dx > 0 && dx < view.width + PAD.x * 2) {
+    if (dy > 0 && dy < view.height + PAD.y * 2) {
+      return true;
+    }
+  }
+}
+
 export function makeButton(text, color, font, fontSize, x, y, PAD, fn) {
   const textView = new Phaser.Text(
     game, x, y, text, {
@@ -17,26 +45,10 @@ export function makeButton(text, color, font, fontSize, x, y, PAD, fn) {
       return;
     }
 
-    let dx = mx - game.ui.x -
-      (textView.x - textView.width * textView.anchor.x - PAD);
-    let dy = my - game.ui.y -
-      (textView.y - textView.height * textView.anchor.y - PAD);
-
-    let parentGroup = textView.parentGroup;
-    while (parentGroup) {
-      if (parentGroup.needHide || !parentGroup.visible) {
-        return;
-      }
-      dx -= parentGroup.x;
-      dy -= parentGroup.y;
-      parentGroup = parentGroup.parentGroup;
-    }
-    if (dx > 0 && dx < textView.width + PAD * 2) {
-      if (dy > 0 && dy < textView.height + PAD * 2) {
-        textView.fill = '#FFFFFF';
-        textView.stroke = '#AAAAAA';
-        global.mouseCapture = fn;
-      }
+    if (checkMouse(textView, PAD)) {
+      textView.fill = '#FFFFFF';
+      textView.stroke = '#AAAAAA';
+      global.mouseCapture = fn;
     }
   }
 
@@ -102,7 +114,171 @@ export function makeVoidsCount() {
   game.ui.add(voidsCountView);
 }
 
+export let barItems = {};
+let curBarItem = 0;
+export function nextBarItem() {
+  ++curBarItem;
+  updateBarItems();
+}
+export function prevBarItem() {
+  --curBarItem;
+  updateBarItems();
+}
+export function setBarItem(g, i, mainI) {
+  const item = client.params.items.list[i];
+  const clientItemData = global['client__' + item.slug];
+  const v = clientItemData.createView();
+  if (mainI === undefined) {
+    v.scale.set(0.5);
+  } else {
+    barItems.curItem = mainI;
+  }
+  g.itemView = v;
+  g.add(v);
+
+  if (item.count !== undefined) {
+    if (mainI !== undefined) {
+      g.textView = g.add(new Phaser.Text(
+        game, -32, -5, item.count, {
+          font: 'Neucha',
+          fontSize: 30,
+          fontWeight: 'bold',
+          fill: '#AAAAAA',
+          stroke: '#050505',
+          strokeThickness: 6,
+        }));
+    } else {
+      g.textView = g.add(new Phaser.Text(
+        game, -16, -6, item.count, {
+          font: 'Neucha',
+          fontSize: 20,
+          fontWeight: 'bold',
+          fill: '#AAAAAA',
+          stroke: '#050505',
+          strokeThickness: 6,
+        }));
+    }
+  }
+}
+export function updateBarItems() {
+  delete barItems.curItem;
+  if (barItems.g1.itemView) {
+    barItems.g1.itemView.destroy();
+    delete barItems.g1.itemView;
+  }
+  if (barItems.g1.textView) {
+    barItems.g1.textView.destroy();
+    delete barItems.g1.textView;
+  }
+  if (barItems.g2.itemView) {
+    barItems.g2.itemView.destroy();
+    delete barItems.g2.itemView;
+  }
+  if (barItems.g2.textView) {
+    barItems.g2.textView.destroy();
+    delete barItems.g2.textView;
+  }
+  if (barItems.g3.itemView) {
+    barItems.g3.itemView.destroy();
+    delete barItems.g3.itemView;
+  }
+  if (barItems.g3.textView) {
+    barItems.g3.textView.destroy();
+    delete barItems.g3.textView;
+  }
+  if (!client || !client.params) {
+    return;
+  }
+  if (!client.params.items.clothed) {
+    return;
+  }
+  const clothed = client.params.items.clothed;
+  let shift = 0;
+  for (let i = 0; i < 8; ++i) {
+    const r = clothed[i];
+    if (r !== undefined) {
+      ++shift;
+    }
+  }
+  curBarItem = (curBarItem + shift) % shift;
+  shift = 0;
+  for (let i = 0; i < 8; ++i) {
+    const r = clothed[i];
+    if (r !== undefined) {
+      if (shift >= curBarItem) {
+        shift = i;
+        break;
+      }
+      ++shift;
+    }
+  }
+
+  let doneI = 0;
+  let lastI;
+  for (let i = 0; i < 8; ++i) {
+    const j = (i + shift) % 8;
+    const clothedI = clothed[j];
+    if (clothedI !== undefined) {
+      if (doneI === 0) {
+        setBarItem(barItems.g1, clothedI, j);
+      } else if (doneI === 1) {
+        setBarItem(barItems.g2, clothedI);
+      } else {
+        lastI = clothedI;
+      }
+      ++doneI;
+    }
+  }
+  if (lastI !== undefined) {
+    setBarItem(barItems.g3, lastI);
+  }
+}
+
+function makeItemsBar() {
+  //
+  const g1 = new Phaser.Group(game);
+  g1.x = 240;
+  g1.y = 180;
+  const v1 = g1.add(
+    new Phaser.Graphics(game, 0, 0));
+
+  v1.beginFill(0xFFFFFF, 0.1);
+  v1.lineStyle(2, 0xFFFFFF, 0.5);
+  v1.drawRect(-40, -40, 80, 80);
+  v1.endFill();
+  game.ui.add(g1);
+  barItems.g1 = g1;
+
+  const g2 = new Phaser.Group(game);
+  g2.x = 320;
+  g2.y = 200;
+  const v2 = g2.add(
+    new Phaser.Graphics(game, 0, 0));
+
+  v2.beginFill(0xFFFFFF, 0.1);
+  v2.lineStyle(2, 0xFFFFFF, 0.5);
+  v2.drawRect(-20, -20, 40, 40);
+  v2.endFill();
+  game.ui.add(g2);
+  barItems.g2 = g2;
+
+  const g3 = new Phaser.Group(game);
+  g3.x = 160;
+  g3.y = 200;
+  const v3 = g3.add(
+    new Phaser.Graphics(game, 0, 0));
+
+  v3.beginFill(0xFFFFFF, 0.1);
+  v3.lineStyle(2, 0xFFFFFF, 0.5);
+  v3.drawRect(-20, -20, 40, 40);
+  v3.endFill();
+  game.ui.add(g3);
+  barItems.g3 = g3;
+}
+
 export function initUI() {
+  game.ui.add(makeGameMenu());
+
   makeBar(0xFF3300, 0, 0, 600, 30, (inner) => {
     if (global.client && global.client.player) {
       inner.scale.x = client.player.hp / client.player.HP;
@@ -120,6 +296,8 @@ export function initUI() {
   });
 
   makeVoidsCount();
+
+  makeItemsBar();
 }
 
 export function makeSuperMessage(text, color) {

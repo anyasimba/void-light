@@ -4,5 +4,6 @@ globally(require('./mobs/stage1'));
 globally(require('./objects/+'));
 globally(require('./quests/stage1'));
 globally(require('./Client'));
+globally(require('./items'));
 globally(require('./map'));
 globally(require('./params'));

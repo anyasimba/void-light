@@ -51,7 +51,15 @@ export class Client extends global.Client {
       });
     game.input.keyboard.addKey(Phaser.Keyboard.F)
       .onDown.add(() => {
-        this.emit('f', {});
+        if (barItems.curItem !== undefined) {
+          this.emit('f', {
+            i: barItems.curItem,
+          });
+        }
+      });
+    game.input.keyboard.addKey(Phaser.Keyboard.G)
+      .onDown.add(() => {
+        this.emit('g', {});
       });
     game.input.keyboard.addKey(Phaser.Keyboard.R)
       .onDown.add(() => {
@@ -59,11 +67,11 @@ export class Client extends global.Client {
       });
     game.input.keyboard.addKey(Phaser.Keyboard.Q)
       .onDown.add(() => {
-        this.emit('q', {});
+        prevBarItem();
       });
     game.input.keyboard.addKey(Phaser.Keyboard.E)
       .onDown.add(() => {
-        this.emit('e', {});
+        nextBarItem();
       });
     game.input.keyboard.addKey(Phaser.Keyboard.H)
       .onDown.add(() => {
@@ -78,6 +86,17 @@ export class Client extends global.Client {
     game.input.onDown.add(() => {
       if (global.mouseCapture) {
         global.mouseCapture();
+      }
+      if (global.mouseAction) {
+        if (global.mouseAction.active) {
+          global.mouseAction();
+          delete global.mouseAction;
+          return;
+        } else {
+          global.mouseAction.active = true;
+        }
+      }
+      if (global.mouseCapture) {
         return;
       }
       this.emit('mouseDown', {
@@ -142,7 +161,11 @@ export class Client extends global.Client {
   }
   onRestart(data) {
     this.mainTheme();
-    game.deads.removeAll();
+    game.layer.sub.deads.removeAll();
+    game.texts.removeAll();
+  }
+  onSoftRestart(data) {
+    game.layer.sub.deads.removeAll();
     game.texts.removeAll();
   }
   async onMap(data) {
@@ -154,10 +177,17 @@ export class Client extends global.Client {
     this.needLoadMap = true;
   }
 
+  onItems(data) {
+    gameMenuView.onItems(data);
+  }
+
   onOpenDoor() {
     makeSuperMessage('ОТКРЫТО', '#2299FF');
   }
 
+  onCanItem() {
+    makeMessage('Нажмите [C] чтобы поднять..', '#AAEEFF');
+  }
   onCanOpenDoor() {
     makeMessage('Нажмите [C] чтобы открыть..', '#AAEEFF');
   }

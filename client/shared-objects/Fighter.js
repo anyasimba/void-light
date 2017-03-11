@@ -347,6 +347,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
   }
 
+  onEffects(data) {
+    this.effects = data.effects;
+  }
+
   onDie() {
     this.speed.init();
     this.inputMove.init();
@@ -402,7 +406,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
       group.alpha = 1 - group.time / 60;
     };
-    game.deads.add(group);
+    game.layer.sub.deads.add(group);
 
     if (this.kind === 'player' && this.id !== client.playerID) {
       this.baseTint = 0x88FF33;
@@ -532,6 +536,34 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         delete this.afterHitTime;
         this.views[2].visible = false;
       }
+    }
+
+    if (game.layer.sub.light) {
+      const light = game.layer.sub.light;
+      if (!this.light) {
+        const rt = new Phaser.RenderTexture(
+          game, 128, 128, null, null, 1);
+        const image = new Phaser.Image(game, 0, 0, 'light');
+        image.blendMode = PIXI.blendModes.ADD;
+        rt.renderXY(image, 0, 0, true);
+        rt.renderXY(image, 0, 0, false);
+        rt.renderXY(image, 0, 0, false);
+        this.light = new Phaser.Image(game, 0, 0, rt);
+        if (this.kind === 'player' && client.playerID === this.id) {
+          this.light.scale.set(0.8);
+          this.light.alpha = 0.6;
+        } else {
+          this.light.scale.set(1.2);
+          this.light.alpha = 0.5;
+        }
+        this.light.tint = this.baseTint;
+        this.light.blendMode = PIXI.blendModes.ADD;
+        this.light.anchor.set(0.5);
+        this.light.alpha *= lightAlpha;
+      }
+      const x = (this.pos.x - game.ui.x) / light.scale.x;
+      const y = (this.pos.y - game.ui.y) / light.scale.y;
+      light.texture.renderXY(this.light, x, y, false);
     }
   }
 }

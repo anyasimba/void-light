@@ -4,7 +4,7 @@ preMain(async() => {
     ++this.__lastID;
     return this.__lastID;
   }
-})
+});
 
 export function parseCookies(rc) {
   const list = {};
@@ -28,9 +28,29 @@ export class Client extends global.Client {
     }
     this.params = JSON.parse(cookies.params || '{}');
 
-    if (!this.params.items) {
-      this.saveParam('items', 'heal__regular', 3);
+    if (!this.params.items || !this.params.items.list) {
+      this.saveParam('items', 'list', [{
+        slug: 'item__heal__regular',
+        count: 3,
+      }, {
+        slug: 'item__heal__stone',
+        count: 10,
+      }, {
+        slug: 'item__mp__stone',
+        count: 3,
+      }, {
+        slug: 'item__stamina__stone',
+        count: 2,
+      }, ]);
+      this.saveParam('items', 'clothed', {
+        '0': 0,
+        '1': 1,
+        '2': 2,
+        '3': 3,
+      });
     }
+
+    this.emit('items', this.params.items);
 
     let hasChange;
     let fighterParams = this.params.fighter || {};
@@ -49,7 +69,7 @@ export class Client extends global.Client {
     }
     if (!fighterParams.level) {
       hasChange = true;
-      fighterParams.level = 30;
+      fighterParams.level = 1;
     }
     if (!fighterParams.voidsCount) {
       hasChange = true;
@@ -148,7 +168,7 @@ export class Client extends global.Client {
       this.params.fighter.params.voidsCount = 0;
       this.saveParam('fighter', 'params', this.params.fighter.params);
 
-      this.gameLevelZone.restartTime = 6;
+      this.gameLevelZone.restartTime = 5;
       this.gameLevelZone.restartFull = true;
     } else {
       setTimeout(() => {
@@ -170,12 +190,12 @@ export class Client extends global.Client {
     this.on('c', data => this.onEventC(data));
     this.on('r', data => this.onEventR(data));
     this.on('f', data => this.onEventF(data));
-    this.on('q', data => this.onEventQ(data));
-    this.on('e', data => this.onEventE(data));
+    this.on('g', data => this.onEventG(data));
     this.on('h', data => this.onEventH(data));
     this.on('talk', data => this.onTalk(data));
     this.on('upLevel', data => this.onUpLevel(data));
     this.on('incParam', data => this.onIncParam(data));
+    this.on('clothe', data => this.onClothe(data));
   }
 
   /**
@@ -254,23 +274,58 @@ export class Client extends global.Client {
   }
   onEventF(data) {
     try {
-      this.player.onKeyF(data);
+      if (!this.player.isAlive) {
+        return;
+      }
+      if (typeof data.i !== 'number') {
+        return;
+      }
+      this.params.items.clothed = this.params.items.clothed || [];
+      if (this.params.items.clothed[data.i] === undefined) {
+        return;
+      }
+      const i = this.params.items.clothed[data.i];
+      const item = this.params.items.list[i];
+      const itemData = global[item.slug];
+
+      let canUse = true;
+      if (item.count === 0) {
+        canUse = false;
+      }
+      if (item.count !== undefined && item.count > 0) {
+        --item.count;
+      } else if (!itemData.IS_KEEP) {
+        this.params.items.list.splice(i, 1);
+        delete this.params.items.clothed[data.i];
+        for (let j = 0; j < 8; ++j) {
+          const k = this.params.items.clothed[j];
+          if (k && k > i) {
+            --this.params.items.clothed[j];
+          }
+        }
+      }
+      this.saveParam('items', 'list', this.params.items.list);
+      this.saveParam('items', 'clothed', this.params.items.clothed);
+      this.emit('items', this.params.items);
+
+      if (canUse) {
+        const isEffect = itemData.HP !== undefined ||
+          itemData.MP !== undefined ||
+          itemData.STAMINA !== undefined;
+
+        if (isEffect) {
+          this.player.effects.push(Object.assign({}, itemData));
+          this.player.emitEffects();
+        }
+      }
     } catch (e) {
       console.log(e, e.stack);
       process.exit(1);
     }
   }
-  onEventQ(data) {
+  onEventG(data) {
     try {
-      this.player.onKeyQ(data);
-    } catch (e) {
-      console.log(e, e.stack);
-      process.exit(1);
-    }
-  }
-  onEventE(data) {
-    try {
-      this.player.onKeyE(data);
+      this.player.onKeyG(data);
     } catch (e) {
       console.log(e, e.stack);
       process.exit(1);
@@ -354,13 +409,47 @@ export class Client extends global.Client {
       process.exit(1);
     }
   }
+  onClothe(data) {
+    try {
+      if (data.item !== undefined && typeof data.item !== 'number') {
+        return;
+      }
+      if (data.item !== undefined && !this.params.items.list[data.item]) {
+        return;
+      }
+      if (typeof data.i !== 'number') {
+        return;
+      }
+      if (data.i < 0 || data.i > 8) {
+        return;
+      }
+
+      if (data.item !== undefined) {
+        this.params.items.clothed = this.params.items.clothed || {};
+        for (let i = 0; i < 8; ++i) {
+          if (this.params.items.clothed[i] === data.item) {
+            delete this.params.items.clothed[i];
+          }
+        }
+        this.params.items.clothed[data.i] = data.item;
+      } else {
+        delete this.params.items.clothed[data.i];
+      }
+      this.saveParam('items', 'clothed', this.params.items.clothed);
+      this.emit('items', this.params.items);
+    } catch (e) {
+      console.log(e, e.stack);
+      process.exit(1);
+    }
+  }
 
   updateFighter() {
     const params = this.params.fighter.params;
     this.player.moveTimeF = 1 + this.getStep(
-      params.Endurance, 10, 4, 30, 2, 50, 1, 0.25) * 0.003;
+      params.Endurance, 10, 4, 30, 2, 50, 1, 0.25) * 0.004;
     this.player.HP = 60 + params.Health * 4;
-    this.player.STAMINA = 30 + params.Willpower * 4;
+    this.player.STAMINA = 30 + params.Endurance * 0.5 + params.Willpower *
+      4;
     this.player.damage = 10 + this.getStep(
       params.Strength, 10, 2, 30, 1, 50, 0.5, 0.25) * 0.3;
     this.player.hitSpeed = 0.9 + 0.5 / (this.getStep(

@@ -8,5 +8,6 @@ globally(require('./shared-objects/+'));
 globally(require('./assets'));
 globally(require('./client'));
 globally(require('./gameMenu'));
+globally(require('./items'));
 globally(require('./NPC'));
 globally(require('./ui'));

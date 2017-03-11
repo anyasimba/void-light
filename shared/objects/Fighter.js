@@ -156,7 +156,7 @@ export class Fighter {
         delete this.hpTime;
       }
     } else {
-      this.hp = Math.min(this.HP, this.hp + dt);
+      this.hp = Math.min(this.HP, this.hp + dt * 0.25);
     }
     if (this.staminaTime) {
       this.staminaTime -= dt;
@@ -164,7 +164,9 @@ export class Fighter {
         delete this.staminaTime;
       }
     } else {
-      this.stamina = Math.min(this.STAMINA, this.stamina + dt * 15 * this.moveTimeF);
+      this.stamina = Math.min(this.STAMINA,
+        this.stamina + dt * 15 * this.moveTimeF * (1 + this.STAMINA * 0.01)
+      );
     }
     if (this.inRoll) {
       this.inRoll.time += dt;
@@ -196,7 +198,7 @@ export class Fighter {
     if (this.stunTime !== undefined) {
       if (!this.inStun) {
         this.inStun = true;
-        this.staminaTime = this.stunTime * 0.9;
+        this.staminaTime = this.stunTime * 0.5;
         delete this.needNextHit;
 
         const hands = this.hands;
@@ -251,6 +253,36 @@ export class Fighter {
         if (timeout.time <= 0) {
           delete this.timeouts[k];
           timeout.fn();
+        }
+      }
+    }
+
+    if (this.effects) {
+      let i = 0;
+      while (this.effects[i]) {
+        const eff = this.effects[i];
+        eff.time = eff.time || eff.DURATION;
+        eff.time -= dt;
+        if (eff.time <= 0) {
+          this.effects.splice(i, 1);
+        } else {
+          ++i;
+
+          if (eff.HP) {
+            this.hp = Math.min(
+              this.HP,
+              this.hp + dt * eff.HP / eff.DURATION);
+          }
+          if (eff.MP) {
+            this.mp = Math.min(
+              this.MP,
+              this.mp + dt * eff.MP / eff.DURATION);
+          }
+          if (eff.STAMINA) {
+            this.stamina = Math.min(
+              this.STAMINA,
+              this.stamina + dt * eff.STAMINA / eff.DURATION);
+          }
         }
       }
     }

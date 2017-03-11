@@ -11,7 +11,7 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
       isStatic: true,
 
       pos: new vec3(opts.mapX, opts.mapY),
-      size: 200,
+      size: 400,
     });
 
     this.body = {
@@ -34,6 +34,22 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
   }
 
   use(player) {
+    let exists;
+    for (const k in player.owner.params.items.list) {
+      const i = player.owner.params.items.list[k];
+      if (i.slug === 'item__heal__regular') {
+        exists = true;
+        i.count = 3;
+      }
+    }
+    if (!exists) {
+      player.owner.params.items.list.push({
+        slug: 'item__heal__regular',
+        count: 3,
+      });
+    }
+    player.owner.saveParam('items', 'list', player.owner.params.items.list);
+    player.owner.emit('items', player.owner.params.items);
     player.owner.saveParam('checkpoint', 'pos', {
       x: this.pos.x,
       y: this.pos.y,

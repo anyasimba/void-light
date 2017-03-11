@@ -87,6 +87,10 @@ function checkIfBothReady() {
     $('.login').css('display', 'block');
     $('.login-button').click(e => {
       const username = $('.username').val();
+      if (username.length <= 0) {
+        alert('Введите имя для игры');
+        return;
+      }
       if (username.length > 24) {
         alert('Не более 24 символов');
         return;
@@ -98,17 +102,30 @@ function checkIfBothReady() {
   }
 };
 
+function createLayer() {
+  const layer = new Phaser.Group(game);
+  layer.sub = {};
+  layer.sub.ground = layer.add(new Phaser.Group(game));
+  layer.sub.deads = layer.add(new Phaser.Group(game));
+  layer.sub.bottom = layer.add(new Phaser.Group(game));
+  layer.sub.middle = layer.add(new Phaser.Group(game));
+  layer.sub.walls = layer.add(new Phaser.Group(game));
+  layer.sub.top = layer.add(new Phaser.Group(game));
+  layer.sub.info = layer.add(new Phaser.Group(game));
+  const q = 0.1;
+  const rt = new Phaser.RenderTexture(
+    game, Math.ceil(game.w * q), Math.ceil(game.h * q), null, null);
+  layer.sub.light = layer.add(new Phaser.Sprite(game, 0, 0, rt));
+  layer.sub.light.scale.set(1 / q);
+  layer.sub.light.blendMode = PIXI.blendModes.MULTIPLY;
+  return layer;
+}
+
 function create() {
   global.client = new Client;
 
-  game.ground = game.scene.add(new Phaser.Group(game));
-  game.deads = game.scene.add(new Phaser.Group(game));
-  game.walls = game.scene.add(new Phaser.Group(game));
-  game.bottom = game.scene.add(new Phaser.Group(game));
-  game.middle = game.scene.add(new Phaser.Group(game));
-  game.top = game.scene.add(new Phaser.Group(game));
+  game.layer = game.scene.add(createLayer());
 
-  game.info = game.scene.add(new Phaser.Group(game));
   game.texts = game.scene.add(new Phaser.Group(game));
   game.textEvents1 = game.scene.add(new Phaser.Group(game));
   game.textEvents2 = game.scene.add(new Phaser.Group(game));
@@ -127,10 +144,27 @@ function create() {
   game.isCreated = true;
 }
 
+export function makeDarken(view) {
+  const v = new Phaser.Sprite(game, 0, 0, view.texture);
+  const rt = new Phaser.RenderTexture(
+    game, v.width, v.height, null, null, 1);
+
+  const filter = new Phaser.Graphics(game, 0, 0);
+  filter.beginFill(0x888888, 1);
+  filter.drawRect(0, 0, v.width, v.height);
+  filter.endFill();
+  filter.blendMode = PIXI.blendModes.MULTIPLY;
+  rt.renderXY(v, 0, 0, true);
+  rt.renderXY(filter, 0, 0, false);
+  return rt;
+}
+
 function createGame() {
   global.game = new Phaser.Game(
     "100%", "100%", Phaser.CANVAS, '', {
       async preload() {
+        game.load.image('light', 'assets/light.png');
+
         game.load.image('shield', 'assets/shield.png');
         game.load.image('sword', 'assets/sword.png');
 
@@ -156,49 +190,49 @@ function createGame() {
         game.load.image('door', 'assets/door.png');
 
         game.load.audio('back',
-          'assets/back__doxent_-_Forgotten_Land.mp3');
+          'assets/back__doxent_-_Forgotten_Land.ogg');
         game.load.audio('bossBack',
-          'assets/bossBack__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.mp3'
+          'assets/bossBack__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.ogg'
         );
 
         game.load.audio('door',
-          'assets/door__233389__laiaoreka__automatic-door.mp3');
+          'assets/door__233389__laiaoreka__automatic-door.ogg');
 
         game.load.audio('boss',
-          'assets/boss__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.mp3');
+          'assets/boss__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.ogg');
         game.load.audio('hit',
-          'assets/hit__86003__nextmaking__hitting-body-with-blood.mp3'
+          'assets/hit__86003__nextmaking__hitting-body-with-blood.ogg'
         );
         game.load.audio('hit1',
-          'assets/hit1__351754__urupin__whistle-of-a-twig-in-air.mp3');
+          'assets/hit1__351754__urupin__whistle-of-a-twig-in-air.ogg');
         game.load.audio('hit2',
-          'assets/hit2__351754__urupin__whistle-of-a-twig-in-air.mp3');
+          'assets/hit2__351754__urupin__whistle-of-a-twig-in-air.ogg');
         game.load.audio('hit3',
-          'assets/hit3__351754__urupin__whistle-of-a-twig-in-air.mp3');
+          'assets/hit3__351754__urupin__whistle-of-a-twig-in-air.ogg');
         game.load.audio('hit4',
-          'assets/hit4__351754__urupin__whistle-of-a-twig-in-air.mp3');
+          'assets/hit4__351754__urupin__whistle-of-a-twig-in-air.ogg');
         game.load.audio('hit5',
-          'assets/hit5__351754__urupin__whistle-of-a-twig-in-air.mp3');
+          'assets/hit5__351754__urupin__whistle-of-a-twig-in-air.ogg');
 
         game.load.audio('block',
-          'assets/block__326845__johnbuhr__sword-clash-25.mp3');
+          'assets/block__326845__johnbuhr__sword-clash-25.ogg');
 
         game.load.audio('jump',
-          'assets/jump__260188__splicesound__young-boy-grunts-for-body-impact.mp3'
+          'assets/jump__260188__splicesound__young-boy-grunts-for-body-impact.ogg'
         );
         game.load.audio('mobJump',
-          'assets/mob1Jump__181068__lolamadeus__zombie-vocals-grunts.mp3'
+          'assets/mob1Jump__181068__lolamadeus__zombie-vocals-grunts.ogg'
         );
 
         game.load.audio('mob1Die',
-          'assets/mob1Die__76964__michel88__grunt2.mp3');
+          'assets/mob1Die__76964__michel88__grunt2.ogg');
         game.load.audio('youDied',
-          'assets/youDied__onlymeith_-_Toward_Isolation.mp3');
+          'assets/youDied__onlymeith_-_Toward_Isolation.ogg');
 
         game.load.audio('bossArea',
-          'assets/bossArea__377887__debsound__monster-072.mp3');
+          'assets/bossArea__377887__debsound__monster-072.ogg');
         game.load.audio('bossDead',
-          'assets/bossDead__56304__syna-max__monster-death-scream.mp3'
+          'assets/bossDead__56304__syna-max__monster-death-scream.ogg'
         );
 
         game.stage.backgroundColor = 0x101010;
@@ -208,33 +242,6 @@ function createGame() {
         game.scaleMode = Phaser.FILL_WINDOW_FIXED_ASPECT;
 
         game.scene = game.add.group();
-        game.scene.postUpdate = () => {
-          if (global.client && client.player) {
-            const targetX = client.player.pos.x + client.player.speed.x *
-              0.5;
-            const targetY = client.player.pos.y + client.player.speed.y *
-              0.5;
-
-            const dx = -targetX *
-              game.scaleFactor + game.width * game.resF / 2 - game.scene
-              .x;
-            const dy = -targetY *
-              game.scaleFactor + game.height * game.resF / 2 - game.scene
-              .y;
-
-            const f = (1 - Math.pow(0.1, dt));
-            game.scene.x += dx * f;
-            game.scene.y += dy * f;
-
-            game.ui.x = -game.scene.x / game.scaleFactor;
-            game.ui.y = -game.scene.y / game.scaleFactor;
-
-            game.cameraPos = new vec3({
-              x: client.player.pos.x,
-              y: client.player.pos.y,
-            });
-          }
-        };
 
         function resize(e) {
           const w = window.innerWidth;
@@ -267,17 +274,75 @@ function createGame() {
         }
         delete global.mouseCapture;
 
-        const makeLayer3D = (layer, f) => {
+        if (client && client.player) {
+          const targetX = client.player.pos.x + client.player.speed.x *
+            0.5;
+          const targetY = client.player.pos.y + client.player.speed.y *
+            0.5;
+
+          const dx = -targetX *
+            game.scaleFactor + game.width * game.resF / 2 - game.scene
+            .x;
+          const dy = -targetY *
+            game.scaleFactor + game.height * game.resF / 2 - game.scene
+            .y;
+
+          const f = (1 - Math.pow(0.1, dt));
+          game.scene.x += dx * f;
+          game.scene.y += dy * f;
+
+          game.ui.x = -game.scene.x / game.scaleFactor;
+          game.ui.y = -game.scene.y / game.scaleFactor;
+
+          game.cameraPos = new vec3({
+            x: targetX,
+            y: targetY,
+          });
+
+          if (game.layer.sub.light) {
+            game.layer.sub.light.x = game.ui.x;
+            game.layer.sub.light.y = game.ui.y;
+          }
+        }
+
+        if (game.layer.sub.light) {
+          global.lightAlpha = 0.1;
+
+          const light = game.layer.sub.light;
+          const light2 = game.layer.sub.light2;
+          if (!game.lightClear) {
+            const w = light.width * light.scale.x;
+            const h = light.height * light.scale.y;
+            game.lightClear = new Phaser.Graphics(game);
+            game.lightClear.beginFill(0x000000, lightAlpha);
+            game.lightClear.drawRect(0, 0, w, h);
+            game.lightClear.endFill();
+            game.lightClear.blendMode = PIXI.blendModes.MULTIPLY;
+
+            game.lightClear2 = new Phaser.Graphics(game);
+            game.lightClear2.beginFill(0x452025, lightAlpha);
+            game.lightClear2.drawRect(0, 0, w, h);
+            game.lightClear2.endFill();
+            game.lightClear2.blendMode = PIXI.blendModes.ADD;
+          }
+          light.texture.renderXY(game.lightClear, 0, 0, false);
+          light.texture.renderXY(game.lightClear2, 0, 0, false);
+        }
+
+        const makeSubLayer3D = (layer, f) => {
           const p = client.player.pos;
           layer.scale.set(f);
           layer.x = -p.x * (f - 1);
           layer.y = -p.y * (f - 1);
         };
+        const makeLayer3D = layer => {
+          makeSubLayer3D(layer.sub.middle, 1.01);
+          makeSubLayer3D(layer.sub.top, 1.02);
+          makeSubLayer3D(layer.sub.walls, 1.02);
+        }
 
         if (global.client && client.player) {
-          makeLayer3D(game.middle, 1.01);
-          makeLayer3D(game.top, 1.02);
-          makeLayer3D(game.walls, 1.02);
+          makeLayer3D(game.layer);
         }
 
         if (client.needLoadMap) {
@@ -286,6 +351,20 @@ function createGame() {
           client.h = client.map.height * WALL_SIZE;
 
           const dictionary = loadMapDictionary(client.map);
+
+          const lights = client.map.layers[2];
+          if (lights) {
+            game.mapLights = [];
+            for (const k in lights.objects) {
+              const o = lights.objects[k];
+              game.mapLights.push({
+                x: (o.x + o.width * 0.5) / 32 * WALL_SIZE,
+                y: (o.y + o.height * 0.5) / 32 * WALL_SIZE,
+                rx: o.width / 64 * WALL_SIZE,
+                ry: o.height / 64 * WALL_SIZE,
+              });
+            }
+          }
 
           const ground = client.map.layers[0];
           const grid = [];
@@ -302,26 +381,35 @@ function createGame() {
           }
 
           const scaleF = Math.ceil(game.scaleFactor * 10) * 0.1;
-          const ts = WALL_SIZE * 10;
+          global.ts = WALL_SIZE * 10;
           const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
           const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
+
+          const ln = 2;
           const textures = [];
+          for (let i = 0; i < ln; ++i) {
+            textures[i] = [];
+          }
 
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
-              const tex = new Phaser.RenderTexture(
-                game,
-                ts * scaleF, ts * scaleF,
-                null, null, 1);
-
-              textures[x] = textures[x] || [];
-              textures[x][y] = tex;
+              for (let i = 0; i < ln; ++i) {
+                const tex = new Phaser.RenderTexture(
+                  game,
+                  ts * scaleF, ts * scaleF,
+                  null, null, 1);
+                textures[i][x] = textures[i][x] || [];
+                textures[i][x][y] = tex;
+              }
             }
           }
 
           const bricksView = new Phaser.TileSprite(
             game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
             'bricks');
+          bricksView.darken = new Phaser.TileSprite(
+            game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
+            makeDarken(bricksView));
 
           console.log('loading map...');
           for (let y = 0; y < client.map.height; ++y) {
@@ -339,56 +427,123 @@ function createGame() {
               }
               if (view) {
                 const f = scaleF;
-                view.tilePosition.x = -x * WALL_SIZE;
-                view.tilePosition.y = -y * WALL_SIZE;
-                view.tileScale.x = f;
-                view.tileScale.y = f;
+                let pad;
+                let px;
+                let py;
 
+                pad = 0;
+                px = 0;
+                py = 0;
+                if (!grid[x - 1] || !grid[x - 1][y]) {
+                  px = pad;
+                }
+                if (!grid[x] || !grid[x][y - 1]) {
+                  py = pad;
+                }
+                view.darken.width = (WALL_SIZE - px) * scaleF;
+                view.darken.height = (WALL_SIZE - py) * scaleF;
+                if (!grid[x + 1] || !grid[x + 1][y]) {
+                  view.darken.width -= pad * scaleF;
+                }
+                if (!grid[x] || !grid[x][y + 1]) {
+                  view.darken.height -= pad * scaleF;
+                }
+                view.darken.tilePosition.x = -x * WALL_SIZE +
+                  view.width * i / ln - px;
+                view.darken.tilePosition.y = -y * WALL_SIZE +
+                  view.height * i / ln - py;
+                view.darken.tileScale.x = f * 0.5;
+                view.darken.tileScale.y = f * 0.5;
                 const cx = Math.floor(x * WALL_SIZE / ts);
                 const cy = Math.floor(y * WALL_SIZE / ts);
-                textures[cx][cy].isUsed = true;
-                textures[cx][cy].renderXY(
+                textures[0][cx][cy].isUsed = true;
+                textures[0][cx][cy].renderXY(
+                  view.darken,
+                  (x * WALL_SIZE - cx * ts + px) * scaleF,
+                  (y * WALL_SIZE - cy * ts + py) * scaleF,
+                  false);
+
+                pad = 10;
+                px = 0;
+                py = 0;
+                if (!grid[x - 1] || !grid[x - 1][y]) {
+                  px = pad;
+                }
+                if (!grid[x] || !grid[x][y - 1]) {
+                  py = pad;
+                }
+                view.width = (WALL_SIZE - px) * scaleF;
+                view.height = (WALL_SIZE - py) * scaleF;
+                if (!grid[x + 1] || !grid[x + 1][y]) {
+                  view.width -= pad * scaleF;
+                }
+                if (!grid[x] || !grid[x][y + 1]) {
+                  view.height -= pad * scaleF;
+                }
+                view.tilePosition.x = -x * WALL_SIZE - px;
+                view.tilePosition.y = -y * WALL_SIZE - py;
+                view.tileScale.x = f;
+                view.tileScale.y = f;
+                textures[1][cx][cy].isUsed = true;
+                textures[1][cx][cy].renderXY(
                   view,
-                  (x * WALL_SIZE - cx * ts) * scaleF,
-                  (y * WALL_SIZE - cy * ts) * scaleF,
+                  (x * WALL_SIZE - cx * ts + px) * scaleF,
+                  (y * WALL_SIZE - cy * ts + py) * scaleF,
                   false);
               }
             }
           }
           console.log('done', xn * yn);
 
-          const groundSprite = game.ground.add(new Phaser.TileSprite(
-            game, 0, 0, client.w, client.h, 'ground'));
+          const groundSprite = game.layer.sub.ground.add(new Phaser.TileSprite(
+            game, 0, 0, game.w, game.h, 'ground'));
+          groundSprite.update = () => {
+            groundSprite.x = game.ui.x;
+            groundSprite.y = game.ui.y;
+            groundSprite.tilePosition.x = -game.ui.x;
+            groundSprite.tilePosition.y = -game.ui.y;
+          };
 
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
-              if (!textures[x][y].isUsed) {
-                continue;
-              }
-
-              const sprite = new Phaser.Sprite(
-                game, x * ts, y * ts,
-                textures[x][y]);
-              sprite.visible = false;
-              sprite.scale.set(1 / scaleF);
-              sprite.update = () => {
-                if (global.client && global.client.player) {
-                  const cx = sprite.x + ts * 0.5;
-                  const cy = sprite.y + ts * 0.5;
-                  const dx = Math.abs(cx - client.player.pos.x);
-                  const dy = Math.abs(cy - client.player.pos.y);
-                  if (dx < ts * 2 && dy < ts * 1.5) {
-                    sprite.visible = true;
-                  } else {
-                    sprite.visible = false;
+              for (let i = 0; i < ln; ++i) {
+                if (textures[i][x][y].isUsed) {
+                  const sprite = new Phaser.Sprite(
+                    game, x * ts, y * ts,
+                    textures[i][x][y]);
+                  sprite.visible = false;
+                  sprite.scale.set(1 / scaleF);
+                  sprite.update = () => {
+                    if (global.client && global.client.player) {
+                      const cx = sprite.x + ts * 0.5;
+                      const cy = sprite.y + ts * 0.5;
+                      const dx = Math.abs(cx - client.player.pos.x);
+                      const dy = Math.abs(cy - client.player.pos.y);
+                      const w = (game.w + ts) * 0.5;
+                      const h = (game.h + ts) * 0.5;
+                      if (dx <= w && dy <= h) {
+                        sprite.visible = true;
+                      } else {
+                        sprite.visible = false;
+                      }
+                    }
+                  };
+                  switch (i) {
+                    case 0:
+                      game.layer.sub.ground.add(sprite);
+                      break;
+                    case 1:
+                      game.layer.sub.walls.add(sprite);
+                      break;
+                    default:
                   }
                 }
-              };
-              game.walls.add(sprite);
+              }
             }
           }
 
           bricksView.destroy();
+          bricksView.darken.destroy();
         }
 
         global.mx = (game.input.x * game.resF - game.scene.x) / game.scaleFactor;

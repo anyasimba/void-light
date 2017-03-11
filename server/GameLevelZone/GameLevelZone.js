@@ -75,6 +75,10 @@ export class GameLevelZone {
             this.mapObjects[data.mapID] = new Checkpoint(this, data);
             break;
           default:
+            if (slug.slice(0, 6) === 'item__') {
+              this.mapObjects[data.mapID] = new ItemOnMap(this, data);
+              break;
+            }
             this.enemyPoints.push(data);
         }
       } else if (o.name) {
@@ -126,9 +130,11 @@ export class GameLevelZone {
   removeObject(object) {
     object.emitAll('delete', {});
 
+    delete object.canItem;
     delete object.canOpenDoor;
     delete object.canTalk;
     delete object.talking;
+    delete object.canCheckpoint;
 
     delete object.gameLevelZone;
 
@@ -156,17 +162,24 @@ export class GameLevelZone {
         this.rebornPlayer(client.player);
         client.emit('restart', {});
       }
+    } else {
+      for (const k in this.clients) {
+        const client = this.clients[k];
+        client.emit('softRestart', {});
+      }
     }
     for (const k in this.clients) {
       const client = this.clients[k];
       client.player.emitParams();
       client.player.emitPos();
+      client.player.emitEffects();
     }
     for (const k in this.mobs) {
       const mob = this.mobs[k];
       mob.reborn();
       mob.fighter.emitParams();
       mob.fighter.emitPos();
+      mob.fighter.emitEffects();
     }
   }
 
@@ -263,6 +276,23 @@ export class GameLevelZone {
 
       this.updateObjectWithBodyCells(object);
       object.others = this.objectWithBodyOthers(object);
+    }
+    for (const k in objectsWithBody) {
+      const object = objectsWithBody[k];
+
+      if (object.isStatic) {
+        continue;
+      }
+
+      object.body.checked = true;
+      if (object.type === 'Fighter' && object.kind === 'player') {
+        this.updateObjectNears(object);
+      }
+      this.updateObjectWithBodyCollisions(object);
+    }
+
+    for (const k in objectsWithBody) {
+      const object = objectsWithBody[k];
 
       if (object.isStatic) {
         continue;
@@ -279,17 +309,6 @@ export class GameLevelZone {
               object, rx, ry, WALL_SIZE, WALL_SIZE);
           }
         }
-      }
-    }
-
-    for (const k in objectsWithBody) {
-      const object = objectsWithBody[k];
-      if (!object.isStatic) {
-        object.body.checked = true;
-        if (object.type === 'Fighter' && object.kind === 'player') {
-          this.updateObjectNears(object);
-        }
-        this.updateObjectWithBodyCollisions(object);
       }
     }
 
@@ -364,6 +383,7 @@ export class GameLevelZone {
     return others;
   }
   updateObjectNears(player) {
+    const canItem = player.canItem;
     const canOpenDoor = player.canOpenDoor;
     const canTalk = player.canTalk;
     const canCheckpoint = player.canCheckpoint;
@@ -371,6 +391,7 @@ export class GameLevelZone {
     delete player.canOpenDoor;
     delete player.canTalk;
     delete player.canCheckpoint;
+    delete player.canItem;
 
     const others = player.others;
     for (const k in others) {
@@ -380,6 +401,10 @@ export class GameLevelZone {
       }
     }
 
+    if (!canItem && player.canItem) {
+      player.owner.emit('canItem', {});
+      return;
+    }
     if (!canOpenDoor && player.canOpenDoor) {
       if (player.canOpenDoor.isOpened) {
         player.owner.emit('canCloseDoor', {});
@@ -394,6 +419,10 @@ export class GameLevelZone {
     }
     if (!canCheckpoint && player.canCheckpoint) {
       player.owner.emit('canCheckpoint', {});
+      return;
+    }
+    if (canItem && !player.canItem) {
+      player.owner.emit('stopCan', {});
       return;
     }
     if (canOpenDoor && !player.canOpenDoor) {
