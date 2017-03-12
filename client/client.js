@@ -18,30 +18,56 @@ export class Client extends global.Client {
     });
 
     let keys = [
-      ['w', Phaser.Keyboard.W],
-      ['a', Phaser.Keyboard.A],
-      ['s', Phaser.Keyboard.S],
-      ['d', Phaser.Keyboard.D],
+      ['w', getCookie('key__w') || Phaser.Keyboard.W],
+      ['a', getCookie('key__a') || Phaser.Keyboard.A],
+      ['s', getCookie('key__s') || Phaser.Keyboard.S],
+      ['d', getCookie('key__d') || Phaser.Keyboard.D],
     ];
+    const keysState = {};
+    let look = new vec3();
+    let move = new vec3();
+    const emitMove = () => {
+      move.init();
+      if (keysState.w) {
+        move.y -= 1;
+      }
+      if (keysState.s) {
+        move.y += 1;
+      }
+      if (keysState.a) {
+        move.x -= 1;
+      }
+      if (keysState.d) {
+        move.x += 1;
+      }
+      if (look.length() > 0) {
+        const l = look.unit();
+        const r = new vec3();
+        r.x = -move.x * l.y - move.y * l.x;
+        r.y = move.x * l.x - move.y * l.y;
+        move = r;
+      }
+      this.emit('move', move);
+    };
     for (const set of keys) {
       const key = game.input.keyboard.addKey(set[1]);
       key.onDown.add(() => {
-        this.emit('move', {
-          [set[0]]: true,
-        });
+        keysState[set[0]] = true;
+        emitMove();
       });
       key.onUp.add(() => {
-        this.emit('move', {
-          [set[0]]: false,
-        });
+        keysState[set[0]] = false;
+        emitMove();
       });
     }
 
-    game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
+    game.input.keyboard.addKey(
+        getCookie('key__space') || Phaser.Keyboard.SPACEBAR)
       .onDown.add(() => {
         this.emit('jump', {});
       });
-    game.input.keyboard.addKey(Phaser.Keyboard.SHIFT)
+    game.input.keyboard.addKey(
+        getCookie('key__shift') || Phaser.Keyboard.SHIFT)
       .onDown.add(() => {
         this.emit('roll', {});
       });
@@ -49,7 +75,7 @@ export class Client extends global.Client {
       .onDown.add(() => {
         this.emit('c', {});
       });
-    game.input.keyboard.addKey(Phaser.Keyboard.F)
+    game.input.keyboard.addKey(getCookie('key__f') || Phaser.Keyboard.F)
       .onDown.add(() => {
         if (barItems.curItem !== undefined) {
           this.emit('f', {
@@ -57,19 +83,19 @@ export class Client extends global.Client {
           });
         }
       });
-    game.input.keyboard.addKey(Phaser.Keyboard.G)
+    game.input.keyboard.addKey(getCookie('key__g') || Phaser.Keyboard.G)
       .onDown.add(() => {
         this.emit('g', {});
       });
-    game.input.keyboard.addKey(Phaser.Keyboard.R)
+    game.input.keyboard.addKey(getCookie('key__r') || Phaser.Keyboard.R)
       .onDown.add(() => {
         this.emit('r', {});
       });
-    game.input.keyboard.addKey(Phaser.Keyboard.Q)
+    game.input.keyboard.addKey(getCookie('key__q') || Phaser.Keyboard.Q)
       .onDown.add(() => {
         prevBarItem();
       });
-    game.input.keyboard.addKey(Phaser.Keyboard.E)
+    game.input.keyboard.addKey(getCookie('key__e') || Phaser.Keyboard.E)
       .onDown.add(() => {
         nextBarItem();
       });
@@ -80,6 +106,10 @@ export class Client extends global.Client {
 
     game.input.keyboard.addKey(Phaser.Keyboard.ESC)
       .onDown.add(() => {
+        if (this.message) {
+          disableMessage();
+          return;
+        }
         showGameMenu();
       });
 
@@ -104,6 +134,40 @@ export class Client extends global.Client {
         'y': my,
       });
     });
+
+    let lookInterval = false;
+    const lookKey = game.input.keyboard.addKey(
+      getCookie('key__y') || Phaser.Keyboard.Y);
+    lookKey.onDown.add(() => {
+      if (lookInterval) {
+        clearInterval(lookInterval);
+        lookInterval = false;
+        look.init();
+        return;
+      }
+      lookInterval = setInterval(() => {
+        look = new vec3(
+            global.mx,
+            global.my)
+          .subtract(this.player.pos);
+        emitMove();
+      }, 100);
+    });
+
+    game.input.keyboard.addKey(getCookie('key__p') || Phaser.Keyboard.P)
+      .onDown.add(() => {
+        if (move.length() > 0) {
+          this.emit('mouseDown', {
+            'x': this.player.pos.x + move.x * 100,
+            'y': this.player.pos.y + move.y * 100,
+          });
+          return;
+        }
+        this.emit('mouseDown', {
+          'x': this.player.pos.x + this.player.look.x * 100,
+          'y': this.player.pos.y + this.player.look.y * 100,
+        });
+      });
 
     this.params = JSON.parse(getCookie('params') || '{}');
   }

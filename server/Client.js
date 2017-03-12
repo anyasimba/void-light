@@ -85,7 +85,7 @@ export class Client extends global.Client {
 
     this.tasks = [];
 
-    this.on('login', data => this.onLogin(data));
+    this.on('login', data => this.onLogin(this.validate(data)));
   }
 
   saveParam(slug, key, value) {
@@ -182,46 +182,44 @@ export class Client extends global.Client {
     }
   }
 
+  validate(data) {
+    if (typeof data !== 'object') {
+      return {};
+    }
+    return data;
+  }
+
   registerEvents() {
-    this.on('move', data => this.onEventMove(data));
-    this.on('mouseDown', data => this.onEventMouseDown(data));
-    this.on('jump', data => this.onEventJump(data));
-    this.on('roll', data => this.onEventRoll(data));
-    this.on('c', data => this.onEventC(data));
-    this.on('r', data => this.onEventR(data));
-    this.on('f', data => this.onEventF(data));
-    this.on('g', data => this.onEventG(data));
-    this.on('h', data => this.onEventH(data));
-    this.on('talk', data => this.onTalk(data));
-    this.on('upLevel', data => this.onUpLevel(data));
-    this.on('incParam', data => this.onIncParam(data));
-    this.on('clothe', data => this.onClothe(data));
+    this.on('move', data => this.onEventMove(this.validate(data)));
+    this.on('mouseDown', data => this.onEventMouseDown(this.validate(data)));
+    this.on('jump', data => this.onEventJump(this.validate(data)));
+    this.on('roll', data => this.onEventRoll(this.validate(data)));
+    this.on('c', data => this.onEventC(this.validate(data)));
+    this.on('r', data => this.onEventR(this.validate(data)));
+    this.on('f', data => this.onEventF(this.validate(data)));
+    this.on('g', data => this.onEventG(this.validate(data)));
+    this.on('h', data => this.onEventH(this.validate(data)));
+    this.on('talk', data => this.onTalk(this.validate(data)));
+    this.on('upLevel', data => this.onUpLevel(this.validate(data)));
+    this.on('incParam', data => this.onIncParam(this.validate(data)));
+    this.on('clothe', data => this.onClothe(this.validate(data)));
   }
 
   /**
    * Events
    */
   onEventMove(data) {
-    const keys = ['w', 'a', 's', 'd'];
-
-    for (const key of keys) {
-      if (typeof data[key] === 'boolean') {
-        this[key] = data[key];
-      }
+    if (typeof data.x !== 'number' || isNaN(data.x)) {
+      return;
+    }
+    if (typeof data.y !== 'number' || isNaN(data.y)) {
+      return;
     }
 
-    this.player.inputMove.init();
-    if (this.w) {
-      this.player.inputMove.y -= 1;
-    }
-    if (this.a) {
-      this.player.inputMove.x -= 1;
-    }
-    if (this.s) {
-      this.player.inputMove.y += 1;
-    }
-    if (this.d) {
-      this.player.inputMove.x += 1;
+    this.player.inputMove.x = data.x;
+    this.player.inputMove.y = data.y;
+    if (this.player.inputMove.length() > 0) {
+      vec3.unit(this.player.inputMove);
     }
 
     this.player.emitPos();
@@ -294,7 +292,8 @@ export class Client extends global.Client {
       }
       if (item.count !== undefined && item.count > 0) {
         --item.count;
-      } else if (!itemData.IS_KEEP) {
+      }
+      if (item.count <= 0 && !itemData.IS_KEEP) {
         this.params.items.list.splice(i, 1);
         delete this.params.items.clothed[data.i];
         for (let j = 0; j < 8; ++j) {

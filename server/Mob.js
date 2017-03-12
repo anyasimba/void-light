@@ -419,6 +419,46 @@ export class Mob {
   }
 
   onDie(source) {
+    this.opts.dies = this.opts.dies || 0;
+
+    if (this.opts.dies === 0) {
+      this.gameLevelZone.timeouts.push({
+        breakable: true,
+        time: 60,
+        fn: () => {
+          this.reborn();
+        },
+      });
+      for (let i = 0; i < 3; ++i) {
+        this.gameLevelZone.timeouts.push({
+          breakable: true,
+          time: 0.5 + Math.random() * 1,
+          fn: () => {
+            const opts = {};
+            for (const k in this.opts) {
+              opts[k] = this.opts[k];
+            }
+            opts.FIGHTER = {};
+            for (const k in this.opts.FIGHTER) {
+              opts.FIGHTER[k] = this.opts.FIGHTER[k];
+            }
+            const mob = new Mob(this.gameLevelZone, Object.assign(opts, {
+              dies: opts.dies + 1,
+              x: this.fighter.pos.x + Math.random() * 10,
+              y: this.fighter.pos.y + Math.random() * 10,
+              FIGHTER: Object.assign(opts.FIGHTER, {
+                scale: opts.FIGHTER.scale * 0.7,
+                hitSpeed: opts.FIGHTER.hitSpeed * 1.2,
+                HP: opts.HP * 0.7,
+                damage: opts.damage * 0.7,
+              }),
+            }));
+            this.gameLevelZone.tempMobs.push(mob);
+          },
+        });
+      }
+    }
+
     if (source.kind === 'player' && this.opts.VOIDS_COUNT) {
       source.owner.params.fighter.params.voidsCount +=
         this.opts.VOIDS_COUNT;

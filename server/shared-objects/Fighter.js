@@ -71,8 +71,12 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     });
   }
 
-  constructor(owner, opts) {
-    opts = opts || {};
+  constructor(owner, optsInput) {
+    optsInput = optsInput || {};
+    const opts = {};
+    for (const k in optsInput) {
+      opts[k] = optsInput[k];
+    }
 
     super({
       lang: opts.LANG_RU,
@@ -380,6 +384,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     if (!this.isInGameLevelZone()) {
       return;
     }
+    if (!this.hitVec) {
+      return;
+    }
 
     opts.hitVec = this.hitVec.clone();
 
@@ -399,6 +406,14 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     if (this.canItem) {
       const item = this.canItem;
+      const gameLevelZone = item.gameLevelZone;
+      const opts = item.opts;
+      item.gameLevelZone.timeouts.push({
+        time: 60,
+        fn: () => {
+          new ItemOnMap(gameLevelZone, opts);
+        },
+      });
       item.destructor();
       delete this.canItem;
       this.owner.emit('stopCan', {});

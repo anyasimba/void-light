@@ -17,6 +17,8 @@ export class GameLevelZone {
     this.enemyPoints = [];
 
     this.mobs = [];
+    this.tempMobs = [];
+    this.timeouts = [];
 
     this.loadMap(mapName);
   }
@@ -108,7 +110,6 @@ export class GameLevelZone {
           area.boss = mob;
         }
       }
-      this.addObject(mob.fighter);
       this.mobs.push(mob);
     }
   }
@@ -151,6 +152,16 @@ export class GameLevelZone {
   }
 
   restart() {
+    let i = 0;
+    while (i < this.timeouts.length) {
+      const timeout = this.timeouts[i];
+      if (timeout.breakable <= 0) {
+        this.timeouts.splice(i, 1);
+      } else {
+        ++i;
+      }
+    }
+
     for (const k in this.clients) {
       const client = this.clients[k];
       client.player.reborn();
@@ -181,6 +192,11 @@ export class GameLevelZone {
       mob.fighter.emitPos();
       mob.fighter.emitEffects();
     }
+    for (const k in this.tempMobs) {
+      const mob = this.tempMobs[k];
+      this.removeObject(mob.fighter);
+    }
+    this.tempMobs = [];
   }
 
   addClient(client) {
@@ -460,6 +476,24 @@ export class GameLevelZone {
   }
 
   updateMobs() {
+    this.updateTimeoutsTime = this.updateTimeoutsTime || 0;
+    this.updateTimeoutsTime += dt;
+    if (this.updateTimeoutsTime >= 1) {
+      this.updateTimeoutsTime -= 1;
+
+      let i = 0;
+      while (i < this.timeouts.length) {
+        const timeout = this.timeouts[i];
+        timeout.time -= 1;
+        if (timeout.time <= 0) {
+          this.timeouts.splice(i, 1);
+          timeout.fn();
+        } else {
+          ++i;
+        }
+      }
+    }
+
     this.updateMobsTime = this.updateMobsTime || 0;
     this.updateMobsTime += dt;
     if (this.updateMobsTime >= 1) {
@@ -476,6 +510,11 @@ export class GameLevelZone {
           const mob = mobs[k];
           mob.checkPlayer(x, y, client.player);
         }
+        const tempMobs = this.tempMobs;
+        for (const k in tempMobs) {
+          const mob = tempMobs[k];
+          mob.checkPlayer(x, y, client.player);
+        }
       }
     }
 
@@ -487,6 +526,11 @@ export class GameLevelZone {
       const mobs = this.mobs;
       for (const k in mobs) {
         const mob = mobs[k];
+        mob.update();
+      }
+      const tempMobs = this.tempMobs;
+      for (const k in tempMobs) {
+        const mob = tempMobs[k];
         mob.update();
       }
 

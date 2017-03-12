@@ -9,12 +9,12 @@ export class ItemOnMap extends mix(global.ItemOnMap, MixGameObject) {
     super({
       isStatic: true,
 
+      opts: opts,
+
       slug: opts.slug,
 
       pos: new vec3(opts.mapX, opts.mapY),
       count: opts.count,
-
-      progress: 0,
     });
 
     this.body = {

@@ -70,3 +70,17 @@ export const client__item__sword = {
     return image;
   },
 };
+export const client__item__shield = {
+  LANG_RU: 'Щит',
+
+  createView() {
+    const image = new Phaser.Image(game, 0, 0, 'shield');
+    image.scale.x = 0.8;
+    image.scale.y = 1.2;
+    image.angle = 45;
+    image.anchor.x = 0.5;
+    image.anchor.y = 0.5;
+    image.smoothed = true;
+    return image;
+  },
+};

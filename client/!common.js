@@ -82,10 +82,15 @@ $(window).on('load', function () {
 });
 
 function checkIfBothReady() {
+  let isEntered = false;
+
   if (windowReady && fontReady) {
     $('.username').val(getCookie('username'));
     $('.login').css('display', 'block');
     $('.login-button').click(e => {
+      if (isEntered) {
+        return;
+      }
       const username = $('.username').val();
       if (username.length <= 0) {
         alert('Введите имя для игры');
@@ -95,9 +100,16 @@ function checkIfBothReady() {
         alert('Не более 24 символов');
         return;
       }
+      isEntered = true;
       setCookie('username', username);
       $('.login').css('display', 'none');
       createGame();
+    });
+
+    $('body').keyup(e => {
+      if (e.keyCode == 13) {
+        $(".login-button").click();
+      }
     });
   }
 };

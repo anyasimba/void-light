@@ -25,3 +25,7 @@ export const item__sword = {
   IS_UNIQUE: true,
   WEAPON: 'weapon__sword__default',
 };
+export const item__shield = {
+  IS_UNIQUE: true,
+  SHIELD: 'shield__default__default',
+};

@@ -346,7 +346,64 @@ function makeGameMenuTab5() {
 
 function makeGameMenuTab6() {
   ++tabsN;
-  return makeGameMenuTabTitle(5, 'Опции');
+  const titleView = makeGameMenuTabTitle(5, 'Опции');
+  const contentView = titleView.contentView;
+  const makeKeyOption = (x, y, key, code, text) => {
+    let updateText;
+    const g = contentView.add(makeButton(
+      '',
+      '#FFFFFF',
+      'Neucha',
+      30,
+      x, y, 0,
+      () => {
+        g.tint = 0xFFEEAA;
+        updateText('...');
+        game.input.keyboard.onDownCallback = e => {
+          delete game.input.keyboard.onDownCallback;
+          e.preventDefault();
+          setCookie('key__' + key, e.keyCode);
+          updateText();
+          g.tint = 0xAAEEFF;
+        };
+      }));
+    g.tint = 0xAAEEFF;
+    updateText = (title) => {
+      if (!getCookie('key__' + key)) {
+        setCookie('key__' + key, code);
+      }
+      const curKey = parseInt(getCookie('key__' + key));
+      if (!title) {
+        for (const k in Phaser.Keyboard) {
+          if (Phaser.Keyboard[k] === curKey) {
+            title = k;
+          }
+        }
+      }
+      g.text = text + ': [' + title + ']';
+    }
+    updateText();
+    g.parentGroup = contentView;
+    return g;
+  }
+
+  const i = 50;
+  makeKeyOption(0, 0, 'w', Phaser.Keyboard.W, 'Движение вверх');
+  makeKeyOption(0, i, 'a', Phaser.Keyboard.A, 'Движение влево');
+  makeKeyOption(0, i * 2, 's', Phaser.Keyboard.S, 'Движение вниз');
+  makeKeyOption(0, i * 3, 'd', Phaser.Keyboard.D, 'Движение вправо');
+  makeKeyOption(0, i * 4, 'shift', Phaser.Keyboard.SHIFT, 'Перекат');
+  makeKeyOption(0, i * 5, 'space', Phaser.Keyboard.SPACE, 'Прыжок');
+  makeKeyOption(0, i * 6, 'q', Phaser.Keyboard.Q, 'Предыдущий предмет');
+  makeKeyOption(0, i * 7, 'e', Phaser.Keyboard.E, 'Следующий предмет');
+  makeKeyOption(0, i * 8, 'f', Phaser.Keyboard.F, 'Использовать предмет');
+  makeKeyOption(0, i * 9, 'r', Phaser.Keyboard.R, 'Поставить\\убрать блок');
+  makeKeyOption(0, i * 10, 'g', Phaser.Keyboard.G, 'Начать\\перестать бежать');
+  makeKeyOption(0, i * 11, 'p', Phaser.Keyboard.P, 'Удар');
+  makeKeyOption(
+    0, i * 12, 'y', Phaser.Keyboard.Y, 'Движение на курсор\\абсолютное');
+
+  return titleView;
 }
 //
 let isGameMenuShowed = false;

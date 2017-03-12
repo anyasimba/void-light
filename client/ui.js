@@ -51,7 +51,6 @@ export function makeButton(text, color, font, fontSize, x, y, PAD, fn) {
       global.mouseCapture = fn;
     }
   }
-
   return textView;
 }
 
