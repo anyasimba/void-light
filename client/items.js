@@ -1,5 +1,5 @@
 export const client__item__heal__regular = {
-  LANG_RU: 'Светлая вода',
+  LANG_RU: 'Жидкий свет',
 
   createView() {
     const graphics = new Phaser.Graphics(game, 0, 0);
@@ -14,7 +14,7 @@ export const client__item__heal__regular = {
 };
 
 export const client__item__heal__stone = {
-  LANG_RU: 'Светлый камень',
+  LANG_RU: 'Красноватый свет',
 
   createView() {
     const graphics = new Phaser.Graphics(game, 0, 0);
@@ -28,7 +28,7 @@ export const client__item__heal__stone = {
   },
 };
 export const client__item__mp__stone = {
-  LANG_RU: 'Магический камень',
+  LANG_RU: 'Синий свет',
 
   createView() {
     const graphics = new Phaser.Graphics(game, 0, 0);
@@ -42,7 +42,7 @@ export const client__item__mp__stone = {
   },
 };
 export const client__item__stamina__stone = {
-  LANG_RU: 'Плотный камень',
+  LANG_RU: 'Зеленоватый свет',
 
   createView() {
     const graphics = new Phaser.Graphics(game, 0, 0);

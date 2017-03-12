@@ -440,7 +440,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
           });
         }
       }
-
+      this.owner.emit('gotItem', {
+        slug: item.slug,
+        count: item.count,
+      });
       this.owner.saveParam('items', 'list', this.owner.params.items.list);
       this.owner.emit('items', this.owner.params.items);
     }

@@ -86,6 +86,16 @@ function checkIfBothReady() {
 
   if (windowReady && fontReady) {
     $('.username').val(getCookie('username'));
+    if (getCookie('role')) {
+      $('.role-wrap').css('display', 'none');
+      $('.reset-button').click(e => {
+        setCookie('role', '');
+        setCookie('params', '');
+        window.location.reload();
+      });
+    } else {
+      $('.reset').css('display', 'none');
+    }
     $('.login').css('display', 'block');
     $('.login-button').click(e => {
       if (isEntered) {
@@ -102,6 +112,7 @@ function checkIfBothReady() {
       }
       isEntered = true;
       setCookie('username', username);
+      setCookie('role', $('.role').val());
       $('.login').css('display', 'none');
       createGame();
     });

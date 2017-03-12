@@ -393,7 +393,7 @@ function makeGameMenuTab6() {
   makeKeyOption(0, i * 2, 's', Phaser.Keyboard.S, 'Движение вниз');
   makeKeyOption(0, i * 3, 'd', Phaser.Keyboard.D, 'Движение вправо');
   makeKeyOption(0, i * 4, 'shift', Phaser.Keyboard.SHIFT, 'Перекат');
-  makeKeyOption(0, i * 5, 'space', Phaser.Keyboard.SPACE, 'Прыжок');
+  makeKeyOption(0, i * 5, 'space', Phaser.Keyboard.SPACEBAR, 'Прыжок');
   makeKeyOption(0, i * 6, 'q', Phaser.Keyboard.Q, 'Предыдущий предмет');
   makeKeyOption(0, i * 7, 'e', Phaser.Keyboard.E, 'Следующий предмет');
   makeKeyOption(0, i * 8, 'f', Phaser.Keyboard.F, 'Использовать предмет');

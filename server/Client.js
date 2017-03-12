@@ -37,10 +37,10 @@ export class Client extends global.Client {
         count: 10,
       }, {
         slug: 'item__mp__stone',
-        count: 3,
+        count: 10,
       }, {
         slug: 'item__stamina__stone',
-        count: 2,
+        count: 20,
       }, ]);
       this.saveParam('items', 'clothed', {
         '0': 0,
@@ -70,6 +70,27 @@ export class Client extends global.Client {
     if (!fighterParams.level) {
       hasChange = true;
       fighterParams.level = 1;
+
+      if (cookies.role === 'Knight') {
+        fighterParams.level = 16;
+        fighterParams.Health = 7;
+        fighterParams.Strength = 2;
+        fighterParams.Endurance = 2;
+        fighterParams.Willpower = 4;
+      }
+      if (cookies.role === 'Warrior') {
+        fighterParams.level = 16;
+        fighterParams.Strength = 7;
+        fighterParams.Dexterity = 5;
+        fighterParams.Endurance = 2;
+        fighterParams.Willpower = 1;
+      }
+      if (cookies.role === 'Lier') {
+        fighterParams.level = 16;
+        fighterParams.Dexterity = 5;
+        fighterParams.Endurance = 6;
+        fighterParams.Willpower = 4;
+      }
     }
     if (!fighterParams.voidsCount) {
       hasChange = true;

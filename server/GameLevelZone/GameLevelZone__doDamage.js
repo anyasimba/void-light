@@ -59,7 +59,7 @@ Object.assign(GameLevelZone.prototype, {
         !other.inStun &&
         !other.inHit;
 
-      let balanceF = 1;
+      let balanceF = source.BALANCE_SCALE || 1;
       let damageF = 1;
       const isJumpHit = source.isJumpHit || source.inJump;
       const isRollHit = source.isRollHit || source.inRoll;

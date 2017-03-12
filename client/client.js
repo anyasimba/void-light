@@ -272,6 +272,21 @@ export class Client extends global.Client {
     }
   }
 
+  onGotItem(data) {
+    disableMessage();
+    let text = '(Вы поднимаете ' +
+      global['client__' + data.slug].LANG_RU;
+    if (data.count) {
+      text += ', ' + data.count + 'шт.';
+    }
+    text += ')';
+    makeMessage(text, '#EEEEEE');
+    this.nextMessage = setTimeout(() => {
+      delete this.nextMessage;
+      disableMessage();
+    }, 800);
+  }
+
   onTalk(data) {
     const dialog = global[data.name][data.talking];
     const lang = dialog.LANG_RU.replace(/ +/g, ' ').slice(1, -2);

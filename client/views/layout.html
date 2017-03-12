@@ -57,6 +57,31 @@
 		margin: 50px auto 0;
 		color: #5CF;
 	}
+	.login .role {
+		font-size: 20px;
+		padding: 10px 20px;
+		display: block;
+		background: transparent;
+		border: 2px solid #5CF;
+		outline: none;
+		margin: 10px auto 0;
+		color: #5CF;
+	}
+	.login .reset-button {
+		font-size: 20px;
+		padding: 10px 20px;
+		display: block;
+		background: transparent;
+		border: 2px solid #5CF;
+		outline: none;
+		margin: 10px auto 0;
+		color: #5CF;
+	}
+	.login .reset-button:hover {
+		background: #5CF;
+		color: #FFF;
+		cursor: pointer;
+	}
 	.login .login-button {
 		font-size: 30px;
 		padding: 20px 40px;
@@ -79,6 +104,17 @@
 		<div class="login-inner">
 			<div class="logo">VOID LIGHT</div>
 			<input class="username" type="text"/>
+			<div class="role-wrap">
+				<select class="role">
+					<option value="Knight">Рыцарь</option>
+					<option value="Warrior">Воин</option>
+					<option value="Lier">Вор</option>
+					<option value="None">Нищий</option>
+				</select>
+			</div>
+			<div class="reset">
+			<button class="reset-button">сброс</button>
+			</div>
 			<button class="login-button">ВХОД</button>
 		</div>
 	</div>

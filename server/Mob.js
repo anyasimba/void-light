@@ -424,15 +424,17 @@ export class Mob {
     if (this.opts.dies === 0) {
       this.gameLevelZone.timeouts.push({
         breakable: true,
-        time: 60,
+        time: 60 * 5,
         fn: () => {
           this.reborn();
         },
       });
-      for (let i = 0; i < 3; ++i) {
+    }
+    if (this.opts.dies < this.opts.DIES || 0) {
+      for (let i = 0; i < this.opts.DIES_N; ++i) {
         this.gameLevelZone.timeouts.push({
           breakable: true,
-          time: 0.5 + Math.random() * 1,
+          time: 0.1 + Math.random() * 0.1,
           fn: () => {
             const opts = {};
             for (const k in this.opts) {
@@ -442,17 +444,20 @@ export class Mob {
             for (const k in this.opts.FIGHTER) {
               opts.FIGHTER[k] = this.opts.FIGHTER[k];
             }
-            const mob = new Mob(this.gameLevelZone, Object.assign(opts, {
+            Object.assign(opts, {
               dies: opts.dies + 1,
-              x: this.fighter.pos.x + Math.random() * 10,
-              y: this.fighter.pos.y + Math.random() * 10,
-              FIGHTER: Object.assign(opts.FIGHTER, {
-                scale: opts.FIGHTER.scale * 0.7,
-                hitSpeed: opts.FIGHTER.hitSpeed * 1.2,
-                HP: opts.HP * 0.7,
-                damage: opts.damage * 0.7,
-              }),
-            }));
+              x: this.fighter.pos.x + Math.random() * 2,
+              y: this.fighter.pos.y + Math.random() * 2,
+            });
+            Object.assign(opts.FIGHTER, {
+              SCALE: opts.FIGHTER.SCALE * opts.DIES_SCALE,
+              hitSpeed: opts.FIGHTER.hitSpeed * opts.DIES_SCALE,
+              damage: opts.FIGHTER.damage * opts.DIES_SCALE,
+              BALANCE_SCALE: (opts.FIGHTER.BALANCE_SCALE || 1) *
+                0.5,
+              BALANCE: opts.FIGHTER.BALANCE * opts.DIES_SCALE,
+            });
+            const mob = new Mob(this.gameLevelZone, opts);
             this.gameLevelZone.tempMobs.push(mob);
           },
         });

@@ -1,4 +1,8 @@
 export const stage1__mob1 = {
+  DIES: 1,
+  DIES_N: 3,
+  DIES_SCALE: 0.4,
+
   AGRO_D: 8,
   RUN_D: 50,
   HIT_D: [100, 400],
