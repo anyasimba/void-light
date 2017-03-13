@@ -536,6 +536,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.emitPos();
   }
   onKeyR() {
+    if (!this.isBlock && !this.shield) {
+      return;
+    }
     this.isBlock = !this.isBlock;
     if (this.isBlock) {
       this.isRun = false;

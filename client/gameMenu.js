@@ -186,10 +186,10 @@ function makeGameMenuTab1() {
   const mainY = 80;
   makeClotheCell(mainX, mainY, 200, 200, 'leftHand1', 2);
   makeClotheCell(mainX + 250, mainY, 200, 200, 'rightHand1', 2);
-  makeClotheCell(mainX, mainY + 300, 200, 200, 'leftHand2', 2);
-  makeClotheCell(mainX + 250, mainY + 300, 200, 200, 'rightHand2', 2);
+  // makeClotheCell(mainX, mainY + 300, 200, 200, 'leftHand2', 2);
+  // makeClotheCell(mainX + 250, mainY + 300, 200, 200, 'rightHand2', 2);
   const mainText1 = contentView.add(new Phaser.Text(
-    game, mainX - 140, mainY, 'Первая стойка', {
+    game, mainX - 140, mainY, 'Руки: ', {
       font: 'Neucha',
       fontSize: 60,
       fontWeight: 'bold',
@@ -199,17 +199,17 @@ function makeGameMenuTab1() {
     }));
   mainText1.anchor.x = 1;
   mainText1.anchor.y = 0.5;
-  const mainText2 = contentView.add(new Phaser.Text(
-    game, mainX - 140, mainY + 300, 'Вторая стойка', {
-      font: 'Neucha',
-      fontSize: 60,
-      fontWeight: 'bold',
-      fill: '#AAAAAA',
-      stroke: '#050505',
-      strokeThickness: 6,
-    }));
-  mainText2.anchor.x = 1;
-  mainText2.anchor.y = 0.5;
+  // const mainText2 = contentView.add(new Phaser.Text(
+  //   game, mainX - 140, mainY + 300, 'Вторая стойка', {
+  //     font: 'Neucha',
+  //     fontSize: 60,
+  //     fontWeight: 'bold',
+  //     fill: '#AAAAAA',
+  //     stroke: '#050505',
+  //     strokeThickness: 6,
+  //   }));
+  // mainText2.anchor.x = 1;
+  // mainText2.anchor.y = 0.5;
 
   const contentViewUpdate = contentView.update;
   contentView.update = () => {
