@@ -30,20 +30,15 @@ export class Client extends global.Client {
 
     if (!this.params.items || !this.params.items.list) {
       this.saveParam('items', 'list', [{
-        slug: 'item__heal__regular',
-        count: 3,
-      }, {
         slug: 'item__heal__stone',
         count: 10,
       }, {
         slug: 'item__stamina__stone',
-        count: 20,
+        count: 3,
       }, {
         slug: 'item__sword',
       }, {
         slug: 'item__axe',
-      }, {
-        slug: 'item__shield',
       }, ]);
       this.saveParam('items', 'clothed', {
         '0': 0,
