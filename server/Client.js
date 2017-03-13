@@ -95,8 +95,6 @@ export class Client extends global.Client {
         fighterParams.Endurance = 6;
         fighterParams.Willpower = 4;
       }
-      fighterParams.level = 999;
-      fighterParams.Endurance = 100;
     }
     if (!fighterParams.voidsCount) {
       hasChange = true;
