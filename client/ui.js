@@ -288,11 +288,11 @@ export function initUI() {
       inner.scale.x = client.player.stamina / client.player.STAMINA;
     };
   });
-  makeBar(0x0077FF, 0, 60, 400, 15, (inner) => {
-    if (global.client && global.client.player) {
-      inner.scale.x = client.player.mp / client.player.MP;
-    };
-  });
+  // makeBar(0x0077FF, 0, 60, 400, 15, (inner) => {
+  //   if (global.client && global.client.player) {
+  //     inner.scale.x = client.player.mp / client.player.MP;
+  //   };
+  // });
 
   makeVoidsCount();
 

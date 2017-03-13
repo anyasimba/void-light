@@ -47,6 +47,8 @@ Object.assign(GameLevelZone.prototype, {
     }
 
     const angle = rel.toAngle();
+    opts.r1 = Math.max(-180, opts.r1 - other.body.size / d * 10);
+    opts.r2 = Math.min(180, opts.r2 + other.body.size / d * 10);
     if (!isAngleInRange(angle, opts.a1, opts.a2)) {
       isHit = false;
     }
@@ -87,6 +89,11 @@ Object.assign(GameLevelZone.prototype, {
       }
 
       let damage = source.damage;
+      if (!damage) {
+        damage = source.damage_f * source.weapon.scale_f +
+          source.damage_d * source.weapon.scale_d +
+          source.weapon.damage;
+      }
       if (isInBlock) {
         damage = 0;
       }

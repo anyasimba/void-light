@@ -36,17 +36,21 @@ export class Client extends global.Client {
         slug: 'item__heal__stone',
         count: 10,
       }, {
-        slug: 'item__mp__stone',
-        count: 10,
-      }, {
         slug: 'item__stamina__stone',
         count: 20,
+      }, {
+        slug: 'item__sword',
+      }, {
+        slug: 'item__axe',
+      }, {
+        slug: 'item__shield',
       }, ]);
       this.saveParam('items', 'clothed', {
         '0': 0,
         '1': 1,
         '2': 2,
-        '3': 3,
+        'leftHand1': 5,
+        'rightHand1': 3,
       });
     }
 
@@ -91,7 +95,6 @@ export class Client extends global.Client {
         fighterParams.Endurance = 6;
         fighterParams.Willpower = 4;
       }
-      fighterParams.level = 999;
     }
     if (!fighterParams.voidsCount) {
       hasChange = true;
@@ -506,8 +509,10 @@ export class Client extends global.Client {
     this.player.HP = 60 + params.Health * 4;
     this.player.STAMINA = 30 + params.Endurance * 0.5 + params.Willpower *
       4;
-    this.player.damage = 10 + this.getStep(
-      params.Strength, 10, 2, 30, 1, 50, 0.5, 0.25) * 0.3;
+    this.player.damage_f = this.getStep(
+      params.Strength, 10, 2, 30, 1, 50, 0.5, 0.25) * 0.6;
+    this.player.damage_d = this.getStep(
+      params.Dexterity, 10, 2, 30, 1, 50, 0.5, 0.25) * 0.3;
     this.player.hitSpeed = 0.9 + 0.5 / (this.getStep(
       params.Dexterity, 10, 0.1, 30, 0.3, 50, 0.5, 1) * 0.1 + 1);
     if (this.player.emitParams) {

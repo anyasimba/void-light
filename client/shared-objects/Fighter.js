@@ -61,6 +61,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         new Phaser.Image(game, 0, 0, opts.BACK_VIEW),
         hitView,
       ];
+      images[0].scale.set(opts.SCALE || 1);
+      images[1].scale.set(opts.SCALE || 1);
+      images[2].scale.set(opts.SCALE || 1);
     } else {
       const hitView = new Phaser.Image(game, 0, 0, 'player');
       hitView.tint = 0xFF3300;
@@ -69,6 +72,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         new Phaser.Image(game, 0, 0, 'player-back'),
         hitView,
       ];
+      images[0].scale.set(0.25);
+      images[1].scale.set(0.25);
+      images[2].scale.set(0.25);
     }
     let ID = '';
     if (kind === 'player') {
@@ -87,7 +93,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       image.anchor.y = 0.5;
       image.angle = 90;
       if (orient) {
-        image.scale.x = -1;
+        image.scale.x = -image.scale.x;
       }
       image.smoothed = true;
     }
@@ -101,11 +107,15 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         new Phaser.Image(game, 0, 0, opts.VIEW),
         new Phaser.Image(game, 0, 0, opts.DEAD_VIEW),
       ];
+      images[0].scale.set(opts.SCALE || 1);
+      images[1].scale.set(opts.SCALE || 1);
     } else {
       images = [
         new Phaser.Image(game, 0, 0, 'player'),
         new Phaser.Image(game, 0, 0, 'player-back'),
       ]
+      images[0].scale.set(0.25);
+      images[1].scale.set(0.25);
     }
     let ID = '';
     if (kind === 'player') {
@@ -122,7 +132,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       image.angle = 90;
       image.tint = tint;
       if (orient) {
-        image.scale.x = -1;
+        image.scale.x = -image.scale.x;
       }
       image.smoothed = true;
     }

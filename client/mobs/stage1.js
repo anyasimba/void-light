@@ -147,6 +147,7 @@ export const weapon__stage1__mob1__leftHand__default = new class {
 //
 export const stage1__mob2 = {
   VIEW: 'player',
+  SCALE: 0.25,
   TINT: 0x995511,
   CAN_MIRROR_VIEW: true,
   BACK_VIEW: 'player-back',
@@ -224,6 +225,7 @@ export const weapon__stage1__mob2__rightHand__default = new class {
 //
 export const stage1__boss1 = {
   VIEW: 'player',
+  SCALE: 0.25,
   TINT: 0xFF8800,
   CAN_MIRROR_VIEW: true,
   BACK_VIEW: 'player-back',

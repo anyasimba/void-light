@@ -95,6 +95,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
       hitSpeed: opts.hitSpeed,
       damage: opts.damage,
+      damage_f: opts.damage_f,
+      damage_d: opts.damage_d,
 
       ACC: opts.ACC || Fighter.ACC,
       RUN_ACC: opts.RUN_ACC || Fighter.RUN_ACC,

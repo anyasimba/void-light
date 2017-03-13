@@ -1,7 +1,7 @@
 export const stage1__mob1 = {
   DIES: 1,
-  DIES_N: 3,
-  DIES_SCALE: 0.4,
+  DIES_N: 1,
+  DIES_SCALE: 0.5,
 
   AGRO_D: 8,
   RUN_D: 50,
@@ -172,7 +172,7 @@ export const stage1__boss1 = {
     ACC: 300,
     RUN_ACC: 500,
     BODY_SIZE: 40,
-    SCALE: 4,
+    SCALE: 6,
 
     BALANCE: 100,
     HP: 400,
