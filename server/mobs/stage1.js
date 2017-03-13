@@ -166,20 +166,35 @@ export const stage1__boss1 = {
 
     moveTimeF: 1.1,
 
-    hitSpeed: 1.5,
+    hitSpeed: 1.3,
     damage: 30,
 
     ACC: 300,
     RUN_ACC: 500,
     BODY_SIZE: 40,
-    SCALE: 6,
+    SCALE: 5,
 
     BALANCE: 100,
-    HP: 400,
+    HP: 200,
     MP: 100,
     STAMINA: 200,
   },
 
+  leftHand(parent) {
+    return new global.Item({
+      parent: parent,
+      type: 'shield',
+      kind: 'stage1__boss1__leftHand',
+      hand: 2,
+      pos: {
+        x: -15,
+        y: -30,
+      },
+      angle: -35,
+      vAngle: 0,
+      hAngle: 20,
+    });
+  },
   rightHand(parent) {
     return new global.Item({
       parent: parent,

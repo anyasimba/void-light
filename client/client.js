@@ -203,7 +203,7 @@ export class Client extends global.Client {
     }
     if (name === 'delete') {
       let object;
-      if (parentID) {
+      if (parentID && gameObjects[parentID]) {
         object = gameObjects[parentID].children[id];
       } else {
         object = gameObjects[id];

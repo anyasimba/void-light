@@ -281,6 +281,9 @@ export class Mob {
     }
 
     if (canAttack) {
+      if (!this.fighter.isBlock) {
+        this.fighter.onKeyR();
+      }
       isRun = false;
       if (!this.act) {
         const lastActIsMove =

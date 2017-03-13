@@ -33,7 +33,7 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
     }
   }
 
-  use(player) {
+  static USE(player) {
     let exists;
     for (const k in player.owner.params.items.list) {
       const i = player.owner.params.items.list[k];
@@ -50,11 +50,36 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
     }
     player.owner.saveParam('items', 'list', player.owner.params.items.list);
     player.owner.emit('items', player.owner.params.items);
+    player.hp = player.HP;
+    player.stamina = player.STAMINA;
+    player.mp = player.MP;
+    player.emitParams();
+  }
+  use(player) {
+    Checkpoint.USE(player);
     player.owner.saveParam('checkpoint', 'pos', {
       x: this.pos.x,
       y: this.pos.y,
     });
     player.owner.emit('useCheckpoint', {});
-    this.gameLevelZone.restart();
+
+    const mobs = this.gameLevelZone.mobs;
+    for (const k in mobs) {
+      const mob = mobs[k];
+      if (mob.target === player) {
+        delete mob.target;
+        delete mob.path;
+        delete mob.onWay;
+      }
+    }
+    const tempMobs = this.gameLevelZone.tempMobs;
+    for (const k in tempMobs) {
+      const mob = tempMobs[k];
+      if (mob.target === player) {
+        delete mob.target;
+        delete mob.path;
+        delete mob.onWay;
+      }
+    }
   }
 }

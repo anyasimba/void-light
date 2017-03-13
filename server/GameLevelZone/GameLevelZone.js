@@ -224,6 +224,7 @@ export class GameLevelZone {
       const a = Math.random() * Math.PI * 2;
       player.pos.x = p.x + Math.cos(a) * WALL_SIZE * 2;
       player.pos.y = p.y + Math.sin(a) * WALL_SIZE * 2;
+      Checkpoint.USE(player);
       return;
     }
     const i = Math.floor(Math.random() * this.playerPoints.length);

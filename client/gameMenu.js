@@ -405,6 +405,8 @@ function makeGameMenuTab6() {
           setCookie('key__' + key, e.keyCode);
           updateText();
           g.tint = 0xAAEEFF;
+          makeMessage('Обновите страницу для применения настроек',
+            '#FFEEAA');
         };
       }));
     g.tint = 0xAAEEFF;

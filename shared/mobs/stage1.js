@@ -212,10 +212,10 @@ export const stage1__boss1__doHit = ia_sword__doHit({
   impulse: 1500,
   begin2: 0.4,
   wait2: 0,
-  end2: 0,
+  end2: 3,
   impulse2: 1000,
   begin3: 0.5,
   wait3: 0,
-  end3: 0.5,
+  end3: 2,
   impulse3: 2000,
 });

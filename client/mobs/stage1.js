@@ -226,17 +226,77 @@ export const weapon__stage1__mob2__rightHand__default = new class {
 export const stage1__boss1 = {
   VIEW: 'player',
   SCALE: 0.2,
-  TINT: 0xFF8800,
+  TINT: 0x222222,
   CAN_MIRROR_VIEW: true,
   BACK_VIEW: 'player-back',
   DEAD_VIEW: 'player-back',
 
-  LIGHT: 0xFF8800,
-  LIGHT_I: 3,
+  LIGHT: 0xFF5555,
+  LIGHT_I: 1,
   LIGHT_A: 1,
   LIGHT_SCALE: 16,
 }
 
+export const shield__stage1__boss1__leftHand__default = new class {
+  createView(isHost, kind) {
+    const image = new Phaser.Image(game, 0, 0, 'shield');
+    image.scale.x = 1.4;
+    image.scale.y = 1.4;
+    image.anchor.x = 0.5;
+    image.anchor.y = 0.5;
+    image.tint = 0x772222;
+    image.smoothed = true;
+    return image;
+  }
+  update() {
+    this.view.x = this.pos.x + this.parent.moveShift + 1;
+    this.view.y = this.pos.y - this.parent.moveShift * 2 + 2;
+    this.view.angle = this.angle + 90;
+  }
+  onStun() {
+    let time = 0;
+
+    const step1 = 0.2;
+    this.parent.step(time, () => {
+      this.stage(step1, easing.easeOutCubic, {
+        pos: {
+          x: -45,
+          y: -30,
+        },
+        angle: -120,
+        sideAngle: -30,
+      });
+    });
+    time += step1;
+
+    let step2FN, step3FN;
+    step2FN = () => {
+      const step2 = 1;
+      this.stage(step2, easing.easeInOutCubic, {
+        pos: {
+          x: -45,
+          y: -30,
+        },
+        angle: -80,
+        sideAngle: -50,
+      });
+      this.parent.step(step2, step3FN);
+    };
+    step3FN = () => {
+      const step3 = 1;
+      this.stage(step3, easing.easeInOutCubic, {
+        pos: {
+          x: -45,
+          y: -30,
+        },
+        angle: -120,
+        sideAngle: -30,
+      });
+      this.parent.step(step3, step2FN);
+    };
+    this.parent.step(time, step2FN);
+  }
+}
 export const weapon__stage1__boss1__rightHand__default = new class {
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'sword');
@@ -245,7 +305,7 @@ export const weapon__stage1__boss1__rightHand__default = new class {
     image.anchor.x = 0.5;
     image.anchor.y = 0.8;
     image.smoothed = true;
-    image.tint = 0x331100;
+    image.tint = 0x772222;
     return image;
   }
   update() {
