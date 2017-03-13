@@ -145,11 +145,11 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     const clothed = this.owner.params.items.clothed;
     const list = this.owner.params.items.list;
-    if (clothed.leftHand1) {
+    if (clothed.leftHand1 && list[clothed.leftHand1]) {
       const item = global[list[clothed.leftHand1].slug];
       global[item.SLUG](this);
     }
-    if (clothed.rightHand1) {
+    if (clothed.rightHand1 && list[clothed.rightHand1]) {
       const item = global[list[clothed.rightHand1].slug];
       global[item.SLUG](this);
     }
@@ -537,7 +537,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         rollData.forceInJump = 300 * (this.moveTimeF * 0.4 + 0.6);
       }
       rollData.force *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
-      rollData.forceInJump *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
+      rollData.forceInJump *= 0.5 + Math.min(this.speed.length() / 700,
+        0.8);
       this.rollBlockTime = rollData.duration + 0.1;
       this.onRoll(rollData);
       this.emitAll('roll', rollData);

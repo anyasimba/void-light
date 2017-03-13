@@ -130,6 +130,9 @@ function makeGameMenuTab1() {
           g.clothed = clothed[k];
           if (clothed[k] !== undefined) {
             const item = client.params.items.list[g.clothed];
+            if (!item) {
+              return;
+            }
             const clientItemData = global['client__' + item.slug];
             const itemView = clientItemData.createView();
             itemView.scale.x *= w / 160;

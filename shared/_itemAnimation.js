@@ -187,7 +187,7 @@ export function ia_axe__doHit(opts) {
       delete this.weapon.mirror;
       let time = 0;
 
-      const step1 = (opts.begin || 0.3) * this.hitSpeed;
+      const step1 = (opts.begin || 0.2) * this.hitSpeed;
       this.step(time, () => {
         this.canNextHit();
         this.weapon.stage(step1, easing.easeInCubic, {
@@ -232,19 +232,19 @@ export function ia_axe__doHit(opts) {
         const damageOpts = {
           r1: 0,
           r2: 320,
-          a1: -90,
-          a2: 90,
-          impulse: opts.impulse || 600,
+          a1: -20,
+          a2: 20,
+          impulse: opts.impulse2 || 600,
         }
         if (this.inRoll) {
-          damageOpts.a1 = -140;
-          damageOpts.a2 = 140;
+          damageOpts.a1 = -40;
+          damageOpts.a2 = 40;
           damageOpts.r2 = 340;
         }
         if (this.inJump) {
           if (!this.inRoll) {
-            damageOpts.a1 = -120;
-            damageOpts.a2 = 120;
+            damageOpts.a1 = -30;
+            damageOpts.a2 = 30;
           }
           damageOpts.r2 = 340;
         }
@@ -269,7 +269,7 @@ export function ia_axe__doHit(opts) {
 
       let time = 0;
 
-      const step1 = (opts.begin2 || 0.2) * this.hitSpeed;
+      const step1 = (opts.begin2 || 0.15) * this.hitSpeed;
       this.step(time, () => {
         this.weapon.stage(step1, easing.easeInCubic, {
           vAngle: 50,
@@ -308,19 +308,19 @@ export function ia_axe__doHit(opts) {
         const damageOpts = {
           r1: 0,
           r2: 320,
-          a1: -90,
-          a2: 90,
+          a1: -20,
+          a2: 20,
           impulse: opts.impulse2 || 600,
         }
         if (this.inRoll) {
-          damageOpts.a1 = -140;
-          damageOpts.a2 = 140;
+          damageOpts.a1 = -40;
+          damageOpts.a2 = 40;
           damageOpts.r2 = 340;
         }
         if (this.inJump) {
           if (!this.inRoll) {
-            damageOpts.a1 = -120;
-            damageOpts.a2 = 120;
+            damageOpts.a1 = -30;
+            damageOpts.a2 = 30;
           }
           damageOpts.r2 = 340;
         }
@@ -345,7 +345,7 @@ export function ia_axe__doHit(opts) {
 
       let time = 0;
 
-      const step1 = (opts.begin2 || 0.2) * this.hitSpeed;
+      const step1 = (opts.begin2 || 0.15) * this.hitSpeed;
       this.step(time, () => {
         this.weapon.stage(step1, easing.easeInCubic, {
           vAngle: 50,
@@ -384,19 +384,19 @@ export function ia_axe__doHit(opts) {
         const damageOpts = {
           r1: 0,
           r2: 320,
-          a1: -90,
-          a2: 90,
+          a1: -20,
+          a2: 20,
           impulse: opts.impulse2 || 600,
         }
         if (this.inRoll) {
-          damageOpts.a1 = -140;
-          damageOpts.a2 = 140;
+          damageOpts.a1 = -40;
+          damageOpts.a2 = 40;
           damageOpts.r2 = 340;
         }
         if (this.inJump) {
           if (!this.inRoll) {
-            damageOpts.a1 = -120;
-            damageOpts.a2 = 120;
+            damageOpts.a1 = -30;
+            damageOpts.a2 = 30;
           }
           damageOpts.r2 = 340;
         }
