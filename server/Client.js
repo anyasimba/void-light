@@ -95,6 +95,8 @@ export class Client extends global.Client {
         fighterParams.Endurance = 6;
         fighterParams.Willpower = 4;
       }
+      fighterParams.level = 999;
+      fighterParams.Endurance = 100;
     }
     if (!fighterParams.voidsCount) {
       hasChange = true;
@@ -297,6 +299,9 @@ export class Client extends global.Client {
   }
   onEventF(data) {
     try {
+      if (!this.player.isCanUseItem()) {
+        return;
+      }
       if (!this.player.isAlive) {
         return;
       }
@@ -315,32 +320,26 @@ export class Client extends global.Client {
       if (item.count === 0) {
         canUse = false;
       }
-      if (item.count !== undefined && item.count > 0) {
-        --item.count;
-      }
-      if (item.count <= 0 && !itemData.IS_KEEP) {
-        this.params.items.list.splice(i, 1);
-        delete this.params.items.clothed[data.i];
-        for (let j = 0; j < 8; ++j) {
-          const k = this.params.items.clothed[j];
-          if (k && k > i) {
-            --this.params.items.clothed[j];
-          }
-        }
-      }
-      this.saveParam('items', 'list', this.params.items.list);
-      this.saveParam('items', 'clothed', this.params.items.clothed);
-      this.emit('items', this.params.items);
 
       if (canUse) {
-        const isEffect = itemData.HP !== undefined ||
-          itemData.MP !== undefined ||
-          itemData.STAMINA !== undefined;
-
-        if (isEffect) {
-          this.player.effects.push(Object.assign({}, itemData));
-          this.player.emitEffects();
-        }
+        this.player.useItem(itemData, () => {
+          if (item.count !== undefined && item.count > 0) {
+            --item.count;
+          }
+          if (item.count <= 0 && !itemData.IS_KEEP) {
+            this.params.items.list.splice(i, 1);
+            delete this.params.items.clothed[data.i];
+            for (let j = 0; j < 8; ++j) {
+              const k = this.params.items.clothed[j];
+              if (k && k > i) {
+                --this.params.items.clothed[j];
+              }
+            }
+          }
+          this.saveParam('items', 'list', this.params.items.list);
+          this.saveParam('items', 'clothed', this.params.items.clothed);
+          this.emit('items', this.params.items);
+        });
       }
     } catch (e) {
       console.log(e, e.stack);

@@ -311,6 +311,33 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
   }
 
+
+  isCanUseItem() {
+    return !this.stunTime &&
+      !this.waitTime;
+  }
+  useItem(item, cb) {
+    let timeout;
+    this.wait(1 / this.moveTimeF);
+    this.waitFor = {
+      breakAction() {
+        clearTimeout(timeout);
+      }
+    };
+    timeout = setTimeout(() => {
+      cb();
+
+      const isEffect = item.HP !== undefined ||
+        item.MP !== undefined ||
+        item.STAMINA !== undefined;
+
+      if (isEffect) {
+        this.effects.push(Object.assign({}, item));
+        this.emitEffects();
+      }
+    }, 700 / this.moveTimeF);
+  }
+
   breakHit() {
     this.clearSteps();
     this.finishHit();
@@ -433,6 +460,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     opts.a2 += hitAngle;
     opts.r1 *= this.scale;
     opts.r2 *= this.scale;
+    if (this.weapon && this.weapon.bodyScale) {
+      opts.r1 *= this.weapon.bodyScale;
+      opts.r2 *= this.weapon.bodyScale;
+    }
 
     this.gameLevelZone.doDamageRadialArea(this, opts);
   }

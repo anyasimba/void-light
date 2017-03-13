@@ -41,7 +41,7 @@ export const MixGameObject = base => class extends base {
       super.destructor();
     }
     if (this.parent) {
-      delete this.parent[this.id];
+      delete this.parent.children[this.id];
       --this.parent.childrenCount;
     } else {
       delete gameObjects[this.id];

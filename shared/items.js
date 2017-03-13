@@ -26,6 +26,11 @@ export const item__sword = {
   WEAPON: 'weapon__sword__default',
   SLUG: 'ItemSword',
 };
+export const item__big__sword = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__bigsword__default',
+  SLUG: 'ItemBigSword',
+};
 export const item__axe = {
   IS_UNIQUE: true,
   WEAPON: 'weapon__axe__default',

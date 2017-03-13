@@ -66,4 +66,17 @@ export class Item {
 }
 
 export const weapon__sword__default__doHit = ia_sword__doHit();
+export const weapon__bigsword__default__doHit = ia_sword__doHit({
+  begin: 0.6,
+  wait: 0.2,
+  end: 0.4,
+
+  begin2: 0.3,
+  wait2: 0.2,
+  end2: 0.3,
+
+  begin3: 0.3,
+  wait3: 0.2,
+  end3: 0.3,
+});
 export const weapon__axe__default__doHit = ia_axe__doHit();

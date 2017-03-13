@@ -37,7 +37,7 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
   destructor() {
     if (this.gameLevelZone) {
       this.gameLevelZone.removeObject(this);
-    } else {
+    } else if (this.parent) {
       this.emitAll('delete', {});
     }
 

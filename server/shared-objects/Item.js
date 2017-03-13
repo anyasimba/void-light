@@ -44,6 +44,28 @@ export function ItemSword(parent) {
     hAngle: 20,
   });
 }
+export function ItemBigSword(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'bigsword',
+    hand: 1,
+    bodyScale: 2,
+    scale_f: 0.8,
+    scale_d: 0,
+    damage: 16,
+    balance: 4,
+    stamina: 6,
+    staminaTime: 1,
+    pos: {
+      x: -40,
+      y: 40,
+    },
+    angle: 15,
+    vAngle: 30,
+    hAngle: 30,
+  });
+}
 export function ItemAxe(parent) {
   return new global.Item({
     parent: parent,

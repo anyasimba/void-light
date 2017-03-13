@@ -238,6 +238,11 @@ function createGame() {
           'assets/stage1__mob1--hand.png');
 
         game.load.image('checkpoint', 'assets/checkpoint.png');
+        game.load.image('item__heal__regular',
+          'assets/item__heal__regular.png');
+        game.load.image('item__heal__stone', 'assets/item__heal__stone.png');
+        game.load.image('item__stamina__stone',
+          'assets/item__stamina__stone.png');
 
         game.load.image('ground', 'assets/ground.jpg');
         game.load.image('bricks', 'assets/bricks.jpg');

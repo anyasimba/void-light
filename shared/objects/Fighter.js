@@ -236,6 +236,9 @@ export class Fighter {
           const hand = hands[k];
           if (hand) {
             hand.finalStage(0.2, easing.easeInOutCubic);
+            hand.stage(0.2, easing.easeInOutCubic, {
+              vAngle: 60,
+            });
           }
         }
       }
@@ -243,6 +246,15 @@ export class Fighter {
       if (this.waitTime <= 0) {
         delete this.waitTime;
         delete this.inWait;
+
+        this.clearSteps();
+        const hands = this.hands;
+        for (const k in hands) {
+          const hand = hands[k];
+          if (hand) {
+            hand.finalStage(0.2, easing.easeInOutCubic);
+          }
+        }
       }
     }
 
