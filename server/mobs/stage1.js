@@ -585,7 +585,7 @@ export const stage1__boss1 = {
   VOIDS_COUNT: 3000,
 
   FIGHTER: {
-    LANG_RU: 'Истяженная оболочка',
+    LANG_RU: 'Истяженная оболочка Тит',
     name: 'stage1__boss1',
 
     moveTimeF: 1.1,

@@ -17,7 +17,7 @@ export const npc__luna = {
   JUMP_TIME: [10, 15],
 
   FIGHTER: {
-    LANG_RU: 'Хранитель лунного света',
+    LANG_RU: 'Лунная стражница',
     name: 'npc__luna',
 
     hitSpeed: 1.8,
@@ -26,10 +26,10 @@ export const npc__luna = {
     RUN_ACC: 800,
     DAMAGE: 30,
     BODY_SIZE: 40,
-    SCALE: 1.5,
+    SCALE: 1.8,
 
     BALANCE: 30,
-    HP: 10000,
+    HP: 1000,
     MP: 100,
     STAMINA: 30,
   },
