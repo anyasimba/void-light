@@ -1,6 +1,5 @@
 export const stage1__mob1 = {
   VIEW: 'stage1__mob1',
-  TINT: 0x449999,
   CAN_MIRROR_VIEW: true,
   BACK_VIEW: 'stage1__mob1--back',
   HIT_VIEW: 'stage1__mob1--hit',
@@ -14,7 +13,7 @@ export const stage1__mob1 = {
 
   H: 0.5,
 
-  LIGHT: 0x449999,
+  LIGHT: 0xFF44FF,
   LIGHT_I: 1,
   LIGHT_A: 1,
   LIGHT_SCALE: 6,
@@ -28,7 +27,6 @@ export const weapon__stage1__mob1__rightHand__default = new class {
     image.anchor.x = 0.2;
     image.anchor.y = 0.8;
     image.smoothed = true;
-    image.tint = 0x449999;
     image.isHSL = true;
     return image;
   }
@@ -91,7 +89,6 @@ export const weapon__stage1__mob1__leftHand__default = new class {
     image.anchor.x = 0.2;
     image.anchor.y = 0.8;
     image.smoothed = true;
-    image.tint = 0x449999;
     image.isHSL = true;
     return image;
   }
