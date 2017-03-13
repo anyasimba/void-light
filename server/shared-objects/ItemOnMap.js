@@ -30,8 +30,8 @@ export class ItemOnMap extends mix(global.ItemOnMap, MixGameObject) {
     if (object.type === 'Fighter' && object.kind === 'player') {
       const dx = Math.abs(this.pos.x - object.pos.x);
       const dy = Math.abs(this.pos.y - object.pos.y);
-      const dw = WALL_SIZE;
-      const dh = WALL_SIZE;
+      const dw = WALL_SIZE * 2;
+      const dh = WALL_SIZE * 2;
       if (dx < dw && dy < dh) {
         object.canItem = this;
       }

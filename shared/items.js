@@ -24,8 +24,15 @@ export const item__stamina__stone = {
 export const item__sword = {
   IS_UNIQUE: true,
   WEAPON: 'weapon__sword__default',
+  SLUG: 'ItemSword',
+};
+export const item__axe = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__axe__default',
+  SLUG: 'ItemAxe',
 };
 export const item__shield = {
   IS_UNIQUE: true,
   SHIELD: 'shield__default__default',
+  SLUG: 'ItemShield',
 };

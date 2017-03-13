@@ -2,6 +2,7 @@ export function ia_sword__doHit(opts) {
   opts = opts || {};
   return {
     1: function () {
+      delete this.weapon.mirror;
       let time = 0;
 
       const step1 = (opts.begin || 0.3) * this.hitSpeed;
@@ -62,6 +63,7 @@ export function ia_sword__doHit(opts) {
       });
     },
     2: function () {
+      this.weapon.mirror = true;
       this.canNextHit();
 
       let time = 0;
@@ -118,6 +120,7 @@ export function ia_sword__doHit(opts) {
       });
     },
     3: function () {
+      delete this.weapon.mirror;
       this.canNextHit();
 
       let time = 0;

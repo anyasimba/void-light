@@ -2,9 +2,8 @@ export class ItemOnMap extends mix(global.ItemOnMap, MixGameObject) {
   static createView() {
     const graphics = new Phaser.Graphics(game, 0, 0);
 
-    graphics.beginFill(0xFF9900, 0.5);
-    graphics.lineStyle(4, 0xFF9900, 1.2);
-    graphics.drawCircle(0, 0, Bullet.BODY_SIZE);
+    graphics.beginFill(0x88EEFF, 0.5);
+    graphics.drawCircle(0, 0, 30);
     graphics.endFill();
 
     return graphics;
@@ -20,5 +19,29 @@ export class ItemOnMap extends mix(global.ItemOnMap, MixGameObject) {
 
     this.view = ItemOnMap.createView();
     this.middleGroup.add(this.view);
+
+    this.light = genLight();
+    this.light.scale.set(3 * this.light.f);
+    this.light.tint = 0x5599FF;
+    for (let i = 0; i < 2; ++i) {
+      this.light.rt.renderXY(this.light.rtImage, 0, 0, false);
+    }
+
+    this.addLight = genLight();
+    this.addLight.tint = 0x5599FF;
+    this.addLight.scale.set(2);
+    this.addLight.alpha = 0.5;
+    this.infoGroup.add(this.addLight);
+  }
+
+  update() {
+    super.update();
+
+    if (game.layer.sub.light) {
+      const light = game.layer.sub.light;
+      const x = (this.pos.x - game.ui.x) / light.scale.x;
+      const y = (this.pos.y - game.ui.y) / light.scale.y;
+      light.texture.renderXY(this.light, x, y, false);
+    }
   }
 }

@@ -437,24 +437,59 @@ export class Client extends global.Client {
       if (data.item !== undefined && !this.params.items.list[data.item]) {
         return;
       }
-      if (typeof data.i !== 'number') {
+      if (typeof data.k !== 'string') {
         return;
       }
-      if (data.i < 0 || data.i > 8) {
+      let isValid = false;
+      for (let i = 0; i < 8; ++i) {
+        if (i + '' === data.k) {
+          isValid = true;
+          break;
+        }
+      }
+      if (data.k === 'leftHand1') {
+        isValid = true;
+      }
+      if (data.k === 'rightHand1') {
+        isValid = true;
+      }
+      if (data.k === 'leftHand2') {
+        isValid = true;
+      }
+      if (data.k === 'rightHand2') {
+        isValid = true;
+      }
+
+      if (!isValid) {
         return;
       }
 
       if (data.item !== undefined) {
-        this.params.items.clothed = this.params.items.clothed || {};
-        for (let i = 0; i < 8; ++i) {
-          if (this.params.items.clothed[i] === data.item) {
-            delete this.params.items.clothed[i];
+        const item = global[this.params.items.list[data.item].slug];
+
+        if (data.k === 'leftHand1' || data.k === 'leftHand2') {
+          if (!item.SHIELD) {
+            return;
           }
         }
-        this.params.items.clothed[data.i] = data.item;
+        if (data.k === 'rightHand1' || data.k === 'rightHand2') {
+          if (!item.WEAPON) {
+            return;
+          }
+        }
+
+        this.params.items.clothed = this.params.items.clothed || {};
+        for (let i = 0; i < 8; ++i) {
+          if (this.params.items.clothed[i + ''] === data.item) {
+            delete this.params.items.clothed[i + ''];
+          }
+        }
+
+        this.params.items.clothed[data.k] = data.item;
       } else {
-        delete this.params.items.clothed[data.i];
+        delete this.params.items.clothed[data.k];
       }
+      this.player.updateHands();
       this.saveParam('items', 'clothed', this.params.items.clothed);
       this.emit('items', this.params.items);
     } catch (e) {

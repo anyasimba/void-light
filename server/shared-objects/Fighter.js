@@ -120,9 +120,38 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       size: this.size * this.scale,
     }
 
-    if (this.kind === 'player') {
-      ItemSword(this);
-      ItemShield(this);
+    this.updateHands();
+  }
+  updateHands() {
+    if (!this.owner.params) {
+      return;
+    }
+    if (!this.owner.params.items.clothed) {
+      return;
+    }
+
+    if (this.weapon) {
+      this.weapon.destructor();
+      delete this.weapon;
+    }
+    if (this.weapon2) {
+      this.weapon2.destructor();
+      delete this.weapon2;
+    }
+    if (this.shield) {
+      this.shield.destructor();
+      delete this.shield;
+    }
+
+    const clothed = this.owner.params.items.clothed;
+    const list = this.owner.params.items.list;
+    if (clothed.leftHand1) {
+      const item = global[list[clothed.leftHand1].slug];
+      global[item.SLUG](this);
+    }
+    if (clothed.rightHand1) {
+      const item = global[list[clothed.rightHand1].slug];
+      global[item.SLUG](this);
     }
   }
   reborn() {
@@ -175,6 +204,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
 
   doHit(opts) {
+    if (!this.weapon) {
+      return;
+    }
     if (this.stamina <= 0) {
       return;
     }

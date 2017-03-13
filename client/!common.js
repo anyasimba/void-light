@@ -55,6 +55,23 @@ export function setCookie(name, value, options) {
 }
 
 //
+export function genLight() {
+  const rt = new Phaser.RenderTexture(
+    game, 128, 128, null, null, 1);
+  const image = new Phaser.Image(game, 0, 0, 'light');
+  image.blendMode = PIXI.blendModes.ADD;
+
+  rt.renderXY(image, 0, 0, true);
+  const light = new Phaser.Image(game, 0, 0, rt);
+  light.rt = rt;
+  light.rtImage = image;
+  light.blendMode = PIXI.blendModes.ADD;
+  light.anchor.set(0.5);
+  light.f = 1 / game.layer.sub.light.scale.x;
+  light.alpha *= lightAlpha;
+  return light;
+}
+//
 WebFont.load({
   custom: {
     families: ['Neucha', 'Tinos'],
@@ -164,6 +181,17 @@ function create() {
   game.bossAreaSound = game.add.sound('bossArea', 1, false);
   game.bossDeadSound = game.add.sound('bossDead', 1, false);
 
+  showGameMenu(true);
+  gameMenuView.switch(5);
+
+  const preUpdate = game.scene.preUpdate;
+  game.scene.preUpdate = () => {
+    global.mx = (game.input.x * game.resF - game.scene.x) / game.scaleFactor;
+    global.my = (game.input.y * game.resF - game.scene.y) / game.scaleFactor;
+    global.dt = game.time.elapsed * 0.001;
+    preUpdate.call(game.scene);
+  }
+
   game.isCreated = true;
 }
 
@@ -186,10 +214,13 @@ function createGame() {
   global.game = new Phaser.Game(
     "100%", "100%", Phaser.CANVAS, '', {
       async preload() {
+        global.lightAlpha = 0.1;
+
         game.load.image('light', 'assets/light.png');
 
         game.load.image('shield', 'assets/shield.png');
         game.load.image('sword', 'assets/sword.png');
+        game.load.image('axe', 'assets/axe.png');
 
         game.load.image('player', 'assets/player.png');
         game.load.image('player-back', 'assets/player-back.png');
@@ -329,8 +360,6 @@ function createGame() {
         }
 
         if (game.layer.sub.light) {
-          global.lightAlpha = 0.1;
-
           const light = game.layer.sub.light;
           const light2 = game.layer.sub.light2;
           if (!game.lightClear) {
@@ -568,10 +597,6 @@ function createGame() {
           bricksView.destroy();
           bricksView.darken.destroy();
         }
-
-        global.mx = (game.input.x * game.resF - game.scene.x) / game.scaleFactor;
-        global.my = (game.input.y * game.resF - game.scene.y) / game.scaleFactor;
-        global.dt = game.time.elapsed * 0.001;
       },
 
       render() {

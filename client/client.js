@@ -193,14 +193,23 @@ export class Client extends global.Client {
     const parentID = packet.data[1].parentID;
     let name = packet.data[0];
 
+    const data = {};
+    for (const k in packet.data[1]) {
+      data[k] = packet.data[1][k];
+    }
     if (name === 'new') {
       const className = packet.data[1]['class'];
-      return new global[className](packet.data[1]);
+      return new global[className](data);
     }
     if (name === 'delete') {
-      const object = gameObjects[id];
+      let object;
+      if (parentID) {
+        object = gameObjects[parentID].children[id];
+      } else {
+        object = gameObjects[id];
+      }
       if (object) {
-        gameObjects[id].destructor();
+        object.destructor();
       }
       return;
     }
@@ -214,10 +223,10 @@ export class Client extends global.Client {
         object = gameObjects[id];
       }
       if (object) {
-        object['on' + name].call(object, packet.data[1]);
+        object['on' + name].call(object, data);
       }
     } else {
-      this['on' + name].call(this, packet.data[1]);
+      this['on' + name].call(this, data);
     }
   }
   onPlayerID(data) {
@@ -274,8 +283,8 @@ export class Client extends global.Client {
 
   onGotItem(data) {
     disableMessage();
-    let text = '(Вы поднимаете ' +
-      global['client__' + data.slug].LANG_RU;
+    let text = '(Вы поднимаете „' +
+      global['client__' + data.slug].LANG_RU + '“';
     if (data.count) {
       text += ', ' + data.count + 'шт.';
     }

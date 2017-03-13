@@ -1,3 +1,19 @@
+export function convertHSL(id, image, H, S, RS) {
+  return image;
+  global.HSL = global.HSL || {};
+  const key = id + '_' + H + '_' + S + '_' + RS;
+  if (!HSL[id]) {
+    console.log(key);
+    const bmd = new Phaser.BitmapData(game, null, image.width, image.height);
+    bmd.load(image);
+    bmd.setHSL(H, S, null);
+    bmd.shiftHSL(H, RS, null);
+    HSL[id] = bmd;
+  }
+  image.destroy();
+  return new Phaser.Image(game, 0, 0, HSL[id]);
+}
+
 export class Fighter extends mix(global.Fighter, MixGameObject) {
   static createBar(lang, innerColor, x, y, w, h, update) {
     const outer = new Phaser.Graphics(game, x, y);
@@ -29,7 +45,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     return [outer, inner, text];
   }
-  static createView(isHost, kind, name, size) {
+  static createView(isHost, kind, name, size, H, S, RS) {
     let orient = Math.floor(Math.random() * 2);
 
     let images;
@@ -54,8 +70,19 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         hitView,
       ];
     }
+    let ID = '';
+    if (kind === 'player') {
+      ID = 'player';
+    } else {
+      ID = name;
+    }
+
     for (const k in images) {
-      const image = images[k];
+      let image = images[k];
+
+      image = convertHSL(ID + k, image, H, S, RS);
+      images[k] = image;
+
       image.anchor.x = 0.5;
       image.anchor.y = 0.5;
       image.angle = 90;
@@ -66,7 +93,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
     return [images, orient];
   }
-  static createDeadView(isHost, kind, name, size, orient, tint) {
+  static createDeadView(isHost, kind, name, size, orient, tint, H, S, RS) {
     let images;
     if (kind === 'mob') {
       const opts = global[name];
@@ -80,8 +107,16 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         new Phaser.Image(game, 0, 0, 'player-back'),
       ]
     }
+    let ID = '';
+    if (kind === 'player') {
+      ID = 'player';
+    } else {
+      ID = name;
+    }
     for (const k in images) {
-      const image = images[k];
+      let image = images[k];
+      image = convertHSL(ID + '_dead_' + k, image, H, S, RS);
+      images[k] = image;
       image.anchor.x = 0.5;
       image.anchor.y = 0.5;
       image.angle = 90;
@@ -94,7 +129,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     return images;
   }
-  static createFootView(isHost, kind, name, size) {
+  static createFootView(isHost, kind, name, size, H, S, RS) {
+    let ID = '';
+    if (kind === 'player') {
+      ID = 'player';
+    } else {
+      ID = name;
+    }
     if (kind === 'mob') {
       const opts = global[name];
       if (!opts.LEFT_FOOT_VIEW) {
@@ -103,7 +144,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       let views = [];
       //
       {
-        const image = new Phaser.Image(game, 0, 0, opts.LEFT_FOOT_VIEW);
+        let image = new Phaser.Image(game, 0, 0, opts.LEFT_FOOT_VIEW);
+        image = convertHSL(ID + '_foot1', image, H, S, RS);
         image.mirror = true;
         image.anchor.x = 0.5;
         image.anchor.y = 0.5;
@@ -111,7 +153,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         image.smoothed = true;
         views.push(image);
       } {
-        const image = new Phaser.Image(game, 0, 0, opts.RIGHT_FOOT_VIEW);
+        let image = new Phaser.Image(game, 0, 0, opts.RIGHT_FOOT_VIEW);
+        image = convertHSL(ID + '_foot2', image, H, S, RS);
         image.anchor.x = 0.5;
         image.anchor.y = 0.5;
         image.angle = 90;
@@ -133,8 +176,17 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     this.viewsForTint = [];
 
+
+    if (this.kind === 'mob') {
+      const opts = global[this.name];
+      this.H = opts.H;
+      this.S = opts.S;
+      this.RS = opts.RS;
+    }
+
     [this.views, this.orient] = Fighter.createView(
-      this.id === client.playerID, this.kind, this.name, this.size);
+      this.id === client.playerID, this.kind, this.name, this.size,
+      this.H, this.S, this.RS);
     this.views[1].visible = false;
     this.views[2].visible = false;
     if (this.kind === 'player') {
@@ -150,7 +202,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.viewsForTint.push(this.views[2]);
 
     this.footViews = Fighter.createFootView(
-      this.id === client.playerID, this.kind, this.name, this.size);
+      this.id === client.playerID, this.kind, this.name, this.size,
+      this.H, this.S, this.RS);
     if (this.footViews) {
       this.footViewsRoot = new Phaser.Group(game);
       this.bottomGroup.add(this.footViewsRoot);
@@ -160,9 +213,27 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.viewsForTint.push(this.footViews[1]);
     }
 
+    this.light = genLight();
+    if (this.kind === 'player') {
+      this.light.scale.set(8 * this.light.f);
+      this.light.alpha *= 0.6;
+      for (let i = 0; i < 2; ++i) {
+        this.light.rt.renderXY(this.light.rtImage, 0, 0, false);
+      }
+    }
     this.baseTint = 0xFFFFFF;
     if (this.kind === 'mob') {
       const opts = global[this.name];
+
+      if (opts.LIGHT) {
+        this.light.tint = opts.LIGHT;
+        this.light.scale.set(opts.LIGHT_SCALE * this.light.f);
+        this.light.alpha *= opts.LIGHT_A;
+        for (let i = 0; i < opts.LIGHT_I - 1; ++i) {
+          this.light.rt.renderXY(this.light.rtImage, 0, 0, false);
+        }
+      }
+
       this.baseTint = opts.TINT || 0xFFFFFF;
 
       const barGroup = new Phaser.Group(game);
@@ -177,6 +248,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     } else {
       if (this.id !== client.playerID) {
         this.baseTint = 0x88FF33;
+        this.light.tint = this.baseTint;
 
         const barGroup = new Phaser.Group(game);
         this.infoGroup.add(barGroup);
@@ -382,7 +454,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.kind, this.name,
       this.size,
       this.orient,
-      this.baseTint);
+      this.baseTint,
+      this.H, this.S, this.RS);
 
     group.add(deadViews[1]);
     group.add(deadViews[0]);
@@ -540,27 +613,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     if (game.layer.sub.light) {
       const light = game.layer.sub.light;
-      if (!this.light) {
-        const rt = new Phaser.RenderTexture(
-          game, 128, 128, null, null, 1);
-        const image = new Phaser.Image(game, 0, 0, 'light');
-        image.blendMode = PIXI.blendModes.ADD;
-        rt.renderXY(image, 0, 0, true);
-        rt.renderXY(image, 0, 0, false);
-        rt.renderXY(image, 0, 0, false);
-        this.light = new Phaser.Image(game, 0, 0, rt);
-        if (this.kind === 'player' && client.playerID === this.id) {
-          this.light.scale.set(0.8);
-          this.light.alpha = 0.6;
-        } else {
-          this.light.scale.set(1.2);
-          this.light.alpha = 0.5;
-        }
-        this.light.tint = this.baseTint;
-        this.light.blendMode = PIXI.blendModes.ADD;
-        this.light.anchor.set(0.5);
-        this.light.alpha *= lightAlpha;
-      }
       const x = (this.pos.x - game.ui.x) / light.scale.x;
       const y = (this.pos.y - game.ui.y) / light.scale.y;
       light.texture.renderXY(this.light, x, y, false);

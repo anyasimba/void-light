@@ -37,13 +37,20 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
   destructor() {
     if (this.gameLevelZone) {
       this.gameLevelZone.removeObject(this);
+    } else {
+      this.emitAll('delete', {});
     }
 
     super.destructor();
   }
 
   emitTo(client) {
+    let parentID;
+    if (this.parent) {
+      parentID = this.parent.id;
+    }
     client.emit('new', Object.assign({
+      parentID: parentID,
       class: this.constructor.classID,
       id: this.id,
     }, this.state));
@@ -65,7 +72,7 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
     if (this.parent) {
       eventData.parentID = this.parent.id;
     }
-    
+
     const clients = this.clients;
     for (const i in clients) {
       const client = clients[i];

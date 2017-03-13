@@ -155,7 +155,7 @@ export class GameLevelZone {
     let i = 0;
     while (i < this.timeouts.length) {
       const timeout = this.timeouts[i];
-      if (timeout.breakable <= 0) {
+      if (timeout.breakable) {
         this.timeouts.splice(i, 1);
       } else {
         ++i;

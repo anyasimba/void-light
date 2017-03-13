@@ -38,6 +38,23 @@ export function ItemSword(parent) {
     angle: 15,
   });
 }
+export function ItemAxe(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'axe',
+    hand: 1,
+    damage: 40,
+    balance: 4,
+    stamina: 6,
+    staminaTime: 1,
+    pos: {
+      x: -25,
+      y: 25,
+    },
+    angle: 15,
+  });
+}
 export function ItemShield(parent) {
   return new global.Item({
     parent: parent,

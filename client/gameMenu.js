@@ -86,12 +86,12 @@ function makeGameMenuTab1() {
   }
 
   const cellViews = [];
-  for (let i = 0; i < 8; ++i) {
+  const makeClotheCell = (x, y, w, h, k, tabI) => {
     const g = contentView.add(new Phaser.Group(game));
-    g.x = i * 90 + 40;
-    g.y = 750;
-    g.width = 80;
-    g.height = 80;
+    g.x = x;
+    g.y = y;
+    g.width = w;
+    g.height = h;
     g.anchor = {
       x: 0.5,
       y: 0.5,
@@ -103,7 +103,7 @@ function makeGameMenuTab1() {
 
     view.beginFill(0xFFFFFF, 0.1);
     view.lineStyle(2, 0xFFFFFF, 0.5);
-    view.drawRect(-40, -40, 80, 80);
+    view.drawRect(-w / 2, -w / 2, w, w);
     view.endFill();
 
     g.update = () => {
@@ -113,12 +113,12 @@ function makeGameMenuTab1() {
         client.params.items.clothed;
       if (hasClothe) {
         const clothed = client.params.items.clothed;
-        const newItem = client.params.items.list[clothed[i]];
+        const newItem = client.params.items.list[clothed[k]];
         let diffByCount = false;
         if (newItem && g.textView && newItem.count + '' !== g.textView.text) {
           diffByCount = true;
         }
-        if (clothed[i] !== g.clothed || diffByCount) {
+        if (clothed[k] !== g.clothed || diffByCount) {
           if (g.itemView) {
             g.itemView.destroy();
             delete g.itemView;
@@ -127,12 +127,13 @@ function makeGameMenuTab1() {
             g.textView.destroy();
             delete g.textView;
           }
-          g.clothed = clothed[i];
-          if (clothed[i] !== undefined) {
+          g.clothed = clothed[k];
+          if (clothed[k] !== undefined) {
             const item = client.params.items.list[g.clothed];
             const clientItemData = global['client__' + item.slug];
             const itemView = clientItemData.createView();
-            itemView.scale.set(0.5);
+            itemView.scale.x *= w / 160;
+            itemView.scale.y *= h / 160;
             g.itemView = g.add(itemView);
 
             if (item.count !== undefined) {
@@ -160,21 +161,52 @@ function makeGameMenuTab1() {
             if (item) {
               client.emit('clothe', {
                 item: parseInt(itemI),
-                i: i
+                k: k,
               });
             } else {
               client.emit('clothe', {
-                i: i
+                k: k,
               });
             }
           };
-          gameMenuView.switch(1);
+          gameMenuView.switch(tabI);
         };
       }
     }
 
     cellViews.push(view);
   }
+  for (let i = 0; i < 8; ++i) {
+    makeClotheCell(i * 90 + 40, 750, 80, 80, i + '', 1);
+  }
+  const mainX = 900;
+  const mainY = 80;
+  makeClotheCell(mainX, mainY, 200, 200, 'leftHand1', 2);
+  makeClotheCell(mainX + 250, mainY, 200, 200, 'rightHand1', 2);
+  makeClotheCell(mainX, mainY + 300, 200, 200, 'leftHand2', 2);
+  makeClotheCell(mainX + 250, mainY + 300, 200, 200, 'rightHand2', 2);
+  const mainText1 = contentView.add(new Phaser.Text(
+    game, mainX - 140, mainY, 'Первая стойка', {
+      font: 'Neucha',
+      fontSize: 60,
+      fontWeight: 'bold',
+      fill: '#AAAAAA',
+      stroke: '#050505',
+      strokeThickness: 6,
+    }));
+  mainText1.anchor.x = 1;
+  mainText1.anchor.y = 0.5;
+  const mainText2 = contentView.add(new Phaser.Text(
+    game, mainX - 140, mainY + 300, 'Вторая стойка', {
+      font: 'Neucha',
+      fontSize: 60,
+      fontWeight: 'bold',
+      fill: '#AAAAAA',
+      stroke: '#050505',
+      strokeThickness: 6,
+    }));
+  mainText2.anchor.x = 1;
+  mainText2.anchor.y = 0.5;
 
   const contentViewUpdate = contentView.update;
   contentView.update = () => {
@@ -265,11 +297,16 @@ function addItem(item, clientItem, data, i, k) {
     }));
   slugView.anchor.set(0.5);
 
+  const sx = view.scale.x;
+  const sy = view.scale.y;
+
   g.parentGroup = this.menuView;
   g.update = () => {
-    view.scale.set(1);
+    view.scale.x = sx;
+    view.scale.y = sy;
     if (checkMouse(g, 0)) {
-      view.scale.set(1.1);
+      view.scale.x = sx * 1.1;
+      view.scale.y = sy * 1.1;
 
       global.mouseCapture = () => {
         if (global.mouseAction) {
@@ -444,6 +481,16 @@ export function makeGameMenu() {
     0xAAAAAA, 0.8,
     0x000000, 0, 0,
     0, 100, w, 5));
+
+  gameMenuView.add(new Phaser.Text(
+    game, 20, 20, '[esc] - закрыть\\открыть меню', {
+      font: 'Tinos',
+      fontSize: 30,
+      fontWeight: 'normal',
+      fill: '#AAAAAA',
+      stroke: '#050505',
+      strokeThickness: 6,
+    }));
 
   const tabs = [
     gameMenuView.add(makeGameMenuTab1()),

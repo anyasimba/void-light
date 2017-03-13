@@ -60,3 +60,4 @@ export class Item {
 }
 
 export const weapon__sword__default__doHit = ia_sword__doHit();
+export const weapon__axe__default__doHit = ia_sword__doHit();

@@ -42,6 +42,13 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
     this.middleGroup.add(this.view2);
     this.topGroup.add(this.view3);
     this.topGroup.add(this.view4);
+
+    this.light = genLight();
+    this.light.s
+    for (let i = 0; i < 4; ++i) {
+      this.light.rt.renderXY(this.light.rtImage, 0, 0, false);
+    }
+    this.light.tint = 0x2266FF;
   }
 
   update() {
@@ -69,39 +76,24 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
 
     if (game.layer.sub.light) {
       const light = game.layer.sub.light;
-      if (!this.light) {
-        const rt = new Phaser.RenderTexture(
-          game, 128, 128, null, null, 1);
-        const image = new Phaser.Image(game, 0, 0, 'light');
-        image.blendMode = PIXI.blendModes.ADD;
-        rt.renderXY(image, 0, 0, true);
-        rt.renderXY(image, 0, 0, false);
-        rt.renderXY(image, 0, 0, false);
-        rt.renderXY(image, 0, 0, false);
-        rt.renderXY(image, 0, 0, false);
-        this.light = new Phaser.Image(game, 0, 0, rt);
-        this.light.tint = 0x2266FF;
-        this.light.blendMode = PIXI.blendModes.ADD;
-        this.light.anchor.set(0.5);
-      }
 
       const f = 1 / light.scale.x;
       const x = (this.pos.x - game.ui.x) * f;
       const y = (this.pos.y - game.ui.y) * f;
 
-      this.light.scale.set(0.3);
+      this.light.scale.set(3 * this.light.f);
       this.light.alpha = 0.7 * lightAlpha;
       light.texture.renderXY(
         this.light, x + this.view.x * f, y + this.view.y * f, false);
-      this.light.scale.set(0.5);
+      this.light.scale.set(5 * this.light.f);
       this.light.alpha = 0.7 * lightAlpha;
       light.texture.renderXY(
         this.light, x + this.view2.x * f, y + this.view2.y * f, false);
-      this.light.scale.set(1);
+      this.light.scale.set(10 * this.light.f);
       this.light.alpha = 0.8 * lightAlpha;
       light.texture.renderXY(
         this.light, x + this.view3.x * f, y + this.view3.y * f, false);
-      this.light.scale.set(0.7);
+      this.light.scale.set(7 * this.light.f);
       this.light.alpha = 1 * lightAlpha;
       light.texture.renderXY(
         this.light, x + this.view4.x * f, y + this.view4.y * f, false);

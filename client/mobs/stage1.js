@@ -10,6 +10,13 @@ export const stage1__mob1 = {
   LEFT_HAND: 'stage1__mob1--hand',
   RIGHT_HAND: 'stage1__mob1--hand',
   CAN_MIRROR_HANDS: true,
+
+  H: 0.5,
+
+  LIGHT: 0xFF44FF,
+  LIGHT_I: 1,
+  LIGHT_A: 1,
+  LIGHT_SCALE: 6,
 }
 
 export const weapon__stage1__mob1__rightHand__default = new class {
@@ -20,6 +27,7 @@ export const weapon__stage1__mob1__rightHand__default = new class {
     image.anchor.x = 0.2;
     image.anchor.y = 0.8;
     image.smoothed = true;
+    image.isHSL = true;
     return image;
   }
   update() {
@@ -81,6 +89,7 @@ export const weapon__stage1__mob1__leftHand__default = new class {
     image.anchor.x = 0.2;
     image.anchor.y = 0.8;
     image.smoothed = true;
+    image.isHSL = true;
     return image;
   }
   update() {
@@ -142,6 +151,11 @@ export const stage1__mob2 = {
   CAN_MIRROR_VIEW: true,
   BACK_VIEW: 'player-back',
   DEAD_VIEW: 'player-back',
+
+  LIGHT: 0x995511,
+  LIGHT_I: 2,
+  LIGHT_A: 1,
+  LIGHT_SCALE: 5,
 }
 
 export const weapon__stage1__mob2__rightHand__default = new class {
@@ -214,6 +228,11 @@ export const stage1__boss1 = {
   CAN_MIRROR_VIEW: true,
   BACK_VIEW: 'player-back',
   DEAD_VIEW: 'player-back',
+
+  LIGHT: 0xFF8800,
+  LIGHT_I: 3,
+  LIGHT_A: 1,
+  LIGHT_SCALE: 16,
 }
 
 export const weapon__stage1__boss1__rightHand__default = new class {

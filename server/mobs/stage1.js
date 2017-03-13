@@ -34,7 +34,7 @@ export const stage1__mob1 = {
     ACC: 400,
     RUN_ACC: 700,
     BODY_SIZE: 140,
-    SCALE: 1.2,
+    SCALE: 1.5,
 
     BALANCE: 50,
     HP: 40,
