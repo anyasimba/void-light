@@ -185,7 +185,7 @@ export class Client extends global.Client {
 
     setTimeout(() => {
       window.location.reload();
-    }, 2000);
+    }, 5000);
   }
 
   readPacket(packet) {
