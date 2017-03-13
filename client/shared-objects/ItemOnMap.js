@@ -30,7 +30,7 @@ export class ItemOnMap extends mix(global.ItemOnMap, MixGameObject) {
     this.addLight = genLight();
     this.addLight.tint = 0x5599FF;
     this.addLight.scale.set(2);
-    this.addLight.alpha = 0.5;
+    this.addLight.alpha = 0.2;
     this.infoGroup.add(this.addLight);
   }
 

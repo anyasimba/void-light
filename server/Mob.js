@@ -310,11 +310,10 @@ export class Mob {
               this.fighter.doJump();
             }
             if (this.target) {
-              if (Math.random() < 0.2) {
-                this.hitDir = this.target.pos.subtract(this.fighter.pos)
-                  .unit()
-                  .multiply(300);
-              }
+              const newHitDir = this.target.pos.subtract(this.fighter.pos)
+                .unit()
+                .multiply(200);
+              this.hitDir = this.hitDir.multiply(0.8).add(newHitDir);
               this.fighter.doHit({
                 x: this.fighter.pos.x + this.hitDir.x,
                 y: this.fighter.pos.y + this.hitDir.y,

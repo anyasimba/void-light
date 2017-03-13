@@ -47,8 +47,8 @@ Object.assign(GameLevelZone.prototype, {
     }
 
     const angle = rel.toAngle();
-    opts.r1 = Math.max(-180, opts.r1 - other.body.size / d * 10);
-    opts.r2 = Math.min(180, opts.r2 + other.body.size / d * 10);
+    opts.r1 = opts.r1 + 360 - other.body.size / d * 30;
+    opts.r2 = opts.r2 + other.body.size / d * 30;
     if (!isAngleInRange(angle, opts.a1, opts.a2)) {
       isHit = false;
     }

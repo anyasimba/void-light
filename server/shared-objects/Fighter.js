@@ -149,11 +149,15 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     const list = this.owner.params.items.list;
     if (clothed.leftHand1 && list[clothed.leftHand1]) {
       const item = global[list[clothed.leftHand1].slug];
-      global[item.SLUG](this);
+      if (typeof global[item.SLUG] === 'function') {
+        global[item.SLUG](this);
+      }
     }
     if (clothed.rightHand1 && list[clothed.rightHand1]) {
       const item = global[list[clothed.rightHand1].slug];
-      global[item.SLUG](this);
+      if (typeof global[item.SLUG] === 'function') {
+        global[item.SLUG](this);
+      }
     }
   }
   reborn() {
