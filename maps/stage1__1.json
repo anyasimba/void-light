@@ -232,7 +232,7 @@
                  "y":2368
                 }, 
                 {
-                 "gid":27,
+                 "gid":30,
                  "height":32,
                  "id":128,
                  "name":"",
@@ -448,7 +448,7 @@
                  "y":2944
                 }, 
                 {
-                 "gid":33,
+                 "gid":36,
                  "height":32,
                  "id":232,
                  "name":"",
@@ -460,7 +460,7 @@
                  "y":3168
                 }, 
                 {
-                 "gid":27,
+                 "gid":30,
                  "height":32,
                  "id":233,
                  "name":"",
@@ -472,7 +472,7 @@
                  "y":960
                 }, 
                 {
-                 "gid":27,
+                 "gid":30,
                  "height":32,
                  "id":234,
                  "name":"",
@@ -520,7 +520,7 @@
                  "y":3264
                 }, 
                 {
-                 "gid":27,
+                 "gid":30,
                  "height":32,
                  "id":239,
                  "name":"",
@@ -532,7 +532,7 @@
                  "y":2880
                 }, 
                 {
-                 "gid":27,
+                 "gid":30,
                  "height":32,
                  "id":240,
                  "name":"",
@@ -724,7 +724,7 @@
                  "y":2816
                 }, 
                 {
-                 "gid":28,
+                 "gid":31,
                  "height":32,
                  "id":260,
                  "name":"",
@@ -734,18 +734,6 @@
                  "width":32,
                  "x":1920,
                  "y":2848
-                }, 
-                {
-                 "gid":25,
-                 "height":32,
-                 "id":261,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":2336,
-                 "y":1248
                 }, 
                 {
                  "gid":18,
@@ -772,7 +760,7 @@
                  "y":2880
                 }, 
                 {
-                 "gid":32,
+                 "gid":35,
                  "height":32,
                  "id":264,
                  "name":"",
@@ -892,7 +880,7 @@
                  "y":2752
                 }, 
                 {
-                 "gid":33,
+                 "gid":36,
                  "height":32,
                  "id":275,
                  "name":"",
@@ -975,7 +963,7 @@
                  "y":4384
                 }, 
                 {
-                 "gid":32,
+                 "gid":35,
                  "height":32,
                  "id":283,
                  "name":"",
@@ -985,6 +973,42 @@
                  "width":32,
                  "x":4608,
                  "y":3232
+                }, 
+                {
+                 "gid":26,
+                 "height":32,
+                 "id":284,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":2304,
+                 "y":1216
+                }, 
+                {
+                 "gid":27,
+                 "height":32,
+                 "id":289,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":896,
+                 "y":2368
+                }, 
+                {
+                 "gid":28,
+                 "height":32,
+                 "id":290,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1056,
+                 "y":4672
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -993,7 +1017,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":284,
+ "nextobjectid":291,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tileheight":32,
@@ -1122,20 +1146,28 @@
          "margin":0,
          "name":"NPC",
          "spacing":0,
-         "tilecount":1,
+         "tilecount":3,
          "tileheight":32,
          "tiles":
             {
-             "0":
+             "1":
                 {
                  "image":"..\/_editor-assets\/npc__luna.png"
+                },
+             "2":
+                {
+                 "image":"..\/_editor-assets\/npc__she.png"
+                },
+             "3":
+                {
+                 "image":"..\/_editor-assets\/npc__she2.png"
                 }
             },
          "tilewidth":32
         }, 
         {
          "columns":0,
-         "firstgid":26,
+         "firstgid":29,
          "margin":0,
          "name":"Items",
          "spacing":0,
