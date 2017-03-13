@@ -43,7 +43,7 @@ export class Client extends global.Client {
       this.saveParam('items', 'clothed', {
         '0': 0,
         '1': 1,
-        'rightHand1': 3,
+        'rightHand1': 2,
       });
     }
 
