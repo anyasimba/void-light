@@ -483,9 +483,9 @@ export function makeGameMenu() {
     0, 100, w, 5));
 
   gameMenuView.add(new Phaser.Text(
-    game, 20, 20, '[esc] - закрыть\\открыть меню', {
+    game, 20, 0, '[esc] - закрыть\\открыть меню', {
       font: 'Tinos',
-      fontSize: 30,
+      fontSize: 26,
       fontWeight: 'normal',
       fill: '#AAAAAA',
       stroke: '#050505',

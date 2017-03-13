@@ -10,6 +10,8 @@ export class Item {
 
     this.basePos = this.pos.clone();
     this.baseAngle = this.angle;
+    this.baseVAngle = this.vAngle;
+    this.baseHAngle = this.hAngle;
     this.baseSideAngle = this.sideAngle;
 
     if (false) {
@@ -37,6 +39,8 @@ export class Item {
   reborn() {
     this.pos = this.basePos.clone();
     this.angle = this.baseAngle;
+    this.vAngle = this.baseVAngle;
+    this.hAngle = this.baseHAngle;
     this.sideAngle = this.baseSideAngle;
   }
 
@@ -54,10 +58,12 @@ export class Item {
     this.stage(duration, fn, {
       pos: this.basePos,
       angle: this.baseAngle,
+      vAngle: this.baseVAngle,
+      hAngle: this.baseHAngle,
       sideAngle: this.baseSideAngle,
     });
   }
 }
 
 export const weapon__sword__default__doHit = ia_sword__doHit();
-export const weapon__axe__default__doHit = ia_sword__doHit();
+export const weapon__axe__default__doHit = ia_axe__doHit();

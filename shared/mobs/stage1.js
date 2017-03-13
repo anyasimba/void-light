@@ -11,6 +11,7 @@ export const stage1__mob1__doHit = {
           y: 40,
         }),
         angle: 135,
+        vAngle: 0,
         sideAngle: -50,
       });
     });
@@ -74,6 +75,7 @@ export const stage1__mob1__doHit = {
           y: -40,
         }),
         angle: -135,
+        vAngle: 0,
         sideAngle: 50,
       });
     });
@@ -137,6 +139,7 @@ export const stage1__mob1__doHit = {
           y: 40,
         }),
         angle: 135,
+        vAngle: 0,
         sideAngle: -50,
       });
     });

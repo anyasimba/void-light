@@ -10,6 +10,9 @@ export class Item extends mix(global.Item, MixGameObject) {
     this.view = this.opts.createView(
       this.parent.id === client.playerID, this.parent.kind);
 
+    this.sx = this.view.scale.x;
+    this.sy = this.view.scale.y;
+
     if (this.view.isHSL) {
       const ax = this.view.anchor.x;
       const ay = this.view.anchor.y;
@@ -43,20 +46,26 @@ export class Item extends mix(global.Item, MixGameObject) {
 
     if (this.type === 'shield') {
       let groupAngle = this.sideAngle + 100;
+      let vAngle = 0;
       const isInBlock = !this.parent.inJump &&
         this.parent.isBlock &&
         !this.parent.inHit &&
         this.parent.stamina > 0
       if (!isInBlock && !this.parent.inStun) {
         groupAngle = this.sideAngle;
+        vAngle = 20;
       }
+      this.vAngle = this.vAngle || 0;
       this.group.angle += (groupAngle - this.group.angle) *
+        (1 - Math.pow(0.1, dt * 5));
+      this.vAngle += (vAngle - this.vAngle) *
         (1 - Math.pow(0.1, dt * 5));
     }
 
-    this.group.scale.y = 1;
+    this.view.scale.x = this.sx * Math.cos(this.hAngle * Math.PI / 180);
+    this.view.scale.y = this.sy * Math.cos(this.vAngle * Math.PI / 180);
     if (this.mirror) {
-      this.group.scale.y = -1;
+      this.view.scale.x = -this.view.scale.x;
     }
   }
 }

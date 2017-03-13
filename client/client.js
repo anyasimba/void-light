@@ -342,6 +342,7 @@ export class Client extends global.Client {
 
         this.emit('upLevel', {});
         showGameMenu(true);
+        gameMenuView.switch(0);
         makeMessage('Повышен уровень..', '#FFEEAA', 'Neucha');
         this.nextMessage = setTimeout(() => {
           delete this.nextMessage;

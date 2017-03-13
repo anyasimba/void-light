@@ -9,6 +9,8 @@ export class Item extends mix(global.Item, MixGameObject) {
 
       pos: this.pos.clone(),
       angle: this.angle,
+      vAngle: this.vAngle,
+      hAngle: this.hAngle,
       sideAngle: this.sideAngle,
     };
   }
@@ -36,6 +38,8 @@ export function ItemSword(parent) {
       y: 25,
     },
     angle: 15,
+    vAngle: 20,
+    hAngle: 20,
   });
 }
 export function ItemAxe(parent) {
@@ -53,6 +57,8 @@ export function ItemAxe(parent) {
       y: 25,
     },
     angle: 15,
+    vAngle: 30,
+    hAngle: 20,
   });
 }
 export function ItemShield(parent) {
@@ -65,5 +71,7 @@ export function ItemShield(parent) {
       y: -30,
     },
     angle: -35,
+    vAngle: 0,
+    hAngle: 20,
   });
 }

@@ -56,6 +56,8 @@ export const stage1__mob1 = {
         y: 80,
       },
       angle: 0,
+      vAngle: 20,
+      hAngle: 20,
     });
   },
   leftHand(parent) {
@@ -72,6 +74,8 @@ export const stage1__mob1 = {
         y: -80,
       },
       angle: -0,
+      vAngle: 20,
+      hAngle: 20,
     });
   },
 };
@@ -129,6 +133,8 @@ export const stage1__mob2 = {
         y: 25,
       },
       angle: 15,
+      vAngle: 20,
+      hAngle: 20,
     });
   },
 };
@@ -188,6 +194,8 @@ export const stage1__boss1 = {
         y: 25,
       },
       angle: 15,
+      vAngle: 20,
+      hAngle: 20,
     });
   },
 };
