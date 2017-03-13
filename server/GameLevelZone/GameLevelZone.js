@@ -130,6 +130,12 @@ export class GameLevelZone {
   }
   removeObject(object) {
     object.emitAll('delete', {});
+    if (object.childrenCount > 0) {
+      for (const id in object.children) {
+        const child = object.children[id];
+        child.emitAll('delete', {});
+      }
+    }
 
     delete object.canItem;
     delete object.canOpenDoor;

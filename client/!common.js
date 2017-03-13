@@ -241,6 +241,7 @@ function createGame() {
 
         game.load.image('ground', 'assets/ground.jpg');
         game.load.image('bricks', 'assets/bricks.jpg');
+        game.load.image('stone', 'assets/stone.png');
         game.load.image('door', 'assets/door.png');
 
         game.load.audio('back',
@@ -459,9 +460,15 @@ function createGame() {
           const bricksView = new Phaser.TileSprite(
             game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
             'bricks');
+          const stoneView = new Phaser.TileSprite(
+            game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
+            'stone');
           bricksView.darken = new Phaser.TileSprite(
             game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
             makeDarken(bricksView));
+          stoneView.darken = new Phaser.TileSprite(
+            game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
+            makeDarken(stoneView));
 
           console.log('loading map...');
           for (let y = 0; y < client.map.height; ++y) {
@@ -473,6 +480,9 @@ function createGame() {
               let view;
               switch (slug) {
                 case 'wall':
+                  view = stoneView;
+                  break;
+                case 'wall2':
                   view = bricksView;
                   break;
                 default:
