@@ -1,7 +1,7 @@
 export const stage1__mob1 = {
   DIES: 1,
-  DIES_N: 1,
-  DIES_SCALE: 0.5,
+  DIES_N: 2,
+  DIES_SCALE: 0.6,
 
   AGRO_D: 8,
   RUN_D: 50,
@@ -316,7 +316,7 @@ export const stage1__mob1c = {
 };
 //
 export const stage1__mob2 = {
-  AGRO_D: 12,
+  AGRO_D: 8,
   RUN_D: 50,
   HIT_D: [50, 200],
   HIT_VER: 0.9,
@@ -432,7 +432,7 @@ export const stage1__mob2a = {
   },
 };
 export const stage1__mob2b = {
-  AGRO_D: 12,
+  AGRO_D: 6,
   RUN_D: 50,
   HIT_D: [50, 200],
   HIT_VER: 0.9,
@@ -490,7 +490,7 @@ export const stage1__mob2b = {
   },
 };
 export const stage1__mob2c = {
-  AGRO_D: 12,
+  AGRO_D: 6,
   RUN_D: 50,
   HIT_D: [50, 200],
   HIT_VER: 0.9,
