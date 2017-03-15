@@ -227,7 +227,7 @@ export const stage1__mob1 = {
   LIGHT: 0xFF44FF,
   LIGHT_I: 1,
   LIGHT_A: 1,
-  LIGHT_SCALE: 6,
+  LIGHT_SCALE: 12,
 }
 export const weapon__stage1__mob1__rightHand__default = new class {
   constructor() {
@@ -280,7 +280,7 @@ export const stage1__mob1a = {
   LIGHT: 0x888888,
   LIGHT_I: 1,
   LIGHT_A: 1,
-  LIGHT_SCALE: 6,
+  LIGHT_SCALE: 8,
 }
 export const weapon__stage1__mob1a__rightHand__default = new class {
   constructor() {
@@ -333,7 +333,7 @@ export const stage1__mob1b = {
   LIGHT: 0x888888,
   LIGHT_I: 1,
   LIGHT_A: 1,
-  LIGHT_SCALE: 6,
+  LIGHT_SCALE: 8,
 }
 export const weapon__stage1__mob1b__rightHand__default = new class {
   constructor() {
@@ -386,7 +386,7 @@ export const stage1__mob1c = {
   LIGHT: 0x888888,
   LIGHT_I: 1,
   LIGHT_A: 1,
-  LIGHT_SCALE: 6,
+  LIGHT_SCALE: 8,
 }
 export const weapon__stage1__mob1c__rightHand__default = new class {
   constructor() {
@@ -433,7 +433,7 @@ export const stage1__mob2 = {
   LIGHT: 0x995511,
   LIGHT_I: 2,
   LIGHT_A: 1,
-  LIGHT_SCALE: 5,
+  LIGHT_SCALE: 6,
 }
 export const weapon__stage1__mob2__rightHand__default = new class {
   constructor() {
@@ -462,7 +462,7 @@ export const stage1__mob2a = {
   LIGHT: 0x994444,
   LIGHT_I: 2,
   LIGHT_A: 1,
-  LIGHT_SCALE: 4,
+  LIGHT_SCALE: 5,
 }
 export const weapon__stage1__mob2a__rightHand__default = new class {
   constructor() {
@@ -520,7 +520,7 @@ export const stage1__mob2c = {
   LIGHT: 0x994444,
   LIGHT_I: 2,
   LIGHT_A: 1,
-  LIGHT_SCALE: 5,
+  LIGHT_SCALE: 6,
 }
 export const weapon__stage1__mob2c__rightHand__default = new class {
   constructor() {
@@ -565,7 +565,7 @@ export const stage1__boss1 = {
   DEAD_VIEW: 'player-back',
 
   LIGHT: 0xFF5555,
-  LIGHT_I: 1,
+  LIGHT_I: 3,
   LIGHT_A: 1,
   LIGHT_SCALE: 16,
 }

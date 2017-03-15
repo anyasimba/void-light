@@ -44,7 +44,6 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
     this.topGroup.add(this.view4);
 
     this.light = genLight();
-    this.light.s
     for (let i = 0; i < 4; ++i) {
       this.light.rt.renderXY(this.light.rtImage, 0, 0, false);
     }

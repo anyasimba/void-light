@@ -82,6 +82,10 @@ export class GameLevelZone {
               this.mapObjects[data.mapID] = new ItemOnMap(this, data);
               break;
             }
+            if (slug.slice(0, 7) === 'decor__') {
+              this.mapObjects[data.mapID] = new Decor(this, data);
+              break;
+            }
             this.enemyPoints.push(data);
         }
       } else if (o.name) {

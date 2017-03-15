@@ -223,11 +223,11 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.viewsForTint.push(this.footViews[1]);
     }
 
-    this.light = genLight();
     if (this.kind === 'player') {
+      this.light = genLight();
       this.light.scale.set(8 * this.light.f);
       this.light.alpha *= 0.6;
-      for (let i = 0; i < 2; ++i) {
+      for (let i = 0; i < 1; ++i) {
         this.light.rt.renderXY(this.light.rtImage, 0, 0, false);
       }
     }
@@ -236,6 +236,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       const opts = global[this.name];
 
       if (opts.LIGHT) {
+        this.light = genLight();
         this.light.tint = opts.LIGHT;
         this.light.scale.set(opts.LIGHT_SCALE * this.light.f);
         this.light.alpha *= opts.LIGHT_A;
@@ -620,7 +621,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
     }
 
-    if (game.layer.sub.light) {
+    if (game.layer.sub.light && this.light) {
       const light = game.layer.sub.light;
       const x = (this.pos.x - game.ui.x) / light.scale.x;
       const y = (this.pos.y - game.ui.y) / light.scale.y;
