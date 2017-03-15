@@ -443,7 +443,7 @@ export const weapon__stage1__mob2__rightHand__default = new class {
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'sword');
     image.scale.x = 0.8;
-    image.scale.y = 1.2;
+    image.scale.y = 1.3;
     image.anchor.x = 0.5;
     image.anchor.y = 0.8;
     image.smoothed = true;
@@ -472,7 +472,7 @@ export const weapon__stage1__mob2a__rightHand__default = new class {
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'sword');
     image.scale.x = 0.8;
-    image.scale.y = 1.2;
+    image.scale.y = 1.4;
     image.anchor.x = 0.5;
     image.anchor.y = 0.8;
     image.smoothed = true;
@@ -501,7 +501,7 @@ export const weapon__stage1__mob2b__rightHand__default = new class {
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'axe');
     image.scale.x = 0.8;
-    image.scale.y = 1.2;
+    image.scale.y = 1.4;
     image.anchor.x = 0.5;
     image.anchor.y = 0.8;
     image.smoothed = true;
@@ -530,7 +530,7 @@ export const weapon__stage1__mob2c__rightHand__default = new class {
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'sword');
     image.scale.x = 0.8;
-    image.scale.y = 1.2;
+    image.scale.y = 1.4;
     image.anchor.x = 0.5;
     image.anchor.y = 0.8;
     image.smoothed = true;
@@ -577,7 +577,7 @@ export const weapon__stage1__boss1__rightHand__default = new class {
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'sword');
     image.scale.x = 1;
-    image.scale.y = 1.3;
+    image.scale.y = 1.4;
     image.anchor.x = 0.5;
     image.anchor.y = 0.8;
     image.smoothed = true;

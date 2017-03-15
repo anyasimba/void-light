@@ -34,7 +34,7 @@ export function ItemSword(parent) {
     damage: 10,
     balance: 4,
     stamina: 6,
-    staminaTime: 1,
+    staminaTime: 0.5,
     pos: {
       x: -25,
       y: 25,
@@ -54,8 +54,8 @@ export function ItemBigSword(parent) {
     scale_f: 0.8,
     scale_d: 0,
     damage: 16,
-    balance: 4,
-    stamina: 6,
+    balance: 10,
+    stamina: 12,
     staminaTime: 1,
     pos: {
       x: -40,
@@ -77,14 +77,14 @@ export function ItemAxe(parent) {
     damage: 12,
     balance: 4,
     stamina: 3,
-    staminaTime: 1,
+    staminaTime: 0.4,
     pos: {
       x: -25,
       y: 25,
     },
     angle: 15,
     vAngle: 30,
-    hAngle: 20,
+    hAngle: 30,
   });
 }
 export function ItemShield(parent) {

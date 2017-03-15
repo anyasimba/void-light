@@ -19,7 +19,7 @@ export const stage1__mob1 = {
   ROLL_TIME: [5, 15],
   JUMP_TIME: [10, 15],
 
-  VOIDS_COUNT: 150,
+  VOIDS_COUNT: 300,
 
   FIGHTER: {
     LANG_RU: 'Тяжкий грех',
@@ -36,8 +36,8 @@ export const stage1__mob1 = {
     BODY_SIZE: 140,
     SCALE: 1.5,
 
-    BALANCE: 50,
-    HP: 40,
+    BALANCE: 60,
+    HP: 300,
     MP: 100,
     STAMINA: 50,
   },
@@ -113,7 +113,7 @@ export const stage1__mob1a = {
     BODY_SIZE: 140,
     SCALE: 0.7,
 
-    BALANCE: 50,
+    BALANCE: 20,
     HP: 50,
     MP: 100,
     STAMINA: 50,
@@ -124,9 +124,9 @@ export const stage1__mob1a = {
       parent: parent,
       type: 'weapon',
       kind: 'stage1__mob1a__rightHand',
-      balance: 5,
-      stamina: 7,
-      staminaTime: 0.6,
+      balance: 2,
+      stamina: 4,
+      staminaTime: 0.4,
       hand: 1,
       pos: {
         x: -15,
@@ -142,9 +142,9 @@ export const stage1__mob1a = {
       parent: parent,
       type: 'weapon',
       kind: 'stage1__mob1a__leftHand',
-      balance: 5,
-      stamina: 7,
-      staminaTime: 0.6,
+      balance: 2,
+      stamina: 4,
+      staminaTime: 0.4,
       hand: 2,
       pos: {
         x: -15,
@@ -190,7 +190,7 @@ export const stage1__mob1b = {
     BODY_SIZE: 140,
     SCALE: 0.8,
 
-    BALANCE: 50,
+    BALANCE: 20,
     HP: 30,
     MP: 100,
     STAMINA: 50,
@@ -201,9 +201,9 @@ export const stage1__mob1b = {
       parent: parent,
       type: 'weapon',
       kind: 'stage1__mob1b__rightHand',
-      balance: 5,
-      stamina: 7,
-      staminaTime: 0.6,
+      balance: 2,
+      stamina: 4,
+      staminaTime: 0.4,
       hand: 1,
       pos: {
         x: -15,
@@ -219,9 +219,9 @@ export const stage1__mob1b = {
       parent: parent,
       type: 'weapon',
       kind: 'stage1__mob1b__leftHand',
-      balance: 5,
-      stamina: 7,
-      staminaTime: 0.6,
+      balance: 2,
+      stamina: 4,
+      staminaTime: 0.4,
       hand: 2,
       pos: {
         x: -15,
@@ -264,7 +264,7 @@ export const stage1__mob1c = {
     moveTimeF: 0.8,
 
     hitSpeed: 4,
-    damage: 20,
+    damage: 30,
 
     ACC: 200,
     RUN_ACC: 400,
@@ -282,9 +282,9 @@ export const stage1__mob1c = {
       parent: parent,
       type: 'weapon',
       kind: 'stage1__mob1c__rightHand',
-      balance: 5,
-      stamina: 10,
-      staminaTime: 1,
+      balance: 3,
+      stamina: 4,
+      staminaTime: 0.4,
       hand: 1,
       pos: {
         x: -15,
@@ -300,9 +300,9 @@ export const stage1__mob1c = {
       parent: parent,
       type: 'weapon',
       kind: 'stage1__mob1c__leftHand',
-      balance: 5,
-      stamina: 10,
-      staminaTime: 1,
+      balance: 3,
+      stamina: 4,
+      staminaTime: 0.4,
       hand: 2,
       pos: {
         x: -15,
@@ -332,7 +332,7 @@ export const stage1__mob2 = {
   ROLL_TIME: [5, 15],
   JUMP_TIME: [10, 15],
 
-  VOIDS_COUNT: 100,
+  VOIDS_COUNT: 200,
 
   FIGHTER: {
     LANG_RU: 'Оболочка',
@@ -349,7 +349,7 @@ export const stage1__mob2 = {
     SCALE: 2.5,
 
     BALANCE: 30,
-    HP: 30,
+    HP: 100,
     MP: 100,
     STAMINA: 120,
   },
@@ -360,9 +360,9 @@ export const stage1__mob2 = {
       type: 'weapon',
       kind: 'stage1__mob2__rightHand',
       hand: 1,
-      balance: 10,
-      stamina: 15,
-      staminaTime: 1.5,
+      balance: 5,
+      stamina: 10,
+      staminaTime: 1,
       pos: {
         x: -25,
         y: 25,
@@ -406,7 +406,7 @@ export const stage1__mob2a = {
     BODY_SIZE: 40,
     SCALE: 1.5,
 
-    BALANCE: 20,
+    BALANCE: 10,
     HP: 30,
     MP: 100,
     STAMINA: 40,
@@ -418,9 +418,9 @@ export const stage1__mob2a = {
       type: 'weapon',
       kind: 'stage1__mob2a__rightHand',
       hand: 1,
-      balance: 4,
-      stamina: 6,
-      staminaTime: 0.7,
+      balance: 2,
+      stamina: 3,
+      staminaTime: 0.4,
       pos: {
         x: -25,
         y: 25,
@@ -464,7 +464,7 @@ export const stage1__mob2b = {
     BODY_SIZE: 40,
     SCALE: 1.6,
 
-    BALANCE: 30,
+    BALANCE: 10,
     HP: 40,
     MP: 100,
     STAMINA: 50,
@@ -476,9 +476,9 @@ export const stage1__mob2b = {
       type: 'weapon',
       kind: 'stage1__mob2b__rightHand',
       hand: 1,
-      balance: 3,
-      stamina: 4,
-      staminaTime: 0.5,
+      balance: 2,
+      stamina: 3,
+      staminaTime: 0.4,
       pos: {
         x: -25,
         y: 25,
@@ -522,7 +522,7 @@ export const stage1__mob2c = {
     BODY_SIZE: 40,
     SCALE: 2,
 
-    BALANCE: 30,
+    BALANCE: 10,
     HP: 50,
     MP: 100,
     STAMINA: 60,
@@ -534,9 +534,9 @@ export const stage1__mob2c = {
       type: 'weapon',
       kind: 'stage1__mob2c__rightHand',
       hand: 1,
-      balance: 4,
-      stamina: 6,
-      staminaTime: 0.7,
+      balance: 3,
+      stamina: 4,
+      staminaTime: 0.5,
       pos: {
         x: -25,
         y: 25,
@@ -625,7 +625,7 @@ export const stage1__boss1 = {
       type: 'weapon',
       kind: 'stage1__boss1__rightHand',
       hand: 1,
-      balance: 20,
+      balance: 10,
       stamina: 10,
       staminaTime: 1,
       pos: {

@@ -2,15 +2,16 @@ const PAD = 40;
 
 export function checkMouse(view, PAD) {
   if (typeof PAD !== 'object') {
+    const p = PAD;
     PAD = {
-      x: PAD,
-      y: PAD,
+      x: p,
+      y: p,
     };
   }
   let dx = mx - game.ui.x -
-    (view.x - view.width * view.anchor.x - PAD.x);
+    (view.x - view.mw * view.anchor.x - PAD.x);
   let dy = my - game.ui.y -
-    (view.y - view.height * view.anchor.y - PAD.y);
+    (view.y - view.mh * view.anchor.y - PAD.y);
 
   let parentGroup = view.parentGroup;
   while (parentGroup) {
@@ -21,8 +22,8 @@ export function checkMouse(view, PAD) {
     dy -= parentGroup.y;
     parentGroup = parentGroup.parentGroup;
   }
-  if (dx > 0 && dx < view.width + PAD.x * 2) {
-    if (dy > 0 && dy < view.height + PAD.y * 2) {
+  if (dx > 0 && dx < view.mw + PAD.x * 2) {
+    if (dy > 0 && dy < view.mh + PAD.y * 2) {
       return true;
     }
   }
@@ -44,7 +45,8 @@ export function makeButton(text, color, font, fontSize, x, y, PAD, fn) {
     if (textView.disabled) {
       return;
     }
-
+    textView.mw = textView.width;
+    textView.mh = textView.height;
     if (checkMouse(textView, PAD)) {
       textView.fill = '#FFFFFF';
       textView.stroke = '#AAAAAA';

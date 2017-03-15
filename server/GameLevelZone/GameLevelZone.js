@@ -69,6 +69,7 @@ export class GameLevelZone {
       Object.assign(data, o.properties);
 
       if (slug && !o.name) {
+        data.mapY -= WALL_SIZE;
         switch (slug) {
           case 'born':
             this.playerPoints.push(data);
@@ -405,10 +406,10 @@ export class GameLevelZone {
     const canTalk = player.canTalk;
     const canCheckpoint = player.canCheckpoint;
 
+    delete player.canItem;
     delete player.canOpenDoor;
     delete player.canTalk;
     delete player.canCheckpoint;
-    delete player.canItem;
 
     const others = player.others;
     for (const k in others) {
@@ -418,26 +419,7 @@ export class GameLevelZone {
       }
     }
 
-    if (!canItem && player.canItem) {
-      player.owner.emit('canItem', {});
-      return;
-    }
-    if (!canOpenDoor && player.canOpenDoor) {
-      if (player.canOpenDoor.isOpened) {
-        player.owner.emit('canCloseDoor', {});
-      } else {
-        player.owner.emit('canOpenDoor', {});
-      }
-      return;
-    }
-    if (!canTalk && player.canTalk) {
-      player.owner.emit('canTalk', {});
-      return;
-    }
-    if (!canCheckpoint && player.canCheckpoint) {
-      player.owner.emit('canCheckpoint', {});
-      return;
-    }
+    //
     if (canItem && !player.canItem) {
       player.owner.emit('stopCan', {});
       return;
@@ -459,6 +441,27 @@ export class GameLevelZone {
     }
     if (canCheckpoint && !player.canCheckpoint) {
       player.owner.emit('stopCan', {});
+      return;
+    }
+    //
+    if (!canItem && player.canItem) {
+      player.owner.emit('canItem', {});
+      return;
+    }
+    if (!canOpenDoor && player.canOpenDoor) {
+      if (player.canOpenDoor.isOpened) {
+        player.owner.emit('canCloseDoor', {});
+      } else {
+        player.owner.emit('canOpenDoor', {});
+      }
+      return;
+    }
+    if (!canTalk && player.canTalk) {
+      player.owner.emit('canTalk', {});
+      return;
+    }
+    if (!canCheckpoint && player.canCheckpoint) {
+      player.owner.emit('canCheckpoint', {});
       return;
     }
   }

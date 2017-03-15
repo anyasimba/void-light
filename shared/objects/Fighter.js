@@ -237,7 +237,7 @@ export class Fighter {
           if (hand) {
             hand.finalStage(0.2, easing.easeInOutCubic);
             hand.stage(0.2, easing.easeInOutCubic, {
-              vAngle: 60,
+              vAngle: 40,
             });
           }
         }

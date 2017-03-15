@@ -42,6 +42,7 @@ export class Item {
     this.vAngle = this.baseVAngle;
     this.hAngle = this.baseHAngle;
     this.sideAngle = this.baseSideAngle;
+    this.sideBAngle = this.baseSideBAngle;
   }
 
   stage(duration, fn, props) {
@@ -68,15 +69,18 @@ export class Item {
 export const weapon__sword__default__doHit = ia_sword__doHit();
 export const weapon__bigsword__default__doHit = ia_sword__doHit({
   begin: 0.6,
-  wait: 0.2,
+  wait: 0.3,
   end: 0.4,
+  impulse1: 1000,
 
   begin2: 0.3,
-  wait2: 0.2,
+  wait2: 0.3,
   end2: 0.3,
+  impulse2: 1000,
 
   begin3: 0.3,
-  wait3: 0.2,
+  wait3: 0.3,
   end3: 0.3,
+  impulse3: 1000,
 });
 export const weapon__axe__default__doHit = ia_axe__doHit();

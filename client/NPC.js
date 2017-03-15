@@ -17,7 +17,7 @@ export const npc__she = {
 export const npc__she2 = {
   VIEW: 'player',
   SCALE: 0.2,
-  TINT: 0x110005,
+  TINT: 0x441122,
   CAN_MIRROR_VIEW: true,
   BACK_VIEW: 'player-back',
   DEAD_VIEW: 'player-back',

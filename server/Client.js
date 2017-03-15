@@ -182,22 +182,19 @@ export class Client extends global.Client {
   }
 
   onDie(source) {
-    if (!this.player.invade) {
-      this.params.fighter.params.voidsCount = 0;
-      this.saveParam('fighter', 'params', this.params.fighter.params);
-
-      this.gameLevelZone.restartTime = 5;
-      this.gameLevelZone.restartFull = true;
-    } else {
-      setTimeout(() => {
+    setTimeout(() => {
+      if (!this.player.invade) {
+        this.params.fighter.params.voidsCount = 0;
+        this.saveParam('fighter', 'params', this.params.fighter.params);
+      } else {
         delete this.player.invade;
-        this.gameLevelZone.rebornPlayer(this.player);
-        this.player.reborn();
-        this.emit('restart', {});
-        this.player.emitParams();
-        this.player.emitPos();
-      }, 6000);
-    }
+      }
+      this.gameLevelZone.rebornPlayer(this.player);
+      this.player.reborn();
+      this.emit('restart', {});
+      this.player.emitParams();
+      this.player.emitPos();
+    }, 6000);
   }
 
   validate(data) {
@@ -209,7 +206,8 @@ export class Client extends global.Client {
 
   registerEvents() {
     this.on('move', data => this.onEventMove(this.validate(data)));
-    this.on('mouseDown', data => this.onEventMouseDown(this.validate(data)));
+    this.on('mouseDown', data => this.onEventMouseDown(this.validate(
+      data)));
     this.on('jump', data => this.onEventJump(this.validate(data)));
     this.on('roll', data => this.onEventRoll(this.validate(data)));
     this.on('c', data => this.onEventC(this.validate(data)));

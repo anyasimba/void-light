@@ -44,6 +44,7 @@ export class Item extends mix(global.Item, MixGameObject) {
     super.update();
     this.opts.update.call(this);
 
+    this.subVAngle = this.subVAngle || 0;
     if (this.type === 'shield') {
       let groupAngle = this.sideAngle + 100;
       let vAngle = 0;
@@ -53,17 +54,17 @@ export class Item extends mix(global.Item, MixGameObject) {
         this.parent.stamina > 0
       if (!isInBlock && !this.parent.inStun) {
         groupAngle = this.sideAngle;
-        vAngle = 20;
+        vAngle = 10;
       }
-      this.vAngle = this.vAngle || 0;
       this.group.angle += (groupAngle - this.group.angle) *
         (1 - Math.pow(0.1, dt * 5));
-      this.vAngle += (vAngle - this.vAngle) *
+      this.subVAngle += (vAngle - this.subVAngle) *
         (1 - Math.pow(0.1, dt * 5));
     }
 
     this.view.scale.x = this.sx * Math.cos(this.hAngle * Math.PI / 180);
-    this.view.scale.y = this.sy * Math.cos(this.vAngle * Math.PI / 180);
+    this.view.scale.y = this.sy *
+      Math.cos((this.vAngle + this.subVAngle) * Math.PI / 180);
     if (this.mirror) {
       this.view.scale.x = -this.view.scale.x;
     }
@@ -80,7 +81,7 @@ export const weapon__sword__default = new class {
     }
     const image = new Phaser.Image(game, 0, 0, 'sword');
     image.scale.x = 0.8;
-    image.scale.y = 1.2;
+    image.scale.y = 1.4;
     image.anchor.x = 0.5;
     image.anchor.y = 0.8;
     image.tint = color;
@@ -148,7 +149,7 @@ export const weapon__bigsword__default = new class {
     }
     const image = new Phaser.Image(game, 0, 0, 'sword');
     image.scale.x = 0.8 * 1.5;
-    image.scale.y = 1.2 * 2;
+    image.scale.y = 1.4 * 2;
     image.anchor.x = 0.5;
     image.anchor.y = 0.8;
     image.tint = color * 0x777755 / 0xFFFFFF;
@@ -217,7 +218,7 @@ export const weapon__axe__default = new class {
     }
     const image = new Phaser.Image(game, 0, 0, 'axe');
     image.scale.x = 0.8;
-    image.scale.y = 1.2;
+    image.scale.y = 1.4;
     image.anchor.x = 0.5;
     image.anchor.y = 0.8;
     image.tint = color;

@@ -21,7 +21,7 @@ function makeGameMenuTabTitle(i, text, fn) {
     '#AAEEFF',
     'Neucha',
     50,
-    0, 30, 40,
+    0, 30, 20,
     fn);
   textView.parentGroup = gameMenuView;
 
@@ -90,8 +90,8 @@ function makeGameMenuTab1() {
     const g = contentView.add(new Phaser.Group(game));
     g.x = x;
     g.y = y;
-    g.width = w;
-    g.height = h;
+    g.mw = w;
+    g.mh = h;
     g.anchor = {
       x: 0.5,
       y: 0.5,
@@ -103,7 +103,7 @@ function makeGameMenuTab1() {
 
     view.beginFill(0xFFFFFF, 0.1);
     view.lineStyle(2, 0xFFFFFF, 0.5);
-    view.drawRect(-w / 2, -w / 2, w, w);
+    view.drawRect(-w / 2, -h / 2, w, h);
     view.endFill();
 
     g.update = () => {
@@ -256,12 +256,12 @@ function onItems(items, filter) {
 
 function addItem(item, clientItem, data, i, k) {
   const w = 250;
-  const h = 160;
+  const h = 200;
   const g = new Phaser.Group(game);
-  g.x = i * w + w / 2;
-  g.y = h / 2;
-  g.width = w;
-  g.height = h;
+  g.x = (i % 6) * w + w / 2;
+  g.y = Math.floor(i / 6) * h + h / 2;
+  g.mw = 240;
+  g.mh = 190;
   g.anchor = {
     x: 0.5,
     y: 0.5,
@@ -395,7 +395,7 @@ function makeGameMenuTab6() {
       '#FFFFFF',
       'Neucha',
       30,
-      x, y, 0,
+      x, y, -4,
       () => {
         g.tint = 0xFFEEAA;
         updateText('...');

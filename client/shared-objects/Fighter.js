@@ -422,8 +422,15 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         const v = this.viewsForTint[k];
         v.tint = this.baseTint;
       }
-      this.weapon.view.tint = 0xFF7700;
-      this.shield.view.tint = 0xFF7700;
+      if (this.weapon) {
+        this.weapon.view.tint = 0xFF7700;
+      }
+      if (this.weapon2) {
+        this.weapon2.view.tint = 0xFF7700;
+      }
+      if (this.shield) {
+        this.shield.view.tint = 0xFF7700;
+      }
     } else {
       makeSuperMessage('ВЫ ВТОРГАЕТЕСЬ', '#FF7700');
     }
@@ -490,14 +497,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       group.alpha = 1 - group.time / 60;
     };
     game.layer.sub.deads.add(group);
-
-    if (this.kind === 'player' && this.id !== client.playerID) {
-      this.baseTint = 0x88FF33;
-      this.color = HEXtoRGB(this.baseTint);
-      this.group.tint = this.baseTint;
-      this.weapon.view.tint = 0x55FF00;
-      this.shield.view.tint = 0x55FF00;
-    }
   }
 
   update() {

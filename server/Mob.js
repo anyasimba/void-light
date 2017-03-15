@@ -452,6 +452,7 @@ export class Mob {
               y: this.fighter.pos.y + Math.random() * 2,
             });
             Object.assign(opts.FIGHTER, {
+              HP: opts.FIGHTER.HP * opts.DIES_SCALE,
               SCALE: opts.FIGHTER.SCALE * opts.DIES_SCALE,
               hitSpeed: opts.FIGHTER.hitSpeed * opts.DIES_SCALE,
               damage: opts.FIGHTER.damage * opts.DIES_SCALE,

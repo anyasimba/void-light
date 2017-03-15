@@ -392,7 +392,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         v *= 150 / (this.speed.length() * 0.25 + 100);
       }
       const vec = this.hitVec.unit();
-      vec3.add(this.speed, vec.multiply(v));
+      vec3.add(this.speed, vec.multiply(v * this.scale));
       this.emitPos();
     }
   }
@@ -454,15 +454,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
 
     opts.hitVec = this.hitVec.clone();
-
-    const hitAngle = opts.hitVec.toAngle();
-    opts.a1 += hitAngle;
-    opts.a2 += hitAngle;
-    opts.r1 *= this.scale;
-    opts.r2 *= this.scale;
+    opts.d *= this.scale;
     if (this.weapon && this.weapon.bodyScale) {
-      opts.r1 *= this.weapon.bodyScale;
-      opts.r2 *= this.weapon.bodyScale;
+      opts.d *= this.weapon.bodyScale;
     }
 
     this.gameLevelZone.doDamageRadialArea(this, opts);
@@ -515,6 +509,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       });
       this.owner.saveParam('items', 'list', this.owner.params.items.list);
       this.owner.emit('items', this.owner.params.items);
+      return;
     }
     if (this.canOpenDoor) {
       this.canOpenDoor.open(this);
@@ -526,6 +521,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
     if (this.canCheckpoint) {
       this.canCheckpoint.use(this);
+      return;
     }
   }
   onKeyG() {
@@ -572,6 +568,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         force: 800 * (this.moveTimeF * 0.4 + 0.6),
         forceInJump: 750 * (this.moveTimeF * 0.4 + 0.6),
       };
+      if (this.inHit && this.hitStage === 1) {
+        rollData.force = 600 * (this.moveTimeF * 0.4 + 0.6);
+        rollData.forceInJump = 500 * (this.moveTimeF * 0.4 + 0.6);
+      }
       if (this.inHit && this.hitStage !== 1) {
         rollData.force = 400 * (this.moveTimeF * 0.4 + 0.6);
         rollData.forceInJump = 300 * (this.moveTimeF * 0.4 + 0.6);

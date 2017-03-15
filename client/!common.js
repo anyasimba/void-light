@@ -397,6 +397,7 @@ function createGame() {
           makeSubLayer3D(layer.sub.middle, 1.01);
           makeSubLayer3D(layer.sub.top, 1.02);
           makeSubLayer3D(layer.sub.walls, 1.02);
+          makeSubLayer3D(layer.sub.info, 1.03);
         }
 
         if (global.client && client.player) {
