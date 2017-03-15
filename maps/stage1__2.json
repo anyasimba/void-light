@@ -699,6 +699,16 @@
                 }
             },
          "tilewidth":32
+        }, 
+        {
+         "columns":0,
+         "firstgid":37,
+         "margin":0,
+         "name":"Light",
+         "spacing":0,
+         "tilecount":0,
+         "tileheight":1,
+         "tilewidth":1
         }],
  "tilewidth":32,
  "version":1,
