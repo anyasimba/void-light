@@ -14,6 +14,9 @@ export class Item {
     this.baseHAngle = this.hAngle;
     this.baseSideAngle = this.sideAngle;
 
+    this.animations = [];
+    this.animationsCount = 0;
+
     if (false) {
       //
     } else if (this.type === 'weapon' && this.hand === 1) {
@@ -36,6 +39,17 @@ export class Item {
   destructor() {
     delete this.parent[this.ownerSlug];
   }
+
+  clearAnimations() {
+    this.animations = {};
+  }
+  animate(k, opts) {
+    if (!this.animations[k]) {
+      ++this.animationsCount;
+    }
+    this.animations[k] = opts;
+  }
+
   reborn() {
     this.pos = this.basePos.clone();
     this.angle = this.baseAngle;
@@ -63,6 +77,46 @@ export class Item {
       hAngle: this.baseHAngle,
       sideAngle: this.baseSideAngle,
     });
+  }
+
+  update() {
+    if (!this.animationsCount) {
+      return;
+    }
+    for (const k in this.animations) {
+      const animation = this.animations[k];
+      if (!animation.time) {
+        animation.time = 0;
+      }
+      if (!animation.start) {
+        if (typeof this[k] !== 'number') {
+          animation.start = this[k].clone();
+        } else {
+          animation.start = this[k];
+        }
+      }
+      if (!animation.duration) {
+        animation.duration = 1;
+      }
+      animation.time += dt / animation.duration;
+      if (animation.time >= 1) {
+        animation.time = 1;
+        delete this.animations[k];
+        --this.animationsCount;
+      }
+      if (typeof this[k] !== 'number') {
+        const t = animation.fn(animation.time);
+        this[k].x = animation.start.x + t *
+          (animation.end.x - animation.start.x);
+        this[k].y = animation.start.y + t *
+          (animation.end.y - animation.start.y);
+        this[k].z = animation.start.z + t *
+          (animation.end.z - animation.start.z);
+      } else {
+        this[k] = animation.start + animation.fn(animation.time) *
+          (animation.end - animation.start);
+      }
+    }
   }
 }
 

@@ -2,10 +2,11 @@ globally(require('./GameLevelZone'));
 
 Object.assign(GameLevelZone.prototype, {
   doDamageRadialArea(source, opts) {
-    const others = this.objectWithBodyOthers(source);
-    for (const k in others) {
-      const other = others[k];
-      let canDamage;
+    console.log(source.name, source.others.length);
+    for (let i = 0; i < source.others.length; ++i) {
+      const other = source.others[i];
+
+      let canDamage = false;
       switch (other.type) {
         case 'Door':
           break;

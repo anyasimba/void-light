@@ -130,6 +130,7 @@ function checkIfBothReady() {
       isEntered = true;
       setCookie('username', username);
       setCookie('role', $('.role').val());
+      setCookie('complex', $('.complex').val());
       $('.login').css('display', 'none');
       createGame();
     });
@@ -201,7 +202,7 @@ export function makeDarken(view) {
     game, v.width, v.height, null, null, 1);
 
   const filter = new Phaser.Graphics(game, 0, 0);
-  filter.beginFill(0x888888, 1);
+  filter.beginFill(0xAAAAAA, 1);
   filter.drawRect(0, 0, v.width, v.height);
   filter.endFill();
   filter.blendMode = PIXI.blendModes.MULTIPLY;
@@ -394,10 +395,11 @@ function createGame() {
           layer.y = -p.y * (f - 1);
         };
         const makeLayer3D = layer => {
-          makeSubLayer3D(layer.sub.middle, 1.01);
-          makeSubLayer3D(layer.sub.top, 1.02);
-          makeSubLayer3D(layer.sub.walls, 1.02);
-          makeSubLayer3D(layer.sub.info, 1.03);
+          const f = 6;
+          makeSubLayer3D(layer.sub.middle, 1 + 0.01 * f);
+          makeSubLayer3D(layer.sub.top, 1 + 0.02 * f);
+          makeSubLayer3D(layer.sub.walls, 1 + 0.02 * f);
+          makeSubLayer3D(layer.sub.info, 1 + 0.03 * f);
         }
 
         if (global.client && client.player) {

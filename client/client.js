@@ -201,31 +201,29 @@ export class Client extends global.Client {
       const className = packet.data[1]['class'];
       return new global[className](data);
     }
-    if (name === 'delete') {
-      let object;
-      if (parentID && gameObjects[parentID]) {
-        object = gameObjects[parentID].children[id];
-      } else {
-        object = gameObjects[id];
-      }
-      if (object) {
-        object.destructor();
-      }
-      return;
-    }
 
-    name = name[0].toUpperCase() + name.substring(1);
     if (id) {
       let object;
       if (parentID) {
-        object = gameObjects[parentID].children[id];
+        for (let i = 0; i < parent.children.length; ++i) {
+          if (parent.children[i].id === id) {
+            object = parent.children[i];
+            break;
+          }
+        }
       } else {
         object = gameObjects[id];
       }
       if (object) {
-        object['on' + name].call(object, data);
+        if (name === 'delete') {
+          object.destructor();
+        } else {
+          name = name[0].toUpperCase() + name.substring(1);
+          object['on' + name].call(object, data);
+        }
       }
     } else {
+      name = name[0].toUpperCase() + name.substring(1);
       this['on' + name].call(this, data);
     }
   }

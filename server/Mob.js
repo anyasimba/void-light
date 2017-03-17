@@ -4,11 +4,24 @@ export class Mob {
 
     let size = 40;
 
-    this.opts = opts;
+    this.opts = {};
+    for (const k in opts) {
+      this.opts[k] = opts[k];
+    }
+    this.opts.FIGHTER = {};
+    for (const k in opts.FIGHTER) {
+      this.opts.FIGHTER[k] = opts.FIGHTER[k];
+    }
+    this.opts.FIGHTER.kind = 'mob';
+    this.opts.FIGHTER.HP *= 
+      Math.pow(this.gameLevelZone.complex, 0.5) + 1;
+    this.opts.FIGHTER.damage *=
+      Math.pow(this.gameLevelZone.complex, 0.5) + 1;
+    this.opts.FIGHTER.hitSpeed *= 1 - this.gameLevelZone.complex * 0.04;
+    this.opts.FIGHTER.BALANCE *= this.gameLevelZone.complex * 0.1 + 1;
+    this.opts.VOIDS_COUNT *= Math.pow(this.gameLevelZone.complex, 2) + 1;
 
-    this.fighter = new Fighter(this, Object.assign(opts.FIGHTER, {
-      kind: 'mob',
-    }));
+    this.fighter = new Fighter(this, this.opts.FIGHTER);
     if (opts.rightHand) {
       opts.rightHand(this.fighter);
     }
@@ -38,81 +51,85 @@ export class Mob {
       delete this.hits;
     }
 
-    this.fighter.pos.x = this.opts.x;
-    this.fighter.pos.y = this.opts.y;
+    this.fighter.pos = {
+      x: this.opts.x,
+      y: this.opts.y,
+    };
 
     this.fighter.reborn();
-    this.fighter.look = new vec3(0, 1, 0);
     this.fighter.emitPos();
-    this.fighter.stun(0);
 
     this.fighter.area = this.area;
   }
 
   genGrid(x, y) {
-    const map = this.gameLevelZone.grid;
-    const pathMap = [];
-    pathMap[x] = [];
-    pathMap[x][y] = 0;
-    let queue = [{
-      x: x,
-      y: y,
-    }];
-    while (queue.length > 0) {
-      const q = queue;
-      queue = [];
-      for (const i in q) {
-        const p = q[i];
-        const cost = pathMap[p.x][p.y];
-        const check = (x, y, cost) => {
-          if (cost > 60) {
-            return;
+    const grid = this.gameLevelZone.grid;
+    grid.pathGrids = grid.pathGrids || {};
+    const gridID = x + 'x' + y;
+    if (!grid.pathGrids[gridID]) {
+      const pathGrid = grid.pathGrids[gridID] = [];
+      pathGrid[x] = [];
+      pathGrid[x][y] = 0;
+      let queue = [{
+        x: x,
+        y: y,
+      }];
+      while (queue.length > 0) {
+        const q = queue;
+        queue = [];
+        for (const i in q) {
+          const p = q[i];
+          const cost = pathGrid[p.x][p.y];
+          const check = (x, y, cost) => {
+            if (cost > 60) {
+              return;
+            }
+            if (grid[x] && grid[x][y]) {
+              return;
+            }
+            if (pathGrid[x] && pathGrid[x][y] !== undefined &&
+              pathGrid[x][y] <= cost) {
+              return;
+            }
+            pathGrid[x] = pathGrid[x] || [];
+            if (pathGrid[x][y] === undefined) {
+              queue.push({
+                x: x,
+                y: y,
+              });
+            }
+            pathGrid[x][y] = cost;
           }
-          if (map[x] && map[x][y]) {
-            return;
-          }
-          if (pathMap[x] && pathMap[x][y] !== undefined &&
-            pathMap[x][y] <= cost) {
-            return;
-          }
-          pathMap[x] = pathMap[x] || [];
-          if (pathMap[x][y] === undefined) {
-            queue.push({
-              x: x,
-              y: y,
-            });
-          }
-          pathMap[x][y] = cost;
+
+          check(p.x + 1, p.y, cost + 1);
+          check(p.x - 1, p.y, cost + 1);
+          check(p.x, p.y + 1, cost + 1);
+          check(p.x, p.y - 1, cost + 1);
+
+          check(p.x + 1, p.y + 1, cost + 1.414);
+          check(p.x - 1, p.y + 1, cost + 1.414);
+          check(p.x + 1, p.y - 1, cost + 1.414);
+          check(p.x - 1, p.y - 1, cost + 1.414);
         }
-
-        check(p.x + 1, p.y, cost + 1);
-        check(p.x - 1, p.y, cost + 1);
-        check(p.x, p.y + 1, cost + 1);
-        check(p.x, p.y - 1, cost + 1);
-
-        check(p.x + 1, p.y + 1, cost + 1.414);
-        check(p.x - 1, p.y + 1, cost + 1.414);
-        check(p.x + 1, p.y - 1, cost + 1.414);
-        check(p.x - 1, p.y - 1, cost + 1.414);
       }
     }
 
-    this.pathMap = pathMap;
+    this.pathGrid = grid.pathGrids[gridID];
   }
 
   getNextPoint(x, y) {
     const check = (p, x, y, cost) => {
-      if (!this.pathMap[x] || this.pathMap[x][y] === undefined) {
+      if (!this.pathGrid[x] || this.pathGrid[x][y] === undefined) {
         return;
       }
-      if (this.pathMap[x][y] + cost <= p.cost) {
+      if (this.pathGrid[x][y] + cost <= p.cost) {
         p.x = x;
         p.y = y;
-        p.cost = this.pathMap[x][y] + cost;
+        p.cost = this.pathGrid[x][y] + cost;
       }
     }
 
-    if (this.pathMap[x] && this.pathMap[x][y] === 0) {
+    if (this.pathGrid[x] && this.pathGrid[x][y] === 0) {
       return;
     }
     let p = {
@@ -143,10 +160,10 @@ export class Mob {
     const tx = Math.floor(this.fighter.pos.x / WALL_SIZE);
     const ty = Math.floor(this.fighter.pos.y / WALL_SIZE);
 
-    if (!this.pathMap[x] || this.pathMap[x][y] === undefined) {
+    if (!this.pathGrid[x] || this.pathGrid[x][y] === undefined) {
       return;
     }
-    if (this.target === player || this.pathMap[x][y] <= this.opts.AGRO_D) {
+    if (this.target === player || this.pathGrid[x][y] <= this.opts.AGRO_D) {
       const setTarget = () => {
         if (this.opts.IS_BOSS && player.area !== this.area) {
           return;
@@ -235,9 +252,9 @@ export class Mob {
       const px = Math.floor(this.target.pos.x / WALL_SIZE);
       const py = Math.floor(this.target.pos.y / WALL_SIZE);
 
-      const needGoHome = !this.pathMap[px] ||
-        this.pathMap[px][py] === undefined ||
-        this.pathMap[px][py] > this.opts.RUN_D ||
+      const needGoHome = !this.pathGrid[px] ||
+        this.pathGrid[px][py] === undefined ||
+        this.pathGrid[px][py] > this.opts.RUN_D ||
         this.target.isDestroyed ||
         !this.target.isAlive;
       if (needGoHome) {
@@ -247,8 +264,8 @@ export class Mob {
         delete this.fighter.absLook;
         isRun = false;
         this.fighter.emitPos();
-      } else if (this.pathMap[tx] && this.pathMap[px]) {
-        const cd = Math.abs(this.pathMap[tx][ty] - this.pathMap[px][py]);
+      } else if (this.pathGrid[tx] && this.pathGrid[px]) {
+        const cd = Math.abs(this.pathGrid[tx][ty] - this.pathGrid[px][py]);
         if (d > 700) {
           isRun = true;
         }

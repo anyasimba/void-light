@@ -83,8 +83,8 @@ Object.assign(GameLevelZone.prototype, {
     }
 
     if (hasCollision) {
-      const dx = object.prevPos.x - x;
-      const dy = object.prevPos.y - y;
+      const dx = object.beforePos.x - x;
+      const dy = object.beforePos.y - y;
 
       const imp = 0.5;
       if (Math.abs(dy) <= h * 0.5) {

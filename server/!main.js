@@ -1,3 +1,5 @@
+const N = 100;
+
 function initUpdate() {
   global.time = performance.now();
 
@@ -6,15 +8,15 @@ function initUpdate() {
       while (true) {
         global.dt = performance.now() - time;
         global.time += dt;
+        console.log(dt);
         global.dt *= 0.001;
-
-        let b = performance.now();
-        for (const id in gameObjects) {
-          const object = gameObjects[id];
-          object.update();
+        if (dt > 1 / 20) {
+          global.dt = 1 / 20;
         }
 
-        gameLevelZone.update();
+        for (let i = 0; i < N; ++i) {
+          gameLevelZones[i].update();
+        }
 
         global.packets = global.packets || {};
         for (const k in packets) {
@@ -33,7 +35,7 @@ function initUpdate() {
           client.tasks = [];
         }
 
-        await sleep(Math.max(1000.0 / 30.0 - performance.now() + b, 0));
+        await sleep(0);
       }
     } catch (e) {
       console.log(e, e.stack);
@@ -43,7 +45,10 @@ function initUpdate() {
 }
 
 export function main() {
-  global.gameLevelZone = new GameLevelZone('stage1__1');
+  global.gameLevelZones = [];
+  for (let i = 0; i < N; ++i) {
+    global.gameLevelZones[i] = new GameLevelZone('stage1__1', i);
+  }
 
   initUpdate();
 

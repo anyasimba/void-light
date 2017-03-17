@@ -4,10 +4,10 @@ export class Decor {
   }
 
   get CELL_SIZE_W() {
-    return 400;
+    return 1;
   }
   get CELL_SIZE_H() {
-    return 400;
+    return 1;
   }
 
   constructor() {

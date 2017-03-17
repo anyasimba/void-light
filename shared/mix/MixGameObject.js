@@ -11,38 +11,31 @@ export const MixGameObject = base => class extends base {
       this[k] = state[k];
     }
 
-    this.children = {};
+    this.children = [];
     this.childrenCount = 0;
 
     if (this.parent) {
-      this.parent.children[id] = this;
-      ++this.parent.childrenCount;
+      this.parent.children.push(this);
     } else {
       gameObjects[id] = this;
       ++gameObjectsCount;
     }
-
-    this.animations = {};
-
-    this.timeSpeed = 1;
 
     if (this.onCreate) {
       this.onCreate();
     }
   }
   destructor() {
-    for (const k in this.children) {
-      const child = this.children[k];
-      if (child.destructor) {
-        child.destructor();
-      }
+    for (let i = 0; i < this.children.length; ++i) {
+      this.children[i].destructor();
     }
+    this.children.length = 0;
+
     if (super.destructor) {
       super.destructor();
     }
     if (this.parent) {
-      delete this.parent.children[this.id];
-      --this.parent.childrenCount;
+      this.parent.children.splice(this.parent.children.indexOf(this), 1);
     } else {
       delete gameObjects[this.id];
       --gameObjectsCount;
@@ -51,63 +44,9 @@ export const MixGameObject = base => class extends base {
     this.isDestroyed = true;
   }
 
-  clearAnimations() {
-    this.animations = {};
-  }
-
-  animate(k, opts) {
-    this.animations[k] = opts;
-  }
-
-  calcTimeSpeed() {
-    if (this.parent) {
-      return this.timeSpeed * this.parent.calcTimeSpeed();
-    }
-    return this.timeSpeed;
-  }
-
   update() {
-    if (this.pendingDestroy) {
-      return this.destructor();
-    }
-
-    for (const id in this.children) {
-      const child = this.children[id];
-      child.update();
-    }
-
-    for (const k in this.animations) {
-      const animation = this.animations[k];
-      if (!animation.time) {
-        animation.time = 0;
-      }
-      if (!animation.start) {
-        if (typeof this[k] !== 'number') {
-          animation.start = this[k].clone();
-        } else {
-          animation.start = this[k];
-        }
-      }
-      if (!animation.duration) {
-        animation.duration = 1;
-      }
-      animation.time += dt / animation.duration * this.calcTimeSpeed();
-      if (animation.time >= 1) {
-        animation.time = 1;
-        delete this.animations[k];
-      }
-      if (typeof this[k] !== 'number') {
-        const t = animation.fn(animation.time);
-        this[k].x = animation.start.x + t *
-          (animation.end.x - animation.start.x);
-        this[k].y = animation.start.y + t *
-          (animation.end.y - animation.start.y);
-        this[k].z = animation.start.z + t *
-          (animation.end.z - animation.start.z);
-      } else {
-        this[k] = animation.start + animation.fn(animation.time) *
-          (animation.end - animation.start);
-      }
+    for (let i = 0; i < this.children.length; ++i) {
+      this.children[i].update();
     }
 
     if (super.update) {

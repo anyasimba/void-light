@@ -1,17 +1,18 @@
 export class GameLevelZone {
   static get CELL_SIZE() {
-    return 256;
+    return WALL_SIZE * 4;
   }
 
-  constructor(mapName) {
+  constructor(mapName, complex) {
     this.cells = [];
-    this.grid = [];
 
     this.clients = [];
 
-    this.objects = {};
-    this.staticBodies = {};
-    this.bodies = {};
+    this.objectsForRemove = [];
+    this.objects = [];
+    this.dynamicObjects = [];
+    this.staticBodies = [];
+    this.bodies = [];
 
     this.playerPoints = [];
     this.enemyPoints = [];
@@ -20,40 +21,59 @@ export class GameLevelZone {
     this.tempMobs = [];
     this.timeouts = [];
 
+    this.complex = complex;
+
     this.loadMap(mapName);
   }
 
   loadMap(mapName) {
-    this.map = JSON.parse(fs.readFileSync(
-      'maps/' + mapName + '.json',
-      'utf8'));
-
     this.mapName = mapName;
 
+    global.mapCache = global.mapCache || {};
+    mapCache[mapName] = mapCache[mapName] || {};
+    const cache = mapCache[mapName];
+
+    if (!cache.map) {
+      cache.map = JSON.parse(fs.readFileSync(
+        'maps/' + mapName + '.json',
+        'utf8'));
+      cache.map.dictionary = loadMapDictionary(cache.map);
+    }
+    this.map = cache.map;
     this.w = this.map.width * WALL_SIZE;
     this.h = this.map.height * WALL_SIZE;
 
-    const dictionary = loadMapDictionary(this.map);
+    if (!cache.grid) {
+      cache.grid = new Array(this.map.width);
 
-    const ground = this.map.layers[0];
-    for (let y = 0; y < this.map.height; ++y) {
-      for (let x = 0; x < this.map.width; ++x) {
-        const i = y * this.map.width + x;
-        const v = ground.data[i];
-        const slug = dictionary[v];
-        if (v !== 0) {
-          this.grid[x] = this.grid[x] || {};
-          this.grid[x][y] = slug;
+      const ground = this.map.layers[0];
+      for (let y = 0; y < this.map.height; ++y) {
+        for (let x = 0; x < this.map.width; ++x) {
+          cache.grid[x] = cache.grid[x] || new Array(this.map.height);
+          cache.grid[x][y] = 0;
+
+          const i = y * this.map.width + x;
+          const v = ground.data[i];
+          const slug = this.map.dictionary[v];
+          if (v !== 0) {
+            switch(slug) {
+              default:
+                cache.grid[x][y] = 1;
+            }
+          }
         }
       }
     }
+    this.grid = cache.grid;
+    
+    this.native = native.new__GameLevelZone(this, this.grid);
 
     this.mapObjects = []
     this.bossAreas = [];
     const objects = this.map.layers[1];
     for (const k in objects.objects) {
       const o = objects.objects[k];
-      const slug = dictionary[o.gid] || o.name;
+      const slug = this.map.dictionary[o.gid] || o.name;
       const x = o.x / 32 * WALL_SIZE + WALL_SIZE * 0.5;
       const y = o.y / 32 * WALL_SIZE + WALL_SIZE * 0.5;
       const data = {
@@ -122,16 +142,21 @@ export class GameLevelZone {
   addObject(object) {
     object.gameLevelZone = this;
 
-    this.objects[object.id] = object;
+    if (object.native) {
+      native.GameLevelZone__addObject(this.native, object.native);
+    }
+    for (let i = 0; i < this.clients.length; ++i){
+      object.emitTo(this.clients[i])
+    }
+
+    this.objects.push(object);
+    return;
+    this.dynamicObjects.push(object);
 
     if (object.body) {
-      this.bodies[object.id] = object;
-      object.prevPos = object.pos.clone();
+      this.bodies.push(object);
     }
 
-    for (const client of this.clients) {
-      object.emitTo(client);
-    }
   }
   removeObject(object) {
     object.emitAll('delete', {});
@@ -144,16 +169,7 @@ export class GameLevelZone {
 
     delete object.gameLevelZone;
 
-    delete this.objects[object.id];
-    delete this.bodies[object.id];
-
-    if (object.cells) {
-      for (const k in object.cells) {
-        const cell = object.cells[k];
-        delete this.cells[cell.x][cell.y][object.id];
-      }
-      delete object.cells;
-    }
+    this.objectsForRemove.push(object);
   }
 
   restart() {
@@ -221,15 +237,16 @@ export class GameLevelZone {
     if (player.owner.params.checkpoint) {
       const p = player.owner.params.checkpoint.pos;
       const a = Math.random() * Math.PI * 2;
-      player.pos.x = p.x + Math.cos(a) * WALL_SIZE * 2;
-      player.pos.y = p.y + Math.sin(a) * WALL_SIZE * 2;
+      player.pos = {
+        x: p.x + Math.cos(a) * WALL_SIZE * 2,
+        y: p.y + Math.sin(a) * WALL_SIZE * 2,
+      };
       Checkpoint.USE(player);
       return;
     }
     const i = Math.floor(Math.random() * this.playerPoints.length);
     const p = this.playerPoints[i];
-    player.pos.x = p.x;
-    player.pos.y = p.y;
+    player.pos = p;
   }
 
   emitTo(client) {
@@ -280,6 +297,29 @@ export class GameLevelZone {
   }
 
   update() {
+    native.GameLevelZone__update(this.native, dt);
+    return;
+
+    for (let i = 0; i < this.objectsForRemove.length; ++i) {
+      const object = this.objectsForRemove[i];
+      this.objects.splice(this.objects.indexOf(object), 1);
+      if (this.bodies.indexOf(object)) {
+        this.bodies.splice(this.bodies.indexOf(object), 1);
+      }
+      if (this.dynamicObjects.indexOf(object)) {
+        this.dynamicObjects.splice(this.dynamicObjects.indexOf(object), 1);
+      }
+       if (object.cells) {
+        for (let i = 0; i < object.cells.length; ++i) {
+          const cell = object.cells[i];
+          const list = this.cells[cell[0]][cell[1]];
+          list.splice(list.indexOf(object), 1);
+        }
+        delete object.cells;
+      }
+    }
+    this.objectsForRemove.length = 0;
+
     if (this.restartTime) {
       this.restartTime -= dt;
       if (this.restartTime <= 0) {
@@ -288,42 +328,49 @@ export class GameLevelZone {
         return;
       }
     }
-    const objectsWithBody = this.bodies;
-    for (const k in objectsWithBody) {
-      const object = objectsWithBody[k];
-      if (!object.isStatic) {
-        object.beforePos = object.pos.clone();
-        object.beforeSpeed = object.speed.clone();
-      }
 
-      this.updateObjectWithBodyCells(object);
-      object.others = this.objectWithBodyOthers(object);
+    for (let i = 0; i < this.dynamicObjects.length; ++i) {
+      this.dynamicObjects[i].update();
     }
-    for (const k in objectsWithBody) {
-      const object = objectsWithBody[k];
+    for (let i = 0; i < this.bodies.length; ++i) {
+      const object = this.bodies[i];
 
       if (object.isStatic) {
+        this.updateObjectWithBodyCells(object);
         continue;
       }
 
+      if (object.speed && object.speed.length() > 0) {
+        object.hasPosChange = true;
+      }
+
+      object.beforePos = object.pos.clone();
+      object.beforeSpeed = object.speed.clone();
+
+      this.updateObjectWithBodyCells(object);
+      this.objectWithBodyOthers(object);
+    }
+    for (let i = 0; i < this.bodies.length; ++i) {
+      const object = this.bodies[i];
+      if (!object.hasPosChange) {
+        continue;
+      }
       object.body.checked = true;
       if (object.type === 'Fighter' && object.kind === 'player') {
         this.updateObjectNears(object);
       }
       this.updateObjectWithBodyCollisions(object);
     }
-
-    for (const k in objectsWithBody) {
-      const object = objectsWithBody[k];
-
-      if (object.isStatic) {
+    for (let i = 0; i < this.bodies.length; ++i) {
+      const object = this.bodies[i];
+      if (!object.hasPosChange) {
         continue;
       }
 
       const cx = Math.floor(object.pos.x / WALL_SIZE);
       const cy = Math.floor(object.pos.y / WALL_SIZE);
-      for (let x = -2; x <= 2; ++x) {
-        for (let y = -2; y <= 2; ++y) {
+      for (let x = -1; x <= 1; ++x) {
+        for (let y = -1; y <= 1; ++y) {
           if (this.grid[x + cx] && this.grid[x + cx][y + cy]) {
             const rx = (x + cx + 0.5) * WALL_SIZE;
             const ry = (y + cy + 0.5) * WALL_SIZE;
@@ -334,37 +381,41 @@ export class GameLevelZone {
       }
     }
 
-    for (const k in objectsWithBody) {
-      const object = objectsWithBody[k];
-      delete object.others;
-      delete object.body.checked;
+    for (let i = 0; i < this.bodies.length; ++i) {
+      const object = this.bodies[i];
 
-      if (!object.isStatic) {
-        const hasChange = object.beforePos.x !== object.pos.x ||
-          object.beforePos.y !== object.pos.y ||
-          object.beforeSpeed.x !== object.speed.x ||
-          object.beforeSpeed.y !== object.speed.y;
-        delete object.beforePos;
-        delete object.beforeSpeed;
-        if (hasChange) {
-          object.emitPos();
-        }
+      if (object.isStatic) {
+        continue;
+      }
+
+      object.others.length = 0;
+      object.body.checked = false;
+
+      object.hasPosChange = false;
+
+      const hasChange = object.beforePos.x !== object.pos.x ||
+        object.beforePos.y !== object.pos.y ||
+        object.beforeSpeed.x !== object.speed.x ||
+        object.beforeSpeed.y !== object.speed.y;
+      if (hasChange) {
+        object.emitPos();
       }
     }
 
     this.updateMobs();
   }
   updateObjectWithBodyCells(object) {
-    if (object.isStatic && object.cells) {
+    if (object.cells && !object.hasPosChange) {
       return;
     }
 
     object.cells = object.cells || [];
-    for (const k in object.cells) {
-      const cell = object.cells[k];
-      delete this.cells[cell.x][cell.y][object.id];
+    for (let i = 0; i < object.cells.length; ++i) {
+      const cell = object.cells[i];
+      const list = this.cells[cell[0]][cell[1]];
+      list.splice(list.indexOf(object), 1);
     }
-    object.cells = [];
+    object.cells.length = 0;
 
     const CELL_SIZE = GameLevelZone.CELL_SIZE;
     const xb = Math.floor(
@@ -378,31 +429,26 @@ export class GameLevelZone {
 
     for (let x = xb; x <= xe; ++x) {
       for (let y = yb; y <= ye; ++y) {
-        this.cells[x] = this.cells[x] || {};
-        this.cells[x][y] = this.cells[x][y] || {};
-        this.cells[x][y][object.id] = object;
-        object.cells.push({
-          x: x,
-          y: y
-        });
+        this.cells[x] = this.cells[x] || [];
+        this.cells[x][y] = this.cells[x][y] || [];
+        this.cells[x][y].push(object);
+        object.cells.push([x, y]);
       }
     }
-
-    if (object.isStatic) {}
   }
   objectWithBodyOthers(object) {
-    const others = {};
-    for (const k in object.cells) {
-      const cellID = object.cells[k];
-      const cell = this.cells[cellID.x][cellID.y];
-      for (const k in cell) {
-        const other = cell[k];
+    object.others = object.others || [];
+    object.others.length = 0;
+    for (let i = 0; i < object.cells.length; ++i) {
+      const cell = object.cells[i];
+      const list = this.cells[cell[0]][cell[1]];
+      for (let i = 0; i < list.length; ++i) {
+        const other = list[i];
         if (object !== other) {
-          others[other.id] = other;
+          object.others.push(other);
         }
       }
     }
-    return others;
   }
   updateObjectNears(player) {
     const canItem = player.canItem;
@@ -470,10 +516,8 @@ export class GameLevelZone {
     }
   }
   updateObjectWithBodyCollisions(object) {
-    const others = object.others;
-
-    for (const k in others) {
-      const other = others[k];
+    for (let i = 0; i < object.others.length; ++i) {
+      const other = object.others[i];
       if (other.checked) {
         continue;
       }

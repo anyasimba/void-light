@@ -55,9 +55,9 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
       id: this.id,
     }, this.state));
 
-    if (this.childrenCount > 0) {
-      for (const id in this.children) {
-        const child = this.children[id];
+    if (this.children.length) {
+      for (let i = 0; i < this.children.length; ++i) {
+        const child = this.children[i];
         client.emit('new', Object.assign({
           class: child.constructor.classID,
           id: child.id,

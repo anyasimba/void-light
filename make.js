@@ -90,6 +90,9 @@ function buildFinalClientJS() {
  * run
  */
 function runServer() {
+  const execSync = require('child_process').execSync;
+  execSync('node-gyp build');
+  
   const traceur = require('traceur');
 
   require('traceur-source-maps').install(traceur);
@@ -120,6 +123,46 @@ function runServer() {
   setImmediate(() => {
     require('./server/+');
   });
+}
+
+function buildServerJS() {
+  const fs = require('fs');
+
+  const browserify = require('browserify');
+  const babelify = require('babelify');
+
+  const r = browserify({
+      debug: true,
+    })
+    .transform(babelify, {
+      ignore: /(bower_components)|(node_modules)/,
+      presets: ['es2015'],
+      plugins: [
+        'transform-async-to-generator', ['transform-runtime', {
+          'helpers': false,
+          'polyfill': false,
+        }],
+      ],
+      compact: false,
+    })
+    .require(__dirname + '/server.js', {
+      entry: true,
+    })
+    .bundle()
+    .pipe(fs.createWriteStream(__dirname + '/server.dev.js'));
+
+  console.log('=> begin build server');
+  const date = new Date;
+  r.addListener('finish', () => {
+    const dt = ((new Date).getTime() - date.getTime()) * 0.001;
+    console.log('[ok] done build server (' + dt + 's)');
+
+    setImmediate(() => {
+      require('./server.dev');
+    });
+  });
+
+  return r;
 }
 
 /**

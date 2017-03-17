@@ -3,11 +3,13 @@ global.preMain = cb => {
   preMainCbs.push(cb);
 }
 
-global.express = require('express');
-global.cookieParser = require('cookie-parser')
-global.io = require('socket.io');
-global.http = require('http');
-global.fs = require('fs');
+const _require = require;
+global.express = _require('express');
+global.io = _require('socket.io');
+global.http = _require('http');
+global.fs = _require('fs');
+
+global.native = require('../build/Release/binding');
 
 globally(require('../common/+'));
 globally(require('../shared/+'));

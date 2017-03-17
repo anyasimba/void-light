@@ -15,12 +15,15 @@ export class Fighter {
   static get FRICTION() {
     return 400;
   }
+  static get MAX_SPEED() {
+    return 2000;
+  }
 
   static get LOOK_ROTATE_F() {
     return 0.94;
   }
   static get LOOK_ROTATE_IN_HIT_F() {
-    return 0.99;
+    return 0.999;
   }
 
   static get BODY_SIZE() {
@@ -120,8 +123,8 @@ export class Fighter {
       }
     }
 
-    if (this.speed.length() > 2000) {
-      this.speed = this.speed.unit().multiply(2000);
+    if (this.speed.length() > this.MAX_SPEED) {
+      this.speed = this.speed.unit().multiply(this.MAX_SPEED);
     }
     vec3.add(this.pos, this.speed.multiply(dt));
 
@@ -173,7 +176,6 @@ export class Fighter {
       if (this.inRoll.time >= this.inRoll.duration) {
         this.afterRollTime = this.inRoll.afterTime;
         delete this.inRoll;
-        this.afterRoll();
       }
     }
     if (this.afterRollTime) {
@@ -317,7 +319,6 @@ export class Fighter {
   }
 
   doDamageRadialArea() {}
-  afterRoll() {}
 
   onRoll(data) {
     let input = this.inputMove;

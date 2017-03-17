@@ -7,10 +7,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     return {
       lang: this.lang,
 
-      pos: this.pos.clone(),
-      speed: this.speed.clone(),
-      inputMove: this.inputMove.clone(),
-      look: this.look.clone(),
+      pos: this.pos,
+      speed: this.speed,
+      inputMove: this.inputMove,
       absLook: this.absLook,
 
       isRun: this.isRun,
@@ -29,6 +28,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       RUN_ACC: this.RUN_ACC,
       AIR_FRICTION: this.AIR_FRICTION,
       FRICTION: this.FRICTION,
+      MAX_SPEED: this.MAX_SPEED,
 
       BALANCE: this.BALANCE,
 
@@ -47,7 +47,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       pos: this.pos,
       speed: this.speed,
       inputMove: this.inputMove,
-      look: this.look,
       absLook: this.absLook,
 
       isRun: this.isRun,
@@ -71,6 +70,34 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     });
   }
 
+  get pos() {
+    return new vec3(
+      native.Fighter__getPosX(this.native),
+      native.Fighter__getPosY(this.native));
+  }
+  set pos(v) {
+    native.Fighter__setPosX(this.native, v.x);
+    native.Fighter__setPosY(this.native, v.y);
+  }
+  get speed() {
+    return new vec3(
+      native.Fighter__getSpeedX(this.native),
+      native.Fighter__getSpeedY(this.native));
+  }
+  set speed(v) {
+    native.Fighter__setSpeedX(this.native, v.x);
+    native.Fighter__setSpeedY(this.native, v.y);
+  }
+  get inputMove() {
+    return new vec3(
+      native.Fighter__getInputMoveX(this.native),
+      native.Fighter__getInputMoveY(this.native));
+  }
+  set inputMove(v) {
+    native.Fighter__setInputMoveX(this.native, v.x);
+    native.Fighter__setInputMoveY(this.native, v.y);
+  }
+
   constructor(owner, optsInput) {
     optsInput = optsInput || {};
     const opts = {};
@@ -78,17 +105,22 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       opts[k] = optsInput[k];
     }
 
+    opts.BODY_SIZE = opts.BODY_SIZE || Fighter.BODY_SIZE;
+
+    opts.ACC = opts.ACC || Fighter.ACC;
+    opts.RUN_ACC = opts.RUN_ACC || Fighter.RUN_ACC;
+    opts.AIR_FRICTION = opts.AIR_FRICTION || Fighter.AIR_FRICTION;
+    opts.FRICTION = opts.FRICTION || Fighter.FRICTION;
+    opts.MAX_SPEED = opts.MAX_SPEED || Fighter.MAX_SPEED;
+
     super({
       lang: opts.LANG_RU,
 
-      pos: new vec3,
-      speed: new vec3,
-      inputMove: new vec3,
       look: new vec3,
 
       kind: opts.kind,
       name: opts.name,
-      size: opts.BODY_SIZE || Fighter.BODY_SIZE,
+      size: opts.BODY_SIZE,
       scale: opts.SCALE,
 
       moveTimeF: opts.moveTimeF,
@@ -98,10 +130,11 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       damage_f: opts.damage_f,
       damage_d: opts.damage_d,
 
-      ACC: opts.ACC || Fighter.ACC,
-      RUN_ACC: opts.RUN_ACC || Fighter.RUN_ACC,
-      AIR_FRICTION: opts.AIR_FRICTION || Fighter.AIR_FRICTION,
-      FRICTION: opts.FRICTION || Fighter.FRICTION,
+      ACC: opts.ACC,
+      RUN_ACC: opts.RUN_ACC,
+      AIR_FRICTION: opts.AIR_FRICTION,
+      FRICTION: opts.FRICTION,
+      MAX_SPEED: opts.MAX_SPEED,
 
       BALANCE: opts.BALANCE,
       balance: opts.BALANCE,
@@ -121,6 +154,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       kind: 'circle',
       size: this.size * this.scale,
     }
+
+    this.native = native.new__Fighter(this, opts);
 
     this.updateHands();
   }
@@ -179,7 +214,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.mp = this.MP;
     this.stamina = this.STAMINA;
 
-    this.inputMove.init();
+    this.inputMove = {x: 0, y: 0};
     this.look.init(0, 1, 0);
     this.speed.init();
 
@@ -291,7 +326,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   }
 
   update() {
-    this.prevPos = this.pos.clone();
     super.update();
 
     if (this.balanceTime) {

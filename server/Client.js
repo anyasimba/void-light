@@ -103,6 +103,8 @@ export class Client extends global.Client {
 
     this.tasks = [];
 
+    this.cookies = cookies;
+
     this.on('login', data => this.onLogin(this.validate(data)));
   }
 
@@ -144,8 +146,12 @@ export class Client extends global.Client {
       playerID: this.player.id,
     });
 
-    this.gameLevelZone = gameLevelZone;
+    let complex = this.cookies.complex || 1;
+    complex = parseInt(complex);
+    if (gameLevelZones[complex]) {
+      this.gameLevelZone = gameLevelZones[complex];
     this.gameLevelZone.addClient(this);
+    }
 
     this.emit('map', {
       name: this.gameLevelZone.mapName,
@@ -175,7 +181,7 @@ export class Client extends global.Client {
     }
 
     if (this.player) {
-      this.player.pendingDestroy = true;
+      this.player.destructor();
     }
 
     console.log('User disconnected', this.username);
@@ -232,12 +238,11 @@ export class Client extends global.Client {
       return;
     }
 
-    this.player.inputMove.x = data.x;
-    this.player.inputMove.y = data.y;
-    if (this.player.inputMove.length() > 0) {
-      vec3.unit(this.player.inputMove);
+    data = new vec3(data);
+    if (data.length() > 0) {
+      vec3.unit(data);
     }
-
+    this.player.inputMove = data;
     this.player.emitPos();
   }
   onEventMouseDown(data) {
