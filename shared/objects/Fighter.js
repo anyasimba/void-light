@@ -100,7 +100,7 @@ export class Fighter {
         } else {
           a = this.RUN_ACC;
         }
-      } else if (this.isBlock) {
+      } else if (this.inBlock) {
         a = this.ACC * 0.8;
       } else {
         a = this.ACC;
