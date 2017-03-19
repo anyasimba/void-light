@@ -143,6 +143,17 @@ function checkIfBothReady() {
   }
 };
 
+
+const WALL_LAYERS = [{
+  slug: 'bottom',
+}, {
+  slug: 'middle',
+}, {
+  slug: 'walls',
+}, {
+  slug: 'info',
+}, ];
+
 function createLayer() {
   const layer = new Phaser.Group(game);
   layer.sub = {};
@@ -446,7 +457,7 @@ function createGame() {
           const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
           const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
 
-          const ln = 2;
+          const ln = WALL_LAYERS.length;
           const textures = [];
           for (let i = 0; i < ln; ++i) {
             textures[i] = [];
@@ -497,69 +508,49 @@ function createGame() {
               }
               if (view) {
                 const f = scaleF;
-                let pad;
-                let px;
-                let py;
+                let pad = 0;
+                let px = 0;
+                let py = 0;
+                for (let i = 0; i < ln; ++i) {
+                  let pad = i * 24 / (ln - 1);
+                  let px = 0;
+                  let py = 0;
 
-                pad = 0;
-                px = 0;
-                py = 0;
-                if (!grid[x - 1] || !grid[x - 1][y]) {
-                  px = pad;
-                }
-                if (!grid[x] || !grid[x][y - 1]) {
-                  py = pad;
-                }
-                view.darken.width = (WALL_SIZE - px) * scaleF;
-                view.darken.height = (WALL_SIZE - py) * scaleF;
-                if (!grid[x + 1] || !grid[x + 1][y]) {
-                  view.darken.width -= pad * scaleF;
-                }
-                if (!grid[x] || !grid[x][y + 1]) {
-                  view.darken.height -= pad * scaleF;
-                }
-                view.darken.tilePosition.x = -x * WALL_SIZE +
-                  view.width * i / ln - px;
-                view.darken.tilePosition.y = -y * WALL_SIZE +
-                  view.height * i / ln - py;
-                view.darken.tileScale.x = f * 0.5;
-                view.darken.tileScale.y = f * 0.5;
-                const cx = Math.floor(x * WALL_SIZE / ts);
-                const cy = Math.floor(y * WALL_SIZE / ts);
-                textures[0][cx][cy].isUsed = true;
-                textures[0][cx][cy].renderXY(
-                  view.darken,
-                  (x * WALL_SIZE - cx * ts + px) * scaleF,
-                  (y * WALL_SIZE - cy * ts + py) * scaleF,
-                  false);
+                  let v = view;
+                  if (i < ln - 1) {
+                    v = view.darken;
+                  }
 
-                pad = 10;
-                px = 0;
-                py = 0;
-                if (!grid[x - 1] || !grid[x - 1][y]) {
-                  px = pad;
+                  if (!grid[x - 1] || !grid[x - 1][y]) {
+                    px = pad;
+                  }
+                  if (!grid[x] || !grid[x][y - 1]) {
+                    py = pad;
+                  }
+                  v.width = (WALL_SIZE - px) * scaleF;
+                  v.height = (WALL_SIZE - py) * scaleF;
+                  if (!grid[x + 1] || !grid[x + 1][y]) {
+                    v.width -= pad * scaleF;
+                  }
+                  if (!grid[x] || !grid[x][y + 1]) {
+                    v.height -= pad * scaleF;
+                  }
+                  const sf = (0.5 + i * 0.5 / (ln - 1));
+                  v.tilePosition.x = (-x * WALL_SIZE - px +
+                    view.width) / sf;
+                  v.tilePosition.y = (-y * WALL_SIZE - py +
+                    view.height) / sf;
+                  v.tileScale.x = f * sf;
+                  v.tileScale.y = f * sf;
+                  const cx = Math.floor(x * WALL_SIZE / ts);
+                  const cy = Math.floor(y * WALL_SIZE / ts);
+                  textures[i][cx][cy].isUsed = true;
+                  textures[i][cx][cy].renderXY(
+                    v,
+                    (x * WALL_SIZE - cx * ts + px) * scaleF,
+                    (y * WALL_SIZE - cy * ts + py) * scaleF,
+                    false);
                 }
-                if (!grid[x] || !grid[x][y - 1]) {
-                  py = pad;
-                }
-                view.width = (WALL_SIZE - px) * scaleF;
-                view.height = (WALL_SIZE - py) * scaleF;
-                if (!grid[x + 1] || !grid[x + 1][y]) {
-                  view.width -= pad * scaleF;
-                }
-                if (!grid[x] || !grid[x][y + 1]) {
-                  view.height -= pad * scaleF;
-                }
-                view.tilePosition.x = -x * WALL_SIZE - px;
-                view.tilePosition.y = -y * WALL_SIZE - py;
-                view.tileScale.x = f;
-                view.tileScale.y = f;
-                textures[1][cx][cy].isUsed = true;
-                textures[1][cx][cy].renderXY(
-                  view,
-                  (x * WALL_SIZE - cx * ts + px) * scaleF,
-                  (y * WALL_SIZE - cy * ts + py) * scaleF,
-                  false);
               }
             }
           }
@@ -593,20 +584,14 @@ function createGame() {
                       const h = (game.h + ts) * 0.5;
                       if (dx <= w && dy <= h) {
                         sprite.visible = true;
+                        ++global.SPRITES_N;
                       } else {
                         sprite.visible = false;
                       }
                     }
                   };
-                  switch (i) {
-                    case 0:
-                      game.layer.sub.ground.add(sprite);
-                      break;
-                    case 1:
-                      game.layer.sub.walls.add(sprite);
-                      break;
-                    default:
-                  }
+                  console.log(WALL_LAYERS[i].slug);
+                  game.layer.sub[WALL_LAYERS[i].slug].add(sprite);
                 }
               }
             }
@@ -615,6 +600,10 @@ function createGame() {
           bricksView.destroy();
           bricksView.darken.destroy();
         }
+
+        global.SPRITES_N = global.SPRITES_N || 0;
+        //console.log(global.SPRITES_N);
+        global.SPRITES_N = 0;
       },
 
       render() {

@@ -72,11 +72,11 @@ export class Fighter {
   }
 
   update() {
-    let FRICTION_F = 1;
+    let AIR_FRICTION_F = 1;
     if (this.inJump || this.inRoll) {
-      FRICTION_F *= 0.1 / this.moveTimeF;
+      AIR_FRICTION_F *= 0.2 / this.moveTimeF;
     }
-    const AIR_FRICTION = Math.pow(this.AIR_FRICTION, FRICTION_F);
+    const AIR_FRICTION = Math.pow(this.AIR_FRICTION, AIR_FRICTION_F);
     const AIR_F = Math.pow(AIR_FRICTION, dt);
     const A_AIR_F = (1 - AIR_F) / (1 - AIR_FRICTION);
 
@@ -90,7 +90,7 @@ export class Fighter {
       !this.waitTime;
     if (isMove) {
       let a = 0;
-      if (this.isRun) {
+      if (this.inRun) {
         this.stamina -= dt * 5;
         this.staminaTime = Math.max(this.staminaTime || 0, 0.05);
         if (this.stamina <= 0) {
@@ -112,15 +112,19 @@ export class Fighter {
         .multiply((a + this.FRICTION) * A_AIR_F));
     }
 
-    if (!this.inJump) {
-      if (this.speed.length() > this.FRICTION * A_AIR_F) {
-        vec3.subtract(this.speed,
-          this.speed
-          .unit()
-          .multiply(this.FRICTION * A_AIR_F));
-      } else {
-        this.speed.init();
-      }
+    let FRICTION_F = 1.0;
+    if (this.inJump) {
+      FRICTION_F = 0.0;
+    } else if (this.inRoll) {
+      FRICTION_F = 0.5;
+    }
+    if (this.speed.length() > this.FRICTION * A_AIR_F * FRICTION_F) {
+      vec3.subtract(this.speed,
+        this.speed
+        .unit()
+        .multiply(this.FRICTION * A_AIR_F * FRICTION_F));
+    } else {
+      this.speed.init();
     }
 
     if (this.speed.length() > this.MAX_SPEED) {
@@ -134,7 +138,7 @@ export class Fighter {
 
     if (isChangeLook) {
       let lookInput = this.inputMove;
-      let lookF = Fighter.LOOK_ROTATE_F;
+      let lookF = this.LOOK_ROTATE_F;
       if (this.absLook && !gameObjects[this.absLook]) {
         delete this.absLook;
       }
@@ -143,7 +147,7 @@ export class Fighter {
       }
       if (this.inHit) {
         lookInput = this.hitVec;
-        lookF = Fighter.LOOK_ROTATE_IN_HIT_F;
+        lookF = this.LOOK_ROTATE_IN_HIT_F;
       }
       if (lookInput.length() > 0.05) {
         const lookRel = lookInput

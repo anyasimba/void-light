@@ -19,14 +19,27 @@ export class Door extends mix(global.Door, MixGameObject) {
     this.view.texture = makeDarken(this.view);
     this.view.width = this.size.x;
     this.view.height = this.size.y;
+    this.view.tileScale.set(0.5);
     this.bottomGroup.add(this.view);
 
     this.view2 = Door.createView();
-    this.view2.x = 10;
-    this.view2.y = 10;
-    this.view2.width = this.size.x - 20;
-    this.view2.height = this.size.y - 20;
-    this.topGroup.add(this.view2);
+    this.view2.width = this.size.x;
+    this.view2.height = this.size.y;
+    this.view2.tileScale.set(0.7);
+    this.middleGroup.add(this.view2);
+
+    this.view3 = Door.createView();
+    this.view2.width = this.size.x;
+    this.view3.height = this.size.y;
+    this.view3.tileScale.set(0.9);
+    this.topGroup.add(this.view3);
+
+    this.view4 = Door.createView();
+    this.view4.x = 10;
+    this.view4.y = 10;
+    this.view4.width = this.size.x - 20;
+    this.view4.height = this.size.y - 20;
+    this.infoGroup.add(this.view4);
   }
 
   onOpen(data) {

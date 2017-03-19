@@ -88,6 +88,8 @@ export class Client extends global.Client {
         fighterParams.Endurance = 6;
         fighterParams.Willpower = 4;
       }
+      fighterParams.Endurance = 100;
+      fighterParams.Willpower = 100;
     }
     if (!fighterParams.voidsCount) {
       hasChange = true;
@@ -150,7 +152,7 @@ export class Client extends global.Client {
     complex = parseInt(complex);
     if (gameLevelZones[complex]) {
       this.gameLevelZone = gameLevelZones[complex];
-    this.gameLevelZone.addClient(this);
+      this.gameLevelZone.addClient(this);
     }
 
     this.emit('map', {

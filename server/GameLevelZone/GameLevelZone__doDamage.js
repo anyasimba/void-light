@@ -2,9 +2,9 @@ globally(require('./GameLevelZone'));
 
 Object.assign(GameLevelZone.prototype, {
   doDamageRadialArea(source, opts) {
-    console.log(source.name, source.others.length);
-    for (let i = 0; i < source.others.length; ++i) {
-      const other = source.others[i];
+    const others = source.others;
+    for (let i = 0; i < others.length; ++i) {
+      const other = others[i];
 
       let canDamage = false;
       switch (other.type) {
@@ -52,7 +52,7 @@ Object.assign(GameLevelZone.prototype, {
     }
 
     const isInBlock = other.shield &&
-      other.isBlock &&
+      other.inBlock &&
       other.stamina > 0 &&
       !other.inJump &&
       !other.inStun &&
@@ -118,15 +118,16 @@ Object.assign(GameLevelZone.prototype, {
     }
 
     if (other.speed.length > 200) {
-      vec3.subtract(other.speed, other.speed.unit().multiply(200));
+      other.speed = other.speed.subtract(
+        other.speed.unit().multiply(200));
     } else {
       other.speed.init();
     }
     if (isJumpHit) {
-      vec3.add(other.speed, opts.hitVec.multiply(
+      other.speed = other.speed.add(opts.hitVec.multiply(
         opts.impulse * 3 * source.scale));
     } else {
-      vec3.add(other.speed, opts.hitVec.multiply(
+      other.speed = other.speed.add(opts.hitVec.multiply(
         opts.impulse * source.scale));
     }
     other.emitPos();

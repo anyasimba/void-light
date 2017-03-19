@@ -13,7 +13,7 @@ export class Mob {
       this.opts.FIGHTER[k] = opts.FIGHTER[k];
     }
     this.opts.FIGHTER.kind = 'mob';
-    this.opts.FIGHTER.HP *= 
+    this.opts.FIGHTER.HP *=
       Math.pow(this.gameLevelZone.complex, 0.5) + 1;
     this.opts.FIGHTER.damage *=
       Math.pow(this.gameLevelZone.complex, 0.5) + 1;
@@ -242,7 +242,7 @@ export class Mob {
     }
 
     let canAttack;
-    let isRun;
+    let inRun;
 
     if (this.target) {
       const dx = this.fighter.pos.x - this.target.pos.x;
@@ -262,12 +262,12 @@ export class Mob {
         delete this.path;
         delete this.onWay;
         delete this.fighter.absLook;
-        isRun = false;
+        inRun = false;
         this.fighter.emitPos();
       } else if (this.pathGrid[tx] && this.pathGrid[px]) {
         const cd = Math.abs(this.pathGrid[tx][ty] - this.pathGrid[px][py]);
         if (d > 700) {
-          isRun = true;
+          inRun = true;
         }
 
         this.attackDistance = this.attackDistance ||
@@ -282,7 +282,7 @@ export class Mob {
           canAttack = true;
         } else if (needForce) {
           canAttack = true;
-          isRun = true;
+          inRun = true;
           if (Math.random() < 0.5) {
             this.fighter.doRoll();
           } else {
@@ -291,17 +291,17 @@ export class Mob {
         } else {
           delete this.attackDistance;
           if (Math.random() < 0.3) {
-            isRun = true;
+            inRun = true;
           }
         }
       }
     }
 
     if (canAttack) {
-      if (!this.fighter.isBlock) {
+      if (!this.fighter.inBlock) {
         this.fighter.onKeyR();
       }
-      isRun = false;
+      inRun = false;
       if (!this.act) {
         const lastActIsMove =
           this.lastAct !== 'left' && this.lastAct !== 'right';
@@ -412,26 +412,28 @@ export class Mob {
 
     const oldX = this.fighter.inputMove.x;
     const oldY = this.fighter.inputMove.y;
-    const oldRun = this.fighter.isRun;
+    const oldRun = this.fighter.inRun;
 
-    this.fighter.inputMove.x = 0;
-    this.fighter.inputMove.y = 0;
-
+    const newInputMove = {
+      x: 0,
+      y: 0
+    };
     if (nextX) {
       if (Math.abs(nextX - this.fighter.pos.x) > 20) {
-        this.fighter.inputMove.x = Math.sign(nextX - this.fighter.pos.x);
+        newInputMove.x = Math.sign(nextX - this.fighter.pos.x);
       }
       if (Math.abs(nextY - this.fighter.pos.y) > 20) {
-        this.fighter.inputMove.y = Math.sign(nextY - this.fighter.pos.y);
+        newInputMove.y = Math.sign(nextY - this.fighter.pos.y);
       }
-      if (isRun !== undefined) {
-        this.fighter.isRun = isRun;
+      if (inRun !== undefined) {
+        this.fighter.inRun = inRun;
       }
     }
+    this.fighter.inputMove = newInputMove;
     const hasChange =
       oldX !== this.fighter.inputMove.x ||
       oldY !== this.fighter.inputMove.y ||
-      oldRun !== this.fighter.isRun;
+      oldRun !== this.fighter.inRun;
     if (hasChange) {
       this.fighter.emitPos();
     }

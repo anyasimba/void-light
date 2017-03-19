@@ -1,5 +1,7 @@
 node_modules
 build
-*.sublime-project
+build/*
+build/**/*
+*.sublime-workspace
 *.dev.js
 *.min.js

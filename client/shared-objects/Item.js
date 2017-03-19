@@ -49,7 +49,7 @@ export class Item extends mix(global.Item, MixGameObject) {
       let groupAngle = this.sideAngle + 100;
       let vAngle = 0;
       const isInBlock = !this.parent.inJump &&
-        this.parent.isBlock &&
+        this.parent.inBlock &&
         !this.parent.inHit &&
         this.parent.stamina > 0
       if (!isInBlock && !this.parent.inStun) {

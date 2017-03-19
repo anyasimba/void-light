@@ -7,6 +7,10 @@ export const MixGameObject = base => class extends base {
 
     this.id = id;
 
+    if (this.preCreate) {
+      this.preCreate(state);
+    }
+
     for (const k in state) {
       this[k] = state[k];
     }

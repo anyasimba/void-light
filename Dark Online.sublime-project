@@ -1,0 +1,34 @@
+{
+	"folders":
+	[
+		{
+			"folder_exclude_patterns":
+			[
+				"node_modules",
+        ".git"
+			],
+			"path": "."
+		}
+	],
+	"build_systems":
+    [
+        {
+    	   "name": "default",
+            "shell_cmd": "taskkill /F /IM node.exe >nul 2>nul & node make default $file",
+                "working_dir": "${project_path:${folder}}",
+    			"file_regex": "[\\(]*[(](.+\\.js):(\\d+):(\\d+)",
+        },
+        {
+         "name": "run",
+            "shell_cmd": "taskkill /F /IM node.exe >nul 2>nul & node make run $file",
+                "working_dir": "${project_path:${folder}}",
+          "file_regex": "[\\(]*[(](.+\\.js):(\\d+):(\\d+)",
+        },
+        {
+         "name": "build-server",
+            "shell_cmd": "taskkill /F /IM node.exe >nul 2>nul & node make build-server $file",
+                "working_dir": "${project_path:${folder}}",
+          "file_regex": "[\\(]*[(](.+\\.js):(\\d+):(\\d+)",
+        },
+    ]
+}

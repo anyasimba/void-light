@@ -12,8 +12,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       inputMove: this.inputMove,
       absLook: this.absLook,
 
-      isRun: this.isRun,
-      isBlock: this.isBlock,
+      inRun: this.inRun,
+      inBlock: this.inBlock,
 
       moveTimeF: this.moveTimeF,
 
@@ -29,6 +29,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       AIR_FRICTION: this.AIR_FRICTION,
       FRICTION: this.FRICTION,
       MAX_SPEED: this.MAX_SPEED,
+
+      LOOK_ROTATE_F: this.LOOK_ROTATE_F,
+      LOOK_ROTATE_IN_HIT_F: this.LOOK_ROTATE_IN_HIT_F,
 
       BALANCE: this.BALANCE,
 
@@ -49,8 +52,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       inputMove: this.inputMove,
       absLook: this.absLook,
 
-      isRun: this.isRun,
-      isBlock: this.isBlock,
+      inRun: this.inRun,
+      inBlock: this.inBlock,
     });
   }
   emitParams() {
@@ -70,6 +73,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     });
   }
 
+  get others() {
+    return native.Fighter__getOthers(this.native);
+  }
   get pos() {
     return new vec3(
       native.Fighter__getPosX(this.native),
@@ -97,6 +103,190 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     native.Fighter__setInputMoveX(this.native, v.x);
     native.Fighter__setInputMoveY(this.native, v.y);
   }
+  get inBlock() {
+    return native.Fighter__getInBlock(this.native) !== 0;
+  }
+  set inBlock(v) {
+    if (v) {
+      v = 1;
+    } else {
+      v = 0;
+    }
+    native.Fighter__setInBlock(this.native, v);
+  }
+  get inRun() {
+    return native.Fighter__getInRun(this.native) !== 0;
+  }
+  set inRun(v) {
+    if (v) {
+      v = 1;
+    } else {
+      v = 0;
+    }
+    native.Fighter__setInRun(this.native, v);
+  }
+  get inRoll() {
+    return native.Fighter__getInRoll(this.native) !== 0;
+  }
+  set inRoll(v) {
+    if (v) {
+      v = 1;
+    } else {
+      v = 0;
+    }
+    native.Fighter__setInRoll(this.native, v);
+  }
+  get afterRollTime() {
+    const t = native.Fighter__getAfterRollTime(this.native);
+    if (t > 0) {
+      return t;
+    }
+  }
+  set afterRollTime(v) {
+    native.Fighter__setAfterRollTime(this.native, v);
+  }
+  get inJump() {
+    return native.Fighter__getInJump(this.native) !== 0;
+  }
+  set inJump(v) {
+    if (v) {
+      v = 1;
+    } else {
+      v = 0;
+    }
+    native.Fighter__setInJump(this.native, v);
+  }
+  get afterJumpTime() {
+    const t = native.Fighter__getAfterJumpTime(this.native);
+    if (t > 0) {
+      return t;
+    }
+  }
+  set afterJumpTime(v) {
+    native.Fighter__setAfterJumpTime(this.native, v);
+  }
+  get inHit() {
+    return native.Fighter__getInHit(this.native) !== 0;
+  }
+  set inHit(v) {
+    if (v) {
+      v = 1;
+    } else {
+      v = 0;
+    }
+    native.Fighter__setInHit(this.native, v);
+  }
+  get stunTime() {
+    const t = native.Fighter__getStunTime(this.native);
+    if (t > 0) {
+      return t;
+    }
+  }
+  set stunTime(v) {
+    native.Fighter__setStunTime(this.native, v);
+  }
+  get waitTime() {
+    const t = native.Fighter__getWaitTime(this.native);
+    if (t > 0) {
+      return t;
+    }
+  }
+  set waitTime(v) {
+    native.Fighter__setWaitTime(this.native, v);
+  }
+  get HP() {
+    const r = native.Fighter__getHP(this.native);
+    return r;
+  }
+  set HP(v) {
+    native.Fighter__setHP(this.native, v);
+  }
+  get hp() {
+    const r = native.Fighter__getHp(this.native);
+    return r;
+  }
+  set hp(v) {
+    native.Fighter__setHp(this.native, v);
+  }
+  get hpTime() {
+    return native.Fighter__getHpTime(this.native);
+  }
+  set hpTime(v) {
+    native.Fighter__setHpTime(this.native, v);
+  }
+  get STAMINA() {
+    const r = native.Fighter__getSTAMINA(this.native);
+    return r;
+  }
+  set STAMINA(v) {
+    native.Fighter__setSTAMINA(this.native, v);
+  }
+  get stamina() {
+    return native.Fighter__getStamina(this.native);
+  }
+  set stamina(v) {
+    native.Fighter__setStamina(this.native, v);
+  }
+  get staminaTime() {
+    return native.Fighter__getStaminaTime(this.native);
+  }
+  set staminaTime(v) {
+    native.Fighter__setStaminaTime(this.native, v);
+  }
+  get MP() {
+    const r = native.Fighter__getMP(this.native);
+    return r;
+  }
+  set MP(v) {
+    native.Fighter__setMP(this.native, v);
+  }
+  get MP() {
+    const r = native.Fighter__getMP(this.native);
+    return r;
+  }
+  set MP(v) {
+    native.Fighter__setMP(this.native, v);
+  }
+  get mp() {
+    return native.Fighter__getMp(this.native);
+  }
+  set mp(v) {
+    native.Fighter__setMp(this.native, v);
+  }
+  get mpTime() {
+    return native.Fighter__getMpTime(this.native);
+  }
+  set mpTime(v) {
+    native.Fighter__setMpTime(this.native, v);
+  }
+  get BALANCE() {
+    const r = native.Fighter__getBALANCE(this.native);
+    return r;
+  }
+  set BALANCE(v) {
+    native.Fighter__setBALANCE(this.native, v);
+  }
+  get balance() {
+    return native.Fighter__getBalance(this.native);
+  }
+  set balance(v) {
+    native.Fighter__setBalance(this.native, v);
+  }
+  get balanceTime() {
+    return native.Fighter__getBalanceTime(this.native);
+  }
+  set balanceTime(v) {
+    native.Fighter__setBalanceTime(this.native, v);
+  }
+
+  preCreate(opts) {
+    this.body = {
+      kind: 'circle',
+      size: opts.size * opts.scale,
+    }
+
+    this.native = native.new__Fighter(this, opts);
+  }
 
   constructor(owner, optsInput) {
     optsInput = optsInput || {};
@@ -112,6 +302,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     opts.AIR_FRICTION = opts.AIR_FRICTION || Fighter.AIR_FRICTION;
     opts.FRICTION = opts.FRICTION || Fighter.FRICTION;
     opts.MAX_SPEED = opts.MAX_SPEED || Fighter.MAX_SPEED;
+
+    opts.LOOK_ROTATE_F = opts.LOOK_ROTATE_F || Fighter.LOOK_ROTATE_F;
+    opts.LOOK_ROTATE_IN_HIT_F = opts.LOOK_ROTATE_IN_HIT_F || Fighter.LOOK_ROTATE_IN_HIT_F;
 
     super({
       lang: opts.LANG_RU,
@@ -135,6 +328,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       AIR_FRICTION: opts.AIR_FRICTION,
       FRICTION: opts.FRICTION,
       MAX_SPEED: opts.MAX_SPEED,
+      
+      LOOK_ROTATE_F: opts.LOOK_ROTATE_F,
+      LOOK_ROTATE_IN_HIT_F: opts.LOOK_ROTATE_IN_HIT_F,
 
       BALANCE: opts.BALANCE,
       balance: opts.BALANCE,
@@ -149,13 +345,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     });
 
     this.owner = owner;
-
-    this.body = {
-      kind: 'circle',
-      size: this.size * this.scale,
-    }
-
-    this.native = native.new__Fighter(this, opts);
 
     this.updateHands();
   }
@@ -214,7 +403,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.mp = this.MP;
     this.stamina = this.STAMINA;
 
-    this.inputMove = {x: 0, y: 0};
+    this.inputMove = {
+      x: 0,
+      y: 0
+    };
     this.look.init(0, 1, 0);
     this.speed.init();
 
@@ -325,27 +517,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     });
   }
 
-  update() {
-    super.update();
-
-    if (this.balanceTime) {
-      this.balanceTime -= dt;
-      if (this.balanceTime <= 0) {
-        delete this.balanceTime;
-      }
-    } else {
-      this.balance = Math.min(this.BALANCE, this.balance + dt * 40);
-    }
-
-    if (this.rollBlockTime) {
-      this.rollBlockTime -= dt;
-      if (this.rollBlockTime <= 0) {
-        delete this.rollBlockTime;
-      }
-    }
-  }
-
-
   isCanUseItem() {
     return !this.stunTime &&
       !this.waitTime;
@@ -426,7 +597,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         v *= 150 / (this.speed.length() * 0.25 + 100);
       }
       const vec = this.hitVec.unit();
-      vec3.add(this.speed, vec.multiply(v * this.scale));
+      this.speed = this.speed.add(
+        vec.multiply(v * this.scale));
       this.emitPos();
     }
   }
@@ -439,6 +611,14 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       opts.hitStage = i;
       this.doHit(opts);
     }
+  }
+  finishHit() {
+    delete this.isCanNextHit;
+    delete this.hitVec;
+    delete this.hitStage;
+    delete this.isJumpHit;
+    delete this.isRollHit;
+    this.inHit = false;
   }
 
   useHP(v, time) {
@@ -559,19 +739,19 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
   }
   onKeyG() {
-    this.isRun = !this.isRun;
-    if (this.isRun) {
-      this.isBlock = false;
+    this.inRun = !this.inRun;
+    if (this.inRun) {
+      this.inBlock = false;
     }
     this.emitPos();
   }
   onKeyR() {
-    if (!this.isBlock && !this.shield) {
+    if (!this.inBlock && !this.shield) {
       return;
     }
-    this.isBlock = !this.isBlock;
-    if (this.isBlock) {
-      this.isRun = false;
+    this.inBlock = !this.inBlock;
+    if (this.inBlock) {
+      this.inRun = false;
     }
     this.emitPos();
   }
@@ -590,7 +770,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       !this.waitTime;
 
     if (canRoll) {
-      if (this.inHit || this.isBlock) {
+      if (this.inHit || this.inBlock) {
         this.useStamina(8, 1);
       } else {
         this.useStamina(4, 1);
@@ -614,7 +794,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       rollData.forceInJump *= 0.5 + Math.min(this.speed.length() / 700,
         0.8);
       this.rollBlockTime = rollData.duration + 0.1;
-      this.onRoll(rollData);
+      native.Fighter__onRoll(this.native, rollData);
       this.emitAll('roll', rollData);
       this.emitPos();
     }
@@ -628,7 +808,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       !this.waitTime;
 
     if (canJump) {
-      if (this.inHit || this.isBlock) {
+      if (this.inHit || this.inBlock) {
         this.useStamina(16, 1.5);
       } else {
         this.useStamina(8, 1.5);
@@ -643,9 +823,16 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         jumpData.force = 300;
       }
       jumpData.force *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
-      this.onJump(jumpData);
+      native.Fighter__onJump(this.native, jumpData);
       this.emitAll('jump', jumpData);
       this.emitPos();
     }
+  }
+
+  step(time, fn) {
+    native.Fighter__step(this.native, fn, time);
+  }
+  clearSteps() {
+    native.Fighter__clearSteps(this.native);
   }
 }

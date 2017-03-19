@@ -16,10 +16,6 @@ export class Item extends mix(global.Item, MixGameObject) {
   }
 
   stage(duration, fn, opts) {
-    this.stageTime = 0;
-    return super.stage(duration, fn, {
-      stageTime: 1,
-    });
   }
 }
 
