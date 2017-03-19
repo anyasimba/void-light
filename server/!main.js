@@ -1,4 +1,4 @@
-const N = 200;
+const N = 10;
 
 function initUpdate() {
   global.time = performance.now();
@@ -56,15 +56,15 @@ function initUpdate() {
   });
 }
 
-export function main() {
+export async function main() {
   global.gameLevelZones = [];
   for (let i = 0; i < N; ++i) {
     global.gameLevelZones[i] = new GameLevelZone('stage1__1', i);
     console.log('game level zone', i + 1);
   }
+  global.server = Server();
 
   initUpdate();
 
-  global.server = Server();
   console.log('Server started');
 }

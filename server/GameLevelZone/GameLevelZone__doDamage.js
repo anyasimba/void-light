@@ -14,6 +14,14 @@ Object.assign(GameLevelZone.prototype, {
           canDamage = true;
       }
       if (canDamage) {
+        if (other.rollBlockTime && !other.inHit && !other.inJump) {
+          continue;
+        }
+        const isInvade = source.invade || other.invade;
+        if (source.kind === other.kind && !isInvade) {
+          continue;
+        }
+
         switch (other.body.kind) {
           case 'circle':
             {
@@ -25,15 +33,8 @@ Object.assign(GameLevelZone.prototype, {
       }
     }
   },
+
   doDamageRadialArea2Circle(source, opts, other) {
-    if (other.rollBlockTime && !other.inHit && !other.inJump) {
-      return;
-    }
-    const isInvade = source.invade || other.invade;
-    if (source.kind === other.kind && !isInvade) {
-      return;
-    }
-        
     const rel = other.pos
       .subtract(source.pos);
 
@@ -51,6 +52,10 @@ Object.assign(GameLevelZone.prototype, {
       return;
     }
 
+    this.doDamage(source, opts, other);
+  },
+
+  doDamage(source, opts, other) {
     const isInBlock = other.shield &&
       other.inBlock &&
       other.stamina > 0 &&
@@ -66,15 +71,19 @@ Object.assign(GameLevelZone.prototype, {
     const isRollHit = source.isRollHit || source.inRoll;
     if (isRollHit) {
       balanceF = 1.5;
-      damageF = 1.3;
+      damageF = 1.2;
     }
     if (isJumpHit) {
       balanceF = 2;
-      damageF = 1.5;
+      damageF = 1.3;
     }
     if (isRollHit && isJumpHit) {
       balanceF = 2.5;
-      damageF = 1.8;
+      damageF = 1.5;
+    }
+    if (!source.inBlock) {
+      balanceF *= 1.5;
+      damageF *= 1.3;
     }
     if (isInBlock) {
       other.useStamina(

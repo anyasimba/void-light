@@ -3,6 +3,18 @@ struct FighterTimeout {
   float time;
 };
 
+enum FIGHTER_EFFECTS {
+  HP,
+  STAMINA,
+  MP,
+};
+struct FighterEffect {
+  float time;
+  FIGHTER_EFFECTS effect;
+  float duration;
+  float value;
+};
+
 struct Fighter: GameLevelZoneObject {
   float ACC;
   float RUN_ACC;
@@ -50,6 +62,7 @@ struct Fighter: GameLevelZoneObject {
   vec2 inputMove;
 
   vector<FighterTimeout> timeouts;
+  vector<FighterEffect> effects;
 };
 
 void new__Fighter(const FunctionCallbackInfo<Value>& args) {
@@ -228,7 +241,9 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
     self->hp = fmin(self->HP, self->hp + dt * 0.25f);
   }
   if (self->staminaTime > 0) {
-    self->staminaTime -= dt;
+    if (!self->inHit && !self->inRoll && !self->inJump) {
+      self->staminaTime -= dt;
+    }
   } else {
     self->stamina = fmin(self->STAMINA,
       self->stamina + dt * 15.f * self->moveTimeF * (1 + self->STAMINA * 0.01f));
@@ -267,56 +282,44 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
     FighterTimeout& timeout = self->timeouts[i];
     timeout.time -= dt;
     if (timeout.time <= 0.f) {
-      Local<Function> fn = Local<Function>::New(isolate, *timeout.fn);
+      Persistent<Function> *fnPtr = timeout.fn;
+      Local<Function> fn = Local<Function>::New(isolate, *fnPtr);
       Local<Object> js = Local<Object>::New(isolate, self->js);
-      fn->Call(js, 0, nullptr);
-      delete timeout.fn;
       self->timeouts.erase(self->timeouts.begin() + i);
       --i;
+      fn->Call(js, 0, nullptr);
+      delete fnPtr;
+    }
+  }
+
+  for (int i = 0; i < self->effects.size(); ++i) {
+    FighterEffect& effect = self->effects[i];
+    effect.time -= dt;
+    if (effect.time <= 0.f) {
+      self->effects.erase(self->effects.begin() + i);
+      --i;
+      continue;
+    }
+
+    float v = dt * effect.value / effect.duration;
+    switch(effect.effect) {
+      case FIGHTER_EFFECTS::HP: {
+        self->hp = fmin(self->HP, self->hp + v);
+        break;
+      }
+      case FIGHTER_EFFECTS::STAMINA: {
+        self->stamina = fmin(self->STAMINA, self->stamina + v);
+        break;
+      }
+      case FIGHTER_EFFECTS::MP: {
+        self->mp = fmin(self->MP, self->mp + v);
+        break;
+      }
+      default:
+        break;
     }
   }
 }
-
-// for (const k in self->timeouts) {
-//   const timeout = self->timeouts[k];
-//   if (timeout) {
-//     timeout.time -= dt;
-//     if (timeout.time <= 0) {
-//       delete self->timeouts[k];
-//       timeout.fn();
-//     }
-//   }
-// }
-
-// if (self->effects) {
-//   let i = 0;
-//   while (self->effects[i]) {
-//     const eff = self->effects[i];
-//     eff.time = eff.time || eff.DURATION;
-//     eff.time -= dt;
-//     if (eff.time <= 0) {
-//       self->effects.splice(i, 1);
-//     } else {
-//       ++i;
-
-//       if (eff.HP) {
-//         self->hp = Math.min(
-//           self->HP,
-//           self->hp + dt * eff.HP / eff.DURATION);
-//       }
-//       if (eff.MP) {
-//         self->mp = Math.min(
-//           self->MP,
-//           self->mp + dt * eff.MP / eff.DURATION);
-//       }
-//       if (eff.STAMINA) {
-//         self->stamina = Math.min(
-//           self->STAMINA,
-//           self->stamina + dt * eff.STAMINA / eff.DURATION);
-//       }
-//     }
-//   }
-// }
 
 void Fighter__onRoll(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();
@@ -380,4 +383,78 @@ void Fighter__clearSteps(const FunctionCallbackInfo<Value>& args) {
     self->timeouts.erase(self->timeouts.begin() + i);
     --i;
   }
+}
+void Fighter__addEffect(const FunctionCallbackInfo<Value>& args) {
+  Isolate* isolate = args.GetIsolate();
+  HandleScope scope(isolate);
+
+  Fighter *self = (Fighter *)node::Buffer::Data(args[0]->ToObject());
+  Local<Object> item = args[1]->ToObject();
+  bool isUnique = args[2]->BooleanValue();
+  float duration = item->GET("DURATION")->NumberValue();
+  float value;
+
+  FIGHTER_EFFECTS effect;
+  if (item->HAS("HP")) {
+    effect = FIGHTER_EFFECTS::HP;
+    value = item->GET("HP")->NumberValue();
+  } else if (item->HAS("STAMINA")) {
+    effect = FIGHTER_EFFECTS::STAMINA;
+    value = item->GET("STAMINA")->NumberValue();
+  } else if (item->HAS("MP")) {
+    effect = FIGHTER_EFFECTS::MP;
+    value = item->GET("MP")->NumberValue();
+  }
+
+  if (isUnique) {
+    for (int i = 0; i < self->effects.size(); ++i) {
+      FighterEffect& fighterEffect = self->effects[i];
+      if (fighterEffect.effect == effect) {
+        fighterEffect.value = value;
+        fighterEffect.time = duration;
+        fighterEffect.duration = duration;
+        return;
+      }
+    }
+  }
+
+  FighterEffect fighterEffect;
+  fighterEffect.effect = effect;
+  fighterEffect.value = value;
+  fighterEffect.time = duration;
+  fighterEffect.duration = duration;
+  self->effects.push_back(fighterEffect);
+}
+void Fighter__getEffects(const FunctionCallbackInfo<Value>& args) {
+  Isolate* isolate = args.GetIsolate();
+  HandleScope scope(isolate);
+
+  Fighter *self = (Fighter *)node::Buffer::Data(args[0]->ToObject());
+
+  Local<Array> effects = Array::New(isolate, self->effects.size());
+  for (int i = 0; i < self->effects.size(); ++i) {
+    FighterEffect& effect = self->effects[i];
+    Local<Object> effectObj = Object::New(isolate);
+    effectObj->SET("DURATION", Number::New(isolate, effect.duration));
+    effectObj->SET("time", Number::New(isolate, effect.time));
+    switch(effect.effect) {
+      case FIGHTER_EFFECTS::HP: {
+        effectObj->SET("HP", Number::New(isolate, effect.value));
+        break;
+      }
+      case FIGHTER_EFFECTS::STAMINA: {
+        effectObj->SET("STAMINA", Number::New(isolate, effect.value));
+        break;
+      }
+      case FIGHTER_EFFECTS::MP: {
+        effectObj->SET("MP", Number::New(isolate, effect.value));
+        break;
+      }
+      default:
+        break;
+    }
+    effects->Set(i, effectObj);
+  }
+  
+  args.GetReturnValue().Set(effects);
 }

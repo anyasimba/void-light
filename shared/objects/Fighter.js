@@ -166,9 +166,11 @@ export class Fighter {
       this.hp = Math.min(this.HP, this.hp + dt * 0.25);
     }
     if (this.staminaTime) {
-      this.staminaTime -= dt;
-      if (this.staminaTime <= 0) {
-        delete this.staminaTime;
+      if (!this.inHit && !this.inRoll && !this.inJump) {
+        this.staminaTime -= dt;
+        if (this.staminaTime <= 0) {
+          delete this.staminaTime;
+        }
       }
     } else {
       this.stamina = Math.min(this.STAMINA,
@@ -237,15 +239,12 @@ export class Fighter {
         delete this.needNextHit;
 
         this.clearSteps();
-        const hands = this.hands;
-        for (const k in hands) {
-          const hand = hands[k];
-          if (hand) {
-            hand.finalStage(0.2, easing.easeInOutCubic);
-            hand.stage(0.2, easing.easeInOutCubic, {
-              vAngle: 40,
-            });
-          }
+        const hand = this.hands[0];
+        if (hand) {
+          hand.finalStage(0.2, easing.easeInOutCubic);
+          hand.stage(0.2, easing.easeInOutCubic, {
+            vAngle: 60,
+          });
         }
       }
       this.waitTime -= dt;

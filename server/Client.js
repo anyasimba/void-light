@@ -88,13 +88,6 @@ export class Client extends global.Client {
         fighterParams.Endurance = 6;
         fighterParams.Willpower = 4;
       }
-
-      fighterParams.level = 251;
-      fighterParams.Endurance = 50;
-      fighterParams.Willpower = 50;
-      fighterParams.Dexterity = 50;
-      fighterParams.Strength = 50;
-      fighterParams.Health = 50;
     }
     if (!fighterParams.voidsCount) {
       hasChange = true;
@@ -184,19 +177,24 @@ export class Client extends global.Client {
   }
 
   onDisconnect() {
-    if (this.gameLevelZone) {
-      this.gameLevelZone.removeClient(this);
-    }
+    setTimeout(() => {
+      if (this.gameLevelZone) {
+        this.gameLevelZone.removeClient(this);
+      }
 
-    if (this.player) {
-      this.player.destructor();
-    }
+      if (this.player) {
+        this.player.destructor();
+      }
+    }, 10000);
 
     console.log('User disconnected', this.username);
   }
 
   onDie(source) {
     setTimeout(() => {
+      if (!this.player.gameLevelZone) {
+        return;
+      }
       if (!this.player.invade) {
         this.params.fighter.params.voidsCount = 0;
         this.saveParam('fighter', 'params', this.params.fighter.params);

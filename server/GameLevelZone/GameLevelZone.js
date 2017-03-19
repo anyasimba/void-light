@@ -307,8 +307,8 @@ export class GameLevelZone {
         const y = Math.floor(client.player.pos.y / WALL_SIZE);
 
         const mobs = this.mobs;
-        for (const k in mobs) {
-          const mob = mobs[k];
+        for (let i = 0; i < this.mobs.length; ++i) {
+          const mob = mobs[i];
           mob.checkPlayer(x, y, client.player);
         }
         const tempMobs = this.tempMobs;
@@ -325,21 +325,22 @@ export class GameLevelZone {
       }
     }
 
-    for (let i = 0; i < 10; ++i) {
-      if (this.mobs.length) {
-        const mobI = Math.floor(Math.random() * this.mobs.length);
-        this.mobs[mobI].update();
+    this.updateMobsTime2 = this.updateMobsTime2 || Math.random();
+    this.updateMobsTime2 += dt;
+    if (this.updateMobsTime2 >= 0.5) {
+      this.updateMobsTime2 -= 0.5;
+      for (let i = 0; i < this.mobs.length; ++i) {
+        this.mobs[i].update();
       }
-      if (this.tempMobs.length) {
-        const tempMobI = Math.floor(Math.random() * this.tempMobs.length);
-        this.tempMobs[tempMobI].update();
+      for (let i = 0; i < this.tempMobs.length; ++i) {
+        this.tempMobs[i].update();
       }
     }
 
-    this.updateMobsTime2 = this.updateMobsTime2 || Math.random();
-    this.updateMobsTime2 += dt;
-    if (this.updateMobsTime2 >= 0.33) {
-      this.updateMobsTime2 -= 0.33;
+    this.updateMobsTime3 = this.updateMobsTime3 || Math.random();
+    this.updateMobsTime3 += dt;
+    if (this.updateMobsTime3 >= 0.33) {
+      this.updateMobsTime3 -= 0.33;
       this.checkBossAreas();
     }
   }

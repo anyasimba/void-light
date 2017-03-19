@@ -13,7 +13,7 @@ using namespace std;
 #define GET(KEY)\
   Get(String::NewFromUtf8(isolate, KEY))
 #define SET(KEY, VALUE)\
-  Set(String::NewFromUtf8(isolate, KEY, VALUE))
+  Set(String::NewFromUtf8(isolate, KEY), VALUE)
 
 #define NUMBER_PROPERTY(CLASS, FN, PROP)\
   void CLASS##__get##FN(const FunctionCallbackInfo<Value>& args) {\
@@ -108,6 +108,8 @@ void init(Local<Object> exports) {
   NODE_SET_METHOD(exports, "Fighter__onJump", Fighter__onJump);
   NODE_SET_METHOD(exports, "Fighter__step", Fighter__step);
   NODE_SET_METHOD(exports, "Fighter__clearSteps", Fighter__clearSteps);
+  NODE_SET_METHOD(exports, "Fighter__addEffect", Fighter__addEffect);
+  NODE_SET_METHOD(exports, "Fighter__getEffects", Fighter__getEffects);
   updates[VTABLE::FIGHTER] = (VFN) Fighter__update;
 }
 

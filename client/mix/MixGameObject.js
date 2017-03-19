@@ -80,6 +80,35 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
 
     super.destructor();
 
+    if (this.smoothDestroy) {
+      const group = new Phaser.Group(game);
+      group.x = this.parent.middleGroup.x;
+      group.y = this.parent.middleGroup.y;
+      group.scale.x = this.parent.middleGroup.scale.x;
+      group.scale.y = this.parent.middleGroup.scale.y;
+      group.angle = this.parent.middleGroup.angle;
+
+      group.add(this.group);
+      game.layer.sub.middle.add(group);
+
+      let a = 1;
+      const interval = setInterval(() => {
+        a -= 0.33 / 30.0;
+        if (a <= 0) {
+          clearInterval(interval);
+          group.destroy();
+          this.bottomGroup.destroy();
+          this.middleGroup.destroy();
+          this.topGroup.destroy();
+          this.group.destroy();
+          this.infoGroup.destroy();
+        } else {
+          group.alpha = a;
+        }
+      }, 1000.0 / 30.0);
+      return;
+    }
+
     this.bottomGroup.destroy();
     this.middleGroup.destroy();
     this.topGroup.destroy();

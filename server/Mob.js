@@ -8,18 +8,22 @@ export class Mob {
     for (const k in opts) {
       this.opts[k] = opts[k];
     }
-    this.opts.FIGHTER = {};
+    this.opts.FIGHTER = {
+      LOOK_ROTATE_F: 0.6,
+    };
     for (const k in opts.FIGHTER) {
       this.opts.FIGHTER[k] = opts.FIGHTER[k];
     }
     this.opts.FIGHTER.kind = 'mob';
-    this.opts.FIGHTER.HP *=
-      Math.pow(this.gameLevelZone.complex, 0.5) + 1;
-    this.opts.FIGHTER.damage *=
-      Math.pow(this.gameLevelZone.complex, 0.5) + 1;
-    this.opts.FIGHTER.hitSpeed *= 1 - this.gameLevelZone.complex * 0.04;
-    this.opts.FIGHTER.BALANCE *= this.gameLevelZone.complex * 0.1 + 1;
-    this.opts.VOIDS_COUNT *= Math.pow(this.gameLevelZone.complex, 2) + 1;
+    if (!this.opts.dies) {
+      this.opts.FIGHTER.HP *=
+        Math.pow(this.gameLevelZone.complex, 0.5) + 1;
+      this.opts.FIGHTER.damage *=
+        Math.pow(this.gameLevelZone.complex, 0.5) + 1;
+      this.opts.FIGHTER.hitSpeed *= 1 - this.gameLevelZone.complex * 0.04;
+      this.opts.FIGHTER.BALANCE *= this.gameLevelZone.complex * 0.1 + 1;
+      this.opts.VOIDS_COUNT *= Math.pow(this.gameLevelZone.complex, 2) + 1;
+    }
 
     this.fighter = new Fighter(this, this.opts.FIGHTER);
     if (opts.rightHand) {
@@ -209,6 +213,15 @@ export class Mob {
   }
 
   update() {
+    if (this.target && !this.fighter.isAlive) {
+      delete this.target;
+      delete this.path;
+      delete this.onWay;
+    }
+    if (!this.fighter.isAlive) {
+      return;
+    }
+
     const tx = Math.floor(this.fighter.pos.x / WALL_SIZE);
     const ty = Math.floor(this.fighter.pos.y / WALL_SIZE);
 
@@ -332,8 +345,8 @@ export class Mob {
             if (this.target) {
               const newHitDir = this.target.pos.subtract(this.fighter.pos)
                 .unit()
-                .multiply(200);
-              this.hitDir = this.hitDir.multiply(0.8).add(newHitDir);
+                .multiply(300);
+              this.hitDir = this.hitDir.multiply(0.7).add(newHitDir);
               this.fighter.doHit({
                 x: this.fighter.pos.x + this.hitDir.x,
                 y: this.fighter.pos.y + this.hitDir.y,
@@ -377,7 +390,7 @@ export class Mob {
       }
     }
     if (this.actTime !== undefined) {
-      this.actTime -= dt * 30;
+      this.actTime -= dt * 15;
       if (this.actTime <= 0) {
         this.lastAct = this.act;
         delete this.actTime;
@@ -394,7 +407,7 @@ export class Mob {
     if (this.target && this.opts.ROLL_TIME) {
       this.rollTime = this.rollTime ||
         this.opts.ROLL_TIME[0] + this.opts.ROLL_TIME[1] * Math.random();
-      this.rollTime -= dt;
+      this.rollTime -= dt * 15;
       if (this.rollTime <= 0) {
         delete this.rollTime;
         this.fighter.doRoll();
@@ -403,7 +416,7 @@ export class Mob {
     if (this.target && this.opts.JUMP_TIME) {
       this.jumpTime = this.jumpTime ||
         this.opts.JUMP_TIME[0] + this.opts.JUMP_TIME[1] * Math.random();
-      this.jumpTime -= dt;
+      this.jumpTime -= dt * 15;
       if (this.jumpTime <= 0) {
         delete this.jumpTime;
         this.fighter.doJump();

@@ -32,6 +32,7 @@ export const MixGameObject = base => class extends base {
   destructor() {
     for (let i = 0; i < this.children.length; ++i) {
       this.children[i].destructor();
+      --i;
     }
     this.children.length = 0;
 

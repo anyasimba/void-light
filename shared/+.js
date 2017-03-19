@@ -1,4 +1,4 @@
-globally(require('./_itemAnimation'));
+globally(require('./_itemAnimation/_itemAnimation'));
 globally(require('./mix/MixGameObject'));
 globally(require('./mobs/stage1'));
 globally(require('./objects/+'));

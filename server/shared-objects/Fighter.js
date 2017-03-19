@@ -2,7 +2,8 @@ preMain(async() => {
   Fighter.list = [];
 });
 
-export class Fighter extends mix(global.Fighter, MixNativeGameObject, MixGameObject) {
+export class Fighter extends mix(global.Fighter, MixNativeGameObject,
+  MixGameObject) {
   get state() {
     return {
       lang: this.lang,
@@ -69,10 +70,10 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject, MixGameObj
   }
   emitEffects() {
     this.emitAll('effects', {
-      effects: this.effects,
+      effects: native.Fighter__getEffects(this.native),
     });
   }
-  
+
   get inputMove() {
     return new vec3(
       native.Fighter__getInputMoveX(this.native),
@@ -536,18 +537,20 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject, MixGameObj
         clearTimeout(timeout);
       }
     };
-    timeout = setTimeout(() => {
+    this.step(0.7 / this.moveTimeF, () => {
       cb();
-
+      
       const isEffect = item.HP !== undefined ||
         item.MP !== undefined ||
         item.STAMINA !== undefined;
 
+      const isUnique = item.STAMINA !== undefined;
+
       if (isEffect) {
-        this.effects.push(Object.assign({}, item));
+        native.Fighter__addEffect(this.native, item, isUnique);
         this.emitEffects();
       }
-    }, 700 / this.moveTimeF);
+    });
   }
 
   breakHit() {
