@@ -1,4 +1,4 @@
-const N = 100;
+const N = 200;
 
 function initUpdate() {
   global.time = performance.now();

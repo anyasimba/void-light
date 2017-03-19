@@ -88,8 +88,13 @@ export class Client extends global.Client {
         fighterParams.Endurance = 6;
         fighterParams.Willpower = 4;
       }
-      fighterParams.Endurance = 100;
-      fighterParams.Willpower = 100;
+
+      fighterParams.level = 251;
+      fighterParams.Endurance = 50;
+      fighterParams.Willpower = 50;
+      fighterParams.Dexterity = 50;
+      fighterParams.Strength = 50;
+      fighterParams.Health = 50;
     }
     if (!fighterParams.voidsCount) {
       hasChange = true;
