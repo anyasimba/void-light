@@ -58,6 +58,7 @@ void init(Local<Object> exports) {
   SET_NUMBER_PROPERTY(Fighter, InRun, inRun);
   SET_NUMBER_PROPERTY(Fighter, InRoll, inRoll);
   SET_NUMBER_PROPERTY(Fighter, AfterRollTime, afterRollTime);
+  SET_NUMBER_PROPERTY(Fighter, RollBlockTime, rollBlockTime);
   SET_NUMBER_PROPERTY(Fighter, InJump, inJump);
   SET_NUMBER_PROPERTY(Fighter, AfterJumpTime, afterJumpTime);
   SET_NUMBER_PROPERTY(Fighter, InHit, inHit);

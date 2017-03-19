@@ -145,6 +145,15 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   set afterRollTime(v) {
     native.Fighter__setAfterRollTime(this.native, v);
   }
+  get rollBlockTime() {
+    const t = native.Fighter__getRollBlockTime(this.native);
+    if (t > 0) {
+      return t;
+    }
+  }
+  set rollBlockTime(v) {
+    native.Fighter__setRollBlockTime(this.native, v);
+  }
   get inJump() {
     return native.Fighter__getInJump(this.native) !== 0;
   }
@@ -328,7 +337,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       AIR_FRICTION: opts.AIR_FRICTION,
       FRICTION: opts.FRICTION,
       MAX_SPEED: opts.MAX_SPEED,
-      
+
       LOOK_ROTATE_F: opts.LOOK_ROTATE_F,
       LOOK_ROTATE_IN_HIT_F: opts.LOOK_ROTATE_IN_HIT_F,
 

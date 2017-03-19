@@ -406,11 +406,11 @@ function createGame() {
           layer.y = -p.y * (f - 1);
         };
         const makeLayer3D = layer => {
-          const f = 6;
+          const f = 5;
           makeSubLayer3D(layer.sub.middle, 1 + 0.01 * f);
           makeSubLayer3D(layer.sub.top, 1 + 0.02 * f);
-          makeSubLayer3D(layer.sub.walls, 1 + 0.02 * f);
-          makeSubLayer3D(layer.sub.info, 1 + 0.03 * f);
+          makeSubLayer3D(layer.sub.walls, 1 + 0.03 * f);
+          makeSubLayer3D(layer.sub.info, 1 + 0.04 * f);
         }
 
         if (global.client && client.player) {
@@ -453,7 +453,7 @@ function createGame() {
           }
 
           const scaleF = Math.ceil(game.scaleFactor * 10) * 0.1;
-          global.ts = WALL_SIZE * 10;
+          global.ts = WALL_SIZE * 7;
           const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
           const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
 
@@ -567,30 +567,39 @@ function createGame() {
 
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
+              const sprites = [];
               for (let i = 0; i < ln; ++i) {
                 if (textures[i][x][y].isUsed) {
                   const sprite = new Phaser.Sprite(
                     game, x * ts, y * ts,
                     textures[i][x][y]);
+                  sprites.push(sprite);
                   sprite.visible = false;
                   sprite.scale.set(1 / scaleF);
-                  sprite.update = () => {
-                    if (global.client && global.client.player) {
-                      const cx = sprite.x + ts * 0.5;
-                      const cy = sprite.y + ts * 0.5;
-                      const dx = Math.abs(cx - client.player.pos.x);
-                      const dy = Math.abs(cy - client.player.pos.y);
-                      const w = (game.w + ts) * 0.5;
-                      const h = (game.h + ts) * 0.5;
-                      if (dx <= w && dy <= h) {
-                        sprite.visible = true;
-                        ++global.SPRITES_N;
-                      } else {
-                        sprite.visible = false;
+                  if (i === 0) {
+                    sprite.update = () => {
+                      if (global.client && global.client.player) {
+                        const cx = sprite.x + ts * 0.5;
+                        const cy = sprite.y + ts * 0.5;
+                        const dx = Math.abs(cx - client.player.pos.x);
+                        const dy = Math.abs(cy - client.player.pos.y);
+                        const w = (game.w + ts) * 0.5;
+                        const h = (game.h + ts) * 0.5;
+                        if (dx <= w && dy <= h) {
+                          for (let i = 0; i < sprites.length; ++i) {
+                            sprites[i].visible = true;
+                            ++global.SPRITES_N;
+                          }
+                        } else {
+                          for (let i = 0; i < sprites.length; ++i) {
+                            sprites[i].visible = false;
+                          }
+                        }
                       }
-                    }
-                  };
-                  console.log(WALL_LAYERS[i].slug);
+                    };
+                  }
+                  //sprite.tint = 0x888888 + Math.random() * 0x777777;
+                  sprite.cacheAsBitmap = true;
                   game.layer.sub[WALL_LAYERS[i].slug].add(sprite);
                 }
               }

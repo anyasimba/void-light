@@ -69,6 +69,7 @@ void new__Fighter(const FunctionCallbackInfo<Value>& args) {
   self->inRun = false;
   self->inRoll = false;
   self->afterRollTime = -1.f;
+  self->rollBlockTime = -1.f;
   self->inJump = false;
   self->afterJumpTime = -1.f;
   self->inHit = false;
@@ -115,6 +116,7 @@ NUMBER_PROPERTY(Fighter, InBlock, inBlock);
 NUMBER_PROPERTY(Fighter, InRun, inRun);
 NUMBER_PROPERTY(Fighter, InRoll, inRoll);
 NUMBER_PROPERTY(Fighter, AfterRollTime, afterRollTime);
+NUMBER_PROPERTY(Fighter, RollBlockTime, rollBlockTime);
 NUMBER_PROPERTY(Fighter, InJump, inJump);
 NUMBER_PROPERTY(Fighter, AfterJumpTime, afterJumpTime);
 NUMBER_PROPERTY(Fighter, InHit, inHit);
