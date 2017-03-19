@@ -35,16 +35,16 @@ export function ia_sword__doHit(opts) {
       });
       this.step(time + 0.075, () => {
         const damageOpts = {
-          d: 270,
+          d: 245,
           a: 80,
           impulse: opts.impulse1 || 600,
         }
         if (this.inRoll) {
           damageOpts.a = 90;
-          damageOpts.d = 270;
+          damageOpts.d = 245;
         }
         if (this.inJump) {
-          damageOpts.d = 270;
+          damageOpts.d = 245;
         }
         this.doDamageRadialArea(damageOpts);
       });
@@ -77,7 +77,7 @@ export function ia_sword__doHit(opts) {
           angle: 135,
           vAngle: 0,
           hAngle: 0,
-          sideAngle: -240,
+          sideAngle: -245,
         });
       });
       time += step1;
@@ -85,16 +85,16 @@ export function ia_sword__doHit(opts) {
       const step2 = 0.15;
       this.step(time + 0.075, () => {
         const damageOpts = {
-          d: 270,
+          d: 245,
           a: 80,
           impulse: opts.impulse2 || 600,
         }
         if (this.inRoll) {
           damageOpts.a = 90;
-          damageOpts.d = 270;
+          damageOpts.d = 245;
         }
         if (this.inJump) {
-          damageOpts.d = 270;
+          damageOpts.d = 245;
         }
         this.doDamageRadialArea(damageOpts);
       });
@@ -147,16 +147,16 @@ export function ia_sword__doHit(opts) {
       const step2 = 0.15;
       this.step(time + 0.075, () => {
         const damageOpts = {
-          d: 270,
+          d: 245,
           a: 80,
           impulse: opts.impulse3 || 600,
         }
         if (this.inRoll) {
           damageOpts.a = 90;
-          damageOpts.d = 270;
+          damageOpts.d = 245;
         }
         if (this.inJump) {
-          damageOpts.d = 270;
+          damageOpts.d = 245;
         }
         this.doDamageRadialArea(damageOpts);
       });
@@ -216,16 +216,16 @@ export function ia_sword__doHit(opts) {
       });
       this.step(time + 0.075, () => {
         const damageOpts = {
-          d: 270,
+          d: 245,
           a: 5,
           impulse: opts.impulse1 || 600,
         }
         if (this.inRoll) {
           damageOpts.a = 10;
-          damageOpts.d = 270;
+          damageOpts.d = 245;
         }
         if (this.inJump) {
-          damageOpts.d = 270;
+          damageOpts.d = 245;
         }
         this.doDamageRadialArea(damageOpts);
       });
