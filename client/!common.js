@@ -150,8 +150,6 @@ const WALL_LAYERS = [{
   slug: 'middle',
 }, {
   slug: 'walls',
-}, {
-  slug: 'info',
 }, ];
 
 function createLayer() {
@@ -406,11 +404,11 @@ function createGame() {
           layer.y = -p.y * (f - 1);
         };
         const makeLayer3D = layer => {
-          const f = 5;
+          const f = 6;
           makeSubLayer3D(layer.sub.middle, 1 + 0.01 * f);
           makeSubLayer3D(layer.sub.top, 1 + 0.02 * f);
-          makeSubLayer3D(layer.sub.walls, 1 + 0.03 * f);
-          makeSubLayer3D(layer.sub.info, 1 + 0.04 * f);
+          makeSubLayer3D(layer.sub.walls, 1 + 0.02 * f);
+          makeSubLayer3D(layer.sub.info, 1 + 0.03 * f);
         }
 
         if (global.client && client.player) {
@@ -453,7 +451,7 @@ function createGame() {
           }
 
           const scaleF = Math.ceil(game.scaleFactor * 10) * 0.1;
-          global.ts = WALL_SIZE * 7;
+          global.ts = WALL_SIZE * 8;
           const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
           const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
 
@@ -468,8 +466,9 @@ function createGame() {
               for (let i = 0; i < ln; ++i) {
                 const tex = new Phaser.RenderTexture(
                   game,
-                  ts * scaleF, ts * scaleF,
+                  Math.ceil(ts * scaleF), Math.ceil(ts * scaleF),
                   null, null, 1);
+                console.log(Math.ceil(ts * scaleF), Math.ceil(ts * scaleF));
                 textures[i][x] = textures[i][x] || [];
                 textures[i][x][y] = tex;
               }

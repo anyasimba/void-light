@@ -33,19 +33,12 @@ export class Door extends mix(global.Door, MixGameObject) {
     this.middleGroup.add(this.view2);
 
     this.view3 = Door.createView();
-    this.view3.x = -10;
-    this.view3.y = -10;
-    this.view3.width = this.size.x + 20;
-    this.view3.height = this.size.y + 20;
+    this.view3.x = 0;
+    this.view3.y = 0;
+    this.view3.width = this.size.x;
+    this.view3.height = this.size.y;
     this.view3.tileScale.set(0.9);
     this.topGroup.add(this.view3);
-
-    this.view4 = Door.createView();
-    this.view4.x = -10;
-    this.view4.y = -10;
-    this.view4.width = this.size.x + 20;
-    this.view4.height = this.size.y + 20;
-    this.infoGroup.add(this.view4);
   }
 
   onOpen(data) {
