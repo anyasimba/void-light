@@ -14,13 +14,6 @@ Object.assign(GameLevelZone.prototype, {
           canDamage = true;
       }
       if (canDamage) {
-        if (other.rollBlockTime && !other.inHit && !other.inJump) {
-          return;
-        }
-        const isInvade = source.invade || other.invade;
-        if (source.kind === other.kind && !isInvade) {
-          return;
-        }
         switch (other.body.kind) {
           case 'circle':
             {
@@ -33,6 +26,14 @@ Object.assign(GameLevelZone.prototype, {
     }
   },
   doDamageRadialArea2Circle(source, opts, other) {
+    if (other.rollBlockTime && !other.inHit && !other.inJump) {
+      return;
+    }
+    const isInvade = source.invade || other.invade;
+    if (source.kind === other.kind && !isInvade) {
+      return;
+    }
+        
     const rel = other.pos
       .subtract(source.pos);
 

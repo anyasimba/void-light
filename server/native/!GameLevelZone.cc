@@ -76,7 +76,7 @@ struct GameLevelZone {
   vector<GameLevelZoneObject *> objects;
 
   static int CELL_SIZE() {
-    return WALL_SIZE * 10;
+    return WALL_SIZE * 8;
   }
 };
 
