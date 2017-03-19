@@ -136,6 +136,7 @@ export class Client extends global.Client {
     this.updateFighter();
     this.player = new Fighter(this, Object.assign({
       kind: 'player',
+      isPlayer: true,
       name: this.username,
 
       BALANCE: 10,

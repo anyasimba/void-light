@@ -32,6 +32,7 @@ struct Fighter: GameLevelZoneObject {
   float stunTime;
   float waitTime;
   bool inHit;
+  vec2 hitVec;
 
   float HP;
   float hp;
@@ -106,12 +107,10 @@ void new__Fighter(const FunctionCallbackInfo<Value>& args) {
   args.GetReturnValue().Set(bufferObj);
 }
 
-NUMBER_PROPERTY(Fighter, PosX, pos.x);
-NUMBER_PROPERTY(Fighter, PosY, pos.y);
-NUMBER_PROPERTY(Fighter, SpeedX, speed.x);
-NUMBER_PROPERTY(Fighter, SpeedY, speed.y);
 NUMBER_PROPERTY(Fighter, InputMoveX, inputMove.x);
 NUMBER_PROPERTY(Fighter, InputMoveY, inputMove.y);
+NUMBER_PROPERTY(Fighter, LookX, look.x);
+NUMBER_PROPERTY(Fighter, LookY, look.y);
 NUMBER_PROPERTY(Fighter, InBlock, inBlock);
 NUMBER_PROPERTY(Fighter, InRun, inRun);
 NUMBER_PROPERTY(Fighter, InRoll, inRoll);
@@ -120,6 +119,8 @@ NUMBER_PROPERTY(Fighter, RollBlockTime, rollBlockTime);
 NUMBER_PROPERTY(Fighter, InJump, inJump);
 NUMBER_PROPERTY(Fighter, AfterJumpTime, afterJumpTime);
 NUMBER_PROPERTY(Fighter, InHit, inHit);
+NUMBER_PROPERTY(Fighter, HitVecX, hitVec.x);
+NUMBER_PROPERTY(Fighter, HitVecY, hitVec.y);
 NUMBER_PROPERTY(Fighter, StunTime, stunTime);
 NUMBER_PROPERTY(Fighter, WaitTime, waitTime);
 NUMBER_PROPERTY(Fighter, HP, HP);
@@ -212,22 +213,13 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
   if (isChangeLook) {
     vec2 lookInput = self->inputMove;
     float lookF = self->LOOK_ROTATE_F;
-    // if (self->absLook && !gameObjects[self->absLook]) {
-    //   delete self->absLook;
-    // }
-    // if (self->absLook) {
-    //   lookInput = gameObjects[self->absLook].pos.subtract(self->pos).unit();
-    // }
-    // if (self->inHit) {
-    //   lookInput = self->hitVec;
-    //   lookF = Fighter.LOOK_ROTATE_IN_HIT_F;
-    // }
-    // if (lookInput.length() > 0.05) {
-    //   const lookRel = lookInput
-    //     .subtract(self->look)
-    //     .multiply(1 - Math.pow(1 - lookF, dt));
-    //   vec3.add(self->look, lookRel);
-    // }
+    if (self->inHit) {
+      lookInput = self->hitVec;
+      lookF = self->LOOK_ROTATE_IN_HIT_F;
+    }
+    if (lookInput.length() > 0.05) {
+      self->look += (lookInput - self->look) * (1 - pow(1 - lookF, dt));
+    }
   }
 
   if (self->hpTime > 0) {
@@ -326,22 +318,6 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
 //   }
 // }
 
-void Fighter__getOthers(const FunctionCallbackInfo<Value>& args) {
-  Isolate* isolate = args.GetIsolate();
-  HandleScope scope(isolate);
-
-  Fighter *self = (Fighter *)node::Buffer::Data(args[0]->ToObject());
-
-  Local<Array> array = Array::New(isolate, self->others.size());
-
-  for(int i = 0; i < self->others.size(); ++i) {
-    GameLevelZoneObject *other = self->others[i];
-    Local<Object> js = Local<Object>::New(isolate, other->js);
-    array->Set(i, js);
-  }
-
-  args.GetReturnValue().Set(array);
-}
 void Fighter__onRoll(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();
   HandleScope scope(isolate);

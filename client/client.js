@@ -205,6 +205,7 @@ export class Client extends global.Client {
     if (id) {
       let object;
       if (parentID) {
+        const parent = gameObjects[parentID];
         for (let i = 0; i < parent.children.length; ++i) {
           if (parent.children[i].id === id) {
             object = parent.children[i];

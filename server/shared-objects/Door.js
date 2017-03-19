@@ -1,4 +1,4 @@
-export class Door extends mix(global.Door, MixGameObject) {
+export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
   get state() {
     return {
       pos: this.pos.clone(),
@@ -13,6 +13,73 @@ export class Door extends mix(global.Door, MixGameObject) {
     };
   }
 
+  get isOpening() {
+    const t = native.Door__getIsOpening(this.native);
+    if (t > 0) {
+      return t;
+    }
+  }
+  set isOpening(v) {
+    native.Door__setIsOpening(this.native, v);
+  }
+  get isClosing() {
+    const t = native.Door__getIsClosing(this.native);
+    if (t > 0) {
+      return t;
+    }
+  }
+  set isClosing(v) {
+    native.Door__setIsClosing(this.native, v);
+  }
+  get isOpened() {
+    return native.Door__getIsOpened(this.native) !== 0;
+  }
+  set isOpened(v) {
+    if (v) {
+      v = 1;
+    } else {
+      v = 0;
+    }
+    native.Door__setIsOpened(this.native, v);
+  }
+  get basePos() {
+    return new vec3(
+      native.Door__getBasePosX(this.native),
+      native.Door__getBasePosY(this.native));
+  }
+  set basePos(v) {
+    native.Door__setBasePosX(this.native, v.x);
+    native.Door__setBasePosY(this.native, v.y);
+  }
+  get size() {
+    return new vec3(
+      native.Door__getSizeX(this.native),
+      native.Door__getSizeY(this.native));
+  }
+  set size(v) {
+    native.Door__setSizeX(this.native, v.x);
+    native.Door__setSizeY(this.native, v.y);
+  }
+  get baseSize() {
+    return new vec3(
+      native.Door__getBaseSizeX(this.native),
+      native.Door__getBaseSizeY(this.native));
+  }
+  set baseSize(v) {
+    native.Door__setBaseSizeX(this.native, v.x);
+    native.Door__setBaseSizeY(this.native, v.y);
+  }
+
+  preCreate(opts) {
+    this.body = {
+      kind: 'staticRect',
+      w: opts.size.x,
+      h: opts.size.y,
+    }
+
+    this.native = native.new__Door(this);
+  }
+
   constructor(gameLevelZone, opts) {
     super({
       isStatic: true,
@@ -25,20 +92,7 @@ export class Door extends mix(global.Door, MixGameObject) {
       progress: 0,
     });
 
-    this.body = {
-      kind: 'staticRect',
-      w: this.size.x,
-      h: this.size.y,
-    }
-
     gameLevelZone.addObject(this);
-  }
-
-  update() {
-    super.update();
-
-    this.body.w = this.size.x;
-    this.body.h = this.size.y;
   }
 
   checkNear(object) {

@@ -1,4 +1,4 @@
-export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
+export class Checkpoint extends mix(global.Checkpoint, MixNativeGameObject, MixGameObject) {
   get state() {
     return {
       pos: this.pos.clone(),
@@ -6,6 +6,15 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
     };
   }
 
+  preCreate(opts) {
+    this.body = {
+      kind: 'staticRect',
+      w: WALL_SIZE,
+      h: WALL_SIZE,
+    }
+
+    this.native = native.new__Checkpoint(this, opts);
+  }
   constructor(gameLevelZone, opts) {
     super({
       isStatic: true,
@@ -13,12 +22,6 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
       pos: new vec3(opts.mapX, opts.mapY),
       size: 400,
     });
-
-    this.body = {
-      kind: 'staticRect',
-      w: WALL_SIZE,
-      h: WALL_SIZE,
-    }
 
     gameLevelZone.addObject(this);
   }

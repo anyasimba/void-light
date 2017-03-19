@@ -2,7 +2,7 @@ preMain(async() => {
   Fighter.list = [];
 });
 
-export class Fighter extends mix(global.Fighter, MixGameObject) {
+export class Fighter extends mix(global.Fighter, MixNativeGameObject, MixGameObject) {
   get state() {
     return {
       lang: this.lang,
@@ -72,28 +72,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       effects: this.effects,
     });
   }
-
-  get others() {
-    return native.Fighter__getOthers(this.native);
-  }
-  get pos() {
-    return new vec3(
-      native.Fighter__getPosX(this.native),
-      native.Fighter__getPosY(this.native));
-  }
-  set pos(v) {
-    native.Fighter__setPosX(this.native, v.x);
-    native.Fighter__setPosY(this.native, v.y);
-  }
-  get speed() {
-    return new vec3(
-      native.Fighter__getSpeedX(this.native),
-      native.Fighter__getSpeedY(this.native));
-  }
-  set speed(v) {
-    native.Fighter__setSpeedX(this.native, v.x);
-    native.Fighter__setSpeedY(this.native, v.y);
-  }
+  
   get inputMove() {
     return new vec3(
       native.Fighter__getInputMoveX(this.native),
@@ -102,6 +81,15 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   set inputMove(v) {
     native.Fighter__setInputMoveX(this.native, v.x);
     native.Fighter__setInputMoveY(this.native, v.y);
+  }
+  get look() {
+    return new vec3(
+      native.Fighter__getLookX(this.native),
+      native.Fighter__getLookY(this.native));
+  }
+  set look(v) {
+    native.Fighter__setLookX(this.native, v.x);
+    native.Fighter__setLookY(this.native, v.y);
   }
   get inBlock() {
     return native.Fighter__getInBlock(this.native) !== 0;
@@ -184,6 +172,15 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       v = 0;
     }
     native.Fighter__setInHit(this.native, v);
+  }
+  get hitVec() {
+    return new vec3(
+      native.Fighter__getHitVecX(this.native),
+      native.Fighter__getHitVecY(this.native));
+  }
+  set hitVec(v) {
+    native.Fighter__setHitVecX(this.native, v.x);
+    native.Fighter__setHitVecY(this.native, v.y);
   }
   get stunTime() {
     const t = native.Fighter__getStunTime(this.native);
@@ -321,6 +318,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       look: new vec3,
 
       kind: opts.kind,
+      isPlayer: opts.isPlayer,
       name: opts.name,
       size: opts.BODY_SIZE,
       scale: opts.SCALE,

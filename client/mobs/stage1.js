@@ -1,214 +1,3 @@
-export const stage1__mob1__family = {
-  rightHand: {
-    update() {
-      this.view.x = this.pos.x + this.parent.moveShift + 1;
-      this.view.y = this.pos.y - this.parent.moveShift * 2 + 2;
-      this.view.angle = this.angle + 90;
-
-      this.group.angle = this.sideAngle;
-    },
-    onStun() {
-      let time = 0;
-
-      const step1 = 0.2;
-      this.parent.step(time, () => {
-        this.stage(step1, easing.easeOutCubic, {
-          pos: {
-            x: -40,
-            y: 40,
-          },
-          angle: 60,
-          sideAngle: -30,
-        });
-      });
-      time += step1;
-
-      let step2FN, step3FN;
-      step2FN = () => {
-        const step2 = 1;
-        this.stage(step2, easing.easeInOutCubic, {
-          pos: {
-            x: -40,
-            y: 40,
-          },
-          angle: 80,
-          sideAngle: -50,
-        });
-        this.parent.step(step2, step3FN);
-      };
-      step3FN = () => {
-        const step3 = 1;
-        this.stage(step3, easing.easeInOutCubic, {
-          pos: {
-            x: -40,
-            y: 40,
-          },
-          angle: 60,
-          sideAngle: -30,
-        });
-        this.parent.step(step3, step2FN);
-      };
-      this.parent.step(time, step2FN);
-    },
-  },
-  leftHand: {
-    update() {
-      this.view.x = this.pos.x + this.parent.moveShift + 1;
-      this.view.y = this.pos.y - this.parent.moveShift * 2 + 2;
-      this.view.angle = this.angle + 90;
-
-      this.group.angle = this.sideAngle;
-    },
-    onStun() {
-      let time = 0;
-
-      const step1 = 0.2;
-      this.parent.step(time, () => {
-        this.stage(step1, easing.easeOutCubic, {
-          pos: {
-            x: -40,
-            y: -40,
-          },
-          angle: -60,
-          sideAngle: 30,
-        });
-      });
-      time += step1;
-
-      let step2FN, step3FN;
-      step2FN = () => {
-        const step2 = 1;
-        this.stage(step2, easing.easeInOutCubic, {
-          pos: {
-            x: -40,
-            y: -40,
-          },
-          angle: -80,
-          sideAngle: 50,
-        });
-        this.parent.step(step2, step3FN);
-      };
-      step3FN = () => {
-        const step3 = 1;
-        this.stage(step3, easing.easeInOutCubic, {
-          pos: {
-            x: -40,
-            y: -40,
-          },
-          angle: -60,
-          sideAngle: 30,
-        });
-        this.parent.step(step3, step2FN);
-      };
-      this.parent.step(time, step2FN);
-    },
-  },
-};
-export const stage1__mob2__family = {
-  rightHand: {
-    update() {
-      this.view.x = this.pos.x + this.parent.moveShift + 1;
-      this.view.y = this.pos.y - this.parent.moveShift * 2 + 2;
-      this.view.angle = this.angle + 90;
-
-      this.group.angle = this.sideAngle;
-    },
-    onStun() {
-      let time = 0;
-
-      const step1 = 0.2;
-      this.parent.step(time, () => {
-        this.stage(step1, easing.easeOutCubic, {
-          pos: {
-            x: -40,
-            y: 40,
-          },
-          angle: 140,
-          sideAngle: -30,
-        });
-      });
-      time += step1;
-
-      let step2FN, step3FN;
-      step2FN = () => {
-        const step2 = 1;
-        this.stage(step2, easing.easeInOutCubic, {
-          pos: {
-            x: -40,
-            y: 40,
-          },
-          angle: 120,
-          sideAngle: -50,
-        });
-        this.parent.step(step2, step3FN);
-      };
-      step3FN = () => {
-        const step3 = 1;
-        this.stage(step3, easing.easeInOutCubic, {
-          pos: {
-            x: -40,
-            y: 40,
-          },
-          angle: 120,
-          sideAngle: -50,
-        });
-        this.parent.step(step3, step2FN);
-      };
-      this.parent.step(time, step2FN);
-    },
-  },
-  leftHand: {
-    update() {
-      this.view.x = this.pos.x + this.parent.moveShift + 1;
-      this.view.y = this.pos.y - this.parent.moveShift * 2 + 2;
-      this.view.angle = this.angle + 90;
-    },
-    onStun() {
-      let time = 0;
-
-      const step1 = 0.2;
-      this.parent.step(time, () => {
-        this.stage(step1, easing.easeOutCubic, {
-          pos: {
-            x: -45,
-            y: -30,
-          },
-          angle: -120,
-          sideAngle: -30,
-        });
-      });
-      time += step1;
-
-      let step2FN, step3FN;
-      step2FN = () => {
-        const step2 = 1;
-        this.stage(step2, easing.easeInOutCubic, {
-          pos: {
-            x: -45,
-            y: -30,
-          },
-          angle: -80,
-          sideAngle: -50,
-        });
-        this.parent.step(step2, step3FN);
-      };
-      step3FN = () => {
-        const step3 = 1;
-        this.stage(step3, easing.easeInOutCubic, {
-          pos: {
-            x: -45,
-            y: -30,
-          },
-          angle: -120,
-          sideAngle: -30,
-        });
-        this.parent.step(step3, step2FN);
-      };
-      this.parent.step(time, step2FN);
-    },
-  },
-};
-//
 export const stage1__mob1 = {
   VIEW: 'stage1__mob1',
   CAN_MIRROR_VIEW: true,
@@ -231,8 +20,8 @@ export const stage1__mob1 = {
 }
 export const weapon__stage1__mob1__rightHand__default = new class {
   constructor() {
-    this.update = stage1__mob1__family.rightHand.update;
-    this.onStun = stage1__mob1__family.rightHand.onStun;
+    this.update = mobs__hands__family.rightHand.update;
+    this.onStun = mobs__hands__family.rightHand.onStun;
   }
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--hand');
@@ -247,8 +36,8 @@ export const weapon__stage1__mob1__rightHand__default = new class {
 }
 export const weapon__stage1__mob1__leftHand__default = new class {
   constructor() {
-    this.update = stage1__mob1__family.leftHand.update;
-    this.onStun = stage1__mob1__family.leftHand.onStun;
+    this.update = mobs__hands__family.leftHand.update;
+    this.onStun = mobs__hands__family.leftHand.onStun;
   }
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--hand');
@@ -284,8 +73,8 @@ export const stage1__mob1a = {
 }
 export const weapon__stage1__mob1a__rightHand__default = new class {
   constructor() {
-    this.update = stage1__mob1__family.rightHand.update;
-    this.onStun = stage1__mob1__family.rightHand.onStun;
+    this.update = mobs__hands__family.rightHand.update;
+    this.onStun = mobs__hands__family.rightHand.onStun;
   }
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--hand');
@@ -300,8 +89,8 @@ export const weapon__stage1__mob1a__rightHand__default = new class {
 }
 export const weapon__stage1__mob1a__leftHand__default = new class {
   constructor() {
-    this.update = stage1__mob1__family.leftHand.update;
-    this.onStun = stage1__mob1__family.leftHand.onStun;
+    this.update = mobs__hands__family.leftHand.update;
+    this.onStun = mobs__hands__family.leftHand.onStun;
   }
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--hand');
@@ -337,8 +126,8 @@ export const stage1__mob1b = {
 }
 export const weapon__stage1__mob1b__rightHand__default = new class {
   constructor() {
-    this.update = stage1__mob1__family.rightHand.update;
-    this.onStun = stage1__mob1__family.rightHand.onStun;
+    this.update = mobs__hands__family.rightHand.update;
+    this.onStun = mobs__hands__family.rightHand.onStun;
   }
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--hand');
@@ -353,8 +142,8 @@ export const weapon__stage1__mob1b__rightHand__default = new class {
 }
 export const weapon__stage1__mob1b__leftHand__default = new class {
   constructor() {
-    this.update = stage1__mob1__family.leftHand.update;
-    this.onStun = stage1__mob1__family.leftHand.onStun;
+    this.update = mobs__hands__family.leftHand.update;
+    this.onStun = mobs__hands__family.leftHand.onStun;
   }
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--hand');
@@ -390,8 +179,8 @@ export const stage1__mob1c = {
 }
 export const weapon__stage1__mob1c__rightHand__default = new class {
   constructor() {
-    this.update = stage1__mob1__family.rightHand.update;
-    this.onStun = stage1__mob1__family.rightHand.onStun;
+    this.update = mobs__hands__family.rightHand.update;
+    this.onStun = mobs__hands__family.rightHand.onStun;
   }
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--hand');
@@ -406,8 +195,8 @@ export const weapon__stage1__mob1c__rightHand__default = new class {
 }
 export const weapon__stage1__mob1c__leftHand__default = new class {
   constructor() {
-    this.update = stage1__mob1__family.leftHand.update;
-    this.onStun = stage1__mob1__family.leftHand.onStun;
+    this.update = mobs__hands__family.leftHand.update;
+    this.onStun = mobs__hands__family.leftHand.onStun;
   }
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--hand');
@@ -437,8 +226,8 @@ export const stage1__mob2 = {
 }
 export const weapon__stage1__mob2__rightHand__default = new class {
   constructor() {
-    this.update = stage1__mob2__family.rightHand.update;
-    this.onStun = stage1__mob2__family.rightHand.onStun;
+    this.update = mobs__weapon__family.rightHand.update;
+    this.onStun = mobs__weapon__family.rightHand.onStun;
   }
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'sword');
@@ -466,8 +255,8 @@ export const stage1__mob2a = {
 }
 export const weapon__stage1__mob2a__rightHand__default = new class {
   constructor() {
-    this.update = stage1__mob2__family.rightHand.update;
-    this.onStun = stage1__mob2__family.rightHand.onStun;
+    this.update = mobs__weapon__family.rightHand.update;
+    this.onStun = mobs__weapon__family.rightHand.onStun;
   }
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'sword');
@@ -495,8 +284,8 @@ export const stage1__mob2b = {
 }
 export const weapon__stage1__mob2b__rightHand__default = new class {
   constructor() {
-    this.update = stage1__mob2__family.rightHand.update;
-    this.onStun = stage1__mob2__family.rightHand.onStun;
+    this.update = mobs__weapon__family.rightHand.update;
+    this.onStun = mobs__weapon__family.rightHand.onStun;
   }
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'axe');
@@ -524,8 +313,8 @@ export const stage1__mob2c = {
 }
 export const weapon__stage1__mob2c__rightHand__default = new class {
   constructor() {
-    this.update = stage1__mob2__family.rightHand.update;
-    this.onStun = stage1__mob2__family.rightHand.onStun;
+    this.update = mobs__weapon__family.rightHand.update;
+    this.onStun = mobs__weapon__family.rightHand.onStun;
   }
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'sword');
@@ -540,8 +329,8 @@ export const weapon__stage1__mob2c__rightHand__default = new class {
 }
 export const shield__stage1__mob2c__leftHand__default = new class {
   constructor() {
-    this.update = stage1__mob2__family.leftHand.update;
-    this.onStun = stage1__mob2__family.leftHand.onStun;
+    this.update = mobs__weapon__family.leftHand.update;
+    this.onStun = mobs__weapon__family.leftHand.onStun;
   }
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'shield');
@@ -571,8 +360,8 @@ export const stage1__boss1 = {
 }
 export const weapon__stage1__boss1__rightHand__default = new class {
   constructor() {
-    this.update = stage1__mob2__family.rightHand.update;
-    this.onStun = stage1__mob2__family.rightHand.onStun;
+    this.update = mobs__weapon__family.rightHand.update;
+    this.onStun = mobs__weapon__family.rightHand.onStun;
   }
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'sword');
@@ -587,8 +376,8 @@ export const weapon__stage1__boss1__rightHand__default = new class {
 }
 export const shield__stage1__boss1__leftHand__default = new class {
   constructor() {
-    this.update = stage1__mob2__family.leftHand.update;
-    this.onStun = stage1__mob2__family.leftHand.onStun;
+    this.update = mobs__weapon__family.leftHand.update;
+    this.onStun = mobs__weapon__family.leftHand.onStun;
   }
   createView(isHost, kind) {
     const image = new Phaser.Image(game, 0, 0, 'shield');

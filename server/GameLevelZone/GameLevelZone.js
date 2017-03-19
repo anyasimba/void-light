@@ -253,45 +253,6 @@ export class GameLevelZone {
     }
   }
 
-  resolveBounds(object) {
-    if (object.body.kind === 'circle') {
-      this.resolveCircleBounds(object, {
-        x: this.w * 0.5,
-        y: this.h * 0.5,
-        w: this.w,
-        h: this.h,
-      });
-      if (object.area) {
-        const area = object.area;
-        this.resolveCircleBounds(object, {
-          x: area.mapX,
-          y: area.mapY,
-          w: area.mapW,
-          h: area.mapH,
-        });
-      }
-    }
-  }
-  resolveCircleBounds(object, rect) {
-    const size = object.body.size;
-    if (object.pos.x < rect.x - rect.w * 0.5 + size * 0.5) {
-      object.pos.x = rect.x - rect.w * 0.5 + size * 0.5;
-      object.speed.x = Math.abs(object.speed.x) * 0.5;
-    }
-    if (object.pos.x > rect.x + rect.w * 0.5 - size * 0.5) {
-      object.pos.x = rect.x + rect.w * 0.5 - size * 0.5;
-      object.speed.x = -Math.abs(object.speed.x) * 0.5;
-    }
-    if (object.pos.y < rect.y - rect.h * 0.5 + size * 0.5) {
-      object.pos.y = rect.y - rect.h * 0.5 + size * 0.5;
-      object.speed.y = Math.abs(object.speed.y) * 0.5;
-    }
-    if (object.pos.y > rect.y + rect.h * 0.5 - size * 0.5) {
-      object.pos.y = rect.y + rect.h * 0.5 - size * 0.5;
-      object.speed.y = -Math.abs(object.speed.y) * 0.5;
-    }
-  }
-
   update() {
     native.GameLevelZone__update(this.native, dt);
 
@@ -303,8 +264,84 @@ export class GameLevelZone {
         return;
       }
     }
-    
-    this.updateMobs();
+
+    this.updateTimeoutsTime = this.updateTimeoutsTime || Math.random();
+    this.updateTimeoutsTime += dt;
+    if (this.updateTimeoutsTime >= 1) {
+      this.updateTimeoutsTime -= 1;
+
+      let i = 0;
+      while (i < this.timeouts.length) {
+        const timeout = this.timeouts[i];
+        timeout.time -= 1;
+        if (timeout.time <= 0) {
+          this.timeouts.splice(i, 1);
+          timeout.fn();
+        } else {
+          ++i;
+        }
+      }
+    }
+    this.updateNears = this.updateNears || Math.random();
+    this.updateNears += dt;
+    if (this.updateNears >= 1.0) {
+      this.updateNears -= 1.0;
+      for (let i = 0; i < this.clients.length; ++i) {
+        const player = this.clients[i].player;
+        if (player.isAlive) {
+          this.updateObjectNears(player);
+        }
+      }
+      this.checkBossAreas();
+    }
+
+    this.updateMobsTime = this.updateMobsTime || Math.random();
+    this.updateMobsTime += dt;
+    if (this.updateMobsTime >= 1) {
+      this.updateMobsTime -= 1;
+
+      const clients = this.clients;
+      for (const k in clients) {
+        const client = clients[k];
+        const x = Math.floor(client.player.pos.x / WALL_SIZE);
+        const y = Math.floor(client.player.pos.y / WALL_SIZE);
+
+        const mobs = this.mobs;
+        for (const k in mobs) {
+          const mob = mobs[k];
+          mob.checkPlayer(x, y, client.player);
+        }
+        const tempMobs = this.tempMobs;
+        let i = 0;
+        while (i < tempMobs.length) {
+          const mob = tempMobs[i];
+          if (!mob.fighter.isAlive) {
+            tempMobs.splice(i, 1);
+          } else {
+            mob.checkPlayer(x, y, client.player);
+            ++i;
+          }
+        }
+      }
+    }
+
+    for (let i = 0; i < 10; ++i) {
+      if (this.mobs.length) {
+        const mobI = Math.floor(Math.random() * this.mobs.length);
+        this.mobs[mobI].update();
+      }
+      if (this.tempMobs.length) {
+        const tempMobI = Math.floor(Math.random() * this.tempMobs.length);
+        this.tempMobs[tempMobI].update();
+      }
+    }
+
+    this.updateMobsTime2 = this.updateMobsTime2 || Math.random();
+    this.updateMobsTime2 += dt;
+    if (this.updateMobsTime2 >= 0.33) {
+      this.updateMobsTime2 -= 0.33;
+      this.checkBossAreas();
+    }
   }
   updateObjectNears(player) {
     const canItem = player.canItem;
@@ -372,73 +409,6 @@ export class GameLevelZone {
     }
   }
 
-  updateMobs() {
-    this.updateTimeoutsTime = this.updateTimeoutsTime || Math.random();
-    this.updateTimeoutsTime += dt;
-    if (this.updateTimeoutsTime >= 1) {
-      this.updateTimeoutsTime -= 1;
-
-      let i = 0;
-      while (i < this.timeouts.length) {
-        const timeout = this.timeouts[i];
-        timeout.time -= 1;
-        if (timeout.time <= 0) {
-          this.timeouts.splice(i, 1);
-          timeout.fn();
-        } else {
-          ++i;
-        }
-      }
-    }
-
-    this.updateMobsTime = this.updateMobsTime || Math.random();
-    this.updateMobsTime += dt;
-    if (this.updateMobsTime >= 1) {
-      this.updateMobsTime -= 1;
-
-      const clients = this.clients;
-      for (const k in clients) {
-        const client = clients[k];
-        const x = Math.floor(client.player.pos.x / WALL_SIZE);
-        const y = Math.floor(client.player.pos.y / WALL_SIZE);
-
-        const mobs = this.mobs;
-        for (const k in mobs) {
-          const mob = mobs[k];
-          mob.checkPlayer(x, y, client.player);
-        }
-        const tempMobs = this.tempMobs;
-        let i = 0;
-        while (i < tempMobs.length) {
-          const mob = tempMobs[i];
-          if (!mob.fighter.isAlive) {
-            tempMobs.splice(i, 1);
-          } else {
-            mob.checkPlayer(x, y, client.player);
-            ++i;
-          }
-        }
-      }
-    }
-
-    for (let i = 0; i < 10; ++i) {
-      if (this.mobs.length) {
-        const mobI = Math.floor(Math.random() * this.mobs.length);
-        this.mobs[mobI].update();
-      }
-      if (this.tempMobs.length) {
-        const tempMobI = Math.floor(Math.random() * this.tempMobs.length);
-        this.tempMobs[tempMobI].update();
-      }
-    }
-
-    this.updateMobsTime2 = this.updateMobsTime2 || Math.random();
-    this.updateMobsTime2 += dt;
-    if (this.updateMobsTime2 >= 0.33) {
-      this.updateMobsTime2 -= 0.33;
-      this.checkBossAreas();
-    }
-  }
   checkBossAreas() {
     for (const k in this.bossAreas) {
       const area = this.bossAreas[k];

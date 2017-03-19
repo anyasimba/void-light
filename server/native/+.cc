@@ -40,20 +40,46 @@ const int WALL_SIZE = 96;
 #include "Checkpoint.cc"
 #include "Door.cc"
 #include "Fighter.cc"
+#include "ItemOnMap.cc"
+#include "!GameLevelZone__imp.cc"
 
 void init(Local<Object> exports) {
   NODE_SET_METHOD(exports, "new__GameLevelZone", new__GameLevelZone);
   NODE_SET_METHOD(exports, "GameLevelZone__update", GameLevelZone__update);
   NODE_SET_METHOD(exports, "GameLevelZone__addObject", GameLevelZone__addObject);
   NODE_SET_METHOD(exports, "GameLevelZone__removeObject", GameLevelZone__removeObject);
+  SET_NUMBER_PROPERTY(GameLevelZoneObject, PosX, pos.x);
+  SET_NUMBER_PROPERTY(GameLevelZoneObject, PosY, pos.y);
+  SET_NUMBER_PROPERTY(GameLevelZoneObject, SpeedX, speed.x);
+  SET_NUMBER_PROPERTY(GameLevelZoneObject, SpeedY, speed.y);
+  NODE_SET_METHOD(exports, "GameLevelZoneObject__getOthers", GameLevelZoneObject__getOthers);
+
+  NODE_SET_METHOD(exports, "new__Bullet", new__Bullet);
+  updates[VTABLE::BULLET] = (VFN) Bullet__update;
+
+  NODE_SET_METHOD(exports, "new__Checkpoint", new__Checkpoint);
+  updates[VTABLE::CHECKPOINT] = (VFN) Checkpoint__update;
+  
+  NODE_SET_METHOD(exports, "new__Door", new__Door);
+  updates[VTABLE::DOOR] = (VFN) Door__update;
+  SET_NUMBER_PROPERTY(Door, IsOpening, isOpening);
+  SET_NUMBER_PROPERTY(Door, IsClosing, isClosing);
+  SET_NUMBER_PROPERTY(Door, IsOpened, isOpened);
+  SET_NUMBER_PROPERTY(Door, BasePosX, basePos.x);
+  SET_NUMBER_PROPERTY(Door, BasePosY, basePos.y);
+  SET_NUMBER_PROPERTY(Door, SizeX, size.x);
+  SET_NUMBER_PROPERTY(Door, SizeY, size.y);
+  SET_NUMBER_PROPERTY(Door, BaseSizeX, baseSize.x);
+  SET_NUMBER_PROPERTY(Door, BaseSizeY, baseSize.y);
+
+  NODE_SET_METHOD(exports, "new__ItemOnMap", new__ItemOnMap);
+  updates[VTABLE::ITEM_ON_MAP] = (VFN) ItemOnMap__update;
 
   NODE_SET_METHOD(exports, "new__Fighter", new__Fighter);
-  SET_NUMBER_PROPERTY(Fighter, PosX, pos.x);
-  SET_NUMBER_PROPERTY(Fighter, PosY, pos.y);
-  SET_NUMBER_PROPERTY(Fighter, SpeedX, speed.x);
-  SET_NUMBER_PROPERTY(Fighter, SpeedY, speed.y);
   SET_NUMBER_PROPERTY(Fighter, InputMoveX, inputMove.x);
   SET_NUMBER_PROPERTY(Fighter, InputMoveY, inputMove.y);
+  SET_NUMBER_PROPERTY(Fighter, LookX, look.x);
+  SET_NUMBER_PROPERTY(Fighter, LookY, look.y);
   SET_NUMBER_PROPERTY(Fighter, InBlock, inBlock);
   SET_NUMBER_PROPERTY(Fighter, InRun, inRun);
   SET_NUMBER_PROPERTY(Fighter, InRoll, inRoll);
@@ -62,6 +88,8 @@ void init(Local<Object> exports) {
   SET_NUMBER_PROPERTY(Fighter, InJump, inJump);
   SET_NUMBER_PROPERTY(Fighter, AfterJumpTime, afterJumpTime);
   SET_NUMBER_PROPERTY(Fighter, InHit, inHit);
+  SET_NUMBER_PROPERTY(Fighter, HitVecX, hitVec.x);
+  SET_NUMBER_PROPERTY(Fighter, HitVecY, hitVec.y);
   SET_NUMBER_PROPERTY(Fighter, StunTime, stunTime);
   SET_NUMBER_PROPERTY(Fighter, WaitTime, waitTime);
   SET_NUMBER_PROPERTY(Fighter, HP, HP);
@@ -76,7 +104,6 @@ void init(Local<Object> exports) {
   SET_NUMBER_PROPERTY(Fighter, BALANCE, BALANCE);
   SET_NUMBER_PROPERTY(Fighter, Balance, balance);
   SET_NUMBER_PROPERTY(Fighter, BalanceTime, balanceTime);
-  NODE_SET_METHOD(exports, "Fighter__getOthers", Fighter__getOthers);
   NODE_SET_METHOD(exports, "Fighter__onRoll", Fighter__onRoll);
   NODE_SET_METHOD(exports, "Fighter__onJump", Fighter__onJump);
   NODE_SET_METHOD(exports, "Fighter__step", Fighter__step);

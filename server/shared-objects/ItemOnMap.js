@@ -1,10 +1,19 @@
-export class ItemOnMap extends mix(global.ItemOnMap, MixGameObject) {
+export class ItemOnMap extends mix(global.ItemOnMap, MixNativeGameObject, MixGameObject) {
   get state() {
     return {
       pos: this.pos.clone(),
     };
   }
 
+  preCreate(opts) {
+    this.body = {
+      kind: 'staticRect',
+      w: 16,
+      h: 16,
+    }
+
+    this.native = native.new__ItemOnMap(this, opts);
+  }
   constructor(gameLevelZone, opts) {
     super({
       isStatic: true,
@@ -17,24 +26,16 @@ export class ItemOnMap extends mix(global.ItemOnMap, MixGameObject) {
       count: opts.count,
     });
 
-    this.body = {
-      kind: 'staticRect',
-      w: 16,
-      h: 16,
-    }
-
     gameLevelZone.addObject(this);
   }
 
-  checkNear(object) {
-    if (object.type === 'Fighter' && object.kind === 'player') {
-      const dx = Math.abs(this.pos.x - object.pos.x);
-      const dy = Math.abs(this.pos.y - object.pos.y);
-      const dw = WALL_SIZE * 2;
-      const dh = WALL_SIZE * 2;
-      if (dx < dw && dy < dh) {
-        object.canItem = this;
-      }
+  checkNear(player) {
+    const dx = Math.abs(this.pos.x - player.pos.x);
+    const dy = Math.abs(this.pos.y - player.pos.y);
+    const dw = WALL_SIZE * 2;
+    const dh = WALL_SIZE * 2;
+    if (dx < dw && dy < dh) {
+      player.canItem = this;
     }
   }
 }

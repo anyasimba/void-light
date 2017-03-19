@@ -21,15 +21,15 @@ export class Door extends mix(global.Door, MixGameObject) {
     this.view.y = -10;
     this.view.width = this.size.x + 20;
     this.view.height = this.size.y + 20;
-    this.view.tileScale.set(0.7);
+    this.view.tileScale.set(0.5);
     this.bottomGroup.add(this.view);
 
     this.view2 = Door.createView();
-    this.view2.x = -10;
-    this.view2.y = -10;
-    this.view2.width = this.size.x + 20;
-    this.view2.height = this.size.y + 20;
-    this.view2.tileScale.set(0.8);
+    this.view2.x = -5;
+    this.view2.y = -5;
+    this.view2.width = this.size.x + 10;
+    this.view2.height = this.size.y + 10;
+    this.view2.tileScale.set(0.7);
     this.middleGroup.add(this.view2);
 
     this.view3 = Door.createView();
@@ -37,7 +37,6 @@ export class Door extends mix(global.Door, MixGameObject) {
     this.view3.y = 0;
     this.view3.width = this.size.x;
     this.view3.height = this.size.y;
-    this.view3.tileScale.set(0.9);
     this.topGroup.add(this.view3);
   }
 
@@ -75,17 +74,20 @@ export class Door extends mix(global.Door, MixGameObject) {
   update() {
     super.update();
 
-    this.view.width = this.size.x;
-    this.view.height = this.size.y;
-    this.view.tilePosition.x = this.size.x - this.baseSize.x;
-    this.view.tilePosition.y = this.size.y - this.baseSize.y;
+    this.view.width = this.size.x + 20;
+    this.view.height = this.size.y + 20;
+    this.view.tilePosition.x = (this.size.x - this.baseSize.x) / 0.5;;
+    this.view.tilePosition.y = (this.size.y - this.baseSize.y) / 0.5;;
 
-    this.view2.width = this.size.x - 20;
-    this.view2.height = this.size.y - 20;
-    this.view2.tilePosition.x = this.size.x - this.baseSize.x +
-      this.view.texture.width * 0.5;
-    this.view2.tilePosition.y = this.size.y - this.baseSize.y +
-      this.view.texture.height * 0.5;
+    this.view2.width = this.size.x + 10;
+    this.view2.height = this.size.y + 10;
+    this.view2.tilePosition.x = (this.size.x - this.baseSize.x) / 0.7;
+    this.view2.tilePosition.y = (this.size.y - this.baseSize.y) / 0.7;
+
+    this.view3.width = this.size.x;
+    this.view3.height = this.size.y;
+    this.view3.tilePosition.x = this.size.x - this.baseSize.x;
+    this.view3.tilePosition.y = this.size.y - this.baseSize.y;
 
     if (this.sound && !this.isOpening && !this.isClosing) {
       this.sound.stop();

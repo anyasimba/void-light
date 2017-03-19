@@ -80,3 +80,27 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
     }
   }
 }
+
+export const MixNativeGameObject = base => class extends base {
+  get others() {
+    return native.GameLevelZoneObject__getOthers(this.native);
+  }
+  get pos() {
+    return new vec3(
+      native.GameLevelZoneObject__getPosX(this.native),
+      native.GameLevelZoneObject__getPosY(this.native));
+  }
+  set pos(v) {
+    native.GameLevelZoneObject__setPosX(this.native, v.x);
+    native.GameLevelZoneObject__setPosY(this.native, v.y);
+  }
+  get speed() {
+    return new vec3(
+      native.GameLevelZoneObject__getSpeedX(this.native),
+      native.GameLevelZoneObject__getSpeedY(this.native));
+  }
+  set speed(v) {
+    native.GameLevelZoneObject__setSpeedX(this.native, v.x);
+    native.GameLevelZoneObject__setSpeedY(this.native, v.y);
+  }
+}
