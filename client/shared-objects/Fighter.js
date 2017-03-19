@@ -635,7 +635,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     const g = new Phaser.Graphics(game, this.pos.x, this.pos.y);
     g.blendMode = PIXI.blendModes.ADD;
 
-    g.beginFill(0x444444, 0.3);
+    g.beginFill(0x444444, 0.2);
     const a = this.hitVec.toAngle() * Math.PI / 180.0;
     opts.a *= Math.PI / 180.0;
     opts.d *= this.scale * (this.weapon.bodyScale || 1);
@@ -662,6 +662,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         g.destroy();
       }
     };
-    game.layer.sub.top.add(g);
+    game.layer.sub.middle.add(g);
   }
 }
