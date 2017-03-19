@@ -627,4 +627,41 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       light.texture.renderXY(this.light, x, y, false);
     }
   }
+
+  doDamageRadialArea(opts) {
+    if (!this.hitVec) {
+      return;
+    }
+    const g = new Phaser.Graphics(game, this.pos.x, this.pos.y);
+    g.blendMode = PIXI.blendModes.ADD;
+
+    g.beginFill(0x444444, 0.3);
+    const a = this.hitVec.toAngle() * Math.PI / 180.0;
+    opts.a *= Math.PI / 180.0;
+    opts.d *= this.scale * (this.weapon.bodyScale || 1);
+    const a1 = a - opts.a;
+    const a2 = a + opts.a;
+    g.arc(0, 0, opts.d, a1, a2);
+
+    const p1 = {
+      x: Math.cos(a1) * opts.d,
+      y: Math.sin(a1) * opts.d,
+    }
+    const p2 = {
+      x: Math.cos(a2) * opts.d,
+      y: Math.sin(a2) * opts.d,
+    }
+    g.drawPolygon([{
+      x: 0,
+      y: 0
+    }, p1, p2, ]);
+    const dirVec = this.hitVec.unit();
+    g.update = () => {
+      g.alpha -= dt * 2;
+      if (g.alpha <= 0.0) {
+        g.destroy();
+      }
+    };
+    game.layer.sub.top.add(g);
+  }
 }

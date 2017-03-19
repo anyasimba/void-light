@@ -1,4 +1,4 @@
-const N = 10;
+const N = 8;
 
 function initUpdate() {
   global.time = performance.now();
@@ -46,7 +46,7 @@ function initUpdate() {
 
         const sleepTime = Math.max(
           1000.0 / 30.0 - performance.now() + time, 0);
-        console.log(curDT, minDT, maxDT, (sleepTime * 3) + '%');
+        //console.log(curDT, minDT, maxDT, (sleepTime * 3) + '%');
         await sleep(sleepTime);
       }
     } catch (e) {

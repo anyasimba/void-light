@@ -599,7 +599,7 @@ export const stage1__boss1 = {
     SCALE: 5,
 
     BALANCE: 100,
-    HP: 200,
+    HP: 400,
     MP: 100,
     STAMINA: 200,
   },
@@ -626,8 +626,8 @@ export const stage1__boss1 = {
       kind: 'stage1__boss1__rightHand',
       hand: 1,
       balance: 10,
-      stamina: 10,
-      staminaTime: 1,
+      stamina: 40,
+      staminaTime: 2,
       pos: {
         x: -25,
         y: 25,

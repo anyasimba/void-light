@@ -12,11 +12,12 @@ export class Item extends mix(global.Item, MixGameObject) {
       vAngle: this.vAngle,
       hAngle: this.hAngle,
       sideAngle: this.sideAngle,
+
+      bodyScale: this.bodyScale,
     };
   }
 
-  stage(duration, fn, opts) {
-  }
+  stage(duration, fn, opts) {}
 }
 
 export function ItemSword(parent) {

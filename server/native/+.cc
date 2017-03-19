@@ -2,6 +2,7 @@
 #include <node_buffer.h>
 #include <v8.h>
 #include <stdio.h>
+#include <string.h>
 #include <vector>
 #include <math.h>
 

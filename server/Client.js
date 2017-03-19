@@ -130,6 +130,14 @@ export class Client extends global.Client {
   }
 
   login() {
+    let complex = this.cookies.complex || 1;
+    complex = parseInt(complex);
+    if (gameLevelZones[complex]) {
+      this.gameLevelZone = gameLevelZones[complex];
+    } else {
+      return;
+    }
+
     this.player = {};
     this.updateFighter();
     this.player = new Fighter(this, Object.assign({
@@ -147,17 +155,11 @@ export class Client extends global.Client {
       playerID: this.player.id,
     });
 
-    let complex = this.cookies.complex || 1;
-    complex = parseInt(complex);
-    if (gameLevelZones[complex]) {
-      this.gameLevelZone = gameLevelZones[complex];
-      this.gameLevelZone.addClient(this);
-    }
-
     this.emit('map', {
       name: this.gameLevelZone.mapName,
     });
 
+    this.gameLevelZone.addClient(this);
     this.registerEvents();
 
     console.log('User login', this.username);
@@ -181,6 +183,7 @@ export class Client extends global.Client {
       if (this.gameLevelZone) {
         this.gameLevelZone.removeClient(this);
       }
+      delete this.gameLevelZone;
 
       if (this.player) {
         this.player.destructor();
@@ -192,7 +195,7 @@ export class Client extends global.Client {
 
   onDie(source) {
     setTimeout(() => {
-      if (!this.player.gameLevelZone) {
+      if (!this.gameLevelZone) {
         return;
       }
       if (!this.player.invade) {

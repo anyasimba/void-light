@@ -38,7 +38,7 @@ Object.assign(GameLevelZone.prototype, {
     const rel = other.pos
       .subtract(source.pos);
 
-    const adx = rel.length();
+    const adx = rel.length() - other.body.size * 0.5;
     if (adx > opts.d) {
       return;
     }
@@ -118,6 +118,7 @@ Object.assign(GameLevelZone.prototype, {
     if (other.inHit && other.balance <= other.BALANCE * 0.5) {
       other.breakHit();
     }
+
     if (!isInBlock && other.balance <= 0) {
       other.stun(source.weapon.staminaTime);
       other.balance = other.BALANCE;
