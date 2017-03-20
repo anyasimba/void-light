@@ -362,16 +362,7 @@ export class Mob {
               if (a < -Math.PI) {
                 a += Math.PI * 2;
               }
-              a = Math.min(Math.abs(a), 40.0 * Math.PI / 180.0) * Math.sign(
-                a);
-              this.hitDir = vec3.fromAngles(0, this.hitDir.toAngle() *
-                  Math.PI / 180.0 + a)
-                .multiply(10000);
-              this.fighter.doHit({
-                x: this.fighter.pos.x + this.hitDir.x,
-                y: this.fighter.pos.y + this.hitDir.y,
-              });
-              if (Math.abs(a) > 90 * Math.PI / 180.0) {
+              if (Math.abs(a) > 130 * Math.PI / 180.0) {
                 this.lastAct = this.act;
                 delete this.actTime;
                 if (this.hits) {
@@ -379,6 +370,16 @@ export class Mob {
                   delete this.hits;
                 }
               }
+              const af = 30 + Math.random() * 80;
+              a = Math.min(Math.abs(a), af * Math.PI / 180.0) *
+                Math.sign(a);
+              this.hitDir = vec3.fromAngles(0, this.hitDir.toAngle() *
+                  Math.PI / 180.0 + a)
+                .multiply(10000);
+              this.fighter.doHit({
+                x: this.fighter.pos.x + this.hitDir.x,
+                y: this.fighter.pos.y + this.hitDir.y,
+              });
             } else {
               this.lastAct = this.act;
               delete this.actTime;
