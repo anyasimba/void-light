@@ -17,26 +17,26 @@ export class Door extends mix(global.Door, MixGameObject) {
 
     this.view = Door.createView();
     this.view.texture = makeDarken(this.view);
-    this.view.x = -10;
-    this.view.y = -10;
-    this.view.width = this.size.x + 20;
-    this.view.height = this.size.y + 20;
-    this.view.tileScale.set(0.5);
+    this.view.x = 0;
+    this.view.y = 0;
+    this.view.width = this.size.x;
+    this.view.height = this.size.y;
+    this.view.tileScale.set(0.7);
     this.bottomGroup.add(this.view);
 
     this.view2 = Door.createView();
-    this.view2.x = -5;
-    this.view2.y = -5;
-    this.view2.width = this.size.x + 10;
-    this.view2.height = this.size.y + 10;
-    this.view2.tileScale.set(0.7);
+    this.view2.x = 0;
+    this.view2.y = 0;
+    this.view2.width = this.size.x;
+    this.view2.height = this.size.y;
+    this.view2.tileScale.set(0.8);
     this.middleGroup.add(this.view2);
 
     this.view3 = Door.createView();
-    this.view3.x = 0;
-    this.view3.y = 0;
-    this.view3.width = this.size.x;
-    this.view3.height = this.size.y;
+    this.view3.x = 10;
+    this.view3.y = 10;
+    this.view3.width = this.size.x - 20;
+    this.view3.height = this.size.y - 20;
     this.topGroup.add(this.view3);
   }
 
@@ -74,18 +74,34 @@ export class Door extends mix(global.Door, MixGameObject) {
   update() {
     super.update();
 
-    this.view.width = this.size.x + 20;
-    this.view.height = this.size.y + 20;
-    this.view.tilePosition.x = (this.size.x - this.baseSize.x) / 0.5;;
-    this.view.tilePosition.y = (this.size.y - this.baseSize.y) / 0.5;;
+    let ax = 0;
+    let ay = 0;
+    if (this.baseSize.x > this.baseSize.y) {
+      ax = 40;
+      ay = -10;
+    } else {
+      ay = 40;
+      ax = -10;
+    }
 
-    this.view2.width = this.size.x + 10;
-    this.view2.height = this.size.y + 10;
-    this.view2.tilePosition.x = (this.size.x - this.baseSize.x) / 0.7;
-    this.view2.tilePosition.y = (this.size.y - this.baseSize.y) / 0.7;
+    this.view.x = -ax;
+    this.view.y = -ay;
+    this.view.width = this.size.x + ax * 2;
+    this.view.height = this.size.y + ay * 2;
+    this.view.tilePosition.x = (this.size.x - this.baseSize.x) / 0.7;;
+    this.view.tilePosition.y = (this.size.y - this.baseSize.y) / 0.7;;
 
-    this.view3.width = this.size.x;
-    this.view3.height = this.size.y;
+    this.view2.x = -ax;
+    this.view2.y = -ay;
+    this.view2.width = this.size.x + ax * 2;
+    this.view2.height = this.size.y + ay * 2;
+    this.view2.tilePosition.x = (this.size.x - this.baseSize.x) / 0.8;
+    this.view2.tilePosition.y = (this.size.y - this.baseSize.y) / 0.8;
+
+    this.view3.x = 10 - ax;
+    this.view3.y = 10 - ay;
+    this.view3.width = this.size.x - 20 + ax * 2;
+    this.view3.height = this.size.y - 20 + ay * 2;
     this.view3.tilePosition.x = this.size.x - this.baseSize.x;
     this.view3.tilePosition.y = this.size.y - this.baseSize.y;
 

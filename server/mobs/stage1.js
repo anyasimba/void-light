@@ -601,7 +601,7 @@ export const stage1__boss1 = {
     BALANCE: 100,
     HP: 400,
     MP: 100,
-    STAMINA: 200,
+    STAMINA: 1000,
   },
 
   leftHand(parent) {

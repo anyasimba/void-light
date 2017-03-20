@@ -540,6 +540,7 @@ export function makeGameMenu() {
 
     if (gameMenuView.needHide) {
       gameMenuView.alpha -= dt * 2;
+      delete gameMenuView.needShow;
     } else if (gameMenuView.needShow) {
       gameMenuView.alpha += dt * 2;
       gameMenuView.visible = true;

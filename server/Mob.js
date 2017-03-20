@@ -9,7 +9,7 @@ export class Mob {
       this.opts[k] = opts[k];
     }
     this.opts.FIGHTER = {
-      LOOK_ROTATE_F: 0.6,
+      LOOK_ROTATE_F: 0.8,
     };
     for (const k in opts.FIGHTER) {
       this.opts.FIGHTER[k] = opts.FIGHTER[k];
@@ -233,7 +233,7 @@ export class Mob {
           (next.x * WALL_SIZE + WALL_SIZE * 0.5));
         const dy = Math.abs(this.fighter.pos.y -
           (next.y * WALL_SIZE + WALL_SIZE * 0.5));
-        if (dx + dy < WALL_SIZE) {
+        if (dx + dy < WALL_SIZE * 2) {
           this.path.pop();
           next = this.path[this.path.length - 1];
         } else {
@@ -331,7 +331,13 @@ export class Mob {
           this.hitDir = this.target.pos
             .subtract(this.fighter.pos)
             .unit()
-            .multiply(1000);
+            .multiply(10000);
+
+          this.fighter.doHit({
+            x: this.fighter.pos.x + this.hitDir.x,
+            y: this.fighter.pos.y + this.hitDir.y,
+          });
+
           this.actTime = (this.opts.HIT_TIME[0] +
               this.opts.HIT_TIME[1] * Math.random()) *
             this.fighter.hitSpeed;
@@ -342,17 +348,46 @@ export class Mob {
             if (Math.random() < this.opts.JUMP_HIT_VER) {
               this.fighter.doJump();
             }
-            if (this.target) {
-              const newHitDir = this.target.pos.subtract(this.fighter.pos)
+            if (this.target && this.fighter.inHit) {
+              this.hitDir = this.fighter.hitVec.clone()
                 .unit()
-                .multiply(300);
-              this.hitDir = this.hitDir.multiply(0.7).add(newHitDir);
+                .multiply(10000);
+              const newHitDir = this.target.pos
+                .subtract(this.fighter.pos);
+              let a = (newHitDir.toAngle() - this.hitDir.toAngle()) *
+                Math.PI / 180.0;
+              if (a > Math.PI) {
+                a -= Math.PI * 2;
+              }
+              if (a < -Math.PI) {
+                a += Math.PI * 2;
+              }
+              a = Math.min(Math.abs(a), 40.0 * Math.PI / 180.0) * Math.sign(
+                a);
+              this.hitDir = vec3.fromAngles(0, this.hitDir.toAngle() *
+                  Math.PI / 180.0 + a)
+                .multiply(10000);
               this.fighter.doHit({
                 x: this.fighter.pos.x + this.hitDir.x,
                 y: this.fighter.pos.y + this.hitDir.y,
               });
+              if (Math.abs(a) > 90 * Math.PI / 180.0) {
+                this.lastAct = this.act;
+                delete this.actTime;
+                if (this.hits) {
+                  clearInterval(this.hits);
+                  delete this.hits;
+                }
+              }
+            } else {
+              this.lastAct = this.act;
+              delete this.actTime;
+              if (this.hits) {
+                clearInterval(this.hits);
+                delete this.hits;
+              }
             }
-          }, 500);
+          }, 500 * this.fighter.hitSpeed);
         } else if (lastActIsMove && Math.random() < this.opts.MOVE_VER) {
           if (Math.random() < 0.5) {
             this.act = 'left';

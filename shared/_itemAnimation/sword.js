@@ -29,22 +29,22 @@ export function ia_sword__doHit(opts) {
       this.step(time, () => {
         this.playHit();
         this.weapon.stage(step2, easing.easeOutQuad, {
-          sideAngle: -200,
+          sideAngle: -210,
         });
         this.addImpulse(opts.impulse1 || 600);
       });
       this.step(time + 0.075, () => {
         const damageOpts = {
-          d: 245,
-          a: 80,
+          d: 240,
+          a: 70,
           impulse: opts.impulse1 || 600,
         }
         if (this.inRoll) {
-          damageOpts.a = 90;
-          damageOpts.d = 245;
+          damageOpts.a = 75;
+          damageOpts.d = 240;
         }
         if (this.inJump) {
-          damageOpts.d = 245;
+          damageOpts.d = 240;
         }
         this.doDamageRadialArea(damageOpts);
       });
@@ -77,7 +77,7 @@ export function ia_sword__doHit(opts) {
           angle: 135,
           vAngle: 0,
           hAngle: 0,
-          sideAngle: -245,
+          sideAngle: -250,
         });
       });
       time += step1;
@@ -85,16 +85,16 @@ export function ia_sword__doHit(opts) {
       const step2 = 0.15;
       this.step(time + 0.075, () => {
         const damageOpts = {
-          d: 245,
-          a: 80,
+          d: 240,
+          a: 70,
           impulse: opts.impulse2 || 600,
         }
         if (this.inRoll) {
-          damageOpts.a = 90;
-          damageOpts.d = 245;
+          damageOpts.a = 75;
+          damageOpts.d = 240;
         }
         if (this.inJump) {
-          damageOpts.d = 245;
+          damageOpts.d = 240;
         }
         this.doDamageRadialArea(damageOpts);
       });
@@ -147,16 +147,16 @@ export function ia_sword__doHit(opts) {
       const step2 = 0.15;
       this.step(time + 0.075, () => {
         const damageOpts = {
-          d: 245,
-          a: 80,
+          d: 240,
+          a: 70,
           impulse: opts.impulse3 || 600,
         }
         if (this.inRoll) {
-          damageOpts.a = 90;
-          damageOpts.d = 245;
+          damageOpts.a = 75;
+          damageOpts.d = 240;
         }
         if (this.inJump) {
-          damageOpts.d = 245;
+          damageOpts.d = 240;
         }
         this.doDamageRadialArea(damageOpts);
       });
@@ -216,16 +216,16 @@ export function ia_sword__doHit(opts) {
       });
       this.step(time + 0.075, () => {
         const damageOpts = {
-          d: 245,
+          d: 240,
           a: 5,
           impulse: opts.impulse1 || 600,
         }
         if (this.inRoll) {
           damageOpts.a = 10;
-          damageOpts.d = 245;
+          damageOpts.d = 240;
         }
         if (this.inJump) {
-          damageOpts.d = 245;
+          damageOpts.d = 240;
         }
         this.doDamageRadialArea(damageOpts);
       });

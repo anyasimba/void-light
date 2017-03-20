@@ -302,49 +302,61 @@ export function initUI() {
 }
 
 export function makeSuperMessage(text, color) {
-  const group = new Phaser.Group(game);
+  let cb;
 
-  const textView = new Phaser.Text(game, game.w * 0.5, game.h * 0.5, text, {
-    font: 'Tinos',
-    fontSize: 140,
-    fill: color,
-  });
-  textView.alpha = 1;
-  textView.anchor.set(0.5);
-  const textView2 = new Phaser.Text(game, game.w * 0.5, game.h * 0.5, text, {
-    font: 'Tinos',
-    fontSize: 180,
-    fill: color,
-  });
-  textView2.alpha = 0;
-  textView2.anchor.set(0.5);
-  textView2.blendMode = PIXI.blendModes.ADD;
-
-  const inner = new Phaser.Graphics(game, 0, game.h * 0.5 - 200);
-  inner.beginFill(0x000000, 0.8);
-  inner.drawRect(0, 0, game.w, 400);
-  inner.endFill();
-
-  let time = 0;
-  group.update = () => {
-    textView2.scale.x = 1.05;
-    textView2.scale.y = 1.05;
-    textView2.x = game.w * 0.5 - 20 + time * 40;
-    time += dt / 3;
-    group.alpha = time;
-    if (time >= 1) {
-      group.alpha = 2 - time;
+  const interval = setInterval(() => {
+    if (loadingProgressOpacity > 0) {
+      return;
     }
-    if (time >= 2) {
-      group.destroy();
-    }
-    textView2.alpha = group.alpha * 0.4;
+    clearInterval(interval);
+    cb();
+  }, 100);
+
+  cb = () => {
+    const group = new Phaser.Group(game);
+
+    const textView = new Phaser.Text(game, game.w * 0.5, game.h * 0.5, text, {
+      font: 'Tinos',
+      fontSize: 140,
+      fill: color,
+    });
+    textView.alpha = 1;
+    textView.anchor.set(0.5);
+    const textView2 = new Phaser.Text(game, game.w * 0.5, game.h * 0.5, text, {
+      font: 'Tinos',
+      fontSize: 180,
+      fill: color,
+    });
+    textView2.alpha = 0;
+    textView2.anchor.set(0.5);
+    textView2.blendMode = PIXI.blendModes.ADD;
+
+    const inner = new Phaser.Graphics(game, 0, game.h * 0.5 - 200);
+    inner.beginFill(0x000000, 0.8);
+    inner.drawRect(0, 0, game.w, 400);
+    inner.endFill();
+
+    let time = 0;
+    group.update = () => {
+      textView2.scale.x = 1.05;
+      textView2.scale.y = 1.05;
+      textView2.x = game.w * 0.5 - 20 + time * 40;
+      time += dt / 3;
+      group.alpha = time;
+      if (time >= 1) {
+        group.alpha = 2 - time;
+      }
+      if (time >= 2) {
+        group.destroy();
+      }
+      textView2.alpha = group.alpha * 0.4;
+    };
+
+    group.add(inner);
+    group.add(textView);
+    group.add(textView2);
+    game.ui.add(group);
   };
-
-  group.add(inner);
-  group.add(textView);
-  group.add(textView2);
-  game.ui.add(group);
 }
 
 export function makeMessage(text, color, font) {

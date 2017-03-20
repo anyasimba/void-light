@@ -284,8 +284,8 @@ export class GameLevelZone {
     }
     this.updateNears = this.updateNears || Math.random();
     this.updateNears += dt;
-    if (this.updateNears >= 1.0) {
-      this.updateNears -= 1.0;
+    if (this.updateNears >= 0.5) {
+      this.updateNears -= 0.5;
       for (let i = 0; i < this.clients.length; ++i) {
         const player = this.clients[i].player;
         if (player.isAlive) {

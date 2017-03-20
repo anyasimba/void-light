@@ -1,4 +1,67 @@
-export function Server() {
+function assert(flag, msg) {
+  if (!flag) {
+    console.log(msg);
+    process.exit(1);
+  }
+}
+
+export function mongoInsert(table, v) {
+  return new Promise(r => {
+    const collection = mongo.collection(table);
+    collection.insertMany(v, (err, result) => {
+      assert(err === null, err);
+      r(result);
+    });
+  });
+}
+export function mongoUpdate(table, k, v) {
+  return new Promise(r => {
+    const collection = mongo.collection(table);
+    collection.updateOne(k, {
+      $set: v
+    }, (err, result) => {
+      assert(err === null, err);
+      r(result);
+    });
+  });
+}
+export function mongoDelete(table, k) {
+  return new Promise(r => {
+    const collection = mongo.collection(table);
+    collection.deleteMany(k, (err, result) => {
+      assert(err === null, err);
+      r(result);
+    });
+  });
+}
+export function mongoFind(table, k) {
+  return new Promise(r => {
+    const collection = mongo.collection(table);
+    collection.find(k).toArray((err, docs) => {
+      assert(err === null, err);
+      r(docs);
+    });
+  });
+}
+
+function mongoDB() {
+  const MongoClient = require('mongodb').MongoClient;
+
+  const url = 'mongodb://localhost:27017/voidlight';
+  return new Promise(r => {
+    MongoClient.connect(url, async(err, db) => {
+      assert(err === null, err);
+      console.log("Connected to mongoDB");
+
+      global.mongo = db;
+      r();
+    });
+  });
+}
+
+export async function Server() {
+  await mongoDB();
+
   const app = express();
 
   app.all('*', function (req, res, next) {

@@ -1,6 +1,7 @@
 {
   "name": "void-light",
   "devDependencies": {
+    "assert": "^1.4.1",
     "babel-core": "^6.18.2",
     "babel-plugin-transform-async-to-generator": "^6.16.0",
     "babel-plugin-transform-runtime": "^6.15.0",
@@ -9,13 +10,12 @@
     "browserify": "^13.1.1",
     "express": "^4.14.0",
     "js-beautify": "^1.6.4",
+    "mongodb": "^2.2.25",
     "mysql": "^2.13.0",
     "socket.io": "^1.5.1",
     "traceur": "0.0.111",
     "traceur-source-maps": "^1.0.6",
     "uglifyify": "^3.0.4",
-    "yargs": "^6.4.0",
-    "express": "^4.14.0",
-    "socket.io": "^1.5.1"
+    "yargs": "^6.4.0"
   }
 }

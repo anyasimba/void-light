@@ -381,9 +381,8 @@ export class Client extends global.Client {
     makeSuperMessage('ПОБЕДА', '#FFFF22');
   }
 
-  onSaveParam(data) {
+  onParam(data) {
     this.params[data.slug] = this.params[data.slug] || {};
     this.params[data.slug][data.key] = data.value;
-    setCookie('params', JSON.stringify(this.params));
   }
 }

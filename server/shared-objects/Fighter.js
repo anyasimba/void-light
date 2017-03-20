@@ -539,7 +539,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     };
     this.step(0.7 / this.moveTimeF, () => {
       cb();
-      
+
       const isEffect = item.HP !== undefined ||
         item.MP !== undefined ||
         item.STAMINA !== undefined;
@@ -840,7 +840,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
   }
 
   step(time, fn) {
-    native.Fighter__step(this.native, fn, time);
+    native.Fighter__step(this.native, this.stepFN(fn), time);
   }
   clearSteps() {
     native.Fighter__clearSteps(this.native);

@@ -108,6 +108,8 @@ export const weapon__sword__default = new class {
           y: 40,
         },
         angle: 140,
+        vAngle: 0,
+        hAngle: 0,
         sideAngle: -30,
       });
     });
@@ -176,6 +178,8 @@ export const weapon__bigsword__default = new class {
           y: 40,
         },
         angle: 140,
+        vAngle: 0,
+        hAngle: 0,
         sideAngle: -30,
       });
     });
@@ -245,6 +249,8 @@ export const weapon__axe__default = new class {
           y: 40,
         },
         angle: 140,
+        vAngle: 0,
+        hAngle: 0,
         sideAngle: -30,
       });
     });
@@ -312,6 +318,8 @@ export const shield__default__default = new class {
           y: -30,
         },
         angle: -120,
+        vAngle: 0,
+        hAngle: 0,
         sideAngle: -30,
       });
     });

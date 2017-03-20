@@ -23,7 +23,7 @@ export class Fighter {
     return 0.94;
   }
   static get LOOK_ROTATE_IN_HIT_F() {
-    return 0.999;
+    return 0.99999;
   }
 
   static get BODY_SIZE() {
@@ -54,9 +54,34 @@ export class Fighter {
     ];
   }
 
+  stepFN(fn) {
+    return () => {
+      if (this.inHit && this.absLook) {
+        const other = gameObjects[this.absLook];
+        if (other) {
+          const newHitDir = other.pos
+            .subtract(this.pos);
+          let a = (newHitDir.toAngle() - this.hitVec.toAngle()) *
+            Math.PI / 180.0;
+          if (a > Math.PI) {
+            a -= Math.PI * 2;
+          }
+          if (a < -Math.PI) {
+            a += Math.PI * 2;
+          }
+          a =
+            Math.min(Math.abs(a), 10.0 * Math.PI / 180.0) * Math.sign(a);
+          this.hitVec = vec3.fromAngles(0, this.hitVec.toAngle() *
+            Math.PI / 180.0 + a);
+        }
+      }
+      fn();
+    }
+  }
+
   step(time, fn) {
     this.timeouts.push({
-      fn: fn,
+      fn: this.stepFN(fn),
       time: time,
     });
   }

@@ -21,15 +21,29 @@ export class Client extends global.Client {
   constructor(sock) {
     super(sock);
 
-    const cookies = parseCookies(sock.request.headers.cookie);
-    if (cookies.params) {
-      cookies.params = cookies.params.split('%3A').join(':');
-      cookies.params = cookies.params.split('%2C').join(',');
+    this.on('login', data => this.onLogin(this.validate(data)));
+  }
+
+  async loadClient() {
+    if (!this.username) {
+      return;
     }
-    this.params = JSON.parse(cookies.params || '{}');
+    let data = await mongoFind('clients', {
+      login: this.username,
+    });
+    if (!data.length) {
+      let r = await mongoInsert('clients', [{
+        login: this.username,
+        params: {},
+      }]);
+
+      data = r.ops;
+    }
+    this.data = data[0];
+    this.params = this.data.params;
 
     if (!this.params.items || !this.params.items.list) {
-      this.saveParam('items', 'list', [{
+      await this.saveSharedParam('items', 'list', [{
         slug: 'item__heal__stone',
         count: 10,
       }, {
@@ -40,10 +54,21 @@ export class Client extends global.Client {
       }, {
         slug: 'item__axe',
       }, ]);
-      this.saveParam('items', 'clothed', {
+      await this.saveSharedParam('items', 'clothed', {
         '0': 0,
         '1': 1,
         'rightHand1': 2,
+      });
+    } else {
+      this.emit('param', {
+        slug: 'items',
+        key: 'list',
+        value: this.params.items.list,
+      });
+      this.emit('param', {
+        slug: 'items',
+        key: 'clothed',
+        value: this.params.items.clothed,
       });
     }
 
@@ -53,9 +78,9 @@ export class Client extends global.Client {
     let fighterParams = this.params.fighter || {};
     fighterParams = fighterParams.params || {};
 
-    if (fighterParams.username !== cookies.username) {
+    if (fighterParams.username !== this.username) {
       hasChange = true;
-      fighterParams.username = cookies.username;
+      fighterParams.username = this.username;
     }
     for (const k in PLAYER_PARAMS) {
       const param = PLAYER_PARAMS[k];
@@ -67,71 +92,72 @@ export class Client extends global.Client {
     if (!fighterParams.level) {
       hasChange = true;
       fighterParams.level = 1;
-
-      if (cookies.role === 'Knight') {
-        fighterParams.level = 16;
-        fighterParams.Health = 7;
-        fighterParams.Strength = 2;
-        fighterParams.Endurance = 2;
-        fighterParams.Willpower = 4;
-      }
-      if (cookies.role === 'Warrior') {
-        fighterParams.level = 16;
-        fighterParams.Strength = 7;
-        fighterParams.Dexterity = 5;
-        fighterParams.Endurance = 2;
-        fighterParams.Willpower = 1;
-      }
-      if (cookies.role === 'Lier') {
-        fighterParams.level = 16;
-        fighterParams.Dexterity = 5;
-        fighterParams.Endurance = 6;
-        fighterParams.Willpower = 4;
-      }
     }
     if (!fighterParams.voidsCount) {
       hasChange = true;
       fighterParams.voidsCount = 0;
     }
     if (hasChange) {
-      this.saveParam('fighter', 'params', fighterParams);
+      await this.saveSharedParam('fighter', 'params', fighterParams);
+    } else {
+      this.emit('param', {
+        slug: 'fighter',
+        key: 'params',
+        value: fighterParams,
+      });
     }
 
-    console.log(this.params);
+    await this.saveParam('info', 'params', {
+      lastConnect: new Date(),
+    });
 
     this.netID = Client.createID();
 
     this.tasks = [];
-
-    this.cookies = cookies;
-
-    this.on('login', data => this.onLogin(this.validate(data)));
   }
-
-  saveParam(slug, key, value) {
-    this.params[slug] = this.params[slug] || {};
-    this.params[slug][key] = value;
-    this.emit('saveParam', {
+  async saveSharedParam(slug, key, value) {
+    this.saveParam(slug, key, value);
+    console.log('emit', slug, key, value);
+    this.emit('param', {
       slug: slug,
       key: key,
       value: value,
     });
   }
+  async saveParam(slug, key, value) {
+    console.log(slug, key, value);
+    this.params[slug] = this.params[slug] || {};
+    this.params[slug][key] = value;
+    await mongoUpdate('clients', {
+      login: this.data.login
+    }, {
+      params: this.params,
+    });
+  }
 
-  onLogin(data) {
-    if (this.username || !data.username) {
-      return;
+  async onLogin(data) {
+    try {
+      if (this.username || !data.username) {
+        return;
+      }
+      if (data.username.length > 24) {
+        return;
+      }
+      if (data.username.length < 1) {
+        return;
+      }
+      this.username = data.username;
+
+      await this.loadClient();
+      this.login();
+    } catch (e) {
+      console.log(e, e.stack);
+      process.exit(1);
     }
-    if (data.username.length > 24) {
-      return;
-    }
-    this.username = data.username;
-    this.login();
   }
 
   login() {
-    let complex = this.cookies.complex || 1;
-    complex = parseInt(complex);
+    let complex = 0;
     if (gameLevelZones[complex]) {
       this.gameLevelZone = gameLevelZones[complex];
     } else {
@@ -190,6 +216,9 @@ export class Client extends global.Client {
       }
     }, 10000);
 
+    this.saveParam('info', 'params', {
+      lastDisconnect: new Date(),
+    });
     console.log('User disconnected', this.username);
   }
 
@@ -339,8 +368,8 @@ export class Client extends global.Client {
               }
             }
           }
-          this.saveParam('items', 'list', this.params.items.list);
-          this.saveParam('items', 'clothed', this.params.items.clothed);
+          this.saveSharedParam('items', 'list', this.params.items.list);
+          this.saveSharedParam('items', 'clothed', this.params.items.clothed);
           this.emit('items', this.params.items);
         });
       }
@@ -407,7 +436,7 @@ export class Client extends global.Client {
       }
       params.voidsCount -= need;
       params.level += 1;
-      this.saveParam('fighter', 'params', params);
+      this.saveSharedParam('fighter', 'params', params);
     } catch (e) {
       console.log(e, e.stack);
       process.exit(1);
@@ -427,7 +456,7 @@ export class Client extends global.Client {
       }
       if (total < params.level - 1) {
         params[PLAYER_PARAMS[data.i]] += 1;
-        this.saveParam('fighter', 'params', params);
+        this.saveSharedParam('fighter', 'params', params);
         this.updateFighter();
       }
     } catch (e) {
@@ -496,7 +525,7 @@ export class Client extends global.Client {
         delete this.params.items.clothed[data.k];
       }
       this.player.updateHands();
-      this.saveParam('items', 'clothed', this.params.items.clothed);
+      this.saveSharedParam('items', 'clothed', this.params.items.clothed);
       this.emit('items', this.params.items);
     } catch (e) {
       console.log(e, e.stack);

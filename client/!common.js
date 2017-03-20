@@ -220,10 +220,43 @@ export function makeDarken(view) {
   return rt;
 }
 
+global.loadingProgressValue = 0;
+global.loadingProgressTargetValue = 0;
+let loadingProgressInterval;
+global.loadingProgressOpacity = 1;
+let loadingProgressText;
+
+function loadingProgress(v, text) {
+  loadingProgressText = text || loadingProgressText;
+
+  if (v === 0) {
+    loadingProgressOpacity = 1;
+    loadingProgressValue = 0;
+  }
+  loadingProgressTargetValue = v;
+  loadingProgressInterval = loadingProgressInterval || setInterval(() => {
+    const progress = Math.ceil(loadingProgressValue);
+    if (progress >= 100 && loadingProgressOpacity <= 0) {
+      $('.loading-wrap').css('display', 'none');
+      clearInterval(loadingProgressInterval);
+    } else {
+      loadingProgressValue +=
+        (loadingProgressTargetValue - loadingProgressValue) * 0.1;
+      if (progress >= 100) {
+        loadingProgressOpacity -= 0.1;
+      }
+      $('.loading').text('Loading ' + loadingProgressText + ', ' +
+        progress + '%');
+      $('.loading-wrap').css('opacity', loadingProgressOpacity);
+    }
+  }, 10);
+}
+
 function createGame() {
   global.game = new Phaser.Game(
     "100%", "100%", Phaser.CANVAS, '', {
       async preload() {
+        $('.loading-wrap').css('display', 'block');
         global.lightAlpha = 0.1;
 
         game.load.image('light', 'assets/light.png');
@@ -335,6 +368,11 @@ function createGame() {
           e.preventDefault();
         }
 
+        loadingProgress(0, 'data');
+        game.load.onFileComplete.add((progress, cacheKey, success,
+          totalLoaded, totalFiles) => {
+          loadingProgress(progress);
+        });
         console.log('Game preloaded');
       },
       create: create,
@@ -416,6 +454,8 @@ function createGame() {
         }
 
         if (client.needLoadMap) {
+          loadingProgress(0, 'map');
+
           delete client.needLoadMap;
           client.w = client.map.width * WALL_SIZE;
           client.h = client.map.height * WALL_SIZE;
@@ -489,6 +529,7 @@ function createGame() {
             makeDarken(stoneView));
 
           console.log('loading map...');
+          loadingProgress(10);
           for (let y = 0; y < client.map.height; ++y) {
             for (let x = 0; x < client.map.width; ++x) {
               const i = y * client.map.width + x;
@@ -507,14 +548,11 @@ function createGame() {
               }
               if (view) {
                 const f = scaleF;
-                let pad = 0;
-                let px = 0;
-                let py = 0;
                 for (let i = 0; i < ln; ++i) {
-                  let pad = i * 24 / (ln - 1);
+                  let pad = i * 24 / (ln - 1) + Math.random() * 16;
+
                   let px = 0;
                   let py = 0;
-
                   let v = view;
                   if (i < ln - 1) {
                     v = view.darken;
@@ -534,11 +572,9 @@ function createGame() {
                   if (!grid[x] || !grid[x][y + 1]) {
                     v.height -= pad * scaleF;
                   }
-                  const sf = (0.5 + i * 0.5 / (ln - 1));
-                  v.tilePosition.x = (-x * WALL_SIZE - px +
-                    view.width) / sf;
-                  v.tilePosition.y = (-y * WALL_SIZE - py +
-                    view.height) / sf;
+                  const sf = (0.7 + i * 0.3 / (ln - 1));
+                  v.tilePosition.x = (-x * WALL_SIZE - px) / sf;
+                  v.tilePosition.y = (-y * WALL_SIZE - py) / sf;
                   v.tileScale.x = f * sf;
                   v.tileScale.y = f * sf;
                   const cx = Math.floor(x * WALL_SIZE / ts);
@@ -554,6 +590,7 @@ function createGame() {
             }
           }
           console.log('done', xn * yn);
+          loadingProgress(50);
 
           const groundSprite = game.layer.sub.ground.add(new Phaser.TileSprite(
             game, 0, 0, game.w, game.h, 'ground'));
@@ -607,6 +644,8 @@ function createGame() {
 
           bricksView.destroy();
           bricksView.darken.destroy();
+
+          loadingProgress(100);
         }
 
         global.SPRITES_N = global.SPRITES_N || 0;

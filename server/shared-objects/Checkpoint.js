@@ -1,4 +1,5 @@
-export class Checkpoint extends mix(global.Checkpoint, MixNativeGameObject, MixGameObject) {
+export class Checkpoint extends mix(global.Checkpoint, MixNativeGameObject,
+  MixGameObject) {
   get state() {
     return {
       pos: this.pos.clone(),
@@ -73,6 +74,7 @@ export class Checkpoint extends mix(global.Checkpoint, MixNativeGameObject, MixG
         delete mob.target;
         delete mob.path;
         delete mob.onWay;
+        delete mob.fighter.absLook;
       }
     }
     const tempMobs = this.gameLevelZone.tempMobs;
@@ -82,6 +84,7 @@ export class Checkpoint extends mix(global.Checkpoint, MixNativeGameObject, MixG
         delete mob.target;
         delete mob.path;
         delete mob.onWay;
+        delete mob.fighter.absLook;
       }
     }
   }
