@@ -28,6 +28,6 @@ globally(require('./Server'));
   for (const cb of preMainCbs) {
     await cb();
   }
+  main();
 })();
 
-main();
