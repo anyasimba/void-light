@@ -92,7 +92,7 @@ function buildFinalClientJS() {
 function runServer() {
   const execSync = require('child_process').execSync;
   execSync('node-gyp build');
-  
+
   const traceur = require('traceur');
 
   require('traceur-source-maps').install(traceur);
