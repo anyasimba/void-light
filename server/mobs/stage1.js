@@ -4,8 +4,8 @@ export const stage1__mob1 = {
   DIES_SCALE: 0.6,
 
   AGRO_D: 8,
-  RUN_D: 50,
-  HIT_D: [100, 400],
+  RUN_D: 120,
+  HIT_D: [250, 450],
   HIT_VER: 0.6,
   HIT_TIME: [0.5, 2],
   JUMP_HIT_VER: 0.02,
@@ -81,8 +81,8 @@ export const stage1__mob1 = {
 };
 export const stage1__mob1a = {
   AGRO_D: 8,
-  RUN_D: 40,
-  HIT_D: [100, 400],
+  RUN_D: 120,
+  HIT_D: [250, 450],
   HIT_VER: 0.6,
   HIT_TIME: [0.5, 2],
   JUMP_HIT_VER: 0.02,
@@ -158,8 +158,8 @@ export const stage1__mob1a = {
 };
 export const stage1__mob1b = {
   AGRO_D: 8,
-  RUN_D: 40,
-  HIT_D: [100, 400],
+  RUN_D: 120,
+  HIT_D: [250, 450],
   HIT_VER: 0.6,
   HIT_TIME: [0.5, 2],
   JUMP_HIT_VER: 0.02,
@@ -239,8 +239,8 @@ export const stage1__mob1c = {
   DIES_SCALE: 0.5,
 
   AGRO_D: 8,
-  RUN_D: 50,
-  HIT_D: [100, 400],
+  RUN_D: 200,
+  HIT_D: [250, 450],
   HIT_VER: 0.6,
   HIT_TIME: [0.5, 2],
   JUMP_HIT_VER: 0.02,
@@ -317,8 +317,8 @@ export const stage1__mob1c = {
 //
 export const stage1__mob2 = {
   AGRO_D: 8,
-  RUN_D: 50,
-  HIT_D: [50, 200],
+  RUN_D: 150,
+  HIT_D: [120, 250],
   HIT_VER: 0.9,
   HIT_TIME: [0.2, 3],
   JUMP_HIT_VER: 0.02,
@@ -375,8 +375,8 @@ export const stage1__mob2 = {
 };
 export const stage1__mob2a = {
   AGRO_D: 7,
-  RUN_D: 40,
-  HIT_D: [50, 200],
+  RUN_D: 150,
+  HIT_D: [120, 250],
   HIT_VER: 0.9,
   HIT_TIME: [0.2, 3],
   JUMP_HIT_VER: 0.02,
@@ -433,8 +433,8 @@ export const stage1__mob2a = {
 };
 export const stage1__mob2b = {
   AGRO_D: 6,
-  RUN_D: 50,
-  HIT_D: [50, 200],
+  RUN_D: 150,
+  HIT_D: [120, 250],
   HIT_VER: 0.9,
   HIT_TIME: [0.2, 3],
   JUMP_HIT_VER: 0.02,
@@ -491,8 +491,8 @@ export const stage1__mob2b = {
 };
 export const stage1__mob2c = {
   AGRO_D: 6,
-  RUN_D: 50,
-  HIT_D: [50, 200],
+  RUN_D: 150,
+  HIT_D: [120, 250],
   HIT_VER: 0.9,
   HIT_TIME: [0.2, 3],
   JUMP_HIT_VER: 0.02,
@@ -566,9 +566,9 @@ export const stage1__mob2c = {
 export const stage1__boss1 = {
   IS_BOSS: true,
 
-  AGRO_D: 16,
-  RUN_D: 50,
-  HIT_D: [50, 150],
+  AGRO_D: 50,
+  RUN_D: 150,
+  HIT_D: [120, 250],
   HIT_VER: 0.9,
   HIT_TIME: [0.2, 4],
   JUMP_HIT_VER: 0.02,

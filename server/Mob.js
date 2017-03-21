@@ -85,7 +85,7 @@ export class Mob {
           const p = q[i];
           const cost = pathGrid[p.x][p.y];
           const check = (x, y, cost) => {
-            if (cost > 60) {
+            if (cost > 200) {
               return;
             }
             if (grid[x] && grid[x][y]) {
@@ -538,7 +538,7 @@ export class Mob {
     if (source.kind === 'player' && this.opts.VOIDS_COUNT) {
       source.owner.params.fighter.params.voidsCount +=
         this.opts.VOIDS_COUNT;
-      source.owner.saveParam('fighter', 'params',
+      source.owner.saveSharedParam('fighter', 'params',
         source.owner.params.fighter.params);
     }
 

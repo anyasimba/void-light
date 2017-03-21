@@ -117,7 +117,6 @@ export class Client extends global.Client {
   }
   async saveSharedParam(slug, key, value) {
     this.saveParam(slug, key, value);
-    console.log('emit', slug, key, value);
     this.emit('param', {
       slug: slug,
       key: key,
@@ -125,7 +124,6 @@ export class Client extends global.Client {
     });
   }
   async saveParam(slug, key, value) {
-    console.log(slug, key, value);
     this.params[slug] = this.params[slug] || {};
     this.params[slug][key] = value;
     await mongoUpdate('clients', {
@@ -223,15 +221,15 @@ export class Client extends global.Client {
   }
 
   onDie(source) {
+    if (!this.player.invade) {
+      this.params.fighter.params.voidsCount = 0;
+      this.saveSharedParam('fighter', 'params', this.params.fighter.params);
+    } else {
+      delete this.player.invade;
+    }
     setTimeout(() => {
       if (!this.gameLevelZone) {
         return;
-      }
-      if (!this.player.invade) {
-        this.params.fighter.params.voidsCount = 0;
-        this.saveParam('fighter', 'params', this.params.fighter.params);
-      } else {
-        delete this.player.invade;
       }
       this.gameLevelZone.rebornPlayer(this.player);
       this.player.reborn();
