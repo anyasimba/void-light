@@ -169,7 +169,7 @@ export class Client extends global.Client {
         });
       });
 
-    this.params = JSON.parse(getCookie('params') || '{}');
+    this.params = {};
   }
 
   onConnect() {
