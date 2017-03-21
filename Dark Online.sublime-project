@@ -4,8 +4,8 @@
     {
       "file_exclude_patterns":
       [
-        "client.js",
-        "client.dev.js",
+        "./client.js",
+        "./client.dev.js",
       ],
       "folder_exclude_patterns":
       [
