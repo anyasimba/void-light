@@ -113,10 +113,10 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
   breakAction() {
     if (this.isOpening) {
       this.isClosing = 4 - this.isOpening;
-      delete this.isOpening;
+      this.isOpening = -1;
     } else if (this.isClosing) {
       this.isOpening = 4 - this.isClosing;
-      delete this.isClosing;
+      this.isClosing = -1;
     }
     this.emitAll('break', {
       time: this.isOpening || this.isClosing,
