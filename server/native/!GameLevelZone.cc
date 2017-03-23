@@ -57,9 +57,9 @@ void GameLevelZoneObject__getOthers(const FunctionCallbackInfo<Value>& args) {
 
   GameLevelZoneObject *self = (GameLevelZoneObject *)node::Buffer::Data(args[0]->ToObject());
 
-  Local<Array> array = Array::New(isolate, self->others.size());
+  Local<Array> array = Array::New(isolate, (int)self->others.size());
 
-  for(int i = 0; i < self->others.size(); ++i) {
+  for(int i = 0; i < (int)self->others.size(); ++i) {
     GameLevelZoneObject *other = self->others[i];
     Local<Object> js = Local<Object>::New(isolate, other->js);
     array->Set(i, js);
@@ -93,17 +93,17 @@ void new__GameLevelZone(const FunctionCallbackInfo<Value>& args) {
 
   Local<Array> grid = Local<Array>::Cast(args[1]);
   self->grid.resize(grid->Length());
-  for (int x = 0; x < (int) grid->Length(); ++x) {
+  for (int x = 0; x < (int)grid->Length(); ++x) {
     Local<Array> col = Local<Array>::Cast(grid->Get(x));
     self->grid[x].resize(col->Length());
-    for (int y = 0; y < (int) col->Length(); ++y) {
-      int v = (int) col->Get(y)->NumberValue();
+    for (int y = 0; y < (int)col->Length(); ++y) {
+      int v = (int)col->Get(y)->NumberValue();
       self->grid[x][y] = v;
     }
   }
 
-  const int cell_w = ceil(self->grid.size() * WALL_SIZE / self->CELL_SIZE());
-  const int cell_h = ceil(self->grid[0].size() * WALL_SIZE / self->CELL_SIZE());
+  const int cell_w = (int)ceil(self->grid.size() * WALL_SIZE / self->CELL_SIZE());
+  const int cell_h = (int)ceil(self->grid[0].size() * WALL_SIZE / self->CELL_SIZE());
   self->cells.resize(cell_w);
   for (int x = 0; x < cell_w; ++x) {
     self->cells[x].resize(cell_h);
@@ -150,17 +150,17 @@ void GameLevelZone__removeObject(const FunctionCallbackInfo<Value>& args) {
   GameLevelZone *self = (GameLevelZone *)node::Buffer::Data(args[0]->ToObject());
   GameLevelZoneObject *object = (GameLevelZoneObject *)node::Buffer::Data(args[1]->ToObject());
 
-  for (int i = 0; i < self->objects.size(); ++i) {
+  for (int i = 0; i < (int)self->objects.size(); ++i) {
     GameLevelZoneObject *other = self->objects[i];
     if (other == object) {
       self->objects.erase(self->objects.begin() + i);
     }
   }
 
-  for (int i = 0; i < object->cells.size(); ++i) {
+  for (int i = 0; i < (int)object->cells.size(); ++i) {
     GameLevelZoneObjectCell& cell = object->cells[i];
     vector<GameLevelZoneObject *>& list = *cell.list;
-    for(int j = 0; j < list.size(); ++j) {
+    for(int j = 0; j < (int)list.size(); ++j) {
       GameLevelZoneObject *other = list[j];
       if (other == object) {
         list.erase(list.begin() + j);
