@@ -35,20 +35,36 @@ Object.assign(GameLevelZone.prototype, {
   },
 
   doDamageRadialArea2Circle(source, opts, other) {
+    let rollSX = 1;
+    let rollSY = 1;
+    if (source.inRoll) {
+      const f = Math.sin(
+        (source.inRoll.time / source.inRoll.duration * 2 + 0.5) * Math.PI
+      );
+      if (source.inHit && !source.inJump) {
+        rollSY = f;
+      } else {
+        rollSX = f;
+      }
+    }
+
     const rel = other.pos
       .subtract(source.pos);
 
     const adx = rel.length() - other.body.size * 0.5;
-    if (adx > opts.d) {
+    if (adx > opts.d * Math.abs(rollSX)) {
       return;
     }
     const ady = other.body.size * 0.5;
     let da = new vec3(adx, ady, 0).toAngle();
     let a = Math.abs(rel.toAngle() - opts.hitVec.toAngle());
+    if (rollSX < 0) {
+      a = 180 - a;
+    }
     if (a > 180) {
       a = 360 - a;
     }
-    if (a > opts.a + da) {
+    if (a > opts.a * Math.abs(rollSY) + da) {
       return;
     }
 

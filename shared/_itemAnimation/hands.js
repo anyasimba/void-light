@@ -82,6 +82,7 @@ export function ia__hands__doHit(opts) {
           d: 280,
           a: 70,
           impulse: 1300,
+          hand: 2,
         }
         if (this.inRoll) {
           damageOpts.a = 80;

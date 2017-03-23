@@ -36,16 +36,16 @@ export function ia_axe__doHit(opts) {
       });
       this.step(time + 0.075, () => {
         const damageOpts = {
-          d: 250,
+          d: 260,
           a: 5,
           impulse: opts.impulse1 || 600,
         }
         if (this.inRoll) {
           damageOpts.a = 10;
-          damageOpts.d = 250;
+          damageOpts.d = 260;
         }
         if (this.inJump) {
-          damageOpts.d = 250;
+          damageOpts.d = 260;
         }
         this.doDamageRadialArea(damageOpts);
       });
@@ -98,16 +98,16 @@ export function ia_axe__doHit(opts) {
       });
       this.step(time + 0.075, () => {
         const damageOpts = {
-          d: 250,
+          d: 260,
           a: 5,
           impulse: opts.impulse2 || 600,
         }
         if (this.inRoll) {
           damageOpts.a = 10;
-          damageOpts.d = 250;
+          damageOpts.d = 260;
         }
         if (this.inJump) {
-          damageOpts.d = 250;
+          damageOpts.d = 260;
         }
         this.doDamageRadialArea(damageOpts);
       });
@@ -161,16 +161,16 @@ export function ia_axe__doHit(opts) {
       });
       this.step(time + 0.075, () => {
         const damageOpts = {
-          d: 250,
+          d: 260,
           a: 5,
           impulse: opts.impulse3 || 600,
         }
         if (this.inRoll) {
           damageOpts.a = 10;
-          damageOpts.d = 250;
+          damageOpts.d = 260;
         }
         if (this.inJump) {
-          damageOpts.d = 250;
+          damageOpts.d = 260;
         }
         this.doDamageRadialArea(damageOpts);
       });

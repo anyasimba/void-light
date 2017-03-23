@@ -317,10 +317,11 @@ export class GameLevelZone {
           const mob = tempMobs[i];
           if (!mob.fighter.isAlive) {
             tempMobs.splice(i, 1);
-          } else {
-            mob.checkPlayer(x, y, client.player);
-            ++i;
+            continue;
           }
+
+          mob.checkPlayer(x, y, client.player);
+          ++i;
         }
       }
     }

@@ -17,6 +17,8 @@ export function parseCookies(rc) {
   return list;
 }
 
+const clients = {};
+
 export class Client extends global.Client {
   constructor(sock) {
     super(sock);
@@ -107,9 +109,10 @@ export class Client extends global.Client {
       });
     }
 
-    await this.saveParam('info', 'params', {
-      lastConnect: new Date(),
-    });
+    this.params.info = this.params.info || {}
+    this.params.info.params = this.params.info.params || {}
+    this.params.info.params.lastConnect = new Date();
+    await this.saveParam('info', 'params', this.params.info.params);
 
     this.netID = Client.createID();
 
@@ -129,7 +132,7 @@ export class Client extends global.Client {
     await mongoUpdate('clients', {
       login: this.data.login
     }, {
-      params: this.params,
+      ['params.' + slug + '.' + key]: this.params[slug][key],
     });
   }
 
@@ -146,8 +149,25 @@ export class Client extends global.Client {
       }
       this.username = data.username;
 
+      if (clients[this.username]) {
+        const other = clients[this.username];
+        other.emit('otherClient');
+        other.__sock = this.__sock;
+        delete this.__sock;
+
+        if (other.player) {
+          other.emit('playerID', {
+            playerID: other.player.id,
+          });
+        }
+        if (other.gameLevelZone) {
+          other.gameLevelZone.emitTo(other);
+        }
+        return;
+      }
       await this.loadClient();
       this.login();
+      clients[this.username] = this;
     } catch (e) {
       console.log(e, e.stack);
       process.exit(1);
@@ -202,21 +222,25 @@ export class Client extends global.Client {
     tasks[this.netID] = this;
   }
 
-  onDisconnect() {
-    setTimeout(() => {
-      if (this.gameLevelZone) {
-        this.gameLevelZone.removeClient(this);
-      }
-      delete this.gameLevelZone;
+  async onDisconnect() {
+    if (this.username) {
+      delete clients[this.username];
 
-      if (this.player) {
-        this.player.destructor();
-      }
-    }, 10000);
+      this.params.info.params.lastDisconnect = new Date();
+      await this.saveParam('info', 'params', this.params.info.params);
 
-    this.saveParam('info', 'params', {
-      lastDisconnect: new Date(),
-    });
+      setTimeout(() => {
+        if (this.gameLevelZone) {
+          this.gameLevelZone.removeClient(this);
+        }
+        delete this.gameLevelZone;
+
+        if (this.player) {
+          this.player.destructor();
+        }
+      }, 10000);
+    }
+
     console.log('User disconnected', this.username);
   }
 
@@ -359,12 +383,20 @@ export class Client extends global.Client {
           if (item.count <= 0 && !itemData.IS_KEEP) {
             this.params.items.list.splice(i, 1);
             delete this.params.items.clothed[data.i];
-            for (let j = 0; j < 8; ++j) {
+
+            const check = j => {
               const k = this.params.items.clothed[j];
-              if (k && k > i) {
+              if (k !== undefined && k > i) {
                 --this.params.items.clothed[j];
               }
             }
+            for (let j = 0; j < 8; ++j) {
+              check(j);
+            }
+            check('leftHand1');
+            check('leftHand2');
+            check('rightHand1');
+            check('rightHand2');
           }
           this.saveSharedParam('items', 'list', this.params.items.list);
           this.saveSharedParam('items', 'clothed', this.params.items.clothed);

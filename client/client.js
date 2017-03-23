@@ -192,7 +192,6 @@ export class Client extends global.Client {
     const id = packet.data[1].id;
     const parentID = packet.data[1].parentID;
     let name = packet.data[0];
-
     const data = {};
     for (const k in packet.data[1]) {
       data[k] = packet.data[1][k];
@@ -384,5 +383,12 @@ export class Client extends global.Client {
   onParam(data) {
     this.params[data.slug] = this.params[data.slug] || {};
     this.params[data.slug][data.key] = data.value;
+  }
+
+  onOtherClient() {
+    makeMessage('Кто-то играет за вас..', '#FFAAAA', 'Neucha');
+    setTimeout(() => {
+      window.location.reload();
+    }, 5000);
   }
 }

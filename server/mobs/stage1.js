@@ -135,6 +135,8 @@ export const stage1__mob1a = {
       angle: 0,
       vAngle: 20,
       hAngle: 20,
+
+      bodyScale: 3,
     });
   },
   leftHand(parent) {
@@ -153,6 +155,8 @@ export const stage1__mob1a = {
       angle: -0,
       vAngle: 20,
       hAngle: 20,
+
+      bodyScale: 1,
     });
   },
 };
@@ -591,7 +595,7 @@ export const stage1__boss1 = {
     moveTimeF: 1.1,
 
     hitSpeed: 1.3,
-    damage: 30,
+    damage: 18,
 
     ACC: 300,
     RUN_ACC: 500,
@@ -610,6 +614,7 @@ export const stage1__boss1 = {
       type: 'shield',
       kind: 'stage1__boss1__leftHand',
       hand: 2,
+      bodyScale: 0.8,
       pos: {
         x: -15,
         y: -30,
@@ -625,9 +630,10 @@ export const stage1__boss1 = {
       type: 'weapon',
       kind: 'stage1__boss1__rightHand',
       hand: 1,
-      balance: 10,
-      stamina: 40,
-      staminaTime: 2,
+      balance: 8,
+      stamina: 20,
+      staminaTime: 1,
+      bodyScale: 0.8,
       pos: {
         x: -25,
         y: 25,
