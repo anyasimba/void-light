@@ -88,7 +88,7 @@ export class Mob {
             if (cost > 200) {
               return;
             }
-            if (grid[x] && grid[x][y]) {
+            if (grid[x] && (grid[x][y] === 1 || grid[x][y] === 2)) {
               return;
             }
             if (pathGrid[x] && pathGrid[x][y] !== undefined &&
@@ -492,6 +492,20 @@ export class Mob {
   }
 
   onDie(source) {
+    if (this.area) {
+      const clients = this.gameLevelZone.clients;
+      for (const k in clients) {
+        const client = clients[k];
+        if (client.player && client.player.area === this.area) {
+          delete client.player.area;
+          client.emit('bossDead', {});
+        }
+      }
+    }
+
+    if (!source) {
+      return;
+    }
     this.opts.dies = this.opts.dies || 0;
 
     if (this.opts.dies === 0) {
@@ -543,17 +557,6 @@ export class Mob {
         this.opts.VOIDS_COUNT;
       source.owner.saveSharedParam('fighter', 'params',
         source.owner.params.fighter.params);
-    }
-
-    if (this.area) {
-      const clients = this.gameLevelZone.clients;
-      for (const k in clients) {
-        const client = clients[k];
-        if (client.player && client.player.area === this.area) {
-          delete client.player.area;
-          client.emit('bossDead', {});
-        }
-      }
     }
   }
 }

@@ -196,7 +196,7 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
   }
 
   // Friction.
-  float FRICTION_F = 1;
+  float FRICTION_F = self->groundFriction;
   if (self->inJump) {
     FRICTION_F = 0.f;
   } else if (self->inRoll) {

@@ -56,6 +56,7 @@ void init(Local<Object> exports) {
   SET_NUMBER_PROPERTY(GameLevelZoneObject, PosY, pos.y);
   SET_NUMBER_PROPERTY(GameLevelZoneObject, SpeedX, speed.x);
   SET_NUMBER_PROPERTY(GameLevelZoneObject, SpeedY, speed.y);
+  SET_NUMBER_PROPERTY(GameLevelZoneObject, GroundFriction, groundFriction);
   NODE_SET_METHOD(exports, "GameLevelZoneObject__getOthers", GameLevelZoneObject__getOthers);
 
   NODE_SET_METHOD(exports, "new__Bullet", new__Bullet);

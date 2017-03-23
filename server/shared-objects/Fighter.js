@@ -44,6 +44,8 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       stamina: this.stamina,
 
       effects: this.effects,
+
+      groundFriction: this.groundFriction,
     };
   }
   emitPos() {
@@ -55,6 +57,8 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
 
       inRun: this.inRun,
       inBlock: this.inBlock,
+
+      groundFriction: this.groundFriction,
     });
   }
   emitParams() {
@@ -836,7 +840,8 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       if (this.inHit && this.hitStage !== 1) {
         jumpData.force = 300;
       }
-      jumpData.force *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
+      jumpData.force *= 0.5 + Math.min(this.speed.length() / 700, 0.8) /
+        (this.groundFriction * 0.5 + 0.5);
       native.Fighter__onJump(this.native, jumpData);
       this.emitAll('jump', jumpData);
       this.emitPos();
@@ -848,5 +853,20 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
   }
   clearSteps() {
     native.Fighter__clearSteps(this.native);
+  }
+
+  fall() {
+    this.hp = 0;
+    this.speed = new vec3();
+    this.emitParams();
+    this.onDie();
+  }
+  groundAffect() {
+    this.hp -= 20;
+    this.emitParams();
+    if (this.hp <= 0) {
+      this.speed = new vec3();
+      this.onDie();
+    }
   }
 }

@@ -72,13 +72,13 @@ Object.assign(GameLevelZone.prototype, {
   },
 
   doDamage(source, opts, other) {
+    console.log(other.stunTime);
     const isInBlock = other.shield &&
       other.inBlock &&
       other.stamina > 0 &&
       !other.stunTime &&
       !other.waitTime &&
       !other.inJump &&
-      !other.inStun &&
       !other.inHit;
 
     let balanceF = source.BALANCE_SCALE || 1;

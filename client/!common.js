@@ -156,8 +156,8 @@ function createLayer() {
   const layer = new Phaser.Group(game);
   layer.sub = {};
   layer.sub.ground = layer.add(new Phaser.Group(game));
-  layer.sub.deads = layer.add(new Phaser.Group(game));
   layer.sub.bottom = layer.add(new Phaser.Group(game));
+  layer.sub.deads = layer.add(new Phaser.Group(game));
   layer.sub.middle = layer.add(new Phaser.Group(game));
   layer.sub.walls = layer.add(new Phaser.Group(game));
   layer.sub.top = layer.add(new Phaser.Group(game));
@@ -490,7 +490,7 @@ function createGame() {
             }
           }
 
-          const scaleF = Math.ceil(game.scaleFactor * 10) * 0.1;
+          const scaleF = game.scaleFactor;
           global.ts = WALL_SIZE * 8;
           const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
           const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
@@ -518,12 +518,34 @@ function createGame() {
           const bricksView = new Phaser.TileSprite(
             game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
             'bricks');
-          const stoneView = new Phaser.TileSprite(
-            game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
-            'stone');
           bricksView.darken = new Phaser.TileSprite(
             game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
             makeDarken(bricksView));
+
+          const wholeView = new Phaser.Graphics(
+            game, 0, 0);
+          wholeView.beginFill(0x000000, 1.0);
+          wholeView.drawRect(0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF);
+          wholeView.endFill();
+          const iceView = new Phaser.Graphics(
+            game, 0, 0);
+          iceView.beginFill(0xAACCFF, 0.2);
+          iceView.drawRect(0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF);
+          iceView.endFill();
+          const slowView = new Phaser.Graphics(
+            game, 0, 0);
+          slowView.beginFill(0xFFCCAA, 0.2);
+          slowView.drawRect(0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF);
+          slowView.endFill();
+          const lavaView = new Phaser.Graphics(
+            game, 0, 0);
+          lavaView.beginFill(0xFF8800, 0.5);
+          lavaView.drawRect(0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF);
+          lavaView.endFill();
+
+          const stoneView = new Phaser.TileSprite(
+            game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
+            'stone');
           stoneView.darken = new Phaser.TileSprite(
             game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
             makeDarken(stoneView));
@@ -537,54 +559,81 @@ function createGame() {
               const slug = dictionary[v];
 
               let view;
+              let isWall = false;
               switch (slug) {
                 case 'wall':
                   view = stoneView;
+                  isWall = true;
                   break;
                 case 'wall2':
                   view = bricksView;
+                  isWall = true;
+                  break;
+                case 'whole':
+                  view = wholeView;
+                  break;
+                case 'ice':
+                  view = iceView;
+                  break;
+                case 'slow':
+                  view = slowView;
+                  break;
+                case 'lava':
+                  view = lavaView;
                   break;
                 default:
               }
               if (view) {
                 const f = scaleF;
-                for (let i = 0; i < ln; ++i) {
-                  let pad = i * 24 / (ln - 1) + Math.random() * 16;
-
-                  let px = 0;
-                  let py = 0;
+                if (!isWall) {
                   let v = view;
-                  if (i < ln - 1) {
-                    v = view.darken;
-                  }
-
-                  if (!grid[x - 1] || !grid[x - 1][y]) {
-                    px = pad;
-                  }
-                  if (!grid[x] || !grid[x][y - 1]) {
-                    py = pad;
-                  }
-                  v.width = (WALL_SIZE - px) * scaleF;
-                  v.height = (WALL_SIZE - py) * scaleF;
-                  if (!grid[x + 1] || !grid[x + 1][y]) {
-                    v.width -= pad * scaleF;
-                  }
-                  if (!grid[x] || !grid[x][y + 1]) {
-                    v.height -= pad * scaleF;
-                  }
-                  const sf = (0.7 + i * 0.3 / (ln - 1));
-                  v.tilePosition.x = (-x * WALL_SIZE - px) / sf;
-                  v.tilePosition.y = (-y * WALL_SIZE - py) / sf;
-                  v.tileScale.x = f * sf;
-                  v.tileScale.y = f * sf;
                   const cx = Math.floor(x * WALL_SIZE / ts);
                   const cy = Math.floor(y * WALL_SIZE / ts);
-                  textures[i][cx][cy].isUsed = true;
-                  textures[i][cx][cy].renderXY(
+                  textures[0][cx][cy].isUsed = true;
+                  textures[0][cx][cy].renderXY(
                     v,
-                    (x * WALL_SIZE - cx * ts + px) * scaleF,
-                    (y * WALL_SIZE - cy * ts + py) * scaleF,
+                    (x * WALL_SIZE - cx * ts) * f,
+                    (y * WALL_SIZE - cy * ts) * f,
                     false);
+                } else {
+                  for (let i = 0; i < ln; ++i) {
+                    let pad = i * 24 / (ln - 1) + Math.random() * 16;
+
+                    let px = 0;
+                    let py = 0;
+                    let v = view;
+                    if (i < ln - 1) {
+                      v = view.darken;
+                    }
+
+                    if (!grid[x - 1] || !grid[x - 1][y]) {
+                      px = pad;
+                    }
+                    if (!grid[x] || !grid[x][y - 1]) {
+                      py = pad;
+                    }
+                    v.width = (WALL_SIZE - px) * scaleF;
+                    v.height = (WALL_SIZE - py) * scaleF;
+                    if (!grid[x + 1] || !grid[x + 1][y]) {
+                      v.width -= pad * scaleF;
+                    }
+                    if (!grid[x] || !grid[x][y + 1]) {
+                      v.height -= pad * scaleF;
+                    }
+                    const sf = (0.7 + i * 0.3 / (ln - 1));
+                    v.tilePosition.x = (-x * WALL_SIZE - px) / sf;
+                    v.tilePosition.y = (-y * WALL_SIZE - py) / sf;
+                    v.tileScale.x = f * sf;
+                    v.tileScale.y = f * sf;
+                    const cx = Math.floor(x * WALL_SIZE / ts);
+                    const cy = Math.floor(y * WALL_SIZE / ts);
+                    textures[i][cx][cy].isUsed = true;
+                    textures[i][cx][cy].renderXY(
+                      v,
+                      (x * WALL_SIZE - cx * ts + px) * scaleF,
+                      (y * WALL_SIZE - cy * ts + py) * scaleF,
+                      false);
+                  }
                 }
               }
             }

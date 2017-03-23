@@ -103,4 +103,10 @@ export const MixNativeGameObject = base => class extends base {
     native.GameLevelZoneObject__setSpeedX(this.native, v.x);
     native.GameLevelZoneObject__setSpeedY(this.native, v.y);
   }
+  get groundFriction() {
+    return native.GameLevelZoneObject__getGroundFriction(this.native);
+  }
+  set groundFriction(v) {
+    native.GameLevelZoneObject__setGroundFriction(this.native, v);
+  }
 }

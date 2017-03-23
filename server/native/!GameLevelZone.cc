@@ -33,6 +33,11 @@ struct GameLevelZoneObject {
   vec2 beforeSpeed2;
   bool hasPosChange;
 
+  float beforeGroundFriction;
+  float groundFriction;
+
+  float groundAffectTime;
+
   short AREA_W;
   short AREA_H;
   BODY_TYPE_ENUM BODY_TYPE;
@@ -50,6 +55,7 @@ NUMBER_PROPERTY(GameLevelZoneObject, PosX, pos.x);
 NUMBER_PROPERTY(GameLevelZoneObject, PosY, pos.y);
 NUMBER_PROPERTY(GameLevelZoneObject, SpeedX, speed.x);
 NUMBER_PROPERTY(GameLevelZoneObject, SpeedY, speed.y);
+NUMBER_PROPERTY(GameLevelZoneObject, GroundFriction, groundFriction);
 
 void GameLevelZoneObject__getOthers(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();
@@ -139,6 +145,9 @@ void GameLevelZone__addObject(const FunctionCallbackInfo<Value>& args) {
   object->hasCells = false;
   object->AREA_W = 500;
   object->AREA_H = 500;
+
+  object->groundFriction = 1.f;
+  object->groundAffectTime = -1.f;
 
   self->objects.push_back(object);
 }

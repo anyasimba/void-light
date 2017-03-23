@@ -51,7 +51,20 @@ export class GameLevelZone {
           const slug = this.map.dictionary[v];
           if (v !== 0) {
             switch (slug) {
-              default: cache.grid[x][y] = 1;
+              case 'ice':
+                cache.grid[x][y] = 5;
+                break;
+              case 'slow':
+                cache.grid[x][y] = 4;
+                break;
+              case 'lava':
+                cache.grid[x][y] = 3;
+                break;
+              case 'whole':
+                cache.grid[x][y] = 2;
+                break;
+              default:
+                cache.grid[x][y] = 1;
             }
           }
         }

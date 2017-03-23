@@ -35,6 +35,7 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
 
     object->beforePos2 = object->pos;
     object->beforeSpeed2 = object->speed;
+    object->beforeGroundFriction = object->groundFriction;
     object->isBodyChecked = false;
 
     GameLevelZone__updateObjectWithBodyCells(self, object);
@@ -58,6 +59,31 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
 
     int cx = (int) floor(object->pos.x / WALL_SIZE);
     int cy = (int) floor(object->pos.y / WALL_SIZE);
+    if (cx >= 0 && cx < (int)self->grid.size()) {
+      if (cy >= 0 && cy < (int)self->grid[cx].size()) {
+        if (self->grid[cx][cy] == 2) {
+          if (!((Fighter *)object)->inJump) {
+            Local<Object> js = Local<Object>::New(isolate, object->js);
+            Local<Function>::Cast(js->GET("fall"))->Call(js, 0, nullptr);
+          }
+        } else if (self->grid[cx][cy] == 3) {
+          if (object->groundAffectTime <= 0.f) {
+            object->groundAffectTime = 0.5f;
+            Local<Object> js = Local<Object>::New(isolate, object->js);
+            Local<Function>::Cast(js->GET("groundAffect"))->Call(js, 0, nullptr);
+          }
+
+          object->groundAffectTime -= dt;
+        } else if (self->grid[cx][cy] == 4) {
+          object->groundFriction = 2.f;
+        } else if (self->grid[cx][cy] == 5) {
+          object->groundFriction = 0.f;
+        } else {
+          object->groundAffectTime = -1.f;
+          object->groundFriction = 1.f;
+        }
+      }
+    }
     for (int x = -1; x <= 1; ++x) {
       for (int y = -1; y <= 1; ++y) {
         const int X = x + cx;
@@ -86,7 +112,8 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
       object->beforePos2.x != object->pos.x ||
       object->beforePos2.y != object->pos.y ||
       object->beforeSpeed2.x != object->speed.x ||
-      object->beforeSpeed2.y != object->speed.y;
+      object->beforeSpeed2.y != object->speed.y ||
+      object->beforeGroundFriction != object->groundFriction;
     if (hasChange) {
       Local<Object> js = Local<Object>::New(isolate, object->js);
       Local<Function>::Cast(js->GET("emitPos"))->Call(js, 0, nullptr);
