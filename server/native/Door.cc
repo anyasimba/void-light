@@ -14,11 +14,6 @@ void new__Door(const FunctionCallbackInfo<Value>& args) {
 
   Door *self = new Door;
 
-  Local<Object> bufferObj(node::Buffer::New(
-    isolate,
-    (char *)self,
-    sizeof(Door)).ToLocalChecked());
-
   self->js.Reset(isolate, args[0]->ToObject());
   self->vtable = VTABLE::DOOR;
 
@@ -26,7 +21,7 @@ void new__Door(const FunctionCallbackInfo<Value>& args) {
   self->isClosing = -1.f;
   self->isOpened = false;
 
-  args.GetReturnValue().Set(bufferObj);
+  args.GetReturnValue().Set(node_buffer_new(isolate, self));
 }
 NUMBER_PROPERTY(Door, IsOpening, isOpening);
 NUMBER_PROPERTY(Door, IsClosing, isClosing);

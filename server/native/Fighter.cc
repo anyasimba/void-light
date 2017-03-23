@@ -25,7 +25,7 @@ struct Fighter: GameLevelZoneObject {
   vec2 look;
   float LOOK_ROTATE_F;
   float LOOK_ROTATE_IN_HIT_F;
-  
+
   float moveTimeF;
 
   bool inBlock;
@@ -71,11 +71,6 @@ void new__Fighter(const FunctionCallbackInfo<Value>& args) {
 
   Fighter *self = new Fighter;
 
-  Local<Object> bufferObj(node::Buffer::New(
-    isolate,
-    (char *)self,
-    sizeof(Fighter)).ToLocalChecked());
-
   self->js.Reset(isolate, args[0]->ToObject());
   self->vtable = VTABLE::FIGHTER;
 
@@ -116,8 +111,8 @@ void new__Fighter(const FunctionCallbackInfo<Value>& args) {
   self->mp = (float) opts->GET("mp")->NumberValue();
   self->BALANCE = (float) opts->GET("BALANCE")->NumberValue();
   self->balance = (float) opts->GET("balance")->NumberValue();
-  
-  args.GetReturnValue().Set(bufferObj);
+
+  args.GetReturnValue().Set(node_buffer_new(isolate, self));
 }
 
 NUMBER_PROPERTY(Fighter, InputMoveX, inputMove.x);
@@ -171,7 +166,7 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
   const float A_AIR_F = (1.f - AIR_F) / (1.f - AIR_FRICTION);
 
   self->speed *= AIR_F;
-  
+
   bool isMove = self->inputMove.length() > 0 &&
     !self->inHit &&
     !self->inJump &&
@@ -455,6 +450,6 @@ void Fighter__getEffects(const FunctionCallbackInfo<Value>& args) {
     }
     effects->Set(i, effectObj);
   }
-  
+
   args.GetReturnValue().Set(effects);
 }

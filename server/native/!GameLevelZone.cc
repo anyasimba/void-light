@@ -89,11 +89,6 @@ void new__GameLevelZone(const FunctionCallbackInfo<Value>& args) {
 
   GameLevelZone *self = new GameLevelZone;
 
-  Local<Object> bufferObj(node::Buffer::New(
-    isolate,
-    (char *)self,
-    sizeof(GameLevelZone)).ToLocalChecked());
-
   self->js = args[0]->ToObject();
 
   Local<Array> grid = Local<Array>::Cast(args[1]);
@@ -113,8 +108,8 @@ void new__GameLevelZone(const FunctionCallbackInfo<Value>& args) {
   for (int x = 0; x < cell_w; ++x) {
     self->cells[x].resize(cell_h);
   }
-  
-  args.GetReturnValue().Set(bufferObj);
+
+  args.GetReturnValue().Set(node_buffer_new(isolate, self));
 }
 
 Isolate *isolate;

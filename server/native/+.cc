@@ -36,6 +36,7 @@ using namespace std;
 const int WALL_SIZE = 96;
 
 #include "!math.cc"
+#include "!utils.cc"
 #include "!GameLevelZone.cc"
 #include "Bullet.cc"
 #include "Checkpoint.cc"
