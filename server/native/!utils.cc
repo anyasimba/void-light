@@ -9,3 +9,21 @@ v8::Local<v8::Object> node_buffer_new(v8::Isolate *isolate, T *object) {
   );
   return buffer.ToLocalChecked();
 }
+
+template <typename Collection, typename T>
+void remove_first(Collection *coll, T value) {
+  auto it = std::find(coll->begin(), coll->end(), value);
+  if (it != coll->end()) {
+    coll->erase(it);
+  }
+}
+
+template <typename Collection, typename Predicate>
+void remove_if(Collection *coll, Predicate pred) {
+  for (size_t i = 0; i < coll->size(); ++i) {
+    if (pred((*coll)[i])) {
+      coll->erase(coll->begin() + i);
+      --i;
+    }
+  }
+}

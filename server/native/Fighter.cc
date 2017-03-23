@@ -1,5 +1,5 @@
 struct FighterTimeout {
-  Persistent<Function> *fn;
+  unique_ptr<Persistent<Function>> fn;
   float time;
 };
 
@@ -273,27 +273,27 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
     self->waitTime -= dt;
   }
 
-  for (int i = 0; i < (int)self->timeouts.size(); ++i) {
-    FighterTimeout& timeout = self->timeouts[i];
-    timeout.time -= dt;
-    if (timeout.time <= 0.f) {
-      Persistent<Function> *fnPtr = timeout.fn;
-      Local<Function> fn = Local<Function>::New(isolate, *fnPtr);
-      Local<Object> js = Local<Object>::New(isolate, self->js);
-      self->timeouts.erase(self->timeouts.begin() + i);
-      --i;
-      fn->Call(js, 0, nullptr);
-      delete fnPtr;
+  remove_if(&self->timeouts, [&](auto &timeout) {
+    if (timeout.fn == nullptr) {
+      return true;
     }
-  }
+    timeout.time -= dt;
+    if (timeout.time > 0.f) {
+      return false;
+    }
 
-  for (int i = 0; i < (int)self->effects.size(); ++i) {
-    FighterEffect& effect = self->effects[i];
+    auto fnPtr = std::move(timeout.fn);
+    Local<Function> fn = Local<Function>::New(isolate, *fnPtr);
+    Local<Object> js = Local<Object>::New(isolate, self->js);
+    fn->Call(js, 0, nullptr);
+
+    return true;
+  });
+
+  remove_if(&self->effects, [&](auto &effect) {
     effect.time -= dt;
     if (effect.time <= 0.f) {
-      self->effects.erase(self->effects.begin() + i);
-      --i;
-      continue;
+      return true;
     }
 
     float v = dt * effect.value / effect.duration;
@@ -313,7 +313,9 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
       default:
         break;
     }
-  }
+
+    return false;
+  });
 }
 
 void Fighter__onRoll(const FunctionCallbackInfo<Value>& args) {
@@ -362,9 +364,9 @@ void Fighter__step(const FunctionCallbackInfo<Value>& args) {
 
   Fighter *self = (Fighter *)node::Buffer::Data(args[0]->ToObject());
   FighterTimeout timeout;
-  timeout.fn = new Persistent<Function>(isolate, Local<Function>::Cast(args[1]));
+  timeout.fn = std::make_unique<Persistent<Function>>(isolate, Local<Function>::Cast(args[1]));
   timeout.time = (float) args[2]->NumberValue();
-  self->timeouts.push_back(timeout);
+  self->timeouts.push_back(std::move(timeout));
 }
 void Fighter__clearSteps(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();
@@ -372,12 +374,7 @@ void Fighter__clearSteps(const FunctionCallbackInfo<Value>& args) {
 
   Fighter *self = (Fighter *)node::Buffer::Data(args[0]->ToObject());
 
-  for (int i = 0; i < (int)self->timeouts.size(); ++i) {
-    FighterTimeout& timeout = self->timeouts[i];
-    delete timeout.fn;
-    self->timeouts.erase(self->timeouts.begin() + i);
-    --i;
-  }
+  self->timeouts.clear();
 }
 void Fighter__addEffect(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();

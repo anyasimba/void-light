@@ -150,23 +150,10 @@ void GameLevelZone__removeObject(const FunctionCallbackInfo<Value>& args) {
   GameLevelZone *self = (GameLevelZone *)node::Buffer::Data(args[0]->ToObject());
   GameLevelZoneObject *object = (GameLevelZoneObject *)node::Buffer::Data(args[1]->ToObject());
 
-  for (int i = 0; i < (int)self->objects.size(); ++i) {
-    GameLevelZoneObject *other = self->objects[i];
-    if (other == object) {
-      self->objects.erase(self->objects.begin() + i);
-    }
-  }
+  remove_first(&self->objects, object);
 
-  for (int i = 0; i < (int)object->cells.size(); ++i) {
-    GameLevelZoneObjectCell& cell = object->cells[i];
-    vector<GameLevelZoneObject *>& list = *cell.list;
-    for(int j = 0; j < (int)list.size(); ++j) {
-      GameLevelZoneObject *other = list[j];
-      if (other == object) {
-        list.erase(list.begin() + j);
-        break;
-      }
-    }
+  for (auto &cell: object->cells) {
+    remove_first(cell.list, object);
   }
   object->cells.clear();
 }
