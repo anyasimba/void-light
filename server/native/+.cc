@@ -1,10 +1,12 @@
 #include <node.h>
 #include <node_buffer.h>
 #include <v8.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <vector>
-#include <math.h>
+#include <memory>
+#include <cmath>
+#include <algorithm>
 
 using namespace v8;
 using namespace std;
@@ -61,7 +63,7 @@ void init(Local<Object> exports) {
 
   NODE_SET_METHOD(exports, "new__Checkpoint", new__Checkpoint);
   updates[VTABLE::CHECKPOINT] = (VFN) Checkpoint__update;
-  
+
   NODE_SET_METHOD(exports, "new__Door", new__Door);
   updates[VTABLE::DOOR] = (VFN) Door__update;
   SET_NUMBER_PROPERTY(Door, IsOpening, isOpening);
