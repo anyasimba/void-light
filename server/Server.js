@@ -1,66 +1,61 @@
 function assert(flag, msg) {
   if (!flag) {
-    console.log(msg);
-    process.exit(1);
+    logAndExit(msg);
+  }
+}
+
+function logAndExit(msg) {
+  console.log(msg);
+  process.exit(1);
+}
+
+async function exitOnErrorAsync(body) {
+  try {
+    return await body();
+  } catch (ex) {
+    logAndExit(ex);
   }
 }
 
 export function mongoInsert(table, v) {
-  return new Promise(r => {
+  return exitOnErrorAsync(() => {
     const collection = mongo.collection(table);
-    collection.insertMany(v, (err, result) => {
-      assert(err === null, err);
-      r(result);
-    });
-  });
+    return collection.insertMany(v);
+  })
 }
+
 export function mongoUpdate(table, k, v) {
-  return new Promise(r => {
+  return exitOnErrorAsync(() => {
     const collection = mongo.collection(table);
-    collection.updateOne(k, {
+    return collection.updateOne(k, {
       $set: v
-    }, (err, result) => {
-      assert(err === null, err);
-      r(result);
     });
   });
 }
+
 export function mongoDelete(table, k) {
-  return new Promise(r => {
+  return exitOnErrorAsync(() => {
     const collection = mongo.collection(table);
-    collection.deleteMany(k, (err, result) => {
-      assert(err === null, err);
-      r(result);
-    });
+    return collection.deleteMany(k);
   });
 }
 export function mongoFind(table, k) {
-  return new Promise(r => {
+  return exitOnErrorAsync(() => {
     const collection = mongo.collection(table);
-    collection.find(k).toArray((err, docs) => {
-      assert(err === null, err);
-      r(docs);
-    });
-  });
+    return collection.find(k).toArray();
+  })
 }
 
-function mongoDB() {
-  const MongoClient = require('mongodb').MongoClient;
-
-  const url = 'mongodb://localhost:27017/voidlight';
-  return new Promise(r => {
-    MongoClient.connect(url, async(err, db) => {
-      assert(err === null, err);
-      console.log("Connected to mongoDB");
-
-      global.mongo = db;
-      r();
-    });
+async function mongoConnect(url) {
+  return exitOnErrorAsync(() => {
+    const { MongoClient } = require('mongodb');
+    return MongoClient.connect(url);
   });
 }
 
 export async function Server() {
-  await mongoDB();
+  global.mongo = await mongoConnect('mongodb://localhost:27017/voidlight');
+  console.log("Connected to mongoDB");
 
   const app = express();
 
