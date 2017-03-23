@@ -273,7 +273,7 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
     self->waitTime -= dt;
   }
 
-  for (int i = 0; i < self->timeouts.size(); ++i) {
+  for (int i = 0; i < (int)self->timeouts.size(); ++i) {
     FighterTimeout& timeout = self->timeouts[i];
     timeout.time -= dt;
     if (timeout.time <= 0.f) {
@@ -287,7 +287,7 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
     }
   }
 
-  for (int i = 0; i < self->effects.size(); ++i) {
+  for (int i = 0; i < (int)self->effects.size(); ++i) {
     FighterEffect& effect = self->effects[i];
     effect.time -= dt;
     if (effect.time <= 0.f) {
@@ -372,7 +372,7 @@ void Fighter__clearSteps(const FunctionCallbackInfo<Value>& args) {
 
   Fighter *self = (Fighter *)node::Buffer::Data(args[0]->ToObject());
 
-  for (int i = 0; i < self->timeouts.size(); ++i) {
+  for (int i = 0; i < (int)self->timeouts.size(); ++i) {
     FighterTimeout& timeout = self->timeouts[i];
     delete timeout.fn;
     self->timeouts.erase(self->timeouts.begin() + i);
@@ -386,23 +386,23 @@ void Fighter__addEffect(const FunctionCallbackInfo<Value>& args) {
   Fighter *self = (Fighter *)node::Buffer::Data(args[0]->ToObject());
   Local<Object> item = args[1]->ToObject();
   bool isUnique = args[2]->BooleanValue();
-  float duration = item->GET("DURATION")->NumberValue();
+  float duration = (float)item->GET("DURATION")->NumberValue();
   float value;
 
   FIGHTER_EFFECTS effect;
   if (item->HAS("HP")) {
     effect = FIGHTER_EFFECTS::HP;
-    value = item->GET("HP")->NumberValue();
+    value = (float)item->GET("HP")->NumberValue();
   } else if (item->HAS("STAMINA")) {
     effect = FIGHTER_EFFECTS::STAMINA;
-    value = item->GET("STAMINA")->NumberValue();
+    value = (float)item->GET("STAMINA")->NumberValue();
   } else if (item->HAS("MP")) {
     effect = FIGHTER_EFFECTS::MP;
-    value = item->GET("MP")->NumberValue();
+    value = (float)item->GET("MP")->NumberValue();
   }
 
   if (isUnique) {
-    for (int i = 0; i < self->effects.size(); ++i) {
+    for (int i = 0; i < (int)self->effects.size(); ++i) {
       FighterEffect& fighterEffect = self->effects[i];
       if (fighterEffect.effect == effect) {
         fighterEffect.value = value;
@@ -426,8 +426,8 @@ void Fighter__getEffects(const FunctionCallbackInfo<Value>& args) {
 
   Fighter *self = (Fighter *)node::Buffer::Data(args[0]->ToObject());
 
-  Local<Array> effects = Array::New(isolate, self->effects.size());
-  for (int i = 0; i < self->effects.size(); ++i) {
+  Local<Array> effects = Array::New(isolate, (int)self->effects.size());
+  for (int i = 0; i < (int)self->effects.size(); ++i) {
     FighterEffect& effect = self->effects[i];
     Local<Object> effectObj = Object::New(isolate);
     effectObj->SET("DURATION", Number::New(isolate, effect.duration));
