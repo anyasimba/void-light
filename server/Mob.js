@@ -339,7 +339,6 @@ export class Mob {
         switch (grid[wx][wy]) {
           case undefined:
             break;
-          case 1:
           case 2:
           case 3:
             if (dx !== 0) {

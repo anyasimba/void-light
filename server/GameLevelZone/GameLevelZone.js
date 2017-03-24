@@ -22,6 +22,7 @@ export class GameLevelZone {
 
   loadMap(mapName) {
     this.mapName = mapName;
+    this.mapConfig = global[mapName];
 
     global.mapCache = global.mapCache || {};
     mapCache[mapName] = mapCache[mapName] || {};
@@ -245,10 +246,16 @@ export class GameLevelZone {
   rebornPlayer(player) {
     if (player.owner.params.checkpoint) {
       const p = player.owner.params.checkpoint.pos;
+      let px = p.x;
+      let py = p.y;
+      if (p.name !== undefined) {
+        px *= WALL_SIZE;
+        py *= WALL_SIZE;
+      }
       const a = Math.random() * Math.PI * 2;
       player.pos = {
-        x: p.x + Math.cos(a) * WALL_SIZE * 2,
-        y: p.y + Math.sin(a) * WALL_SIZE * 2,
+        x: px + Math.cos(a) * WALL_SIZE * 2,
+        y: py + Math.sin(a) * WALL_SIZE * 2,
       };
       Checkpoint.USE(player);
       return;

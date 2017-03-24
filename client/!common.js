@@ -156,6 +156,8 @@ function createLayer() {
   const layer = new Phaser.Group(game);
   layer.sub = {};
   layer.sub.ground = layer.add(new Phaser.Group(game));
+  layer.sub.affects = layer.add(new Phaser.Group(game));
+  layer.sub.affects2 = layer.add(new Phaser.Group(game));
   layer.sub.bottom = layer.add(new Phaser.Group(game));
   layer.sub.deads = layer.add(new Phaser.Group(game));
   layer.sub.middle = layer.add(new Phaser.Group(game));
@@ -289,6 +291,7 @@ function createGame() {
         global.lightAlpha = 0.1;
 
         game.load.image('light', 'assets/light.png');
+        game.load.image('ground-mask', 'assets/ground-mask.png');
 
         game.load.image('shield', 'assets/shield.png');
         game.load.image('sword', 'assets/sword.png');
@@ -319,6 +322,10 @@ function createGame() {
         game.load.image('ground', 'assets/ground.jpg');
         game.load.image('bricks', 'assets/bricks.jpg');
         game.load.image('stone', 'assets/stone.png');
+        game.load.image('ice', 'assets/ice.png');
+        game.load.image('dirt', 'assets/dirt.png');
+        game.load.image('whole', 'assets/whole.png');
+        game.load.image('lava', 'assets/lava.png');
         game.load.image('door', 'assets/door.png');
 
         game.load.audio('back',
@@ -517,8 +524,6 @@ function createGame() {
           }
 
           const scaleF = Math.round(game.scaleFactor * 8) / 8;
-          const scaleLF = scaleF / WALL_SIZE * 2;
-          const scaleLF2 = scaleF / WALL_SIZE * 3;
           global.ts = WALL_SIZE * 4;
           const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
           const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
@@ -529,19 +534,18 @@ function createGame() {
             textures[i] = [];
           }
 
+          const AF = 2.5;
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
               for (let i = 0; i < ln; ++i) {
                 let f = scaleF;
-                if (i === 0) {
-                  f = scaleLF;
-                }
-                if (i === 1) {
-                  f = scaleLF2;
+                let pad = 0;
+                if (i < 2) {
+                  pad = WALL_SIZE * (AF - 1);
                 }
                 const tex = new Phaser.RenderTexture(
                   game,
-                  Math.ceil(ts * f) + 3, Math.ceil(ts * f) + 3,
+                  Math.ceil((ts + pad) * f), Math.ceil((ts + pad) * f),
                   null, null, 1);
 
                 textures[i][x] = textures[i][x] || [];
@@ -549,32 +553,6 @@ function createGame() {
               }
             }
           }
-
-          const wholeView = new Phaser.Graphics(
-            game, 0, 0);
-          wholeView.padShift = 1;
-          wholeView.beginFill(0x000000, 1.0);
-          wholeView.drawRect(0, 0,
-            WALL_SIZE * scaleLF2 + 1, WALL_SIZE * scaleLF2 + 1);
-          wholeView.endFill();
-          const iceView = new Phaser.Graphics(
-            game, 0, 0);
-          iceView.beginFill(0x4ba4b4, 1.0);
-          iceView.drawRect(0, 0,
-            WALL_SIZE * scaleLF + 1, WALL_SIZE * scaleLF + 1);
-          iceView.endFill();
-          const slowView = new Phaser.Graphics(
-            game, 0, 0);
-          slowView.beginFill(0x451401, 1.0);
-          slowView.drawRect(0, 0,
-            WALL_SIZE * scaleLF + 1, WALL_SIZE * scaleLF + 1);
-          slowView.endFill();
-          const lavaView = new Phaser.Graphics(
-            game, 0, 0);
-          lavaView.beginFill(0x992200, 1.0);
-          lavaView.drawRect(0, 0,
-            WALL_SIZE * scaleLF + 1, WALL_SIZE * scaleLF + 1);
-          lavaView.endFill();
 
           const bricksView = new Phaser.TileSprite(
             game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
@@ -592,6 +570,49 @@ function createGame() {
             game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
             makeDarken(stoneView));
 
+
+          const maskView = new Phaser.Image(game, 0, 0, 'ground-mask');
+          maskView.scale.set(AF * WALL_SIZE / maskView.width * scaleF);
+
+          const renderMaskAffect = (image, x, y) => {
+            const v = new Phaser.Image(game, 0, 0, image);
+            v.scale.set(2 * WALL_SIZE * AF * scaleF / v.width);
+            v.x = -x * WALL_SIZE * AF * scaleF;
+            v.y = -y * WALL_SIZE * AF * scaleF;
+            maskView.anchor.set(0.5);
+            maskView.angle = Math.random() * 360;
+            maskView.x = WALL_SIZE * AF * scaleF * 0.5;
+            maskView.y = WALL_SIZE * AF * scaleF * 0.5;
+            let bmd = game.make.bitmapData(
+              WALL_SIZE * AF * scaleF, WALL_SIZE * AF * scaleF);
+            bmd.alphaMask(v, maskView);
+            return new Phaser.Image(game, 0, 0, bmd);
+          }
+          const wholeView = [
+            renderMaskAffect('whole', 0, 0),
+            renderMaskAffect('whole', 1, 0),
+            renderMaskAffect('whole', 0, 1),
+            renderMaskAffect('whole', 1, 1),
+          ];
+          const iceView = [
+            renderMaskAffect('ice', 0, 0),
+            renderMaskAffect('ice', 1, 0),
+            renderMaskAffect('ice', 0, 1),
+            renderMaskAffect('ice', 1, 1),
+          ];
+          const slowView = [
+            renderMaskAffect('dirt', 0, 0),
+            renderMaskAffect('dirt', 1, 0),
+            renderMaskAffect('dirt', 0, 1),
+            renderMaskAffect('dirt', 1, 1),
+          ];
+          const lavaView = [
+            renderMaskAffect('lava', 0, 0),
+            renderMaskAffect('lava', 1, 0),
+            renderMaskAffect('lava', 0, 1),
+            renderMaskAffect('lava', 1, 1),
+          ];
+
           console.log('loading map...');
           loadingProgress(10);
           for (let y = 0; y < client.map.height; ++y) {
@@ -608,6 +629,7 @@ function createGame() {
                 const slug = dictionary[v];
 
                 let view;
+                let padShift = 0;
                 switch (slug) {
                   case 'wall':
                     view = stoneView;
@@ -616,16 +638,18 @@ function createGame() {
                     view = bricksView;
                     break;
                   case 'whole':
-                    view = wholeView;
+                    view = wholeView[x % 2 + (y % 2) * 2];
+                    padShift = 1;
                     break;
                   case 'ice':
-                    view = iceView;
+                    view = iceView[x % 2 + (y % 2) * 2];
                     break;
                   case 'slow':
-                    view = slowView;
+                    view = slowView[x % 2 + (y % 2) * 2];
                     break;
                   case 'lava':
-                    view = lavaView;
+                    view = lavaView[x % 2 + (y % 2) * 2];
+                    padShift = 1;
                     break;
                   default:
                     return;
@@ -638,29 +662,16 @@ function createGame() {
               if (view) {
                 const f = scaleF;
                 if (!view.isWall) {
-                  let f = scaleLF;
-                  const padShift = view.padShift;
-                  if (padShift) {
-                    f = scaleLF2;
-                  }
                   let v = view;
                   const cx = Math.floor(x * WALL_SIZE / ts);
                   const cy = Math.floor(y * WALL_SIZE / ts);
-                  const drawTex = (cx, cy) => {
-                    if (textures[padShift][cx] &&
-                      textures[padShift][cx][cy]) {
-
-                      textures[padShift][cx][cy].isUsed = true;
-                      textures[padShift][cx][cy].renderXY(
-                        v,
-                        (x * WALL_SIZE - cx * ts) * f + 1,
-                        (y * WALL_SIZE - cy * ts) * f + 1,
-                        false);
-                      textures[padShift][cx][cy].padShift = padShift;
-                    }
-                  }
-
-                  drawTex(cx, cy);
+                  textures[padShift][cx][cy].isUsed = true;
+                  textures[padShift][cx][cy].renderXY(
+                    v,
+                    (x * WALL_SIZE - cx * ts) * f,
+                    (y * WALL_SIZE - cy * ts) * f,
+                    false);
+                  textures[padShift][cx][cy].padShift = padShift;
                 } else {
                   for (let i = 2; i < ln; ++i) {
                     let pad = (i - 2) * WALL_SIZE * 0.25 / (ln - 3) + Math.random() *
@@ -754,8 +765,8 @@ function createGame() {
                           }
                         }
                         if (lowLevels) {
-                          const w0 = w + 200;
-                          const h0 = h + 200;
+                          const w0 = w + WALL_SIZE;
+                          const h0 = h + WALL_SIZE;
                           if (dx <= w0 && dy <= h0) {
                             for (let i = 0; i < lowLevels; ++i) {
                               sprites[i].visible = true;
@@ -773,15 +784,14 @@ function createGame() {
                   //sprite.tint = 0x888888 + Math.random() * 0x777777;
                   sprite.cacheAsBitmap = true;
                   if (i < 2) {
-                    let f = scaleLF;
                     if (i === 1) {
-                      f = scaleLF2;
+                      game.layer.sub.affects2.add(sprite);
+                    } else {
+                      game.layer.sub.affects.add(sprite);
                     }
                     ++lowLevels;
-                    sprite.scale.set(1 / f);
-                    sprite.x -= 1.5 / f;
-                    sprite.y -= 1.5 / f;
-                    game.layer.sub.ground.add(sprite);
+                    sprite.x -= (AF - 1) * 0.5 * WALL_SIZE;
+                    sprite.y -= (AF - 1) * 0.5 * WALL_SIZE;
                   } else {
                     game.layer.sub[WALL_LAYERS[i - 2].slug].add(sprite);
                   }
