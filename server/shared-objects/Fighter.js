@@ -879,7 +879,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     this.onDie();
   }
   groundAffect() {
-    this.hp -= 20;
+    this.hp = Math.max(this.hp - 20, 0);
     this.emitParams();
     if (this.hp <= 0) {
       this.speed = new vec3();
