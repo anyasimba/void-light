@@ -236,7 +236,7 @@ export class Mob {
           (next.x * WALL_SIZE + WALL_SIZE * 0.5));
         const dy = Math.abs(this.fighter.pos.y -
           (next.y * WALL_SIZE + WALL_SIZE * 0.5));
-        if (dx + dy < WALL_SIZE * 2) {
+        if (dx + dy < WALL_SIZE * 1.5) {
           this.path.pop();
           next = this.path[this.path.length - 1];
         } else {
@@ -248,6 +248,15 @@ export class Mob {
     if (!next) {
       toHome = true;
       next = this.getNextPoint(tx, ty);
+      if (next && next.cost < 4) {
+        const dx = Math.abs(this.fighter.pos.x -
+          (next.x * WALL_SIZE + WALL_SIZE * 0.5));
+        const dy = Math.abs(this.fighter.pos.y -
+          (next.y * WALL_SIZE + WALL_SIZE * 0.5));
+        if (dx + dy < WALL_SIZE * 1.5) {
+          next = undefined;
+        }
+      }
     }
     let nextX;
     let nextY;
@@ -281,7 +290,6 @@ export class Mob {
         inRun = false;
         this.fighter.emitPos();
       } else if (this.pathGrid[tx] && this.pathGrid[px]) {
-        const cd = Math.abs(this.pathGrid[tx][ty] - this.pathGrid[px][py]);
         if (d > 700) {
           inRun = true;
         }
@@ -290,25 +298,58 @@ export class Mob {
           (this.opts.HIT_D[0] + this.opts.HIT_D[1] * Math.random()) *
           this.fighter.scale;
 
-        const needForce = d < this.attackDistance * 3 &&
+        const needForce = d > this.attackDistanced &&
+          d < this.attackDistance * 3 &&
           this.target.speed.length() > 50 &&
           Math.random() < 0.02;
 
-        if (d < this.attackDistance) {
-          canAttack = true;
-        } else if (needForce) {
-          canAttack = true;
-          inRun = true;
-          if (Math.random() < 0.5) {
-            this.fighter.doRoll();
-          } else {
-            this.fighter.doJump();
-          }
-        } else {
-          delete this.attackDistance;
-          if (Math.random() < 0.3) {
+        canAttack = d < this.attackDistance;
+        if (d < this.attackDistance * 0.5 && Math.random() < 0.5) {
+          canAttack = undefined;
+        }
+        if (!canAttack) {
+          if (needForce) {
+            canAttack = true;
             inRun = true;
+            if (Math.random() < 0.5) {
+              this.fighter.doRoll();
+            } else {
+              this.fighter.doJump();
+            }
+          } else if (d < this.attackDistance * 0.5) {
+            nextX = this.fighter.pos.x * 2 - this.target.pos.x;
+            nextY = this.fighter.pos.y * 2 - this.target.pos.y;
+          } else {
+            delete this.attackDistance;
+            if (Math.random() < 0.3) {
+              inRun = true;
+            }
           }
+        }
+      }
+    }
+
+    if (nextX) {
+      const dx = Math.sign(nextX - this.fighter.pos.x);
+      const dy = Math.sign(nextY - this.fighter.pos.y);
+      const wx = tx + dx;
+      const wy = ty + dy;
+      const grid = this.gameLevelZone.grid;
+      if (grid[wx]) {
+        switch (grid[wx][wy]) {
+          case undefined:
+            break;
+          case 1:
+          case 2:
+          case 3:
+            if (dx !== 0) {
+              nextX = this.fighter.pos.x - dx * WALL_SIZE;
+            }
+            if (dy !== 0) {
+              nextY = this.fighter.pos.y - dy * WALL_SIZE;
+            }
+            break;
+          default:
         }
       }
     }

@@ -33,6 +33,7 @@ struct Fighter: GameLevelZoneObject {
 
   bool inRoll;
   float inRollTime;
+  float inRollDuration;
   float inRollAfterTime;
   float afterRollTime;
   float rollBlockTime;
@@ -122,6 +123,8 @@ NUMBER_PROPERTY(Fighter, LookY, look.y);
 NUMBER_PROPERTY(Fighter, InBlock, inBlock);
 NUMBER_PROPERTY(Fighter, InRun, inRun);
 NUMBER_PROPERTY(Fighter, InRoll, inRoll);
+NUMBER_PROPERTY(Fighter, InRollTime, inRollTime);
+NUMBER_PROPERTY(Fighter, InRollDuration, inRollDuration);
 NUMBER_PROPERTY(Fighter, AfterRollTime, afterRollTime);
 NUMBER_PROPERTY(Fighter, RollBlockTime, rollBlockTime);
 NUMBER_PROPERTY(Fighter, InJump, inJump);
@@ -337,6 +340,7 @@ void Fighter__onRoll(const FunctionCallbackInfo<Value>& args) {
   }
   self->inRoll = true;
   self->inRollTime = (float) opts->GET("duration")->NumberValue();
+  self->inRollDuration = (float) opts->GET("duration")->NumberValue();
   self->inRollAfterTime = (float) opts->GET("afterTime")->NumberValue();
   self->look = self->speed.unit();
 }

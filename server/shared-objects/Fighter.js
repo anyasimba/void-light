@@ -129,6 +129,21 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     }
     native.Fighter__setInRoll(this.native, v);
   }
+  get inRollTime() {
+    const t = native.Fighter__getInRollTime(this.native);
+    if (t > 0) {
+      return t;
+    }
+  }
+  set inRollTime(v) {
+    native.Fighter__setInRollTime(this.native, v);
+  }
+  get inRollDuration() {
+    return native.Fighter__getInRollDuration(this.native);
+  }
+  set inRollDuration(v) {
+    native.Fighter__setInRollDuration(this.native, v);
+  }
   get afterRollTime() {
     const t = native.Fighter__getAfterRollTime(this.native);
     if (t > 0) {
@@ -796,8 +811,10 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       const rollData = {
         duration: 0.7 / this.moveTimeF,
         afterTime: 0.3 / this.moveTimeF,
-        force: 800 * (this.moveTimeF * 0.4 + 0.6),
-        forceInJump: 750 * (this.moveTimeF * 0.4 + 0.6),
+        force: 800 * (this.moveTimeF * 0.4 + 0.6) /
+          (this.groundFriction * 0.2 + 0.8),
+        forceInJump: 750 * (this.moveTimeF * 0.4 + 0.6) /
+          (this.groundFriction * 0.2 + 0.8),
       };
       if (this.inHit && this.hitStage === 1) {
         rollData.force = 600 * (this.moveTimeF * 0.4 + 0.6);
@@ -833,7 +850,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       }
 
       const jumpData = {
-        duration: 0.6,
+        duration: 0.8,
         afterTime: 0.3 / this.moveTimeF,
         force: 700 * (this.moveTimeF * 0.4 + 0.6),
       };
@@ -841,7 +858,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
         jumpData.force = 300;
       }
       jumpData.force *= 0.5 + Math.min(this.speed.length() / 700, 0.8) /
-        (this.groundFriction * 0.5 + 0.5);
+        (this.groundFriction * 0.6 + 0.4);
       native.Fighter__onJump(this.native, jumpData);
       this.emitAll('jump', jumpData);
       this.emitPos();

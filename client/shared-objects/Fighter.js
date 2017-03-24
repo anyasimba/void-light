@@ -226,7 +226,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     if (this.kind === 'player') {
       this.light = genLight();
       this.light.scale.set(8 * this.light.f);
-      this.light.alpha *= 0.6;
+      this.light.alpha *= 1;
       for (let i = 0; i < 1; ++i) {
         this.light.rt.renderXY(this.light.rtImage, 0, 0, false);
       }

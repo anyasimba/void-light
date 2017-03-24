@@ -39,7 +39,7 @@ Object.assign(GameLevelZone.prototype, {
     let rollSY = 1;
     if (source.inRoll) {
       const f = Math.sin(
-        (source.inRoll.time / source.inRoll.duration * 2 + 0.5) * Math.PI
+        (source.inRollTime / source.inRollDuration * 2 + 0.5) * Math.PI
       );
       if (source.inHit && !source.inJump) {
         rollSY = f;
@@ -72,7 +72,6 @@ Object.assign(GameLevelZone.prototype, {
   },
 
   doDamage(source, opts, other) {
-    console.log(other.stunTime);
     const isInBlock = other.shield &&
       other.inBlock &&
       other.stamina > 0 &&

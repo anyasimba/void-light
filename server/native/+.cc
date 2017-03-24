@@ -35,7 +35,7 @@ using namespace std;
   NODE_SET_METHOD(exports, #CLASS"__get"#FN, CLASS##__get##FN);\
   NODE_SET_METHOD(exports, #CLASS"__set"#FN, CLASS##__set##FN);
 
-const int WALL_SIZE = 96;
+const int WALL_SIZE = 160;
 
 #include "!math.cc"
 #include "!utils.cc"
@@ -88,6 +88,8 @@ void init(Local<Object> exports) {
   SET_NUMBER_PROPERTY(Fighter, InBlock, inBlock);
   SET_NUMBER_PROPERTY(Fighter, InRun, inRun);
   SET_NUMBER_PROPERTY(Fighter, InRoll, inRoll);
+  SET_NUMBER_PROPERTY(Fighter, InRollTime, inRollTime);
+  SET_NUMBER_PROPERTY(Fighter, InRollDuration, inRollDuration);
   SET_NUMBER_PROPERTY(Fighter, AfterRollTime, afterRollTime);
   SET_NUMBER_PROPERTY(Fighter, RollBlockTime, rollBlockTime);
   SET_NUMBER_PROPERTY(Fighter, InJump, inJump);

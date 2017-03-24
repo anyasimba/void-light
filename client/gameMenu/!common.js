@@ -352,8 +352,8 @@ export function showGameMenu(force) {
   isGameMenuShowed = true;
   gameMenuView.needShow = true;
 
-  gameMenuView.x = game.w * 0.5 - gameMenuView.w * 0.5;
-  gameMenuView.y = game.h * 0.5 - gameMenuView.h * 0.5;
+  gameMenuView.x = game.ui.w * 0.5 - gameMenuView.w * 0.5;
+  gameMenuView.y = game.ui.h * 0.5 - gameMenuView.h * 0.5;
 }
 
 export function hideGameMenu() {

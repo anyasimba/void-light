@@ -164,7 +164,7 @@ function createLayer() {
   layer.sub.info = layer.add(new Phaser.Group(game));
   const q = 0.1;
   const rt = new Phaser.RenderTexture(
-    game, Math.ceil(game.w * q), Math.ceil(game.h * q), null, null);
+    game, Math.ceil(game.w * q * 2), Math.ceil(game.h * q * 2), null, null);
   layer.sub.light = layer.add(new Phaser.Sprite(game, 0, 0, rt));
   layer.sub.light.scale.set(1 / q);
   layer.sub.light.blendMode = PIXI.blendModes.MULTIPLY;
@@ -172,6 +172,33 @@ function createLayer() {
 }
 
 function create() {
+  game.ui = new Phaser.Group(game)
+
+  function resize(e) {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    game.width = w;
+    game.height = h;
+    game.resF = 1;
+
+    game.renderer.resize(w * game.resF, h * game.resF);
+
+    const s = Math.min(w / 2560, h / 1440) * game.resF * 0.9;
+    game.w = game.width / s;
+    game.h = game.height / s;
+    game.sceneWrap.x = game.width / 2;
+    game.sceneWrap.y = game.height / 2;
+    const uiS = Math.min(w / 2560, h / 1440) * game.resF;
+    game.ui.w = game.width / uiS;
+    game.ui.h = game.height / uiS;
+    game.scene.scale.set(s);
+    game.ui.scale.set(uiS / s);
+    game.scaleFactor = s;
+    game.uiScaleFactor = uiS;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
   global.client = new Client;
 
   game.layer = game.scene.add(createLayer());
@@ -180,7 +207,7 @@ function create() {
   game.textEvents1 = game.scene.add(new Phaser.Group(game));
   game.textEvents2 = game.scene.add(new Phaser.Group(game));
 
-  game.ui = game.scene.add(new Phaser.Group(game));
+  game.scene.add(game.ui);
   initUI();
 
   game.backSound = game.add.sound('back', 0.5, true);
@@ -196,8 +223,10 @@ function create() {
 
   const preUpdate = game.scene.preUpdate;
   game.scene.preUpdate = () => {
-    global.mx = (game.input.x * game.resF - game.scene.x) / game.scaleFactor;
-    global.my = (game.input.y * game.resF - game.scene.y) / game.scaleFactor;
+    global.mx = ((game.input.x * game.resF - game.width * 0.5) /
+      game.sceneWrap.scale.x - game.scene.x) / game.scaleFactor;
+    global.my = ((game.input.y * game.resF - game.height * 0.5) /
+      game.sceneWrap.scale.y - game.scene.y) / game.scaleFactor;
     global.dt = game.time.elapsed * 0.001;
     preUpdate.call(game.scene);
   }
@@ -344,25 +373,8 @@ function createGame() {
         game.time.advancedTiming = true;
         game.scaleMode = Phaser.FILL_WINDOW_FIXED_ASPECT;
 
-        game.scene = game.add.group();
-
-        function resize(e) {
-          const w = window.innerWidth;
-          const h = window.innerHeight;
-          game.width = w;
-          game.height = h;
-          game.resF = 1;
-
-          game.renderer.resize(w * game.resF, h * game.resF);
-
-          const s = Math.min(w / 2560, h / 1440) * game.resF;
-          game.w = game.width / s;
-          game.h = game.height / s;
-          game.scene.scale.set(s);
-          game.scaleFactor = s;
-        }
-        resize();
-        window.addEventListener('resize', resize);
+        game.sceneWrap = game.add.group();
+        game.scene = game.sceneWrap.add(new Phaser.Group(game));
 
         game.canvas.oncontextmenu = function (e) {
           e.preventDefault();
@@ -383,28 +395,42 @@ function createGame() {
         delete global.mouseCapture;
 
         if (client && client.player) {
-          const targetX = client.player.pos.x + client.player.speed.x *
-            0.5;
-          const targetY = client.player.pos.y + client.player.speed.y *
-            0.5;
+          const targetX = client.player.pos.x +
+            client.player.speed.x * 0.5 +
+            (mx - client.player.pos.x) * 0.2;
+          const targetY = client.player.pos.y +
+            client.player.speed.y * 0.5 +
+            (my - client.player.pos.y) * 0.2;
 
           const dx = -targetX *
-            game.scaleFactor + game.width * game.resF / 2 - game.scene
-            .x;
+            game.scaleFactor -
+            game.scene.x;
           const dy = -targetY *
-            game.scaleFactor + game.height * game.resF / 2 - game.scene
-            .y;
+            game.scaleFactor -
+            game.scene.y;
 
-          const f = (1 - Math.pow(0.1, dt));
+          const f = (1 - Math.pow(0.1, dt * 0.6));
           game.scene.x += dx * f;
           game.scene.y += dy * f;
 
-          game.ui.x = -game.scene.x / game.scaleFactor;
-          game.ui.y = -game.scene.y / game.scaleFactor;
+          const speed = client.player.speed.length();
+          const zoom =
+            (game.preZoom || 1) *
+            (game.actionPreZoom || 1);
+          game.zoomF = (game.zoomF || 1);
+          const f2 = (1 - Math.pow(0.1, dt * 0.3));
+          game.zoomF += (zoom - game.zoomF) * f2;
+          game.sceneWrap.scale.set(game.zoomF);
+
+          game.ui.x = -game.scene.x / game.scaleFactor - game.w * 0.5 /
+            game.sceneWrap.scale.x;
+          game.ui.y = -game.scene.y / game.scaleFactor - game.h * 0.5 /
+            game.sceneWrap.scale.y;
+          game.ui.scale.set(game.uiScaleFactor / game.scaleFactor / game.zoomF);
 
           game.cameraPos = new vec3({
-            x: targetX,
-            y: targetY,
+            x: -game.scene.x / game.scaleFactor,
+            y: -game.scene.y / game.scaleFactor,
           });
 
           if (game.layer.sub.light) {
@@ -442,7 +468,7 @@ function createGame() {
           layer.y = -p.y * (f - 1);
         };
         const makeLayer3D = layer => {
-          const f = 6;
+          const f = 6 * game.sceneWrap.scale.x;
           makeSubLayer3D(layer.sub.middle, 1 + 0.01 * f);
           makeSubLayer3D(layer.sub.top, 1 + 0.02 * f);
           makeSubLayer3D(layer.sub.walls, 1 + 0.02 * f);
@@ -490,8 +516,8 @@ function createGame() {
             }
           }
 
-          const scaleF = game.scaleFactor;
-          global.ts = WALL_SIZE * 8;
+          const scaleF = Math.round(game.scaleFactor * 8) / 8;
+          global.ts = WALL_SIZE * 4;
           const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
           const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
 
@@ -508,7 +534,7 @@ function createGame() {
                   game,
                   Math.ceil(ts * scaleF), Math.ceil(ts * scaleF),
                   null, null, 1);
-                console.log(Math.ceil(ts * scaleF), Math.ceil(ts * scaleF));
+
                 textures[i][x] = textures[i][x] || [];
                 textures[i][x][y] = tex;
               }
@@ -642,7 +668,7 @@ function createGame() {
           loadingProgress(50);
 
           const groundSprite = game.layer.sub.ground.add(new Phaser.TileSprite(
-            game, 0, 0, game.w, game.h, 'ground'));
+            game, 0, 0, game.w * 2, game.h * 2, 'ground'));
           groundSprite.update = () => {
             groundSprite.x = game.ui.x;
             groundSprite.y = game.ui.y;
@@ -666,10 +692,12 @@ function createGame() {
                       if (global.client && global.client.player) {
                         const cx = sprite.x + ts * 0.5;
                         const cy = sprite.y + ts * 0.5;
-                        const dx = Math.abs(cx - client.player.pos.x);
-                        const dy = Math.abs(cy - client.player.pos.y);
-                        const w = (game.w + ts) * 0.5;
-                        const h = (game.h + ts) * 0.5;
+                        const dx = Math.abs(cx - game.cameraPos.x);
+                        const dy = Math.abs(cy - game.cameraPos.y);
+                        const fx = 1 / game.sceneWrap.scale.x;
+                        const fy = 1 / game.sceneWrap.scale.y;
+                        const w = (game.w * fx + ts) * 0.5;
+                        const h = (game.h * fy + ts) * 0.5;
                         if (dx <= w && dy <= h) {
                           for (let i = 0; i < sprites.length; ++i) {
                             sprites[i].visible = true;

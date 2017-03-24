@@ -75,7 +75,7 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
 
           object->groundAffectTime -= dt;
         } else if (self->grid[cx][cy] == 4) {
-          object->groundFriction = 2.f;
+          object->groundFriction = 1.5f;
         } else if (self->grid[cx][cy] == 5) {
           object->groundFriction = 0.f;
         } else {

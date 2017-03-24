@@ -8,9 +8,12 @@ export function checkMouse(view, PAD) {
       y: p,
     };
   }
-  let dx = mx - game.ui.x -
+  const mx = (global.mx - game.ui.x) / game.ui.scale.x;
+  const my = (global.my - game.ui.y) / game.ui.scale.y;
+
+  let dx = mx -
     (view.x - view.mw * view.anchor.x - PAD.x);
-  let dy = my - game.ui.y -
+  let dy = my -
     (view.y - view.mh * view.anchor.y - PAD.y);
 
   let parentGroup = view.parentGroup;
@@ -92,7 +95,7 @@ export function makeVoidsCount() {
       return client.params.fighter.params;
     }
   }
-  makeBar(0x999999, 0, game.h - 100, 300, 10, (inner) => {
+  makeBar(0x999999, 0, game.ui.h - 100, 300, 10, (inner) => {
     if (global.client && global.client.player) {
       const params = getParams();
       if (params) {
@@ -100,7 +103,7 @@ export function makeVoidsCount() {
       }
     };
   });
-  const voidsCountView = new Phaser.Text(game, 300 + PAD, game.h - 120, '', {
+  const voidsCountView = new Phaser.Text(game, 300 + PAD, game.ui.h - 120, '', {
     font: 'Tinos',
     fontSize: 40,
     fill: '#AAAAAA',
@@ -302,6 +305,7 @@ export function initUI() {
 }
 
 export function makeSuperMessage(text, color) {
+  game.actionPreZoom = 2;
   let cb;
 
   const interval = setInterval(() => {
@@ -315,32 +319,34 @@ export function makeSuperMessage(text, color) {
   cb = () => {
     const group = new Phaser.Group(game);
 
-    const textView = new Phaser.Text(game, game.w * 0.5, game.h * 0.5, text, {
-      font: 'Tinos',
-      fontSize: 140,
-      fill: color,
-    });
+    const textView = new Phaser.Text(game, game.ui.w * 0.5, game.ui.h * 0.5,
+      text, {
+        font: 'Tinos',
+        fontSize: 140,
+        fill: color,
+      });
     textView.alpha = 1;
     textView.anchor.set(0.5);
-    const textView2 = new Phaser.Text(game, game.w * 0.5, game.h * 0.5, text, {
-      font: 'Tinos',
-      fontSize: 180,
-      fill: color,
-    });
+    const textView2 = new Phaser.Text(game, game.ui.w * 0.5, game.ui.h * 0.5,
+      text, {
+        font: 'Tinos',
+        fontSize: 180,
+        fill: color,
+      });
     textView2.alpha = 0;
     textView2.anchor.set(0.5);
     textView2.blendMode = PIXI.blendModes.ADD;
 
-    const inner = new Phaser.Graphics(game, 0, game.h * 0.5 - 200);
+    const inner = new Phaser.Graphics(game, 0, game.ui.h * 0.5 - 200);
     inner.beginFill(0x000000, 0.8);
-    inner.drawRect(0, 0, game.w, 400);
+    inner.drawRect(0, 0, game.ui.w, 400);
     inner.endFill();
 
     let time = 0;
     group.update = () => {
       textView2.scale.x = 1.05;
       textView2.scale.y = 1.05;
-      textView2.x = game.w * 0.5 - 20 + time * 40;
+      textView2.x = game.ui.w * 0.5 - 20 + time * 40;
       time += dt / 3;
       group.alpha = time;
       if (time >= 1) {
@@ -348,6 +354,9 @@ export function makeSuperMessage(text, color) {
       }
       if (time >= 2) {
         group.destroy();
+        if (game.actionPreZoom === 2) {
+          game.actionPreZoom = 1;
+        }
       }
       textView2.alpha = group.alpha * 0.4;
     };
@@ -361,28 +370,30 @@ export function makeSuperMessage(text, color) {
 
 export function makeMessage(text, color, font) {
   disableMessage();
+  game.actionPreZoom = 1.5;
 
   const group = new Phaser.Group(game);
 
   const inner = new Phaser.Graphics(game, 0, 0);
   inner.beginFill(0x000000, 0.8);
-  inner.drawRect(game.w * 0.5 - 1000, 0, 2000, 1);
+  inner.drawRect(game.ui.w * 0.5 - 1000, 0, 2000, 1);
   inner.endFill();
   group.add(inner);
 
-  const inner2 = new Phaser.Graphics(game, 0, game.h - 250);
+  const inner2 = new Phaser.Graphics(game, 0, game.ui.h - 250);
   inner2.beginFill(0x202020, 0.5);
-  inner2.drawRect(game.w * 0.5 - 1000, 0, 2000, 10);
+  inner2.drawRect(game.ui.w * 0.5 - 1000, 0, 2000, 10);
   inner2.endFill();
   group.add(inner2);
 
-  const textView = new Phaser.Text(game, game.w * 0.5, game.h - 250, text, {
-    font: font || 'Tinos',
-    fontSize: 45,
-    fill: color,
-    stroke: '#050505',
-    strokeThickness: 6,
-  });
+  const textView = new Phaser.Text(game, game.ui.w * 0.5, game.ui.h - 250,
+    text, {
+      font: font || 'Tinos',
+      fontSize: 45,
+      fill: color,
+      stroke: '#050505',
+      strokeThickness: 6,
+    });
   textView.anchor.x = 0.5;
   textView.anchor.y = 1;
 
@@ -409,7 +420,7 @@ export function makeMessage(text, color, font) {
     inner.y = textView.y - textView.height - 100;
     inner.scale.y = textView.height + 200;
     if (group.isExpanded) {
-      textView.y = game.h - 300;
+      textView.y = game.ui.h - 300;
       inner.y = textView.y - textView.height - 75;
       inner.scale.y = textView.height + 250;
     }
@@ -422,6 +433,7 @@ export function disableMessage() {
   if (!client.message) {
     return;
   }
+  game.actionPreZoom = 1;
   client.message.needHide = true;
   delete client.message;
 }
@@ -432,7 +444,7 @@ export function makeMessageOption(text, color, font, i, fn) {
     color,
     font,
     50,
-    game.w * 0.5 - 300 + i * 600, game.h - 220, 40,
+    game.ui.w * 0.5 - 300 + i * 600, game.ui.h - 220, 40,
     fn);
   textView.anchor.x = i;
   textView.anchor.y = 0;

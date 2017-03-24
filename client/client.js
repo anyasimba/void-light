@@ -359,11 +359,13 @@ export class Client extends global.Client {
     game.bossBackSound.stop();
     game.youDiedSound.stop();
     game.backSound.restart('', 0, 0.5, true);
+    game.preZoom = 1;
   }
   bossTheme() {
     game.backSound.stop();
     game.youDiedSound.stop();
     game.bossBackSound.restart('', 0, 1, true);
+    game.preZoom = 0.8;
   }
   diedTheme() {
     game.backSound.stop();
