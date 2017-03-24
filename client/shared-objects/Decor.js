@@ -60,16 +60,16 @@ export class Decor extends mix(global.Decor, MixGameObject) {
 
 export const decor__light = {
   LIGHT: 0xFFFFFF,
-  LIGHT_A: 1,
-  LIGHT_SCALE: 30,
+  LIGHT_A: 0.8,
+  LIGHT_SCALE: 20,
 };
 export const decor__light2 = {
-  LIGHT_A: 1,
-  LIGHT_SCALE: 30,
+  LIGHT_A: 0.8,
+  LIGHT_SCALE: 20,
   LIGHT: 0xFF9933,
 };
 export const decor__light3 = {
-  LIGHT_A: 1,
-  LIGHT_SCALE: 30,
+  LIGHT_A: 0.8,
+  LIGHT_SCALE: 20,
   LIGHT: 0xFF77FF,
 };

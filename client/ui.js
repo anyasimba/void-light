@@ -305,7 +305,7 @@ export function initUI() {
 }
 
 export function makeSuperMessage(text, color) {
-  game.actionPreZoom = 1.5;
+  game.actionPreZoom = 1.3;
   let cb;
 
   const interval = setInterval(() => {
@@ -354,7 +354,7 @@ export function makeSuperMessage(text, color) {
       }
       if (time >= 2) {
         group.destroy();
-        if (game.actionPreZoom === 2) {
+        if (game.actionPreZoom === 1.3) {
           game.actionPreZoom = 1;
         }
       }

@@ -534,7 +534,7 @@ function createGame() {
             textures[i] = [];
           }
 
-          const AF = 2.5;
+          const AF = 2.4;
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
               for (let i = 0; i < ln; ++i) {
