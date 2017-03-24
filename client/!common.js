@@ -517,12 +517,12 @@ function createGame() {
           }
 
           const scaleF = Math.round(game.scaleFactor * 8) / 8;
-          const scaleLF = scaleF * 0.01;
+          const scaleLF = scaleF / WALL_SIZE * 2;
           global.ts = WALL_SIZE * 4;
           const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
           const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
 
-          const ln = WALL_LAYERS.length + 1;
+          const ln = WALL_LAYERS.length + 2;
           const textures = [];
           for (let i = 0; i < ln; ++i) {
             textures[i] = [];
@@ -532,12 +532,12 @@ function createGame() {
             for (let y = 0; y < yn; ++y) {
               for (let i = 0; i < ln; ++i) {
                 let f = scaleF;
-                if (i === 0) {
+                if (i < 2) {
                   f = scaleLF;
                 }
                 const tex = new Phaser.RenderTexture(
                   game,
-                  Math.ceil(ts * f) + 2, Math.ceil(ts * f) + 2,
+                  Math.ceil(ts * f) + 4, Math.ceil(ts * f) + 4,
                   null, null, 1);
 
                 textures[i][x] = textures[i][x] || [];
@@ -549,7 +549,8 @@ function createGame() {
           const wholeView = new Phaser.Graphics(
             game, 0, 0);
           wholeView.beginFill(0x000000, 1.0);
-          wholeView.drawRect(0, 0, WALL_SIZE * scaleLF, WALL_SIZE * scaleLF);
+          wholeView.drawRect(0, 0,
+            WALL_SIZE * scaleLF + 0.4, WALL_SIZE * scaleLF + 0.4);
           wholeView.endFill();
           const iceView = new Phaser.Graphics(
             game, 0, 0);
@@ -564,7 +565,8 @@ function createGame() {
           const lavaView = new Phaser.Graphics(
             game, 0, 0);
           lavaView.beginFill(0x992200, 1);
-          lavaView.drawRect(0, 0, WALL_SIZE * scaleLF, WALL_SIZE * scaleLF);
+          lavaView.drawRect(0, 0,
+            WALL_SIZE * scaleLF + 0.4, WALL_SIZE * scaleLF + 0.4);
           lavaView.endFill();
 
           const bricksView = new Phaser.TileSprite(
@@ -591,6 +593,7 @@ function createGame() {
 
               let view;
               let isWall = false;
+              let padShift = 0;
               switch (slug) {
                 case 'wall':
                   view = stoneView;
@@ -602,6 +605,7 @@ function createGame() {
                   break;
                 case 'whole':
                   view = wholeView;
+                  padShift = 1;
                   break;
                 case 'ice':
                   view = iceView;
@@ -611,6 +615,7 @@ function createGame() {
                   break;
                 case 'lava':
                   view = lavaView;
+                  padShift = 1;
                   break;
                 default:
               }
@@ -621,15 +626,16 @@ function createGame() {
                   let v = view;
                   const cx = Math.floor(x * WALL_SIZE / ts);
                   const cy = Math.floor(y * WALL_SIZE / ts);
-                  textures[0][cx][cy].isUsed = true;
-                  textures[0][cx][cy].renderXY(
+                  textures[padShift][cx][cy].isUsed = true;
+                  textures[padShift][cx][cy].renderXY(
                     v,
                     (x * WALL_SIZE - cx * ts) * f + 1,
                     (y * WALL_SIZE - cy * ts) * f + 1,
                     false);
+                  textures[padShift][cx][cy].padShift = padShift;
                 } else {
-                  for (let i = 1; i < ln; ++i) {
-                    let pad = (i - 1) * WALL_SIZE * 0.25 / (ln - 2) + Math.random() *
+                  for (let i = 2; i < ln; ++i) {
+                    let pad = (i - 2) * WALL_SIZE * 0.25 / (ln - 3) + Math.random() *
                       WALL_SIZE / 6;
 
                     let px = 0;
@@ -653,7 +659,7 @@ function createGame() {
                     if (!grid[x] || !grid[x][y + 1]) {
                       v.height -= pad * scaleF;
                     }
-                    const sf = (0.7 + i * 0.3 / (ln - 1));
+                    const sf = (0.7 + i * 0.3 / (ln - 3));
                     v.tilePosition.x = (-x * WALL_SIZE - px) / sf;
                     v.tilePosition.y = (-y * WALL_SIZE - py) / sf;
                     v.tileScale.x = f * sf;
@@ -710,7 +716,7 @@ function createGame() {
                         const h = (game.h * fy + ts) * 0.5;
                         let b = 0;
                         if (hasLowLevel) {
-                          b = 1;
+                          b = 2;
                         }
                         if (dx <= w && dy <= h) {
                           for (let i = b; i < sprites.length; ++i) {
@@ -726,10 +732,14 @@ function createGame() {
                           const w0 = w + 200;
                           const h0 = h + 200;
                           if (dx <= w0 && dy <= h0) {
-                            sprites[0].visible = true;
-                            ++global.SPRITES_N;
+                            for (let i = 0; i < 2; ++i) {
+                              sprites[0].visible = true;
+                              ++global.SPRITES_N;
+                            }
                           } else {
-                            sprites[0].visible = false;
+                            for (let i = 0; i < 2; ++i) {
+                              sprites[0].visible = false;
+                            }
                           }
                         }
                       }
@@ -737,14 +747,16 @@ function createGame() {
                   }
                   //sprite.tint = 0x888888 + Math.random() * 0x777777;
                   sprite.cacheAsBitmap = true;
-                  if (i === 0) {
+                  if (i < 2) {
                     hasLowLevel = true;
                     sprite.scale.set(1 / scaleLF);
-                    sprite.x -= 1 / scaleLF;
-                    sprite.y -= 1 / scaleLF;
+                    sprite.x -= (1 + textures[i][x][y].padShift * 0.2) /
+                      scaleLF;
+                    sprite.y -= (1 + textures[i][x][y].padShift * 0.2) /
+                      scaleLF;
                     game.layer.sub.ground.add(sprite);
                   } else {
-                    game.layer.sub[WALL_LAYERS[i - 1].slug].add(sprite);
+                    game.layer.sub[WALL_LAYERS[i - 2].slug].add(sprite);
                   }
                 }
               }
