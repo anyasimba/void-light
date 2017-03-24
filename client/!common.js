@@ -687,6 +687,7 @@ function createGame() {
             for (let y = 0; y < yn; ++y) {
               const sprites = [];
               let hasUpdate = false;
+              let hasLowLevel = false;
               for (let i = 0; i < ln; ++i) {
                 if (textures[i][x][y].isUsed) {
                   const sprite = new Phaser.Sprite(
@@ -699,31 +700,37 @@ function createGame() {
                     hasUpdate = true;
                     sprite.update = () => {
                       if (global.client && global.client.player) {
-                        const cx = sprite.x + ts * 0.5;
-                        const cy = sprite.y + ts * 0.5;
+                        const cx = x * ts + ts * 0.5;
+                        const cy = y * ts + ts * 0.5;
                         const dx = Math.abs(cx - game.cameraPos.x);
                         const dy = Math.abs(cy - game.cameraPos.y);
                         const fx = 1 / game.sceneWrap.scale.x;
                         const fy = 1 / game.sceneWrap.scale.y;
                         const w = (game.w * fx + ts) * 0.5;
                         const h = (game.h * fy + ts) * 0.5;
+                        let b = 0;
+                        if (hasLowLevel) {
+                          b = 1;
+                        }
                         if (dx <= w && dy <= h) {
-                          for (let i = 1; i < sprites.length; ++i) {
+                          for (let i = b; i < sprites.length; ++i) {
                             sprites[i].visible = true;
                             ++global.SPRITES_N;
                           }
                         } else {
-                          for (let i = 1; i < sprites.length; ++i) {
+                          for (let i = b; i < sprites.length; ++i) {
                             sprites[i].visible = false;
                           }
                         }
-                        const w0 = w + 100;
-                        const h0 = h + 100;
-                        if (dx <= w0 && dy <= h0) {
-                          sprites[0].visible = true;
-                          ++global.SPRITES_N;
-                        } else {
-                          sprites[0].visible = false;
+                        if (hasLowLevel) {
+                          const w0 = w + 200;
+                          const h0 = h + 200;
+                          if (dx <= w0 && dy <= h0) {
+                            sprites[0].visible = true;
+                            ++global.SPRITES_N;
+                          } else {
+                            sprites[0].visible = false;
+                          }
                         }
                       }
                     };
@@ -731,6 +738,7 @@ function createGame() {
                   //sprite.tint = 0x888888 + Math.random() * 0x777777;
                   sprite.cacheAsBitmap = true;
                   if (i === 0) {
+                    hasLowLevel = true;
                     sprite.scale.set(1 / scaleLF);
                     sprite.x -= 1 / scaleLF;
                     sprite.y -= 1 / scaleLF;
