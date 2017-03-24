@@ -517,7 +517,7 @@ function createGame() {
           }
 
           const scaleF = Math.round(game.scaleFactor * 8) / 8;
-          const scaleLF = scaleF / WALL_SIZE * 2;
+          const scaleLF = scaleF / WALL_SIZE * 2.5;
           global.ts = WALL_SIZE * 4;
           const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
           const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
@@ -550,7 +550,7 @@ function createGame() {
             game, 0, 0);
           wholeView.beginFill(0x000000, 1.0);
           wholeView.drawRect(0, 0,
-            WALL_SIZE * scaleLF + 0.4, WALL_SIZE * scaleLF + 0.4);
+            WALL_SIZE * scaleLF + 0.5, WALL_SIZE * scaleLF + 0.5);
           wholeView.endFill();
           const iceView = new Phaser.Graphics(
             game, 0, 0);
@@ -566,7 +566,7 @@ function createGame() {
             game, 0, 0);
           lavaView.beginFill(0x992200, 1);
           lavaView.drawRect(0, 0,
-            WALL_SIZE * scaleLF + 0.4, WALL_SIZE * scaleLF + 0.4);
+            WALL_SIZE * scaleLF + 0.5, WALL_SIZE * scaleLF + 0.5);
           lavaView.endFill();
 
           const bricksView = new Phaser.TileSprite(
@@ -693,7 +693,7 @@ function createGame() {
             for (let y = 0; y < yn; ++y) {
               const sprites = [];
               let hasUpdate = false;
-              let hasLowLevel = false;
+              let lowLevels = 0;
               for (let i = 0; i < ln; ++i) {
                 if (textures[i][x][y].isUsed) {
                   const sprite = new Phaser.Sprite(
@@ -714,10 +714,7 @@ function createGame() {
                         const fy = 1 / game.sceneWrap.scale.y;
                         const w = (game.w * fx + ts) * 0.5;
                         const h = (game.h * fy + ts) * 0.5;
-                        let b = 0;
-                        if (hasLowLevel) {
-                          b = 2;
-                        }
+                        let b = lowLevels;
                         if (dx <= w && dy <= h) {
                           for (let i = b; i < sprites.length; ++i) {
                             sprites[i].visible = true;
@@ -728,17 +725,17 @@ function createGame() {
                             sprites[i].visible = false;
                           }
                         }
-                        if (hasLowLevel) {
+                        if (lowLevels) {
                           const w0 = w + 200;
                           const h0 = h + 200;
                           if (dx <= w0 && dy <= h0) {
-                            for (let i = 0; i < 2; ++i) {
-                              sprites[0].visible = true;
+                            for (let i = 0; i < lowLevels; ++i) {
+                              sprites[i].visible = true;
                               ++global.SPRITES_N;
                             }
                           } else {
-                            for (let i = 0; i < 2; ++i) {
-                              sprites[0].visible = false;
+                            for (let i = 0; i < lowLevels; ++i) {
+                              sprites[i].visible = false;
                             }
                           }
                         }
@@ -748,11 +745,11 @@ function createGame() {
                   //sprite.tint = 0x888888 + Math.random() * 0x777777;
                   sprite.cacheAsBitmap = true;
                   if (i < 2) {
-                    hasLowLevel = true;
+                    ++lowLevels;
                     sprite.scale.set(1 / scaleLF);
-                    sprite.x -= (1 + textures[i][x][y].padShift * 0.2) /
+                    sprite.x -= (1 + textures[i][x][y].padShift * 0.25) /
                       scaleLF;
-                    sprite.y -= (1 + textures[i][x][y].padShift * 0.2) /
+                    sprite.y -= (1 + textures[i][x][y].padShift * 0.25) /
                       scaleLF;
                     game.layer.sub.ground.add(sprite);
                   } else {
