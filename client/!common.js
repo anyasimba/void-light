@@ -517,7 +517,7 @@ function createGame() {
           }
 
           const scaleF = Math.round(game.scaleFactor * 8) / 8;
-          const scaleLF = scaleF / WALL_SIZE * 1.5;
+          const scaleLF = scaleF / WALL_SIZE * 2;
           const scaleLF2 = scaleF / WALL_SIZE * 3;
           global.ts = WALL_SIZE * 4;
           const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
@@ -559,19 +559,21 @@ function createGame() {
           wholeView.endFill();
           const iceView = new Phaser.Graphics(
             game, 0, 0);
-          iceView.beginFill(0x114488, 1.0);
-          iceView.drawRect(0, 0, WALL_SIZE * scaleLF, WALL_SIZE * scaleLF);
+          iceView.beginFill(0x4ba4b4, 1.0);
+          iceView.drawRect(0, 0,
+            WALL_SIZE * scaleLF + 0.5, WALL_SIZE * scaleLF + 0.5);
           iceView.endFill();
           const slowView = new Phaser.Graphics(
             game, 0, 0);
           slowView.beginFill(0x451401, 1.0);
-          slowView.drawRect(0, 0, WALL_SIZE * scaleLF, WALL_SIZE * scaleLF);
+          slowView.drawRect(0, 0,
+            WALL_SIZE * scaleLF + 0.5, WALL_SIZE * scaleLF + 0.5);
           slowView.endFill();
           const lavaView = new Phaser.Graphics(
             game, 0, 0);
           lavaView.beginFill(0x992200, 1.0);
           lavaView.drawRect(0, 0,
-            WALL_SIZE * scaleLF2, WALL_SIZE * scaleLF2);
+            WALL_SIZE * scaleLF + 0.5, WALL_SIZE * scaleLF + 0.5);
           lavaView.endFill();
 
           const bricksView = new Phaser.TileSprite(
@@ -777,10 +779,8 @@ function createGame() {
                     }
                     ++lowLevels;
                     sprite.scale.set(1 / f);
-                    sprite.x -= (1 + textures[i][x][y].padShift * 0.25) /
-                      f;
-                    sprite.y -= (1 + textures[i][x][y].padShift * 0.25) /
-                      f;
+                    sprite.x -= 1.25 / f;
+                    sprite.y -= 1.25 / f;
                     game.layer.sub.ground.add(sprite);
                   } else {
                     game.layer.sub[WALL_LAYERS[i - 2].slug].add(sprite);
