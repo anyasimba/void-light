@@ -617,102 +617,93 @@ function createGame() {
           loadingProgress(10);
           for (let y = 0; y < client.map.height; ++y) {
             for (let x = 0; x < client.map.width; ++x) {
-              const getView = (x, y) => {
-                if (x < 0 || y < 0 ||
-                  x >= client.map.width ||
-                  y >= client.map.height) {
+              const i = y * client.map.width + x;
+              const v = ground.data[i];
+              const slug = dictionary[v];
 
-                  return;
-                }
-                const i = y * client.map.width + x;
-                const v = ground.data[i];
-                const slug = dictionary[v];
-
-                let view;
-                let padShift = 0;
-                switch (slug) {
-                  case 'wall':
-                    view = stoneView;
-                    break;
-                  case 'wall2':
-                    view = bricksView;
-                    break;
-                  case 'whole':
-                    view = wholeView[x % 2 + (y % 2) * 2];
-                    padShift = 1;
-                    break;
-                  case 'ice':
-                    view = iceView[x % 2 + (y % 2) * 2];
-                    break;
-                  case 'slow':
-                    view = slowView[x % 2 + (y % 2) * 2];
-                    break;
-                  case 'lava':
-                    view = lavaView[x % 2 + (y % 2) * 2];
-                    padShift = 1;
-                    break;
-                  default:
-                    return;
-                }
-                view.padShift = view.padShift || 0;
-                view.isWall = view.isWall || false;
-                return view;
+              let view;
+              let padShift = 0;
+              switch (slug) {
+                case 'wall':
+                  view = stoneView;
+                  break;
+                case 'wall2':
+                  view = bricksView;
+                  break;
+                case 'whole':
+                  view = wholeView[x % 2 + (y % 2) * 2];
+                  padShift = 1;
+                  break;
+                case 'ice':
+                  view = iceView[x % 2 + (y % 2) * 2];
+                  break;
+                case 'slow':
+                  view = slowView[x % 2 + (y % 2) * 2];
+                  break;
+                case 'lava':
+                  view = lavaView[x % 2 + (y % 2) * 2];
+                  padShift = 1;
+                  break;
+                default:
+                  continue;
               }
-              const view = getView(x, y);
-              if (view) {
-                const f = scaleF;
-                if (!view.isWall) {
-                  let v = view;
-                  const cx = Math.floor(x * WALL_SIZE / ts);
-                  const cy = Math.floor(y * WALL_SIZE / ts);
-                  textures[padShift][cx][cy].isUsed = true;
-                  textures[padShift][cx][cy].renderXY(
-                    v,
-                    (x * WALL_SIZE - cx * ts) * f,
-                    (y * WALL_SIZE - cy * ts) * f,
-                    false);
-                  textures[padShift][cx][cy].padShift = padShift;
-                } else {
-                  for (let i = 2; i < ln; ++i) {
-                    let pad = (i - 2) * WALL_SIZE * 0.25 / (ln - 3) + Math.random() *
-                      WALL_SIZE / 6;
 
-                    let px = 0;
-                    let py = 0;
-                    let v = view;
-                    if (i < ln - 1) {
-                      v = view.darken;
-                    }
+              view.isWall = view.isWall || false;
 
-                    if (!grid[x - 1] || !grid[x - 1][y]) {
-                      px = pad;
-                    }
-                    if (!grid[x] || !grid[x][y - 1]) {
-                      py = pad;
-                    }
-                    v.width = (WALL_SIZE - px) * scaleF;
-                    v.height = (WALL_SIZE - py) * scaleF;
-                    if (!grid[x + 1] || !grid[x + 1][y]) {
-                      v.width -= pad * scaleF;
-                    }
-                    if (!grid[x] || !grid[x][y + 1]) {
-                      v.height -= pad * scaleF;
-                    }
-                    const sf = (0.7 + i * 0.3 / (ln - 3));
-                    v.tilePosition.x = (-x * WALL_SIZE - px) / sf;
-                    v.tilePosition.y = (-y * WALL_SIZE - py) / sf;
-                    v.tileScale.x = f * sf;
-                    v.tileScale.y = f * sf;
-                    const cx = Math.floor(x * WALL_SIZE / ts);
-                    const cy = Math.floor(y * WALL_SIZE / ts);
-                    textures[i][cx][cy].isUsed = true;
-                    textures[i][cx][cy].renderXY(
-                      v,
-                      (x * WALL_SIZE - cx * ts + px) * scaleF,
-                      (y * WALL_SIZE - cy * ts + py) * scaleF,
-                      false);
-                  }
+              const f = scaleF;
+              if (!view.isWall) {
+                let v = view;
+                const cx = Math.floor(x * WALL_SIZE / ts);
+                const cy = Math.floor(y * WALL_SIZE / ts);
+                textures[padShift][cx][cy].isUsed = true;
+                textures[padShift][cx][cy].renderXY(
+                  v,
+                  (x * WALL_SIZE - cx * ts) * f,
+                  (y * WALL_SIZE - cy * ts) * f,
+                  false);
+                textures[padShift][cx][cy].padShift = padShift;
+
+                continue;
+              }
+
+              for (let i = 2; i < ln; ++i) {
+                let pad = (i - 2) * WALL_SIZE * 0.25 / (ln - 3) + Math.random() *
+                  WALL_SIZE / 6;
+
+                let px = 0;
+                let py = 0;
+                let v = view;
+                if (i < ln - 1) {
+                  v = view.darken;
                 }
+
+                if (!grid[x - 1] || !grid[x - 1][y]) {
+                  px = pad;
+                }
+                if (!grid[x] || !grid[x][y - 1]) {
+                  py = pad;
+                }
+                v.width = (WALL_SIZE - px) * scaleF;
+                v.height = (WALL_SIZE - py) * scaleF;
+                if (!grid[x + 1] || !grid[x + 1][y]) {
+                  v.width -= pad * scaleF;
+                }
+                if (!grid[x] || !grid[x][y + 1]) {
+                  v.height -= pad * scaleF;
+                }
+                const sf = (0.7 + i * 0.3 / (ln - 3));
+                v.tilePosition.x = (-x * WALL_SIZE - px) / sf;
+                v.tilePosition.y = (-y * WALL_SIZE - py) / sf;
+                v.tileScale.x = f * sf;
+                v.tileScale.y = f * sf;
+                const cx = Math.floor(x * WALL_SIZE / ts);
+                const cy = Math.floor(y * WALL_SIZE / ts);
+                textures[i][cx][cy].isUsed = true;
+                textures[i][cx][cy].renderXY(
+                  v,
+                  (x * WALL_SIZE - cx * ts + px) * scaleF,
+                  (y * WALL_SIZE - cy * ts + py) * scaleF,
+                  false);
               }
             }
           }
