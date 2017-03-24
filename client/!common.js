@@ -555,25 +555,25 @@ function createGame() {
           wholeView.padShift = 1;
           wholeView.beginFill(0x000000, 1.0);
           wholeView.drawRect(0, 0,
-            WALL_SIZE * scaleLF2 + 0.5, WALL_SIZE * scaleLF2 + 0.5);
+            WALL_SIZE * scaleLF2 + 1, WALL_SIZE * scaleLF2 + 1);
           wholeView.endFill();
           const iceView = new Phaser.Graphics(
             game, 0, 0);
           iceView.beginFill(0x4ba4b4, 1.0);
           iceView.drawRect(0, 0,
-            WALL_SIZE * scaleLF + 0.5, WALL_SIZE * scaleLF + 0.5);
+            WALL_SIZE * scaleLF + 1, WALL_SIZE * scaleLF + 1);
           iceView.endFill();
           const slowView = new Phaser.Graphics(
             game, 0, 0);
           slowView.beginFill(0x451401, 1.0);
           slowView.drawRect(0, 0,
-            WALL_SIZE * scaleLF + 0.5, WALL_SIZE * scaleLF + 0.5);
+            WALL_SIZE * scaleLF + 1, WALL_SIZE * scaleLF + 1);
           slowView.endFill();
           const lavaView = new Phaser.Graphics(
             game, 0, 0);
           lavaView.beginFill(0x992200, 1.0);
           lavaView.drawRect(0, 0,
-            WALL_SIZE * scaleLF + 0.5, WALL_SIZE * scaleLF + 0.5);
+            WALL_SIZE * scaleLF + 1, WALL_SIZE * scaleLF + 1);
           lavaView.endFill();
 
           const bricksView = new Phaser.TileSprite(
@@ -779,8 +779,8 @@ function createGame() {
                     }
                     ++lowLevels;
                     sprite.scale.set(1 / f);
-                    sprite.x -= 1.25 / f;
-                    sprite.y -= 1.25 / f;
+                    sprite.x -= 1.5 / f;
+                    sprite.y -= 1.5 / f;
                     game.layer.sub.ground.add(sprite);
                   } else {
                     game.layer.sub[WALL_LAYERS[i - 2].slug].add(sprite);
