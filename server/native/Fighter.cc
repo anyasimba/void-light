@@ -319,6 +319,16 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
 
     return false;
   });
+
+  if (self->groundAffectTime >= 0.f) {
+    self->groundAffectTime -= dt;
+
+    if (self->groundAffectTime <= 0.f) {
+      self->groundAffectTime = 0.5f;
+      Local<Object> js = Local<Object>::New(isolate, self->js);
+      Local<Function>::Cast(js->GET("groundAffect"))->Call(js, 0, nullptr);
+    }
+  }
 }
 
 void Fighter__onRoll(const FunctionCallbackInfo<Value>& args) {

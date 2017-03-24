@@ -67,13 +67,7 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
             Local<Function>::Cast(js->GET("fall"))->Call(js, 0, nullptr);
           }
         } else if (self->grid[cx][cy] == 3) {
-          if (object->groundAffectTime <= 0.f) {
-            object->groundAffectTime = 0.5f;
-            Local<Object> js = Local<Object>::New(isolate, object->js);
-            Local<Function>::Cast(js->GET("groundAffect"))->Call(js, 0, nullptr);
-          }
-
-          object->groundAffectTime -= dt;
+          object.groundAffectTime = 0.f;
         } else if (self->grid[cx][cy] == 4) {
           object->groundFriction = 1.5f;
         } else if (self->grid[cx][cy] == 5) {

@@ -517,7 +517,7 @@ function createGame() {
           }
 
           const scaleF = Math.round(game.scaleFactor * 8) / 8;
-          const scaleLF = scaleF / WALL_SIZE * 2.5;
+          const scaleLF = scaleF / WALL_SIZE * 2;
           global.ts = WALL_SIZE * 4;
           const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
           const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
