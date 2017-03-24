@@ -396,10 +396,10 @@ function createGame() {
 
         if (client && client.player) {
           const targetX = client.player.pos.x +
-            client.player.speed.x * 0.5 +
+            client.player.speed.x +
             (mx - client.player.pos.x) * 0.2;
           const targetY = client.player.pos.y +
-            client.player.speed.y * 0.5 +
+            client.player.speed.y +
             (my - client.player.pos.y) * 0.2;
 
           const dx = -targetX *
@@ -462,7 +462,7 @@ function createGame() {
         }
 
         const makeSubLayer3D = (layer, f) => {
-          const p = client.player.pos;
+          const p = game.cameraPos;
           layer.scale.set(f);
           layer.x = -p.x * (f - 1);
           layer.y = -p.y * (f - 1);
@@ -517,11 +517,12 @@ function createGame() {
           }
 
           const scaleF = Math.round(game.scaleFactor * 8) / 8;
+          const scaleLF = scaleF * 0.01;
           global.ts = WALL_SIZE * 4;
           const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
           const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
 
-          const ln = WALL_LAYERS.length;
+          const ln = WALL_LAYERS.length + 1;
           const textures = [];
           for (let i = 0; i < ln; ++i) {
             textures[i] = [];
@@ -530,9 +531,13 @@ function createGame() {
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
               for (let i = 0; i < ln; ++i) {
+                let f = scaleF;
+                if (i === 0) {
+                  f = scaleLF;
+                }
                 const tex = new Phaser.RenderTexture(
                   game,
-                  Math.ceil(ts * scaleF), Math.ceil(ts * scaleF),
+                  Math.ceil(ts * f) + 2, Math.ceil(ts * f) + 2,
                   null, null, 1);
 
                 textures[i][x] = textures[i][x] || [];
@@ -541,33 +546,33 @@ function createGame() {
             }
           }
 
+          const wholeView = new Phaser.Graphics(
+            game, 0, 0);
+          wholeView.beginFill(0x000000, 1.0);
+          wholeView.drawRect(0, 0, WALL_SIZE * scaleLF, WALL_SIZE * scaleLF);
+          wholeView.endFill();
+          const iceView = new Phaser.Graphics(
+            game, 0, 0);
+          iceView.beginFill(0x33ccff, 0.3);
+          iceView.drawRect(0, 0, WALL_SIZE * scaleLF, WALL_SIZE * scaleLF);
+          iceView.endFill();
+          const slowView = new Phaser.Graphics(
+            game, 0, 0);
+          slowView.beginFill(0x451401, 0.4);
+          slowView.drawRect(0, 0, WALL_SIZE * scaleLF, WALL_SIZE * scaleLF);
+          slowView.endFill();
+          const lavaView = new Phaser.Graphics(
+            game, 0, 0);
+          lavaView.beginFill(0x992200, 1);
+          lavaView.drawRect(0, 0, WALL_SIZE * scaleLF, WALL_SIZE * scaleLF);
+          lavaView.endFill();
+
           const bricksView = new Phaser.TileSprite(
             game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
             'bricks');
           bricksView.darken = new Phaser.TileSprite(
             game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
             makeDarken(bricksView));
-
-          const wholeView = new Phaser.Graphics(
-            game, 0, 0);
-          wholeView.beginFill(0x000000, 1.0);
-          wholeView.drawRect(0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF);
-          wholeView.endFill();
-          const iceView = new Phaser.Graphics(
-            game, 0, 0);
-          iceView.beginFill(0xAACCFF, 0.2);
-          iceView.drawRect(0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF);
-          iceView.endFill();
-          const slowView = new Phaser.Graphics(
-            game, 0, 0);
-          slowView.beginFill(0xFFCCAA, 0.2);
-          slowView.drawRect(0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF);
-          slowView.endFill();
-          const lavaView = new Phaser.Graphics(
-            game, 0, 0);
-          lavaView.beginFill(0xFF8800, 0.5);
-          lavaView.drawRect(0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF);
-          lavaView.endFill();
 
           const stoneView = new Phaser.TileSprite(
             game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
@@ -612,18 +617,20 @@ function createGame() {
               if (view) {
                 const f = scaleF;
                 if (!isWall) {
+                  const f = scaleLF;
                   let v = view;
                   const cx = Math.floor(x * WALL_SIZE / ts);
                   const cy = Math.floor(y * WALL_SIZE / ts);
                   textures[0][cx][cy].isUsed = true;
                   textures[0][cx][cy].renderXY(
                     v,
-                    (x * WALL_SIZE - cx * ts) * f,
-                    (y * WALL_SIZE - cy * ts) * f,
+                    (x * WALL_SIZE - cx * ts) * f + 1,
+                    (y * WALL_SIZE - cy * ts) * f + 1,
                     false);
                 } else {
-                  for (let i = 0; i < ln; ++i) {
-                    let pad = i * 24 / (ln - 1) + Math.random() * 16;
+                  for (let i = 1; i < ln; ++i) {
+                    let pad = (i - 1) * WALL_SIZE * 0.25 / (ln - 2) + Math.random() *
+                      WALL_SIZE / 6;
 
                     let px = 0;
                     let py = 0;
@@ -679,6 +686,7 @@ function createGame() {
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
               const sprites = [];
+              let hasUpdate = false;
               for (let i = 0; i < ln; ++i) {
                 if (textures[i][x][y].isUsed) {
                   const sprite = new Phaser.Sprite(
@@ -687,7 +695,8 @@ function createGame() {
                   sprites.push(sprite);
                   sprite.visible = false;
                   sprite.scale.set(1 / scaleF);
-                  if (i === 0) {
+                  if (!hasUpdate) {
+                    hasUpdate = true;
                     sprite.update = () => {
                       if (global.client && global.client.player) {
                         const cx = sprite.x + ts * 0.5;
@@ -699,21 +708,36 @@ function createGame() {
                         const w = (game.w * fx + ts) * 0.5;
                         const h = (game.h * fy + ts) * 0.5;
                         if (dx <= w && dy <= h) {
-                          for (let i = 0; i < sprites.length; ++i) {
+                          for (let i = 1; i < sprites.length; ++i) {
                             sprites[i].visible = true;
                             ++global.SPRITES_N;
                           }
                         } else {
-                          for (let i = 0; i < sprites.length; ++i) {
+                          for (let i = 1; i < sprites.length; ++i) {
                             sprites[i].visible = false;
                           }
+                        }
+                        const w0 = w + 100;
+                        const h0 = h + 100;
+                        if (dx <= w0 && dy <= h0) {
+                          sprites[0].visible = true;
+                          ++global.SPRITES_N;
+                        } else {
+                          sprites[0].visible = false;
                         }
                       }
                     };
                   }
                   //sprite.tint = 0x888888 + Math.random() * 0x777777;
                   sprite.cacheAsBitmap = true;
-                  game.layer.sub[WALL_LAYERS[i].slug].add(sprite);
+                  if (i === 0) {
+                    sprite.scale.set(1 / scaleLF);
+                    sprite.x -= 1 / scaleLF;
+                    sprite.y -= 1 / scaleLF;
+                    game.layer.sub.ground.add(sprite);
+                  } else {
+                    game.layer.sub[WALL_LAYERS[i - 1].slug].add(sprite);
+                  }
                 }
               }
             }
