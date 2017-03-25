@@ -574,7 +574,7 @@ export const stage1__boss1 = {
   RUN_D: 150,
   HIT_D: [120, 180],
   HIT_VER: 0.9,
-  HIT_TIME: [0.5, 5],
+  HIT_TIME: [0.5, 10],
   JUMP_HIT_VER: 0.2,
   ROLL_HIT_VER: 0.1,
   MOVE_VER: 0.5,
@@ -592,20 +592,20 @@ export const stage1__boss1 = {
     LANG_RU: 'Истяженная оболочка Тит',
     name: 'stage1__boss1',
 
-    moveTimeF: 2,
+    moveTimeF: 0.8,
 
     hitSpeed: 1.2,
     damage: 18,
 
-    ACC: 300,
-    RUN_ACC: 300,
+    ACC: 400,
+    RUN_ACC: 450,
     BODY_SIZE: 40,
     SCALE: 4.5,
 
     BALANCE: 100,
     HP: 400,
     MP: 100,
-    STAMINA: 2000,
+    STAMINA: 1000,
   },
 
   leftHand(parent) {
