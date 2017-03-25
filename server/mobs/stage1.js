@@ -592,15 +592,15 @@ export const stage1__boss1 = {
     LANG_RU: 'Истяженная оболочка Тит',
     name: 'stage1__boss1',
 
-    moveTimeF: 1.1,
+    moveTimeF: 2,
 
-    hitSpeed: 1.3,
+    hitSpeed: 1.2,
     damage: 18,
 
     ACC: 300,
-    RUN_ACC: 500,
+    RUN_ACC: 300,
     BODY_SIZE: 40,
-    SCALE: 5,
+    SCALE: 4.5,
 
     BALANCE: 100,
     HP: 400,
@@ -614,7 +614,7 @@ export const stage1__boss1 = {
       type: 'shield',
       kind: 'stage1__boss1__leftHand',
       hand: 2,
-      bodyScale: 0.8,
+      bodyScale: 0.9,
       pos: {
         x: -15,
         y: -30,
@@ -633,7 +633,7 @@ export const stage1__boss1 = {
       balance: 8,
       stamina: 20,
       staminaTime: 1,
-      bodyScale: 0.8,
+      bodyScale: 0.9,
       pos: {
         x: -25,
         y: 25,
