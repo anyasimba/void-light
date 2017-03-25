@@ -151,9 +151,10 @@ export class Client extends global.Client {
 
       if (clients[this.username]) {
         const other = clients[this.username];
-        clearTimeout(other.disconnectTimeout);
 
-        other.emit('otherClient');
+        other.emit('otherClient', {});
+        delete other.username;
+        clearTimeout(other.disconnectTimeout);
         other.sock.conn.close();
 
         this.player = other.player;
