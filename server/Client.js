@@ -151,11 +151,11 @@ export class Client extends global.Client {
 
       if (clients[this.username]) {
         const other = clients[this.username];
+        delete other.username;
+        clients[this.username] = this;
 
         other.emit('otherClient', {});
-        delete other.username;
-        clearTimeout(other.disconnectTimeout);
-        other.sock.conn.close();
+        other.sock.removeAllListeners();
 
         this.player = other.player;
         this.player.owner = this;
@@ -239,7 +239,12 @@ export class Client extends global.Client {
 
   async onDisconnect() {
     if (this.username) {
+      console.log("SET TIMEOUT!!!");
       this.disconnectTimeout = setTimeout(() => {
+        if (!this.username) {
+          return;
+        }
+        console.log('WTF');
         delete clients[this.username];
 
         if (this.gameLevelZone) {

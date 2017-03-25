@@ -517,9 +517,9 @@ function createGame() {
           makeSubLayer3D(layer.sub.middle, 1 + 0.002 * f);
           makeSubLayer3D(layer.sub.top, 1 + 0.007 * f);
           makeSubLayer3D(layer.sub.walls2, 1 + 0.008 * f);
-          makeSubLayer3D(layer.sub.walls3, 1 + 0.02 * f);
           makeSubLayer3D(layer.sub.info, 1 + 0.01 * f);
-          makeSubLayer3D(layer.sub.ceil, 1 + 0.015 * f);
+          makeSubLayer3D(layer.sub.walls3, 1 + 0.02 * f);
+          makeSubLayer3D(layer.sub.ceil, 1 + 0.025 * f);
         }
 
         if (global.client && client.player) {
@@ -527,9 +527,10 @@ function createGame() {
         }
 
         if (client.needLoadMap) {
+          console.log('loading map...');
+          delete client.needLoadMap;
           loadingProgress(0, 'map');
 
-          delete client.needLoadMap;
           client.w = client.map.width * WALL_SIZE;
           client.h = client.map.height * WALL_SIZE;
 
@@ -575,6 +576,7 @@ function createGame() {
           }
 
           const AF = 2.4;
+          global.AF = AF;
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
               for (let i = 0; i < ln; ++i) {
@@ -653,7 +655,6 @@ function createGame() {
             renderMaskAffect('lava', 1, 1),
           ];
 
-          console.log('loading map...');
           loadingProgress(10);
           for (let y = 0; y < client.map.height; ++y) {
             for (let x = 0; x < client.map.width; ++x) {
@@ -759,82 +760,79 @@ function createGame() {
             groundSprite.tilePosition.y = -game.ui.y;
           };
 
+          game.mapTextures = textures;
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
               const sprites = [];
-              let hasUpdate = false;
-              let lowLevels = 0;
               for (let i = 0; i < ln; ++i) {
                 if (textures[i][x][y].isUsed) {
                   const sprite = new Phaser.Sprite(
                     game, x * ts, y * ts,
                     textures[i][x][y]);
-                  sprites.push(sprite);
-                  sprite.visible = false;
+                  textures[i][x][y].sprite = sprite;
                   sprite.scale.set(1 / scaleF);
-                  if (!hasUpdate) {
-                    hasUpdate = true;
-                    sprite.update = () => {
-                      if (global.client && global.client.player) {
-                        const cx = x * ts + ts * 0.5;
-                        const cy = y * ts + ts * 0.5;
-                        const dx = Math.abs(cx - game.cameraPos.x);
-                        const dy = Math.abs(cy - game.cameraPos.y);
-                        const fx = 1 / game.sceneWrap.scale.x;
-                        const fy = 1 / game.sceneWrap.scale.y;
-                        const w = (game.w * fx + ts) * 0.5;
-                        const h = (game.h * fy + ts) * 0.5;
-                        let b = lowLevels;
-                        if (dx <= w && dy <= h) {
-                          for (let i = b; i < sprites.length; ++i) {
-                            sprites[i].visible = true;
-                            ++global.SPRITES_N;
-                          }
-                        } else {
-                          for (let i = b; i < sprites.length; ++i) {
-                            sprites[i].visible = false;
-                          }
-                        }
-                        if (lowLevels) {
-                          const w0 = w + WALL_SIZE;
-                          const h0 = h + WALL_SIZE;
-                          if (dx <= w0 && dy <= h0) {
-                            for (let i = 0; i < lowLevels; ++i) {
-                              sprites[i].visible = true;
-                              ++global.SPRITES_N;
-                            }
-                          } else {
-                            for (let i = 0; i < lowLevels; ++i) {
-                              sprites[i].visible = false;
-                            }
-                          }
-                        }
-                      }
-                    };
-                  }
-                  //sprite.tint = 0x888888 + Math.random() * 0x777777;
-                  sprite.cacheAsBitmap = true;
+                  sprites.push(sprite);
+
                   if (i < 2) {
                     if (i === 1) {
-                      game.layer.sub.affects2.add(sprite);
+                      sprite.target = 'affects2';
                     } else {
-                      game.layer.sub.affects.add(sprite);
+                      sprite.target = 'affects';
                     }
-                    ++lowLevels;
                     sprite.x -= (AF - 1) * 0.5 * WALL_SIZE;
                     sprite.y -= (AF - 1) * 0.5 * WALL_SIZE;
                   } else {
-                    game.layer.sub[WALL_LAYERS[i - 2].slug].add(sprite);
+                    sprite.target = WALL_LAYERS[i - 2].slug;
                   }
                 }
               }
             }
           }
 
-          bricksView.destroy();
-          bricksView.darken.destroy();
-
           loadingProgress(100);
+        }
+
+        if (game.cameraPos && global.AF) {
+          const ln = WALL_LAYERS.length + 2;
+          let gbx = game.cameraPos.x - game.w * 0.5 / game.sceneWrap.scale.x;
+          gbx -= (AF - 1) * 0.5 * WALL_SIZE;
+          gbx = Math.floor(gbx / ts);
+          let gby = game.cameraPos.y - game.h * 0.5 / game.sceneWrap.scale.y;
+          gby -= (AF - 1) * 0.5 * WALL_SIZE;
+          gby = Math.floor(gby / ts);
+          let gex = game.cameraPos.x + game.w * 0.5 / game.sceneWrap.scale.x;
+          gex += (AF - 1) * 0.5 * WALL_SIZE;
+          gex = Math.floor(gex / ts);
+          let gey = game.cameraPos.y + game.h * 0.5 / game.sceneWrap.scale.y;
+          gey += (AF - 1) * 0.5 * WALL_SIZE;
+          gey = Math.floor(gey / ts);
+
+          const texs = game.mapTextures;
+          gbx = Math.max(0, Math.min(texs[0].length - 1, gbx));
+          gby = Math.max(0, Math.min(texs[0][0].length - 1, gby));
+          gex = Math.max(0, Math.min(texs[0].length - 1, gex));
+          gey = Math.max(0, Math.min(texs[0][0].length - 1, gey));
+
+          game.layer.sub.affects.removeAll();
+          game.layer.sub.affects2.removeAll();
+          game.layer.sub.walls.removeAll();
+          game.layer.sub.walls2.removeAll();
+          game.layer.sub.walls3.removeAll();
+          for (let i = 0; i < ln; ++i) {
+            for (let x = gbx; x <= gex; ++x) {
+              for (let y = gby; y <= gey; ++y) {
+                const tex = texs[i][x][y];
+                if (!tex.isUsed) {
+                  continue;
+                }
+                const s = tex.sprite;
+                s.visible = true;
+                game.layer.sub[s.target].add(s);
+                global.SPRITES_N = global.SPRITES_N || 0;
+                ++global.SPRITES_N;
+              }
+            }
+          }
         }
 
         global.SPRITES_N = global.SPRITES_N || 0;
