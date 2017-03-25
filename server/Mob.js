@@ -85,7 +85,7 @@ export class Mob {
           const p = q[i];
           const cost = pathGrid[p.x][p.y];
           const check = (x, y, cost) => {
-            if (cost > 200) {
+            if (cost > 50) {
               return;
             }
             if (grid[x] && (grid[x][y] === 1 || grid[x][y] === 2)) {
@@ -170,6 +170,7 @@ export class Mob {
     if (!this.pathGrid[x] || this.pathGrid[x][y] === undefined) {
       return;
     }
+    this.opts.AGRO_D = Math.min(this.opts.AGRO_D, 40);
     if (this.target === player || this.pathGrid[x][y] <= this.opts.AGRO_D) {
       const setTarget = () => {
         if (this.opts.IS_BOSS && player.area !== this.area) {

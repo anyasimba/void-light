@@ -145,11 +145,11 @@ function checkIfBothReady() {
 
 
 const WALL_LAYERS = [{
-  slug: 'bottom',
-}, {
-  slug: 'middle',
-}, {
   slug: 'walls',
+}, {
+  slug: 'walls2',
+}, {
+  slug: 'walls3',
 }, ];
 
 function createLayer() {
@@ -159,15 +159,20 @@ function createLayer() {
   layer.sub.affects = layer.add(new Phaser.Group(game));
   layer.sub.affects2 = layer.add(new Phaser.Group(game));
   layer.sub.bottom = layer.add(new Phaser.Group(game));
+  layer.sub.walls = layer.add(new Phaser.Group(game));
   layer.sub.deads = layer.add(new Phaser.Group(game));
   layer.sub.middle = layer.add(new Phaser.Group(game));
-  layer.sub.walls = layer.add(new Phaser.Group(game));
   layer.sub.top = layer.add(new Phaser.Group(game));
+  layer.sub.walls2 = layer.add(new Phaser.Group(game));
+  layer.sub.walls3 = layer.add(new Phaser.Group(game));
   layer.sub.info = layer.add(new Phaser.Group(game));
-  const q = 0.1;
+  layer.sub.ceil = layer.add(new Phaser.Group(game));
+  const q = 0.05;
   const rt = new Phaser.RenderTexture(
-    game, Math.ceil(game.w * q * 2), Math.ceil(game.h * q * 2), null, null);
-  layer.sub.light = layer.add(new Phaser.Sprite(game, 0, 0, rt));
+    game, Math.ceil(game.w * q * 1.3), Math.ceil(game.h * q * 1.3), null,
+    null);
+  layer.sub.light = layer.add(new Phaser.Sprite(
+    game, 0, 0, rt));
   layer.sub.light.scale.set(1 / q);
   layer.sub.light.blendMode = PIXI.blendModes.MULTIPLY;
   return layer;
@@ -380,7 +385,8 @@ function createGame() {
         game.time.advancedTiming = true;
         game.scaleMode = Phaser.FILL_WINDOW_FIXED_ASPECT;
 
-        game.sceneWrap = game.add.group();
+        game.sceneWrap2 = game.add.group();
+        game.sceneWrap = game.sceneWrap2.add(new Phaser.Group(game));
         game.scene = game.sceneWrap.add(new Phaser.Group(game));
 
         game.canvas.oncontextmenu = function (e) {
@@ -408,6 +414,13 @@ function createGame() {
           const targetY = client.player.pos.y +
             client.player.speed.y +
             (my - client.player.pos.y) * 0.2;
+          // let targetX = client.player.pos.x +
+          //   client.player.speed.x;
+          // let targetY = client.player.pos.y +
+          //   client.player.speed.y;
+
+          // targetX += look.x * 200;
+          // targetY += look.y * 200;
 
           const dx = -targetX *
             game.scaleFactor -
@@ -428,17 +441,24 @@ function createGame() {
           const f2 = (1 - Math.pow(0.1, dt * 0.3));
           game.zoomF += (zoom - game.zoomF) * f2;
           game.sceneWrap.scale.set(game.zoomF);
+          //game.sceneWrap.angle = -90 - look.toAngle();
 
           game.ui.x = -game.scene.x / game.scaleFactor - game.w * 0.5 /
             game.sceneWrap.scale.x;
           game.ui.y = -game.scene.y / game.scaleFactor - game.h * 0.5 /
             game.sceneWrap.scale.y;
           game.ui.scale.set(game.uiScaleFactor / game.scaleFactor / game.zoomF);
+          //game.ui.angle = -game.sceneWrap.angle;
 
           game.cameraPos = new vec3({
             x: -game.scene.x / game.scaleFactor,
             y: -game.scene.y / game.scaleFactor,
           });
+          // game.cameraPos.angle = look.toAngle();
+          // game.cameraPos.x += Math.cos(game.cameraPos.angle * Math.PI / 180) *
+          //   1000;
+          // game.cameraPos.y += Math.sin(game.cameraPos.angle * Math.PI / 180) *
+          //   1000;
 
           if (game.layer.sub.light) {
             game.layer.sub.light.x = game.ui.x;
@@ -468,18 +488,38 @@ function createGame() {
           light.texture.renderXY(game.lightClear2, 0, 0, false);
         }
 
+        // let angleS = 60;
+        // if (keysState.a) {
+        //   const a = look.toAngle() * Math.PI / 180;
+        //   look.x = Math.cos(a - dt * angleS * Math.PI / 180);
+        //   look.y = Math.sin(a - dt * angleS * Math.PI / 180);
+        // }
+        // if (keysState.d) {
+        //   const a = look.toAngle() * Math.PI / 180;
+        //   look.x = Math.cos(a + dt * angleS * Math.PI / 180);
+        //   look.y = Math.sin(a + dt * angleS * Math.PI / 180);
+        // }
+
         const makeSubLayer3D = (layer, f) => {
           const p = game.cameraPos;
+          let px = p.x;
+          let py = p.y;
+          // if (p.angle && !isNaN(p.angle)) {
+          //   px -= Math.cos(p.angle * Math.PI / 180) * 1400;
+          //   py -= Math.sin(p.angle * Math.PI / 180) * 1400;
+          // }
           layer.scale.set(f);
-          layer.x = -p.x * (f - 1);
-          layer.y = -p.y * (f - 1);
+          layer.x = -px * (f - 1);
+          layer.y = -py * (f - 1);
         };
         const makeLayer3D = layer => {
           const f = 6 * game.sceneWrap.scale.x;
-          makeSubLayer3D(layer.sub.middle, 1 + 0.01 * f);
-          makeSubLayer3D(layer.sub.top, 1 + 0.02 * f);
-          makeSubLayer3D(layer.sub.walls, 1 + 0.02 * f);
-          makeSubLayer3D(layer.sub.info, 1 + 0.03 * f);
+          makeSubLayer3D(layer.sub.middle, 1 + 0.002 * f);
+          makeSubLayer3D(layer.sub.top, 1 + 0.007 * f);
+          makeSubLayer3D(layer.sub.walls2, 1 + 0.008 * f);
+          makeSubLayer3D(layer.sub.walls3, 1 + 0.02 * f);
+          makeSubLayer3D(layer.sub.info, 1 + 0.01 * f);
+          makeSubLayer3D(layer.sub.ceil, 1 + 0.015 * f);
         }
 
         if (global.client && client.player) {

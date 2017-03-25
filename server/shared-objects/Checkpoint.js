@@ -71,6 +71,7 @@ export class Checkpoint extends mix(global.Checkpoint, MixNativeGameObject,
       y: this.pos.y / WALL_SIZE,
       name: this.slug,
     });
+    player.owner.saveParam('checkpoint', 'mapName', this.gameLevelZone.mapName);
     player.owner.emit('useCheckpoint', {});
 
     const mobs = this.gameLevelZone.mobs;

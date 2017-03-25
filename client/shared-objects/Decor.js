@@ -20,7 +20,7 @@ export class Decor extends mix(global.Decor, MixGameObject) {
     const opts = global[this.slug];
     if (opts.VIEW) {
       this.view = Decor.createView(opts);
-      this.middleGroup.add(this.view);
+      this.ceilGroup.add(this.view);
     }
 
     if (opts.LIGHT) {
@@ -51,8 +51,10 @@ export class Decor extends mix(global.Decor, MixGameObject) {
 
     if (game.layer.sub.light && this.light) {
       const light = game.layer.sub.light;
-      const x = (this.pos.x - game.ui.x) / light.scale.x;
-      const y = (this.pos.y - game.ui.y) / light.scale.y;
+      const lx = 0; //game.w * 0.5;
+      const ly = 0; //game.h * 0.5;
+      const x = (this.pos.x - game.ui.x + lx) / light.scale.x;
+      const y = (this.pos.y - game.ui.y + ly) / light.scale.y;
       light.texture.renderXY(this.light, x, y, false);
     }
   }

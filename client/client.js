@@ -23,9 +23,14 @@ export class Client extends global.Client {
       ['s', getCookie('key__s') || Phaser.Keyboard.S],
       ['d', getCookie('key__d') || Phaser.Keyboard.D],
     ];
+
+    game.input.mouse.requestPointerLock();
+
     const keysState = {};
+    global.keysState = keysState;
     let look = new vec3();
     let move = new vec3();
+    global.look = look;
     const emitMove = () => {
       move.init();
       if (keysState.w) {
@@ -40,6 +45,7 @@ export class Client extends global.Client {
       if (keysState.d) {
         move.x += 1;
       }
+
       if (look.length() > 0) {
         const l = look.unit();
         const r = new vec3();

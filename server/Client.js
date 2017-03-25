@@ -151,18 +151,30 @@ export class Client extends global.Client {
 
       if (clients[this.username]) {
         const other = clients[this.username];
-        other.emit('otherClient');
-        other.__sock = this.__sock;
-        delete this.__sock;
+        clearTimeout(other.disconnectTimeout);
 
-        if (other.player) {
-          other.emit('playerID', {
-            playerID: other.player.id,
-          });
-        }
-        if (other.gameLevelZone) {
-          other.gameLevelZone.emitTo(other);
-        }
+        other.emit('otherClient');
+        other.sock.conn.close();
+
+        this.player = other.player;
+        this.player.owner = this;
+
+        this.gameLevelZone = other.gameLevelZone;
+
+        this.emit('playerID', {
+          playerID: other.player.id,
+        });
+
+        this.emit('map', {
+          name: this.gameLevelZone.mapName,
+        });
+
+        this.gameLevelZone.switchClient(this, other);
+        await this.loadClient();
+
+        this.registerEvents();
+
+        console.log('User relogin', this.username);
         return;
       }
       await this.loadClient();
@@ -176,10 +188,12 @@ export class Client extends global.Client {
 
   login() {
     let complex = 0;
-    if (gameLevelZones[complex]) {
-      this.gameLevelZone = gameLevelZones[complex];
+
+    if (this.params.checkpoint && this.params.checkpoint.mapName) {
+      this.gameLevelZone = getGameLevelZone(
+        this.params.checkpoint.mapName, complex);
     } else {
-      return;
+      this.gameLevelZone = getGameLevelZone('stage1__1', 0);
     }
 
     this.player = {};
@@ -224,12 +238,9 @@ export class Client extends global.Client {
 
   async onDisconnect() {
     if (this.username) {
-      delete clients[this.username];
+      this.disconnectTimeout = setTimeout(() => {
+        delete clients[this.username];
 
-      this.params.info.params.lastDisconnect = new Date();
-      await this.saveParam('info', 'params', this.params.info.params);
-
-      setTimeout(() => {
         if (this.gameLevelZone) {
           this.gameLevelZone.removeClient(this);
         }
@@ -239,6 +250,9 @@ export class Client extends global.Client {
           this.player.destructor();
         }
       }, 10000);
+
+      this.params.info.params.lastDisconnect = new Date();
+      await this.saveParam('info', 'params', this.params.info.params);
     }
 
     console.log('User disconnected', this.username);

@@ -10,6 +10,8 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
       isOpening: this.isOpening,
       isClosing: this.isClosing,
       progress: this.progress,
+
+      isExit: this.isExit,
     };
   }
 
@@ -89,6 +91,9 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
       basePos: new vec3(opts.mapX, opts.mapY),
       baseSize: new vec3(opts.mapW, opts.mapH),
 
+      isExit: opts.isExit,
+      exitWay: opts.exitWay,
+
       progress: 0,
     });
 
@@ -124,6 +129,11 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
   }
 
   open(player) {
+    if (this.isExit) {
+      player.wait(4);
+      player.speed.init();
+      return;
+    }
     if (this.isOpening || this.isClosing) {
       return;
     }

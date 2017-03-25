@@ -15,11 +15,12 @@ globally(require('../common/+'));
 globally(require('../shared/+'));
 
 globally(require('./!main'));
+globally(require('./configs/+'));
+globally(require('./GameLevelZone/+'));
 globally(require('./mix/MixGameObject'));
 globally(require('./mobs/stage1'));
 globally(require('./shared-objects/+'));
 globally(require('./Client'));
-globally(require('./GameLevelZone/+'));
 globally(require('./Mob'));
 globally(require('./NPC'));
 globally(require('./Server'));
@@ -30,4 +31,3 @@ globally(require('./Server'));
   }
   main();
 })();
-

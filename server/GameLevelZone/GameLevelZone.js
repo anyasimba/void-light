@@ -1,3 +1,23 @@
+export const sharedZones = {};
+export const gameZones = [];
+
+export function getGameLevelZone(mapName, complex) {
+  const opts = global[mapName];
+  if (!opts) {
+    return;
+  }
+
+  if (opts.isPrivate) {
+    return new GameLevelZone(mapName, complex);
+  }
+
+  if (sharedZones[mapName] && sharedZones[mapName][complex]) {
+    return sharedZones[mapName][complex];
+  }
+
+  return new GameLevelZone(mapName, complex);
+}
+
 export class GameLevelZone {
   static get CELL_SIZE() {
     return WALL_SIZE * 4;
@@ -16,14 +36,34 @@ export class GameLevelZone {
     this.timeouts = [];
 
     this.complex = complex;
-
-    this.loadMap(mapName);
-  }
-
-  loadMap(mapName) {
     this.mapName = mapName;
     this.mapConfig = global[mapName];
 
+    this.isPrivate = this.mapConfig.isPrivate;
+    gameZones.push(this);
+    if (!this.isPrivate) {
+      sharedZones[this.mapName] = sharedZones[this.mapName] || [];
+      sharedZones[this.mapName][this.complex] = this;
+      console.log('New SHARED game zone', mapName, complex);
+    } else {
+      console.log('New PRIVATE game zone', mapName, complex);
+    }
+
+    this.loadMap(mapName);
+
+    console.log('Game zone', mapName, complex, 'loading [done]');
+  }
+  destructor() {
+    gameZones.splice(gameZones.indexOf(this), 1);
+    if (!this.isPrivate) {
+      delete sharedZones[this.mapName][this.complex];
+      console.log('Destroy SHARED game zone', this.mapName, this.complex);
+    } else {
+      console.log('Destroy PRIVATE game zone', this.mapName, this.complex);
+    }
+  }
+
+  loadMap(mapName) {
     global.mapCache = global.mapCache || {};
     mapCache[mapName] = mapCache[mapName] || {};
     const cache = mapCache[mapName];
@@ -118,6 +158,11 @@ export class GameLevelZone {
       } else if (o.name) {
         switch (o.name) {
           case 'Door':
+            this.mapObjects[data.mapID] = new Door(this, data);
+            break;
+          case 'Door':
+            data.isExit = true;
+            data.exitWay = o.type;
             this.mapObjects[data.mapID] = new Door(this, data);
             break;
           case 'BossArea':
@@ -242,6 +287,15 @@ export class GameLevelZone {
     const i = this.clients.indexOf(client);
     this.clients.splice(i, 1);
     this.removeObject(client.player);
+    if (this.clients.length <= 0) {
+      this.destructor();
+    }
+  }
+  switchClient(newClient, oldClient) {
+    const i = this.clients.indexOf(oldClient);
+    this.clients.splice(i, 1);
+    this.emitTo(newClient);
+    this.clients.push(newClient);
   }
   rebornPlayer(player) {
     if (player.owner.params.checkpoint) {
