@@ -11,21 +11,21 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
 
   GameLevelZone *self = (GameLevelZone *)node::Buffer::Data(args[0]->ToObject());
   float dt = (float) args[1]->NumberValue();
-  
-  for (int i = 0; i < self->objects.size(); ++i) {
+
+  for (int i = 0; i < (int)self->objects.size(); ++i) {
     GameLevelZoneObject *object = self->objects[i];
 
     object->beforePos = object->pos;
     object->beforeSpeed = object->speed;
   }
 
-  for (int i = 0; i < self->objects.size(); ++i) {
+  for (int i = 0; i < (int)self->objects.size(); ++i) {
     GameLevelZoneObject *object = self->objects[i];
 
     updates[object->vtable](object, self, dt);
   }
 
-  for (int i = 0; i < self->objects.size(); ++i) {
+  for (int i = 0; i < (int)self->objects.size(); ++i) {
     GameLevelZoneObject *object = self->objects[i];
 
     object->hasPosChange = false;
@@ -35,13 +35,14 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
 
     object->beforePos2 = object->pos;
     object->beforeSpeed2 = object->speed;
+    object->beforeGroundFriction = object->groundFriction;
     object->isBodyChecked = false;
 
     GameLevelZone__updateObjectWithBodyCells(self, object);
     GameLevelZone__objectWithBodyOthers(self, object);
   }
 
-  for (int i = 0; i < self->objects.size(); ++i) {
+  for (int i = 0; i < (int)self->objects.size(); ++i) {
     GameLevelZoneObject *object = self->objects[i];
     if (!object->hasPosChange) {
       continue;
@@ -50,7 +51,7 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
     GameLevelZone__updateObjectWithBodyCollisions(self, object);
   }
 
-  for (int i = 0; i < self->objects.size(); ++i) {
+  for (int i = 0; i < (int)self->objects.size(); ++i) {
     GameLevelZoneObject *object = self->objects[i];
     if (!object->hasPosChange) {
       continue;
@@ -58,12 +59,37 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
 
     int cx = (int) floor(object->pos.x / WALL_SIZE);
     int cy = (int) floor(object->pos.y / WALL_SIZE);
+    if (cx >= 0 && cx < (int)self->grid.size()) {
+      if (cy >= 0 && cy < (int)self->grid[cx].size()) {
+        if (self->grid[cx][cy] == 2) {
+          if (!((Fighter *)object)->inJump) {
+            Local<Object> js = Local<Object>::New(isolate, object->js);
+            Local<Function>::Cast(js->GET("fall"))->Call(js, 0, nullptr);
+          }
+        } else if (self->grid[cx][cy] == 3) {
+          if (!((Fighter *)object)->inJump) {
+            if (object->groundAffectTime < 0.f) {
+              object->groundAffectTime = 0.f;
+            }
+          } else {
+            object->groundAffectTime = -1.f;
+          }
+        } else if (self->grid[cx][cy] == 4) {
+          object->groundFriction = 1.5f;
+        } else if (self->grid[cx][cy] == 5) {
+          object->groundFriction = 0.f;
+        } else {
+          object->groundAffectTime = -1.f;
+          object->groundFriction = 1.f;
+        }
+      }
+    }
     for (int x = -1; x <= 1; ++x) {
       for (int y = -1; y <= 1; ++y) {
         const int X = x + cx;
         const int Y = y + cy;
-        if (X >= 0 && X < self->grid.size()) {
-          if (Y >= 0 && Y < self->grid[X].size()) {
+        if (X >= 0 && X < (int)self->grid.size()) {
+          if (Y >= 0 && Y < (int)self->grid[X].size()) {
             if (self->grid[X][Y] == 1) {
               float rx = (X + 0.5f) * WALL_SIZE;
               float ry = (Y + 0.5f) * WALL_SIZE;
@@ -76,7 +102,7 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
     }
   }
 
-  for (int i = 0; i < self->objects.size(); ++i) {
+  for (int i = 0; i < (int)self->objects.size(); ++i) {
     GameLevelZoneObject *object = self->objects[i];
     if (!object->hasPosChange) {
       continue;
@@ -86,7 +112,8 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
       object->beforePos2.x != object->pos.x ||
       object->beforePos2.y != object->pos.y ||
       object->beforeSpeed2.x != object->speed.x ||
-      object->beforeSpeed2.y != object->speed.y;
+      object->beforeSpeed2.y != object->speed.y ||
+      object->beforeGroundFriction != object->groundFriction;
     if (hasChange) {
       Local<Object> js = Local<Object>::New(isolate, object->js);
       Local<Function>::Cast(js->GET("emitPos"))->Call(js, 0, nullptr);
@@ -100,33 +127,25 @@ void GameLevelZone__updateObjectWithBodyCells(GameLevelZone *self, GameLevelZone
   }
   object->hasCells = true;
 
-  for (int i = 0; i < object->cells.size(); ++i) {
-    GameLevelZoneObjectCell& cell = object->cells[i];
-    vector<GameLevelZoneObject *>& list = *cell.list;
-    for(int j = 0; j < list.size(); ++j) {
-      GameLevelZoneObject *other = list[j];
-      if (other == object) {
-        list.erase(list.begin() + j);
-        break;
-      }
-    }
+  for (auto &cell: object->cells) {
+    remove_first(cell.list, object);
   }
   object->cells.clear();
 
   int CELL_SIZE = GameLevelZone::CELL_SIZE();
-  int xb = floor(
+  int xb = (int)floor(
     (object->pos.x - object->AREA_W * 0.5f) / CELL_SIZE);
-  int xe = ceil(
+  int xe = (int)ceil(
     (object->pos.x + object->AREA_W * 0.5f) / CELL_SIZE);
-  int yb = floor(
+  int yb = (int)floor(
     (object->pos.y - object->AREA_H * 0.5f) / CELL_SIZE);
-  int ye = ceil(
+  int ye = (int)ceil(
     (object->pos.y + object->AREA_H * 0.5f) / CELL_SIZE);
 
   for (int x = xb; x <= xe; ++x) {
     for (int y = yb; y <= ye; ++y) {
-      if (x >= 0 && x < self->cells.size()) {
-        if (y >= 0 && y < self->cells[x].size()) {
+      if (x >= 0 && x < (int)self->cells.size()) {
+        if (y >= 0 && y < (int)self->cells[x].size()) {
           self->cells[x][y].push_back(object);
           GameLevelZoneObjectCell cell;
           cell.list = &self->cells[x][y];
@@ -138,15 +157,15 @@ void GameLevelZone__updateObjectWithBodyCells(GameLevelZone *self, GameLevelZone
 }
 void GameLevelZone__objectWithBodyOthers(GameLevelZone *self, GameLevelZoneObject *object) {
   object->others.clear();
-  for (int i = 0; i < object->cells.size(); ++i) {
+  for (int i = 0; i < (int)object->cells.size(); ++i) {
     GameLevelZoneObjectCell& cell = object->cells[i];
     vector<GameLevelZoneObject *>& list = *cell.list;
-    for (int i = 0; i < list.size(); ++i) {
+    for (int i = 0; i < (int)list.size(); ++i) {
       GameLevelZoneObject *other = list[i];
       if (object != other) {
         bool exists = false;
 
-        for (int i = 0; i < object->others.size(); ++i) {
+        for (int i = 0; i < (int)object->others.size(); ++i) {
           GameLevelZoneObject *existsOther = object->others[i];
           if (existsOther == other) {
             exists = true;
@@ -161,7 +180,7 @@ void GameLevelZone__objectWithBodyOthers(GameLevelZone *self, GameLevelZoneObjec
   }
 }
 void GameLevelZone__updateObjectWithBodyCollisions(GameLevelZone *self, GameLevelZoneObject *object) {
-  for (int i = 0; i < object->others.size(); ++i) {
+  for (int i = 0; i < (int)object->others.size(); ++i) {
     GameLevelZoneObject *other = object->others[i];
     if (other->isBodyChecked) {
       continue;
@@ -183,7 +202,7 @@ void GameLevelZone__resolveCollision(GameLevelZone *self, GameLevelZoneObject *o
   }
 }
 void GameLevelZone__resolveCircle2CircleCollision(GameLevelZone *self, GameLevelZoneObject *object, GameLevelZoneObject *other) {
-  float bodyD = (object->BODY_P1 + other->BODY_P1) * 0.5;
+  float bodyD = (object->BODY_P1 + other->BODY_P1) * 0.5f;
   float dx = object->pos.x - other->pos.x;
   float dy = object->pos.y - other->pos.y;
   float d = sqrt(dx * dx + dy * dy);

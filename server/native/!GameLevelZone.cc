@@ -33,6 +33,11 @@ struct GameLevelZoneObject {
   vec2 beforeSpeed2;
   bool hasPosChange;
 
+  float beforeGroundFriction;
+  float groundFriction;
+
+  float groundAffectTime;
+
   short AREA_W;
   short AREA_H;
   BODY_TYPE_ENUM BODY_TYPE;
@@ -50,6 +55,7 @@ NUMBER_PROPERTY(GameLevelZoneObject, PosX, pos.x);
 NUMBER_PROPERTY(GameLevelZoneObject, PosY, pos.y);
 NUMBER_PROPERTY(GameLevelZoneObject, SpeedX, speed.x);
 NUMBER_PROPERTY(GameLevelZoneObject, SpeedY, speed.y);
+NUMBER_PROPERTY(GameLevelZoneObject, GroundFriction, groundFriction);
 
 void GameLevelZoneObject__getOthers(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();
@@ -57,9 +63,9 @@ void GameLevelZoneObject__getOthers(const FunctionCallbackInfo<Value>& args) {
 
   GameLevelZoneObject *self = (GameLevelZoneObject *)node::Buffer::Data(args[0]->ToObject());
 
-  Local<Array> array = Array::New(isolate, self->others.size());
+  Local<Array> array = Array::New(isolate, (int)self->others.size());
 
-  for(int i = 0; i < self->others.size(); ++i) {
+  for(int i = 0; i < (int)self->others.size(); ++i) {
     GameLevelZoneObject *other = self->others[i];
     Local<Object> js = Local<Object>::New(isolate, other->js);
     array->Set(i, js);
@@ -89,32 +95,27 @@ void new__GameLevelZone(const FunctionCallbackInfo<Value>& args) {
 
   GameLevelZone *self = new GameLevelZone;
 
-  Local<Object> bufferObj(node::Buffer::New(
-    isolate,
-    (char *)self,
-    sizeof(GameLevelZone)).ToLocalChecked());
-
   self->js = args[0]->ToObject();
 
   Local<Array> grid = Local<Array>::Cast(args[1]);
   self->grid.resize(grid->Length());
-  for (int x = 0; x < (int) grid->Length(); ++x) {
+  for (int x = 0; x < (int)grid->Length(); ++x) {
     Local<Array> col = Local<Array>::Cast(grid->Get(x));
     self->grid[x].resize(col->Length());
-    for (int y = 0; y < (int) col->Length(); ++y) {
-      int v = (int) col->Get(y)->NumberValue();
+    for (int y = 0; y < (int)col->Length(); ++y) {
+      int v = (int)col->Get(y)->NumberValue();
       self->grid[x][y] = v;
     }
   }
 
-  const int cell_w = ceil(self->grid.size() * WALL_SIZE / self->CELL_SIZE());
-  const int cell_h = ceil(self->grid[0].size() * WALL_SIZE / self->CELL_SIZE());
+  const int cell_w = (int)ceil(self->grid.size() * WALL_SIZE / self->CELL_SIZE());
+  const int cell_h = (int)ceil(self->grid[0].size() * WALL_SIZE / self->CELL_SIZE());
   self->cells.resize(cell_w);
   for (int x = 0; x < cell_w; ++x) {
     self->cells[x].resize(cell_h);
   }
-  
-  args.GetReturnValue().Set(bufferObj);
+
+  args.GetReturnValue().Set(node_buffer_new(isolate, self));
 }
 
 Isolate *isolate;
@@ -145,6 +146,9 @@ void GameLevelZone__addObject(const FunctionCallbackInfo<Value>& args) {
   object->AREA_W = 500;
   object->AREA_H = 500;
 
+  object->groundFriction = 1.f;
+  object->groundAffectTime = -1.f;
+
   self->objects.push_back(object);
 }
 
@@ -155,23 +159,10 @@ void GameLevelZone__removeObject(const FunctionCallbackInfo<Value>& args) {
   GameLevelZone *self = (GameLevelZone *)node::Buffer::Data(args[0]->ToObject());
   GameLevelZoneObject *object = (GameLevelZoneObject *)node::Buffer::Data(args[1]->ToObject());
 
-  for (int i = 0; i < self->objects.size(); ++i) {
-    GameLevelZoneObject *other = self->objects[i];
-    if (other == object) {
-      self->objects.erase(self->objects.begin() + i);
-    }
-  }
+  remove_first(&self->objects, object);
 
-  for (int i = 0; i < object->cells.size(); ++i) {
-    GameLevelZoneObjectCell& cell = object->cells[i];
-    vector<GameLevelZoneObject *>& list = *cell.list;
-    for(int j = 0; j < list.size(); ++j) {
-      GameLevelZoneObject *other = list[j];
-      if (other == object) {
-        list.erase(list.begin() + j);
-        break;
-      }
-    }
+  for (auto &cell: object->cells) {
+    remove_first(cell.list, object);
   }
   object->cells.clear();
 }

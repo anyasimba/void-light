@@ -1,4 +1,4 @@
-export const WALL_SIZE = 96;
+export const WALL_SIZE = 160;
 
 globally(require('./Bullet'));
 globally(require('./Checkpoint'));

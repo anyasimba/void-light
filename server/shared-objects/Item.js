@@ -13,7 +13,7 @@ export class Item extends mix(global.Item, MixGameObject) {
       hAngle: this.hAngle,
       sideAngle: this.sideAngle,
 
-      bodyScale: this.bodyScale,
+      bodyScale: this.bodyScale || 1.0,
     };
   }
 
@@ -33,8 +33,8 @@ export function ItemSword(parent) {
     stamina: 6,
     staminaTime: 0.5,
     pos: {
-      x: -25,
-      y: 25,
+      x: -10,
+      y: 40,
     },
     angle: 15,
     vAngle: 20,
@@ -50,13 +50,13 @@ export function ItemBigSword(parent) {
     bodyScale: 2,
     scale_f: 0.8,
     scale_d: 0,
-    damage: 16,
+    damage: 30,
     balance: 10,
     stamina: 12,
     staminaTime: 1,
     pos: {
-      x: -40,
-      y: 40,
+      x: 10,
+      y: 50,
     },
     angle: 15,
     vAngle: 30,
@@ -70,14 +70,14 @@ export function ItemAxe(parent) {
     kind: 'axe',
     hand: 1,
     scale_f: 0.5,
-    scale_d: 0.4,
-    damage: 12,
+    scale_d: 0.3,
+    damage: 8,
     balance: 4,
     stamina: 3,
     staminaTime: 0.4,
     pos: {
-      x: -25,
-      y: 25,
+      x: -10,
+      y: 40,
     },
     angle: 15,
     vAngle: 30,

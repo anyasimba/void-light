@@ -44,6 +44,8 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       stamina: this.stamina,
 
       effects: this.effects,
+
+      groundFriction: this.groundFriction,
     };
   }
   emitPos() {
@@ -55,6 +57,8 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
 
       inRun: this.inRun,
       inBlock: this.inBlock,
+
+      groundFriction: this.groundFriction,
     });
   }
   emitParams() {
@@ -124,6 +128,21 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       v = 0;
     }
     native.Fighter__setInRoll(this.native, v);
+  }
+  get inRollTime() {
+    const t = native.Fighter__getInRollTime(this.native);
+    if (t > 0) {
+      return t;
+    }
+  }
+  set inRollTime(v) {
+    native.Fighter__setInRollTime(this.native, v);
+  }
+  get inRollDuration() {
+    return native.Fighter__getInRollDuration(this.native);
+  }
+  set inRollDuration(v) {
+    native.Fighter__setInRollDuration(this.native, v);
   }
   get afterRollTime() {
     const t = native.Fighter__getAfterRollTime(this.native);
@@ -379,13 +398,13 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
 
     const clothed = this.owner.params.items.clothed;
     const list = this.owner.params.items.list;
-    if (clothed.leftHand1 && list[clothed.leftHand1]) {
+    if (clothed.leftHand1 !== undefined && list[clothed.leftHand1]) {
       const item = global[list[clothed.leftHand1].slug];
       if (typeof global[item.SLUG] === 'function') {
         global[item.SLUG](this);
       }
     }
-    if (clothed.rightHand1 && list[clothed.rightHand1]) {
+    if (clothed.rightHand1 !== undefined && list[clothed.rightHand1]) {
       const item = global[list[clothed.rightHand1].slug];
       if (typeof global[item.SLUG] === 'function') {
         global[item.SLUG](this);
@@ -599,16 +618,9 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
   }
   addImpulse(v) {
     if (this.inHit) {
-      if (this.inRoll && this.inJump) {
-        v *= 80 / (this.speed.length() * 0.2 + 100);
-      } else if (this.inRoll || this.afterRollTime) {
-        v *= 160 / (this.speed.length() * 0.1 + 100);
-      } else if (this.inJump) {
-        v *= 150 / (this.speed.length() * 0.25 + 100);
-      }
       const vec = this.hitVec.unit();
       this.speed = this.speed.add(
-        vec.multiply(v * this.scale));
+        vec.multiply(v));
       this.emitPos();
     }
   }
@@ -629,6 +641,13 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     delete this.isJumpHit;
     delete this.isRollHit;
     this.inHit = false;
+  }
+
+  canNextHit() {
+    super.canNextHit();
+    if (this.owner.canNextHit) {
+      this.owner.canNextHit();
+    }
   }
 
   useHP(v, time) {
@@ -678,10 +697,20 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     }
 
     opts.hitVec = this.hitVec.clone();
-    opts.d *= this.scale;
-    if (this.weapon && this.weapon.bodyScale) {
-      opts.d *= this.weapon.bodyScale;
+    if (opts.hand === 2) {
+      if (this.weapon2 && this.weapon2.bodyScale) {
+        opts.d -= this.weapon2.pos.length();
+        opts.d *= this.weapon2.bodyScale;
+        opts.d += this.weapon2.pos.length();
+      }
+    } else {
+      if (this.weapon && this.weapon.bodyScale) {
+        opts.d -= this.weapon.pos.length();
+        opts.d *= this.weapon.bodyScale;
+        opts.d += this.weapon.pos.length();
+      }
     }
+    opts.d *= this.scale;
 
     this.gameLevelZone.doDamageRadialArea(this, opts);
   }
@@ -781,16 +810,18 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
 
     if (canRoll) {
       if (this.inHit || this.inBlock) {
-        this.useStamina(8, 1);
+        this.useStamina(6, 0.5);
       } else {
-        this.useStamina(4, 1);
+        this.useStamina(3, 0.5);
       }
 
       const rollData = {
         duration: 0.7 / this.moveTimeF,
         afterTime: 0.3 / this.moveTimeF,
-        force: 800 * (this.moveTimeF * 0.4 + 0.6),
-        forceInJump: 750 * (this.moveTimeF * 0.4 + 0.6),
+        force: 800 * (this.moveTimeF * 0.4 + 0.6) /
+          (this.groundFriction * 0.2 + 0.8),
+        forceInJump: 750 * (this.moveTimeF * 0.4 + 0.6) /
+          (this.groundFriction * 0.2 + 0.8),
       };
       if (this.inHit && this.hitStage === 1) {
         rollData.force = 600 * (this.moveTimeF * 0.4 + 0.6);
@@ -800,9 +831,10 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
         rollData.force = 400 * (this.moveTimeF * 0.4 + 0.6);
         rollData.forceInJump = 300 * (this.moveTimeF * 0.4 + 0.6);
       }
-      rollData.force *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
-      rollData.forceInJump *= 0.5 + Math.min(this.speed.length() / 700,
-        0.8);
+      rollData.force *= 0.5 +
+        Math.min(this.speed.length() / 700, 0.8);
+      rollData.forceInJump *= 0.5 +
+        Math.min(this.speed.length() / 700, 0.8);
       this.rollBlockTime = rollData.duration + 0.1;
       native.Fighter__onRoll(this.native, rollData);
       this.emitAll('roll', rollData);
@@ -819,20 +851,21 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
 
     if (canJump) {
       if (this.inHit || this.inBlock) {
-        this.useStamina(16, 1.5);
+        this.useStamina(8, 0.8);
       } else {
-        this.useStamina(8, 1.5);
+        this.useStamina(4, 0.8);
       }
 
       const jumpData = {
-        duration: 0.6,
+        duration: 0.8,
         afterTime: 0.3 / this.moveTimeF,
         force: 700 * (this.moveTimeF * 0.4 + 0.6),
       };
       if (this.inHit && this.hitStage !== 1) {
         jumpData.force = 300;
       }
-      jumpData.force *= 0.5 + Math.min(this.speed.length() / 700, 0.8);
+      jumpData.force *= 0.5 + Math.min(this.speed.length() / 700, 0.8) /
+        (this.groundFriction * 0.6 + 0.4);
       native.Fighter__onJump(this.native, jumpData);
       this.emitAll('jump', jumpData);
       this.emitPos();
@@ -844,5 +877,20 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
   }
   clearSteps() {
     native.Fighter__clearSteps(this.native);
+  }
+
+  fall() {
+    this.hp = 0;
+    this.speed = new vec3();
+    this.emitParams();
+    this.onDie();
+  }
+  groundAffect() {
+    this.hp = Math.max(this.hp - 20, 0);
+    this.emitParams();
+    if (this.hp <= 0) {
+      this.speed = new vec3();
+      this.onDie();
+    }
   }
 }

@@ -16,8 +16,8 @@ export class Item extends mix(global.Item, MixGameObject) {
     this.view = this.opts.createView(
       this.parent.id === client.playerID, this.parent.kind);
 
-    this.sx = this.view.scale.x;
-    this.sy = this.view.scale.y;
+    this.sx = this.view.scale.x * this.bodyScale;
+    this.sy = this.view.scale.y * this.bodyScale;
 
     if (this.view.isHSL) {
       const ax = this.view.anchor.x;
@@ -152,11 +152,11 @@ export const weapon__bigsword__default = new class {
       color = 0x55FF00;
     }
     const image = new Phaser.Image(game, 0, 0, 'sword');
-    image.scale.x = 0.8 * 1.5;
-    image.scale.y = 1.4 * 2;
+    image.scale.x = 0.8;
+    image.scale.y = 1.4;
     image.anchor.x = 0.5;
     image.anchor.y = 0.8;
-    image.tint = color * 0x777755 / 0xFFFFFF;
+    image.tint = multiplyTint(color, 0x777755);
     image.smoothed = true;
     return image;
   }

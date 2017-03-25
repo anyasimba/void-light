@@ -6,10 +6,19 @@ const file = process.argv[3];
 switch (goal) {
   case 'default':
     beautify();
-    build()
-      .addListener('finish', () => {
-        runServer();
-      });
+    if (file &&
+      file.indexOf('server') >= 0 && file.indexOf('native') >= 0) {
+
+      buildServerNative();
+      runServer();
+    } else if (file && file.indexOf('server') >= 0) {
+      runServer();
+    } else if (file) {
+      build()
+        .addListener('finish', () => {
+          runServer();
+        });
+    }
     break;
   case 'run':
     runServer();
@@ -27,11 +36,14 @@ function buildClientJS() {
   const fs = require('fs');
 
   const browserify = require('browserify');
+  const browserifyInc = require('browserify-incremental');
   const babelify = require('babelify');
 
-  const r = browserify({
-      debug: true,
-    })
+  const b = browserify(Object.assign({}, browserifyInc.args, {}));
+  browserifyInc(b, {
+    cacheFile: './browserify-cache.json',
+  });
+  const r = b
     .transform(babelify, {
       ignore: /(bower_components)|(node_modules)/,
       presets: ['es2015'],
@@ -45,8 +57,7 @@ function buildClientJS() {
     })
     .require(__dirname + '/client.js', {
       entry: true,
-    })
-    .bundle()
+    }).bundle()
     .pipe(fs.createWriteStream(__dirname + '/client.dev.js'));
 
   console.log('=> begin build client');
@@ -90,9 +101,6 @@ function buildFinalClientJS() {
  * run
  */
 function runServer() {
-  const execSync = require('child_process').execSync;
-  execSync('node-gyp build');
-
   const traceur = require('traceur');
 
   require('traceur-source-maps').install(traceur);
@@ -123,6 +131,11 @@ function runServer() {
   setImmediate(() => {
     require('./server/+');
   });
+}
+
+function buildServerNative() {
+  const execSync = require('child_process').execSync;
+  execSync('node-gyp build');
 }
 
 function buildServerJS() {

@@ -137,7 +137,7 @@ export class Fighter {
         .multiply((a + this.FRICTION) * A_AIR_F));
     }
 
-    let FRICTION_F = 1.0;
+    let FRICTION_F = this.groundFriction;
     if (this.inJump) {
       FRICTION_F = 0.0;
     } else if (this.inRoll) {

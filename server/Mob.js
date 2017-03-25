@@ -85,10 +85,10 @@ export class Mob {
           const p = q[i];
           const cost = pathGrid[p.x][p.y];
           const check = (x, y, cost) => {
-            if (cost > 200) {
+            if (cost > 50) {
               return;
             }
-            if (grid[x] && grid[x][y]) {
+            if (grid[x] && (grid[x][y] === 1 || grid[x][y] === 2)) {
               return;
             }
             if (pathGrid[x] && pathGrid[x][y] !== undefined &&
@@ -153,6 +153,9 @@ export class Mob {
     return p;
   }
   checkPlayer(x, y, player) {
+    if (this.opts.IS_NPC) {
+      return;
+    }
     if (this.target && (!this.target.isAlive || this.target.isDestroyed)) {
       delete this.target;
       delete this.path;
@@ -167,6 +170,7 @@ export class Mob {
     if (!this.pathGrid[x] || this.pathGrid[x][y] === undefined) {
       return;
     }
+    this.opts.AGRO_D = Math.min(this.opts.AGRO_D, 40);
     if (this.target === player || this.pathGrid[x][y] <= this.opts.AGRO_D) {
       const setTarget = () => {
         if (this.opts.IS_BOSS && player.area !== this.area) {
@@ -212,6 +216,51 @@ export class Mob {
     }
   }
 
+  canNextHit() {
+    if (Math.random() < this.opts.ROLL_HIT_VER) {
+      this.fighter.doRoll();
+    }
+    if (Math.random() < this.opts.JUMP_HIT_VER) {
+      this.fighter.doJump();
+    }
+    if (this.target && this.fighter.inHit) {
+      this.hitDir = this.fighter.hitVec.clone()
+        .unit()
+        .multiply(10000);
+      const newHitDir = this.target.pos
+        .subtract(this.fighter.pos);
+      let a = (newHitDir.toAngle() - this.hitDir.toAngle()) *
+        Math.PI / 180.0;
+      if (a > Math.PI) {
+        a -= Math.PI * 2;
+      }
+      if (a < -Math.PI) {
+        a += Math.PI * 2;
+      }
+      if (Math.abs(a) > 130 * Math.PI / 180.0) {
+        this.lastAct = this.act;
+        delete this.actTime;
+        if (this.hits) {
+          clearInterval(this.hits);
+          delete this.hits;
+        }
+      }
+      const af = 30 + Math.random() * 80;
+      a = Math.min(Math.abs(a), af * Math.PI / 180.0) *
+        Math.sign(a);
+      this.hitDir = vec3.fromAngles(0, this.hitDir.toAngle() *
+          Math.PI / 180.0 + a)
+        .multiply(10000);
+      this.fighter.doHit({
+        x: this.fighter.pos.x + this.hitDir.x,
+        y: this.fighter.pos.y + this.hitDir.y,
+      });
+    } else {
+      this.lastAct = this.act;
+      delete this.actTime;
+    }
+  }
+
   update() {
     if (this.target && !this.fighter.isAlive) {
       delete this.target;
@@ -233,7 +282,7 @@ export class Mob {
           (next.x * WALL_SIZE + WALL_SIZE * 0.5));
         const dy = Math.abs(this.fighter.pos.y -
           (next.y * WALL_SIZE + WALL_SIZE * 0.5));
-        if (dx + dy < WALL_SIZE * 2) {
+        if (dx + dy < WALL_SIZE * 1.5) {
           this.path.pop();
           next = this.path[this.path.length - 1];
         } else {
@@ -245,6 +294,15 @@ export class Mob {
     if (!next) {
       toHome = true;
       next = this.getNextPoint(tx, ty);
+      if (next && next.cost < 4) {
+        const dx = Math.abs(this.fighter.pos.x -
+          (next.x * WALL_SIZE + WALL_SIZE * 0.5));
+        const dy = Math.abs(this.fighter.pos.y -
+          (next.y * WALL_SIZE + WALL_SIZE * 0.5));
+        if (dx + dy < WALL_SIZE * 1.5) {
+          next = undefined;
+        }
+      }
     }
     let nextX;
     let nextY;
@@ -278,7 +336,6 @@ export class Mob {
         inRun = false;
         this.fighter.emitPos();
       } else if (this.pathGrid[tx] && this.pathGrid[px]) {
-        const cd = Math.abs(this.pathGrid[tx][ty] - this.pathGrid[px][py]);
         if (d > 700) {
           inRun = true;
         }
@@ -287,25 +344,57 @@ export class Mob {
           (this.opts.HIT_D[0] + this.opts.HIT_D[1] * Math.random()) *
           this.fighter.scale;
 
-        const needForce = d < this.attackDistance * 3 &&
+        const needForce = d > this.attackDistanced &&
+          d < this.attackDistance * 3 &&
           this.target.speed.length() > 50 &&
           Math.random() < 0.02;
 
-        if (d < this.attackDistance) {
-          canAttack = true;
-        } else if (needForce) {
-          canAttack = true;
-          inRun = true;
-          if (Math.random() < 0.5) {
-            this.fighter.doRoll();
-          } else {
-            this.fighter.doJump();
-          }
-        } else {
-          delete this.attackDistance;
-          if (Math.random() < 0.3) {
+        canAttack = d < this.attackDistance;
+        if (d < this.attackDistance * 0.5 && Math.random() < 0.5) {
+          canAttack = undefined;
+        }
+        if (!canAttack) {
+          if (needForce) {
+            canAttack = true;
             inRun = true;
+            if (Math.random() < 0.5) {
+              this.fighter.doRoll();
+            } else {
+              this.fighter.doJump();
+            }
+          } else if (d < this.attackDistance * 0.5) {
+            nextX = this.fighter.pos.x * 2 - this.target.pos.x;
+            nextY = this.fighter.pos.y * 2 - this.target.pos.y;
+          } else {
+            delete this.attackDistance;
+            if (Math.random() < 0.3) {
+              inRun = true;
+            }
           }
+        }
+      }
+    }
+
+    if (nextX) {
+      const dx = Math.sign(nextX - this.fighter.pos.x);
+      const dy = Math.sign(nextY - this.fighter.pos.y);
+      const wx = tx + dx;
+      const wy = ty + dy;
+      const grid = this.gameLevelZone.grid;
+      if (grid[wx]) {
+        switch (grid[wx][wy]) {
+          case undefined:
+            break;
+          case 2:
+          case 3:
+            if (dx !== 0) {
+              nextX = this.fighter.pos.x - dx * WALL_SIZE;
+            }
+            if (dy !== 0) {
+              nextY = this.fighter.pos.y - dy * WALL_SIZE;
+            }
+            break;
+          default:
         }
       }
     }
@@ -341,54 +430,6 @@ export class Mob {
           this.actTime = (this.opts.HIT_TIME[0] +
               this.opts.HIT_TIME[1] * Math.random()) *
             this.fighter.hitSpeed;
-          this.hits = setInterval(() => {
-            if (Math.random() < this.opts.ROLL_HIT_VER) {
-              this.fighter.doRoll();
-            }
-            if (Math.random() < this.opts.JUMP_HIT_VER) {
-              this.fighter.doJump();
-            }
-            if (this.target && this.fighter.inHit) {
-              this.hitDir = this.fighter.hitVec.clone()
-                .unit()
-                .multiply(10000);
-              const newHitDir = this.target.pos
-                .subtract(this.fighter.pos);
-              let a = (newHitDir.toAngle() - this.hitDir.toAngle()) *
-                Math.PI / 180.0;
-              if (a > Math.PI) {
-                a -= Math.PI * 2;
-              }
-              if (a < -Math.PI) {
-                a += Math.PI * 2;
-              }
-              if (Math.abs(a) > 130 * Math.PI / 180.0) {
-                this.lastAct = this.act;
-                delete this.actTime;
-                if (this.hits) {
-                  clearInterval(this.hits);
-                  delete this.hits;
-                }
-              }
-              const af = 30 + Math.random() * 80;
-              a = Math.min(Math.abs(a), af * Math.PI / 180.0) *
-                Math.sign(a);
-              this.hitDir = vec3.fromAngles(0, this.hitDir.toAngle() *
-                  Math.PI / 180.0 + a)
-                .multiply(10000);
-              this.fighter.doHit({
-                x: this.fighter.pos.x + this.hitDir.x,
-                y: this.fighter.pos.y + this.hitDir.y,
-              });
-            } else {
-              this.lastAct = this.act;
-              delete this.actTime;
-              if (this.hits) {
-                clearInterval(this.hits);
-                delete this.hits;
-              }
-            }
-          }, 500 * this.fighter.hitSpeed);
         } else if (lastActIsMove && Math.random() < this.opts.MOVE_VER) {
           if (Math.random() < 0.5) {
             this.act = 'left';
@@ -430,10 +471,6 @@ export class Mob {
       if (this.actTime <= 0) {
         this.lastAct = this.act;
         delete this.actTime;
-        if (this.hits) {
-          clearInterval(this.hits);
-          delete this.hits;
-        }
       }
     }
     if (!this.actTime && !this.fighter.inHit && this.act) {
@@ -489,6 +526,20 @@ export class Mob {
   }
 
   onDie(source) {
+    if (this.area) {
+      const clients = this.gameLevelZone.clients;
+      for (const k in clients) {
+        const client = clients[k];
+        if (client.player && client.player.area === this.area) {
+          delete client.player.area;
+          client.emit('bossDead', {});
+        }
+      }
+    }
+
+    if (!source) {
+      return;
+    }
     this.opts.dies = this.opts.dies || 0;
 
     if (this.opts.dies === 0) {
@@ -540,17 +591,6 @@ export class Mob {
         this.opts.VOIDS_COUNT;
       source.owner.saveSharedParam('fighter', 'params',
         source.owner.params.fighter.params);
-    }
-
-    if (this.area) {
-      const clients = this.gameLevelZone.clients;
-      for (const k in clients) {
-        const client = clients[k];
-        if (client.player && client.player.area === this.area) {
-          delete client.player.area;
-          client.emit('bossDead', {});
-        }
-      }
     }
   }
 }

@@ -225,8 +225,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     if (this.kind === 'player') {
       this.light = genLight();
-      this.light.scale.set(8 * this.light.f);
-      this.light.alpha *= 0.6;
+      this.light.scale.set(12 * this.light.f);
+      this.light.alpha *= 1;
       for (let i = 0; i < 1; ++i) {
         this.light.rt.renderXY(this.light.rtImage, 0, 0, false);
       }
@@ -306,6 +306,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.absLook = data.absLook;
     this.inRun = data.inRun;
     this.inBlock = data.inBlock;
+    this.groundFriction = data.groundFriction;
   }
   onParams(data) {
     Object.assign(this, data);
@@ -457,10 +458,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     } else if (this.kind === 'player') {
       if (this.invade) {
         makeSuperMessage('ВТОРЖЕНИЕ ЗАВЕРШЕНО', '#991100');
-      } else if (client.player.invade) {
-        makeSuperMessage('ВТОРЖЕНИЕ ЗАВЕРШЕНО', '#991100');
-      } else {
-        makeSuperMessage('СОЮЗНИК ПОГИБ', '#991100');
       }
     }
 
@@ -534,13 +531,17 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     this.views[0].visible = true;
     this.views[1].visible = false;
+    this.rollSX = 1;
+    this.rollSY = 1;
     if (this.inRoll) {
       const f = Math.sin(
         (this.inRoll.time / this.inRoll.duration * 2 + 0.5) * Math.PI);
-      if (this.inHit || this.inJump) {
+      if (this.inHit && !this.inJump) {
         this.group.scale.y *= f;
+        this.rollSY = f;
       } else {
         this.group.scale.x *= f;
+        this.rollSX = f;
       }
 
       if (f < 0) {
@@ -622,8 +623,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     if (game.layer.sub.light && this.light) {
       const light = game.layer.sub.light;
-      const x = (this.pos.x - game.ui.x) / light.scale.x;
-      const y = (this.pos.y - game.ui.y) / light.scale.y;
+      const lx = 0; //game.w * 0.5;
+      const ly = 0; //game.h * 0.5;
+      const x = (this.pos.x - game.ui.x + lx) / light.scale.x;
+      const y = (this.pos.y - game.ui.y + ly) / light.scale.y;
       light.texture.renderXY(this.light, x, y, false);
     }
   }
@@ -636,26 +639,34 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     g.blendMode = PIXI.blendModes.ADD;
 
     g.beginFill(0x444444, 0.2);
-    const a = this.hitVec.toAngle() * Math.PI / 180.0;
+    const a = this.hitVec.toAngle() * Math.PI / 180.0 * this.rollSY;
     opts.a *= Math.PI / 180.0;
-    opts.d *= this.scale * (this.weapon.bodyScale || 1);
-    const a1 = a - opts.a;
-    const a2 = a + opts.a;
-    g.arc(0, 0, opts.d, a1, a2);
+    if (opts.hand === 2) {
+      opts.d -= this.weapon2.pos.length();
+      opts.d *= this.scale * (this.weapon2.bodyScale || 1);
+      opts.d += this.weapon2.pos.length() * this.scale;
+    } else {
+      opts.d -= this.weapon.pos.length();
+      opts.d *= this.scale * (this.weapon.bodyScale || 1);
+      opts.d += this.weapon.pos.length() * this.scale;
+    }
+    const a1 = -opts.a;
+    const a2 = opts.a;
+    g.arc(0, 0, opts.d * this.rollSX, a1, a2);
 
     const p1 = {
-      x: Math.cos(a1) * opts.d,
-      y: Math.sin(a1) * opts.d,
+      x: Math.cos(a1) * opts.d * this.rollSX,
+      y: Math.sin(a1) * opts.d * this.rollSX,
     }
     const p2 = {
-      x: Math.cos(a2) * opts.d,
-      y: Math.sin(a2) * opts.d,
+      x: Math.cos(a2) * opts.d * this.rollSX,
+      y: Math.sin(a2) * opts.d * this.rollSX,
     }
     g.drawPolygon([{
       x: 0,
       y: 0
     }, p1, p2, ]);
-    const dirVec = this.hitVec.unit();
+    g.angle = this.hitVec.toAngle();
     g.update = () => {
       g.alpha -= dt * 2;
       if (g.alpha <= 0.0) {

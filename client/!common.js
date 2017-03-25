@@ -145,33 +145,67 @@ function checkIfBothReady() {
 
 
 const WALL_LAYERS = [{
-  slug: 'bottom',
-}, {
-  slug: 'middle',
-}, {
   slug: 'walls',
+}, {
+  slug: 'walls2',
+}, {
+  slug: 'walls3',
 }, ];
 
 function createLayer() {
   const layer = new Phaser.Group(game);
   layer.sub = {};
   layer.sub.ground = layer.add(new Phaser.Group(game));
-  layer.sub.deads = layer.add(new Phaser.Group(game));
+  layer.sub.affects = layer.add(new Phaser.Group(game));
+  layer.sub.affects2 = layer.add(new Phaser.Group(game));
   layer.sub.bottom = layer.add(new Phaser.Group(game));
-  layer.sub.middle = layer.add(new Phaser.Group(game));
   layer.sub.walls = layer.add(new Phaser.Group(game));
+  layer.sub.deads = layer.add(new Phaser.Group(game));
+  layer.sub.middle = layer.add(new Phaser.Group(game));
   layer.sub.top = layer.add(new Phaser.Group(game));
+  layer.sub.walls2 = layer.add(new Phaser.Group(game));
+  layer.sub.walls3 = layer.add(new Phaser.Group(game));
   layer.sub.info = layer.add(new Phaser.Group(game));
-  const q = 0.1;
+  layer.sub.ceil = layer.add(new Phaser.Group(game));
+  const q = 0.05;
   const rt = new Phaser.RenderTexture(
-    game, Math.ceil(game.w * q), Math.ceil(game.h * q), null, null);
-  layer.sub.light = layer.add(new Phaser.Sprite(game, 0, 0, rt));
+    game, Math.ceil(game.w * q * 1.3), Math.ceil(game.h * q * 1.3), null,
+    null);
+  layer.sub.light = layer.add(new Phaser.Sprite(
+    game, 0, 0, rt));
   layer.sub.light.scale.set(1 / q);
   layer.sub.light.blendMode = PIXI.blendModes.MULTIPLY;
   return layer;
 }
 
 function create() {
+  game.ui = new Phaser.Group(game)
+
+  function resize(e) {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    game.width = w;
+    game.height = h;
+    game.resF = 1;
+
+    game.renderer.resize(w * game.resF, h * game.resF);
+
+    const s = Math.min(w / 2560, h / 1440) * game.resF * 0.9;
+    game.w = game.width / s;
+    game.h = game.height / s;
+    game.sceneWrap.x = game.width / 2;
+    game.sceneWrap.y = game.height / 2;
+    const uiS = Math.min(w / 2560, h / 1440) * game.resF;
+    game.ui.w = game.width / uiS;
+    game.ui.h = game.height / uiS;
+    game.scene.scale.set(s);
+    game.ui.scale.set(uiS / s);
+    game.scaleFactor = s;
+    game.uiScaleFactor = uiS;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
   global.client = new Client;
 
   game.layer = game.scene.add(createLayer());
@@ -180,7 +214,7 @@ function create() {
   game.textEvents1 = game.scene.add(new Phaser.Group(game));
   game.textEvents2 = game.scene.add(new Phaser.Group(game));
 
-  game.ui = game.scene.add(new Phaser.Group(game));
+  game.scene.add(game.ui);
   initUI();
 
   game.backSound = game.add.sound('back', 0.5, true);
@@ -196,8 +230,10 @@ function create() {
 
   const preUpdate = game.scene.preUpdate;
   game.scene.preUpdate = () => {
-    global.mx = (game.input.x * game.resF - game.scene.x) / game.scaleFactor;
-    global.my = (game.input.y * game.resF - game.scene.y) / game.scaleFactor;
+    global.mx = ((game.input.x * game.resF - game.width * 0.5) /
+      game.sceneWrap.scale.x - game.scene.x) / game.scaleFactor;
+    global.my = ((game.input.y * game.resF - game.height * 0.5) /
+      game.sceneWrap.scale.y - game.scene.y) / game.scaleFactor;
     global.dt = game.time.elapsed * 0.001;
     preUpdate.call(game.scene);
   }
@@ -260,6 +296,7 @@ function createGame() {
         global.lightAlpha = 0.1;
 
         game.load.image('light', 'assets/light.png');
+        game.load.image('ground-mask', 'assets/ground-mask.png');
 
         game.load.image('shield', 'assets/shield.png');
         game.load.image('sword', 'assets/sword.png');
@@ -290,6 +327,10 @@ function createGame() {
         game.load.image('ground', 'assets/ground.jpg');
         game.load.image('bricks', 'assets/bricks.jpg');
         game.load.image('stone', 'assets/stone.png');
+        game.load.image('ice', 'assets/ice.png');
+        game.load.image('dirt', 'assets/dirt.png');
+        game.load.image('whole', 'assets/whole.png');
+        game.load.image('lava', 'assets/lava.png');
         game.load.image('door', 'assets/door.png');
 
         game.load.audio('back',
@@ -344,25 +385,9 @@ function createGame() {
         game.time.advancedTiming = true;
         game.scaleMode = Phaser.FILL_WINDOW_FIXED_ASPECT;
 
-        game.scene = game.add.group();
-
-        function resize(e) {
-          const w = window.innerWidth;
-          const h = window.innerHeight;
-          game.width = w;
-          game.height = h;
-          game.resF = 1;
-
-          game.renderer.resize(w * game.resF, h * game.resF);
-
-          const s = Math.min(w / 2560, h / 1440) * game.resF;
-          game.w = game.width / s;
-          game.h = game.height / s;
-          game.scene.scale.set(s);
-          game.scaleFactor = s;
-        }
-        resize();
-        window.addEventListener('resize', resize);
+        game.sceneWrap2 = game.add.group();
+        game.sceneWrap = game.sceneWrap2.add(new Phaser.Group(game));
+        game.scene = game.sceneWrap.add(new Phaser.Group(game));
 
         game.canvas.oncontextmenu = function (e) {
           e.preventDefault();
@@ -383,29 +408,57 @@ function createGame() {
         delete global.mouseCapture;
 
         if (client && client.player) {
-          const targetX = client.player.pos.x + client.player.speed.x *
-            0.5;
-          const targetY = client.player.pos.y + client.player.speed.y *
-            0.5;
+          const targetX = client.player.pos.x +
+            client.player.speed.x +
+            (mx - client.player.pos.x) * 0.2;
+          const targetY = client.player.pos.y +
+            client.player.speed.y +
+            (my - client.player.pos.y) * 0.2;
+          // let targetX = client.player.pos.x +
+          //   client.player.speed.x;
+          // let targetY = client.player.pos.y +
+          //   client.player.speed.y;
+
+          // targetX += look.x * 200;
+          // targetY += look.y * 200;
 
           const dx = -targetX *
-            game.scaleFactor + game.width * game.resF / 2 - game.scene
-            .x;
+            game.scaleFactor -
+            game.scene.x;
           const dy = -targetY *
-            game.scaleFactor + game.height * game.resF / 2 - game.scene
-            .y;
+            game.scaleFactor -
+            game.scene.y;
 
-          const f = (1 - Math.pow(0.1, dt));
+          const f = (1 - Math.pow(0.1, dt * 0.6));
           game.scene.x += dx * f;
           game.scene.y += dy * f;
 
-          game.ui.x = -game.scene.x / game.scaleFactor;
-          game.ui.y = -game.scene.y / game.scaleFactor;
+          const speed = client.player.speed.length();
+          const zoom =
+            (game.preZoom || 1) *
+            (game.actionPreZoom || 1);
+          game.zoomF = (game.zoomF || 1);
+          const f2 = (1 - Math.pow(0.1, dt * 0.3));
+          game.zoomF += (zoom - game.zoomF) * f2;
+          game.sceneWrap.scale.set(game.zoomF);
+          //game.sceneWrap.angle = -90 - look.toAngle();
+
+          game.ui.x = -game.scene.x / game.scaleFactor - game.w * 0.5 /
+            game.sceneWrap.scale.x;
+          game.ui.y = -game.scene.y / game.scaleFactor - game.h * 0.5 /
+            game.sceneWrap.scale.y;
+          game.ui.scale.set(game.uiScaleFactor / game.scaleFactor / game.zoomF);
+          //game.ui.angle = -game.sceneWrap.angle;
 
           game.cameraPos = new vec3({
-            x: targetX,
-            y: targetY,
+            x: -game.scene.x / game.scaleFactor,
+            y: -game.scene.y / game.scaleFactor,
           });
+          // game.cameraPos.angle = look.toAngle();
+          // game.cameraPos.x += Math.cos(game.cameraPos.angle * Math.PI / 180) *
+          //   1000;
+          // game.cameraPos.y += Math.sin(game.cameraPos.angle * Math.PI / 180) *
+          //   1000;
 
           if (game.layer.sub.light) {
             game.layer.sub.light.x = game.ui.x;
@@ -435,18 +488,38 @@ function createGame() {
           light.texture.renderXY(game.lightClear2, 0, 0, false);
         }
 
+        // let angleS = 60;
+        // if (keysState.a) {
+        //   const a = look.toAngle() * Math.PI / 180;
+        //   look.x = Math.cos(a - dt * angleS * Math.PI / 180);
+        //   look.y = Math.sin(a - dt * angleS * Math.PI / 180);
+        // }
+        // if (keysState.d) {
+        //   const a = look.toAngle() * Math.PI / 180;
+        //   look.x = Math.cos(a + dt * angleS * Math.PI / 180);
+        //   look.y = Math.sin(a + dt * angleS * Math.PI / 180);
+        // }
+
         const makeSubLayer3D = (layer, f) => {
-          const p = client.player.pos;
+          const p = game.cameraPos;
+          let px = p.x;
+          let py = p.y;
+          // if (p.angle && !isNaN(p.angle)) {
+          //   px -= Math.cos(p.angle * Math.PI / 180) * 1400;
+          //   py -= Math.sin(p.angle * Math.PI / 180) * 1400;
+          // }
           layer.scale.set(f);
-          layer.x = -p.x * (f - 1);
-          layer.y = -p.y * (f - 1);
+          layer.x = -px * (f - 1);
+          layer.y = -py * (f - 1);
         };
         const makeLayer3D = layer => {
-          const f = 6;
-          makeSubLayer3D(layer.sub.middle, 1 + 0.01 * f);
-          makeSubLayer3D(layer.sub.top, 1 + 0.02 * f);
-          makeSubLayer3D(layer.sub.walls, 1 + 0.02 * f);
-          makeSubLayer3D(layer.sub.info, 1 + 0.03 * f);
+          const f = 6 * game.sceneWrap.scale.x;
+          makeSubLayer3D(layer.sub.middle, 1 + 0.002 * f);
+          makeSubLayer3D(layer.sub.top, 1 + 0.007 * f);
+          makeSubLayer3D(layer.sub.walls2, 1 + 0.008 * f);
+          makeSubLayer3D(layer.sub.info, 1 + 0.01 * f);
+          makeSubLayer3D(layer.sub.walls3, 1 + 0.02 * f);
+          makeSubLayer3D(layer.sub.ceil, 1 + 0.025 * f);
         }
 
         if (global.client && client.player) {
@@ -454,9 +527,10 @@ function createGame() {
         }
 
         if (client.needLoadMap) {
+          console.log('loading map...');
+          delete client.needLoadMap;
           loadingProgress(0, 'map');
 
-          delete client.needLoadMap;
           client.w = client.map.width * WALL_SIZE;
           client.h = client.map.height * WALL_SIZE;
 
@@ -490,25 +564,32 @@ function createGame() {
             }
           }
 
-          const scaleF = Math.ceil(game.scaleFactor * 10) * 0.1;
-          global.ts = WALL_SIZE * 8;
+          const scaleF = Math.round(game.scaleFactor * 8) / 8;
+          global.ts = WALL_SIZE * 4;
           const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
           const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
 
-          const ln = WALL_LAYERS.length;
+          const ln = WALL_LAYERS.length + 2;
           const textures = [];
           for (let i = 0; i < ln; ++i) {
             textures[i] = [];
           }
 
+          const AF = 2.4;
+          global.AF = AF;
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
               for (let i = 0; i < ln; ++i) {
+                let f = scaleF;
+                let pad = 0;
+                if (i < 2) {
+                  pad = WALL_SIZE * (AF - 1);
+                }
                 const tex = new Phaser.RenderTexture(
                   game,
-                  Math.ceil(ts * scaleF), Math.ceil(ts * scaleF),
+                  Math.ceil((ts + pad) * f), Math.ceil((ts + pad) * f),
                   null, null, 1);
-                console.log(Math.ceil(ts * scaleF), Math.ceil(ts * scaleF));
+
                 textures[i][x] = textures[i][x] || [];
                 textures[i][x][y] = tex;
               }
@@ -518,17 +599,62 @@ function createGame() {
           const bricksView = new Phaser.TileSprite(
             game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
             'bricks');
-          const stoneView = new Phaser.TileSprite(
-            game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
-            'stone');
+          bricksView.isWall = true;
           bricksView.darken = new Phaser.TileSprite(
             game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
             makeDarken(bricksView));
+
+          const stoneView = new Phaser.TileSprite(
+            game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
+            'stone');
+          stoneView.isWall = true;
           stoneView.darken = new Phaser.TileSprite(
             game, 0, 0, WALL_SIZE * scaleF, WALL_SIZE * scaleF,
             makeDarken(stoneView));
 
-          console.log('loading map...');
+
+          const maskView = new Phaser.Image(game, 0, 0, 'ground-mask');
+          maskView.scale.set(AF * WALL_SIZE / maskView.width * scaleF);
+
+          const renderMaskAffect = (image, x, y) => {
+            const v = new Phaser.Image(game, 0, 0, image);
+            v.scale.set(2 * WALL_SIZE * AF * scaleF / v.width);
+            v.x = -x * WALL_SIZE * AF * scaleF;
+            v.y = -y * WALL_SIZE * AF * scaleF;
+            maskView.anchor.set(0.5);
+            maskView.angle = Math.random() * 360;
+            maskView.x = WALL_SIZE * AF * scaleF * 0.5;
+            maskView.y = WALL_SIZE * AF * scaleF * 0.5;
+            let bmd = game.make.bitmapData(
+              WALL_SIZE * AF * scaleF, WALL_SIZE * AF * scaleF);
+            bmd.alphaMask(v, maskView);
+            return new Phaser.Image(game, 0, 0, bmd);
+          }
+          const wholeView = [
+            renderMaskAffect('whole', 0, 0),
+            renderMaskAffect('whole', 1, 0),
+            renderMaskAffect('whole', 0, 1),
+            renderMaskAffect('whole', 1, 1),
+          ];
+          const iceView = [
+            renderMaskAffect('ice', 0, 0),
+            renderMaskAffect('ice', 1, 0),
+            renderMaskAffect('ice', 0, 1),
+            renderMaskAffect('ice', 1, 1),
+          ];
+          const slowView = [
+            renderMaskAffect('dirt', 0, 0),
+            renderMaskAffect('dirt', 1, 0),
+            renderMaskAffect('dirt', 0, 1),
+            renderMaskAffect('dirt', 1, 1),
+          ];
+          const lavaView = [
+            renderMaskAffect('lava', 0, 0),
+            renderMaskAffect('lava', 1, 0),
+            renderMaskAffect('lava', 0, 1),
+            renderMaskAffect('lava', 1, 1),
+          ];
+
           loadingProgress(10);
           for (let y = 0; y < client.map.height; ++y) {
             for (let x = 0; x < client.map.width; ++x) {
@@ -537,6 +663,7 @@ function createGame() {
               const slug = dictionary[v];
 
               let view;
+              let padShift = 0;
               switch (slug) {
                 case 'wall':
                   view = stoneView;
@@ -544,48 +671,80 @@ function createGame() {
                 case 'wall2':
                   view = bricksView;
                   break;
+                case 'whole':
+                  view = wholeView[x % 2 + (y % 2) * 2];
+                  padShift = 1;
+                  break;
+                case 'ice':
+                  view = iceView[x % 2 + (y % 2) * 2];
+                  break;
+                case 'slow':
+                  view = slowView[x % 2 + (y % 2) * 2];
+                  break;
+                case 'lava':
+                  view = lavaView[x % 2 + (y % 2) * 2];
+                  padShift = 1;
+                  break;
                 default:
+                  continue;
               }
-              if (view) {
-                const f = scaleF;
-                for (let i = 0; i < ln; ++i) {
-                  let pad = i * 24 / (ln - 1) + Math.random() * 16;
 
-                  let px = 0;
-                  let py = 0;
-                  let v = view;
-                  if (i < ln - 1) {
-                    v = view.darken;
-                  }
+              view.isWall = view.isWall || false;
 
-                  if (!grid[x - 1] || !grid[x - 1][y]) {
-                    px = pad;
-                  }
-                  if (!grid[x] || !grid[x][y - 1]) {
-                    py = pad;
-                  }
-                  v.width = (WALL_SIZE - px) * scaleF;
-                  v.height = (WALL_SIZE - py) * scaleF;
-                  if (!grid[x + 1] || !grid[x + 1][y]) {
-                    v.width -= pad * scaleF;
-                  }
-                  if (!grid[x] || !grid[x][y + 1]) {
-                    v.height -= pad * scaleF;
-                  }
-                  const sf = (0.7 + i * 0.3 / (ln - 1));
-                  v.tilePosition.x = (-x * WALL_SIZE - px) / sf;
-                  v.tilePosition.y = (-y * WALL_SIZE - py) / sf;
-                  v.tileScale.x = f * sf;
-                  v.tileScale.y = f * sf;
-                  const cx = Math.floor(x * WALL_SIZE / ts);
-                  const cy = Math.floor(y * WALL_SIZE / ts);
-                  textures[i][cx][cy].isUsed = true;
-                  textures[i][cx][cy].renderXY(
-                    v,
-                    (x * WALL_SIZE - cx * ts + px) * scaleF,
-                    (y * WALL_SIZE - cy * ts + py) * scaleF,
-                    false);
+              const f = scaleF;
+              if (!view.isWall) {
+                let v = view;
+                const cx = Math.floor(x * WALL_SIZE / ts);
+                const cy = Math.floor(y * WALL_SIZE / ts);
+                textures[padShift][cx][cy].isUsed = true;
+                textures[padShift][cx][cy].renderXY(
+                  v,
+                  (x * WALL_SIZE - cx * ts) * f,
+                  (y * WALL_SIZE - cy * ts) * f,
+                  false);
+                textures[padShift][cx][cy].padShift = padShift;
+
+                continue;
+              }
+
+              for (let i = 2; i < ln; ++i) {
+                let pad = (i - 2) * WALL_SIZE * 0.25 / (ln - 3) + Math.random() *
+                  WALL_SIZE / 6;
+
+                let px = 0;
+                let py = 0;
+                let v = view;
+                if (i < ln - 1) {
+                  v = view.darken;
                 }
+
+                if (!grid[x - 1] || !grid[x - 1][y]) {
+                  px = pad;
+                }
+                if (!grid[x] || !grid[x][y - 1]) {
+                  py = pad;
+                }
+                v.width = (WALL_SIZE - px) * scaleF;
+                v.height = (WALL_SIZE - py) * scaleF;
+                if (!grid[x + 1] || !grid[x + 1][y]) {
+                  v.width -= pad * scaleF;
+                }
+                if (!grid[x] || !grid[x][y + 1]) {
+                  v.height -= pad * scaleF;
+                }
+                const sf = (0.7 + i * 0.3 / (ln - 3));
+                v.tilePosition.x = (-x * WALL_SIZE - px) / sf;
+                v.tilePosition.y = (-y * WALL_SIZE - py) / sf;
+                v.tileScale.x = f * sf;
+                v.tileScale.y = f * sf;
+                const cx = Math.floor(x * WALL_SIZE / ts);
+                const cy = Math.floor(y * WALL_SIZE / ts);
+                textures[i][cx][cy].isUsed = true;
+                textures[i][cx][cy].renderXY(
+                  v,
+                  (x * WALL_SIZE - cx * ts + px) * scaleF,
+                  (y * WALL_SIZE - cy * ts + py) * scaleF,
+                  false);
               }
             }
           }
@@ -593,7 +752,7 @@ function createGame() {
           loadingProgress(50);
 
           const groundSprite = game.layer.sub.ground.add(new Phaser.TileSprite(
-            game, 0, 0, game.w, game.h, 'ground'));
+            game, 0, 0, game.w * 2, game.h * 2, 'ground'));
           groundSprite.update = () => {
             groundSprite.x = game.ui.x;
             groundSprite.y = game.ui.y;
@@ -601,6 +760,7 @@ function createGame() {
             groundSprite.tilePosition.y = -game.ui.y;
           };
 
+          game.mapTextures = textures;
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
               const sprites = [];
@@ -609,43 +769,70 @@ function createGame() {
                   const sprite = new Phaser.Sprite(
                     game, x * ts, y * ts,
                     textures[i][x][y]);
-                  sprites.push(sprite);
-                  sprite.visible = false;
+                  textures[i][x][y].sprite = sprite;
                   sprite.scale.set(1 / scaleF);
-                  if (i === 0) {
-                    sprite.update = () => {
-                      if (global.client && global.client.player) {
-                        const cx = sprite.x + ts * 0.5;
-                        const cy = sprite.y + ts * 0.5;
-                        const dx = Math.abs(cx - client.player.pos.x);
-                        const dy = Math.abs(cy - client.player.pos.y);
-                        const w = (game.w + ts) * 0.5;
-                        const h = (game.h + ts) * 0.5;
-                        if (dx <= w && dy <= h) {
-                          for (let i = 0; i < sprites.length; ++i) {
-                            sprites[i].visible = true;
-                            ++global.SPRITES_N;
-                          }
-                        } else {
-                          for (let i = 0; i < sprites.length; ++i) {
-                            sprites[i].visible = false;
-                          }
-                        }
-                      }
-                    };
+                  sprites.push(sprite);
+
+                  if (i < 2) {
+                    if (i === 1) {
+                      sprite.target = 'affects2';
+                    } else {
+                      sprite.target = 'affects';
+                    }
+                    sprite.x -= (AF - 1) * 0.5 * WALL_SIZE;
+                    sprite.y -= (AF - 1) * 0.5 * WALL_SIZE;
+                  } else {
+                    sprite.target = WALL_LAYERS[i - 2].slug;
                   }
-                  //sprite.tint = 0x888888 + Math.random() * 0x777777;
-                  sprite.cacheAsBitmap = true;
-                  game.layer.sub[WALL_LAYERS[i].slug].add(sprite);
                 }
               }
             }
           }
 
-          bricksView.destroy();
-          bricksView.darken.destroy();
-
           loadingProgress(100);
+        }
+
+        if (game.cameraPos && global.AF) {
+          const ln = WALL_LAYERS.length + 2;
+          let gbx = game.cameraPos.x - game.w * 0.5 / game.sceneWrap.scale.x;
+          gbx -= (AF - 1) * 0.5 * WALL_SIZE;
+          gbx = Math.floor(gbx / ts);
+          let gby = game.cameraPos.y - game.h * 0.5 / game.sceneWrap.scale.y;
+          gby -= (AF - 1) * 0.5 * WALL_SIZE;
+          gby = Math.floor(gby / ts);
+          let gex = game.cameraPos.x + game.w * 0.5 / game.sceneWrap.scale.x;
+          gex += (AF - 1) * 0.5 * WALL_SIZE;
+          gex = Math.floor(gex / ts);
+          let gey = game.cameraPos.y + game.h * 0.5 / game.sceneWrap.scale.y;
+          gey += (AF - 1) * 0.5 * WALL_SIZE;
+          gey = Math.floor(gey / ts);
+
+          const texs = game.mapTextures;
+          gbx = Math.max(0, Math.min(texs[0].length - 1, gbx));
+          gby = Math.max(0, Math.min(texs[0][0].length - 1, gby));
+          gex = Math.max(0, Math.min(texs[0].length - 1, gex));
+          gey = Math.max(0, Math.min(texs[0][0].length - 1, gey));
+
+          game.layer.sub.affects.removeAll();
+          game.layer.sub.affects2.removeAll();
+          game.layer.sub.walls.removeAll();
+          game.layer.sub.walls2.removeAll();
+          game.layer.sub.walls3.removeAll();
+          for (let i = 0; i < ln; ++i) {
+            for (let x = gbx; x <= gex; ++x) {
+              for (let y = gby; y <= gey; ++y) {
+                const tex = texs[i][x][y];
+                if (!tex.isUsed) {
+                  continue;
+                }
+                const s = tex.sprite;
+                s.visible = true;
+                game.layer.sub[s.target].add(s);
+                global.SPRITES_N = global.SPRITES_N || 0;
+                ++global.SPRITES_N;
+              }
+            }
+          }
         }
 
         global.SPRITES_N = global.SPRITES_N || 0;

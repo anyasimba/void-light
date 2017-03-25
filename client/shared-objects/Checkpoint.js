@@ -77,8 +77,10 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
       const light = game.layer.sub.light;
 
       const f = 1 / light.scale.x;
-      const x = (this.pos.x - game.ui.x) * f;
-      const y = (this.pos.y - game.ui.y) * f;
+      const lx = 0; //game.w * 0.5;
+      const ly = 0; //game.h * 0.5;
+      const x = (this.pos.x - game.ui.x + lx) * f;
+      const y = (this.pos.y - game.ui.y + ly) * f;
 
       this.light.scale.set(3 * this.light.f);
       this.light.alpha = 0.7 * lightAlpha;

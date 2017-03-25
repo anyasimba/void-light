@@ -7,6 +7,11 @@ export class Checkpoint extends mix(global.Checkpoint, MixNativeGameObject,
     };
   }
 
+  get slug() {
+    return this.gameLevelZone.mapConfig.LANG_RU;
+
+  }
+
   preCreate(opts) {
     this.body = {
       kind: 'staticRect',
@@ -62,9 +67,11 @@ export class Checkpoint extends mix(global.Checkpoint, MixNativeGameObject,
   use(player) {
     Checkpoint.USE(player);
     player.owner.saveParam('checkpoint', 'pos', {
-      x: this.pos.x,
-      y: this.pos.y,
+      x: this.pos.x / WALL_SIZE,
+      y: this.pos.y / WALL_SIZE,
+      name: this.slug,
     });
+    player.owner.saveParam('checkpoint', 'mapName', this.gameLevelZone.mapName);
     player.owner.emit('useCheckpoint', {});
 
     const mobs = this.gameLevelZone.mobs;

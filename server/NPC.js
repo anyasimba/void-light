@@ -21,6 +21,7 @@ export const npc__luna = {
     name: 'npc__luna',
 
     hitSpeed: 1.8,
+    moveTimeF: 1,
 
     ACC: 500,
     RUN_ACC: 800,
@@ -58,6 +59,7 @@ export const npc__she = {
     name: 'npc__she',
 
     hitSpeed: 1.8,
+    moveTimeF: 1,
 
     ACC: 500,
     RUN_ACC: 800,
@@ -95,6 +97,7 @@ export const npc__she2 = {
     name: 'npc__she2',
 
     hitSpeed: 1.8,
+    moveTimeF: 1,
 
     ACC: 500,
     RUN_ACC: 800,

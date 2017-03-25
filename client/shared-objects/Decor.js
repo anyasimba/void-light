@@ -36,13 +36,13 @@ export class Decor extends mix(global.Decor, MixGameObject) {
       this.addLight.tint = opts.LIGHT;
       this.addLight.scale.set(0.6);
       this.addLight.alpha = (opts.LIGHT_A || 1) * 0.2;
-      this.infoGroup.add(this.addLight);
+      this.ceilGroup.add(this.addLight);
 
       this.addLight2 = genLight();
       this.addLight2.tint = 0xFFFFFF;
       this.addLight2.scale.set(0.07);
       this.addLight2.alpha = (opts.LIGHT_A || 1) * 0.5;
-      this.infoGroup.add(this.addLight2);
+      this.ceilGroup.add(this.addLight2);
     }
   }
 
@@ -51,8 +51,10 @@ export class Decor extends mix(global.Decor, MixGameObject) {
 
     if (game.layer.sub.light && this.light) {
       const light = game.layer.sub.light;
-      const x = (this.pos.x - game.ui.x) / light.scale.x;
-      const y = (this.pos.y - game.ui.y) / light.scale.y;
+      const lx = 0; //game.w * 0.5;
+      const ly = 0; //game.h * 0.5;
+      const x = (this.pos.x - game.ui.x + lx) / light.scale.x;
+      const y = (this.pos.y - game.ui.y + ly) / light.scale.y;
       light.texture.renderXY(this.light, x, y, false);
     }
   }
@@ -60,16 +62,16 @@ export class Decor extends mix(global.Decor, MixGameObject) {
 
 export const decor__light = {
   LIGHT: 0xFFFFFF,
-  LIGHT_A: 1,
-  LIGHT_SCALE: 15,
+  LIGHT_A: 0.8,
+  LIGHT_SCALE: 20,
 };
 export const decor__light2 = {
-  LIGHT_A: 1,
-  LIGHT_SCALE: 15,
+  LIGHT_A: 0.8,
+  LIGHT_SCALE: 20,
   LIGHT: 0xFF9933,
 };
 export const decor__light3 = {
-  LIGHT_A: 1,
-  LIGHT_SCALE: 15,
+  LIGHT_A: 0.8,
+  LIGHT_SCALE: 20,
   LIGHT: 0xFF77FF,
 };

@@ -21,5 +21,8 @@
     "traceur-source-maps": "^1.0.6",
     "uglifyify": "^3.0.4",
     "yargs": "^6.4.0"
+  },
+  "dependencies": {
+    "browserify-incremental": "^3.1.1"
   }
 }

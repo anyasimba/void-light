@@ -1,10 +1,12 @@
 #include <node.h>
 #include <node_buffer.h>
 #include <v8.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <vector>
-#include <math.h>
+#include <memory>
+#include <cmath>
+#include <algorithm>
 
 using namespace v8;
 using namespace std;
@@ -33,9 +35,10 @@ using namespace std;
   NODE_SET_METHOD(exports, #CLASS"__get"#FN, CLASS##__get##FN);\
   NODE_SET_METHOD(exports, #CLASS"__set"#FN, CLASS##__set##FN);
 
-const int WALL_SIZE = 96;
+const int WALL_SIZE = 160;
 
 #include "!math.cc"
+#include "!utils.cc"
 #include "!GameLevelZone.cc"
 #include "Bullet.cc"
 #include "Checkpoint.cc"
@@ -53,6 +56,7 @@ void init(Local<Object> exports) {
   SET_NUMBER_PROPERTY(GameLevelZoneObject, PosY, pos.y);
   SET_NUMBER_PROPERTY(GameLevelZoneObject, SpeedX, speed.x);
   SET_NUMBER_PROPERTY(GameLevelZoneObject, SpeedY, speed.y);
+  SET_NUMBER_PROPERTY(GameLevelZoneObject, GroundFriction, groundFriction);
   NODE_SET_METHOD(exports, "GameLevelZoneObject__getOthers", GameLevelZoneObject__getOthers);
 
   NODE_SET_METHOD(exports, "new__Bullet", new__Bullet);
@@ -60,7 +64,7 @@ void init(Local<Object> exports) {
 
   NODE_SET_METHOD(exports, "new__Checkpoint", new__Checkpoint);
   updates[VTABLE::CHECKPOINT] = (VFN) Checkpoint__update;
-  
+
   NODE_SET_METHOD(exports, "new__Door", new__Door);
   updates[VTABLE::DOOR] = (VFN) Door__update;
   SET_NUMBER_PROPERTY(Door, IsOpening, isOpening);
@@ -84,6 +88,8 @@ void init(Local<Object> exports) {
   SET_NUMBER_PROPERTY(Fighter, InBlock, inBlock);
   SET_NUMBER_PROPERTY(Fighter, InRun, inRun);
   SET_NUMBER_PROPERTY(Fighter, InRoll, inRoll);
+  SET_NUMBER_PROPERTY(Fighter, InRollTime, inRollTime);
+  SET_NUMBER_PROPERTY(Fighter, InRollDuration, inRollDuration);
   SET_NUMBER_PROPERTY(Fighter, AfterRollTime, afterRollTime);
   SET_NUMBER_PROPERTY(Fighter, RollBlockTime, rollBlockTime);
   SET_NUMBER_PROPERTY(Fighter, InJump, inJump);

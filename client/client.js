@@ -23,9 +23,14 @@ export class Client extends global.Client {
       ['s', getCookie('key__s') || Phaser.Keyboard.S],
       ['d', getCookie('key__d') || Phaser.Keyboard.D],
     ];
+
+    game.input.mouse.requestPointerLock();
+
     const keysState = {};
+    global.keysState = keysState;
     let look = new vec3();
     let move = new vec3();
+    global.look = look;
     const emitMove = () => {
       move.init();
       if (keysState.w) {
@@ -40,6 +45,7 @@ export class Client extends global.Client {
       if (keysState.d) {
         move.x += 1;
       }
+
       if (look.length() > 0) {
         const l = look.unit();
         const r = new vec3();
@@ -192,7 +198,6 @@ export class Client extends global.Client {
     const id = packet.data[1].id;
     const parentID = packet.data[1].parentID;
     let name = packet.data[0];
-
     const data = {};
     for (const k in packet.data[1]) {
       data[k] = packet.data[1][k];
@@ -360,11 +365,13 @@ export class Client extends global.Client {
     game.bossBackSound.stop();
     game.youDiedSound.stop();
     game.backSound.restart('', 0, 0.5, true);
+    game.preZoom = 1;
   }
   bossTheme() {
     game.backSound.stop();
     game.youDiedSound.stop();
     game.bossBackSound.restart('', 0, 1, true);
+    game.preZoom = 0.8;
   }
   diedTheme() {
     game.backSound.stop();
@@ -384,5 +391,12 @@ export class Client extends global.Client {
   onParam(data) {
     this.params[data.slug] = this.params[data.slug] || {};
     this.params[data.slug][data.key] = data.value;
+  }
+
+  onOtherClient() {
+    makeMessage('Кто-то играет за вас..', '#FFAAAA', 'Neucha');
+    setTimeout(() => {
+      window.location.reload();
+    }, 5000);
   }
 }

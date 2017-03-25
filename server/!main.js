@@ -23,8 +23,8 @@ function initUpdate() {
           global.dt = 1 / 20;
         }
 
-        for (let i = 0; i < N; ++i) {
-          gameLevelZones[i].update();
+        for (let i = 0; i < gameZones.length; ++i) {
+          gameZones[i].update();
         }
 
         global.packets = global.packets || {};
@@ -57,11 +57,6 @@ function initUpdate() {
 }
 
 export async function main() {
-  global.gameLevelZones = [];
-  for (let i = 0; i < N; ++i) {
-    global.gameLevelZones[i] = new GameLevelZone('stage1__1', i);
-    console.log('game level zone', i + 1);
-  }
   global.server = Server();
 
   initUpdate();

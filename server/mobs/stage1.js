@@ -135,6 +135,8 @@ export const stage1__mob1a = {
       angle: 0,
       vAngle: 20,
       hAngle: 20,
+
+      bodyScale: 3,
     });
   },
   leftHand(parent) {
@@ -153,6 +155,8 @@ export const stage1__mob1a = {
       angle: -0,
       vAngle: 20,
       hAngle: 20,
+
+      bodyScale: 1,
     });
   },
 };
@@ -568,11 +572,11 @@ export const stage1__boss1 = {
 
   AGRO_D: 50,
   RUN_D: 150,
-  HIT_D: [120, 250],
+  HIT_D: [120, 180],
   HIT_VER: 0.9,
-  HIT_TIME: [0.2, 4],
-  JUMP_HIT_VER: 0.02,
-  ROLL_HIT_VER: 0.04,
+  HIT_TIME: [0.5, 10],
+  JUMP_HIT_VER: 0.2,
+  ROLL_HIT_VER: 0.1,
   MOVE_VER: 0.5,
   MOVE_TIME: [0.5, 1],
   LONG_MOVE_VER: 0.1,
@@ -582,21 +586,21 @@ export const stage1__boss1 = {
   ROLL_TIME: [5, 15],
   JUMP_TIME: [10, 15],
 
-  VOIDS_COUNT: 3000,
+  VOIDS_COUNT: 5000,
 
   FIGHTER: {
     LANG_RU: 'Истяженная оболочка Тит',
     name: 'stage1__boss1',
 
-    moveTimeF: 1.1,
+    moveTimeF: 0.8,
 
-    hitSpeed: 1.3,
-    damage: 30,
+    hitSpeed: 1.2,
+    damage: 18,
 
-    ACC: 300,
-    RUN_ACC: 500,
+    ACC: 400,
+    RUN_ACC: 450,
     BODY_SIZE: 40,
-    SCALE: 5,
+    SCALE: 4.5,
 
     BALANCE: 100,
     HP: 400,
@@ -610,6 +614,7 @@ export const stage1__boss1 = {
       type: 'shield',
       kind: 'stage1__boss1__leftHand',
       hand: 2,
+      bodyScale: 0.9,
       pos: {
         x: -15,
         y: -30,
@@ -625,9 +630,10 @@ export const stage1__boss1 = {
       type: 'weapon',
       kind: 'stage1__boss1__rightHand',
       hand: 1,
-      balance: 10,
-      stamina: 40,
-      staminaTime: 2,
+      balance: 8,
+      stamina: 20,
+      staminaTime: 1,
+      bodyScale: 0.9,
       pos: {
         x: -25,
         y: 25,

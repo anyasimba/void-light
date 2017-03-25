@@ -1,3 +1,23 @@
+export const sharedZones = {};
+export const gameZones = [];
+
+export function getGameLevelZone(mapName, complex) {
+  const opts = global[mapName];
+  if (!opts) {
+    return;
+  }
+
+  if (opts.isPrivate) {
+    return new GameLevelZone(mapName, complex);
+  }
+
+  if (sharedZones[mapName] && sharedZones[mapName][complex]) {
+    return sharedZones[mapName][complex];
+  }
+
+  return new GameLevelZone(mapName, complex);
+}
+
 export class GameLevelZone {
   static get CELL_SIZE() {
     return WALL_SIZE * 4;
@@ -16,13 +36,34 @@ export class GameLevelZone {
     this.timeouts = [];
 
     this.complex = complex;
+    this.mapName = mapName;
+    this.mapConfig = global[mapName];
+
+    this.isPrivate = this.mapConfig.isPrivate;
+    gameZones.push(this);
+    if (!this.isPrivate) {
+      sharedZones[this.mapName] = sharedZones[this.mapName] || [];
+      sharedZones[this.mapName][this.complex] = this;
+      console.log('New SHARED game zone', mapName, complex);
+    } else {
+      console.log('New PRIVATE game zone', mapName, complex);
+    }
 
     this.loadMap(mapName);
+
+    console.log('Game zone', mapName, complex, 'loading [done]');
+  }
+  destructor() {
+    gameZones.splice(gameZones.indexOf(this), 1);
+    if (!this.isPrivate) {
+      delete sharedZones[this.mapName][this.complex];
+      console.log('Destroy SHARED game zone', this.mapName, this.complex);
+    } else {
+      console.log('Destroy PRIVATE game zone', this.mapName, this.complex);
+    }
   }
 
   loadMap(mapName) {
-    this.mapName = mapName;
-
     global.mapCache = global.mapCache || {};
     mapCache[mapName] = mapCache[mapName] || {};
     const cache = mapCache[mapName];
@@ -51,7 +92,20 @@ export class GameLevelZone {
           const slug = this.map.dictionary[v];
           if (v !== 0) {
             switch (slug) {
-              default: cache.grid[x][y] = 1;
+              case 'ice':
+                cache.grid[x][y] = 5;
+                break;
+              case 'slow':
+                cache.grid[x][y] = 4;
+                break;
+              case 'lava':
+                cache.grid[x][y] = 3;
+                break;
+              case 'whole':
+                cache.grid[x][y] = 2;
+                break;
+              default:
+                cache.grid[x][y] = 1;
             }
           }
         }
@@ -104,6 +158,11 @@ export class GameLevelZone {
       } else if (o.name) {
         switch (o.name) {
           case 'Door':
+            this.mapObjects[data.mapID] = new Door(this, data);
+            break;
+          case 'Door':
+            data.isExit = true;
+            data.exitWay = o.type;
             this.mapObjects[data.mapID] = new Door(this, data);
             break;
           case 'BossArea':
@@ -228,14 +287,29 @@ export class GameLevelZone {
     const i = this.clients.indexOf(client);
     this.clients.splice(i, 1);
     this.removeObject(client.player);
+    if (this.clients.length <= 0) {
+      this.destructor();
+    }
+  }
+  switchClient(newClient, oldClient) {
+    const i = this.clients.indexOf(oldClient);
+    this.clients.splice(i, 1);
+    this.emitTo(newClient);
+    this.clients.push(newClient);
   }
   rebornPlayer(player) {
     if (player.owner.params.checkpoint) {
       const p = player.owner.params.checkpoint.pos;
+      let px = p.x;
+      let py = p.y;
+      if (p.name !== undefined) {
+        px *= WALL_SIZE;
+        py *= WALL_SIZE;
+      }
       const a = Math.random() * Math.PI * 2;
       player.pos = {
-        x: p.x + Math.cos(a) * WALL_SIZE * 2,
-        y: p.y + Math.sin(a) * WALL_SIZE * 2,
+        x: px + Math.cos(a) * WALL_SIZE * 2,
+        y: py + Math.sin(a) * WALL_SIZE * 2,
       };
       Checkpoint.USE(player);
       return;
@@ -317,10 +391,11 @@ export class GameLevelZone {
           const mob = tempMobs[i];
           if (!mob.fighter.isAlive) {
             tempMobs.splice(i, 1);
-          } else {
-            mob.checkPlayer(x, y, client.player);
-            ++i;
+            continue;
           }
+
+          mob.checkPlayer(x, y, client.player);
+          ++i;
         }
       }
     }
