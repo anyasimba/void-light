@@ -643,6 +643,13 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     this.inHit = false;
   }
 
+  canNextHit() {
+    super.canNextHit();
+    if (this.owner.canNextHit) {
+      this.owner.canNextHit();
+    }
+  }
+
   useHP(v, time) {
     this.hp = Math.max(this.hp - v, 0);
     this.hpTime = this.hpTime || 0;

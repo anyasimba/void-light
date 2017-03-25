@@ -48,16 +48,16 @@ export const stage1__mob2c__doHit = ia_sword__doHit({
   impulse3: 500,
 });
 export const stage1__boss1__doHit = ia_sword__doHit({
-  begin: 0.7,
-  wait: 0,
-  end: 2,
+  begin: 0.5,
+  wait: 0.3,
+  end: 2.5,
   impulse: 1200,
-  begin2: 0.4,
+  begin2: 0.1,
   wait2: 0,
-  end2: 2,
+  end2: 2.5,
   impulse2: 1200,
-  begin3: 0.4,
+  begin3: 0.2,
   wait3: 0,
-  end3: 2,
+  end3: 2.5,
   impulse3: 1200,
 });

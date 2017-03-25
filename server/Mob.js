@@ -216,6 +216,51 @@ export class Mob {
     }
   }
 
+  canNextHit() {
+    if (Math.random() < this.opts.ROLL_HIT_VER) {
+      this.fighter.doRoll();
+    }
+    if (Math.random() < this.opts.JUMP_HIT_VER) {
+      this.fighter.doJump();
+    }
+    if (this.target && this.fighter.inHit) {
+      this.hitDir = this.fighter.hitVec.clone()
+        .unit()
+        .multiply(10000);
+      const newHitDir = this.target.pos
+        .subtract(this.fighter.pos);
+      let a = (newHitDir.toAngle() - this.hitDir.toAngle()) *
+        Math.PI / 180.0;
+      if (a > Math.PI) {
+        a -= Math.PI * 2;
+      }
+      if (a < -Math.PI) {
+        a += Math.PI * 2;
+      }
+      if (Math.abs(a) > 130 * Math.PI / 180.0) {
+        this.lastAct = this.act;
+        delete this.actTime;
+        if (this.hits) {
+          clearInterval(this.hits);
+          delete this.hits;
+        }
+      }
+      const af = 30 + Math.random() * 80;
+      a = Math.min(Math.abs(a), af * Math.PI / 180.0) *
+        Math.sign(a);
+      this.hitDir = vec3.fromAngles(0, this.hitDir.toAngle() *
+          Math.PI / 180.0 + a)
+        .multiply(10000);
+      this.fighter.doHit({
+        x: this.fighter.pos.x + this.hitDir.x,
+        y: this.fighter.pos.y + this.hitDir.y,
+      });
+    } else {
+      this.lastAct = this.act;
+      delete this.actTime;
+    }
+  }
+
   update() {
     if (this.target && !this.fighter.isAlive) {
       delete this.target;
@@ -385,54 +430,6 @@ export class Mob {
           this.actTime = (this.opts.HIT_TIME[0] +
               this.opts.HIT_TIME[1] * Math.random()) *
             this.fighter.hitSpeed;
-          this.hits = setInterval(() => {
-            if (Math.random() < this.opts.ROLL_HIT_VER) {
-              this.fighter.doRoll();
-            }
-            if (Math.random() < this.opts.JUMP_HIT_VER) {
-              this.fighter.doJump();
-            }
-            if (this.target && this.fighter.inHit) {
-              this.hitDir = this.fighter.hitVec.clone()
-                .unit()
-                .multiply(10000);
-              const newHitDir = this.target.pos
-                .subtract(this.fighter.pos);
-              let a = (newHitDir.toAngle() - this.hitDir.toAngle()) *
-                Math.PI / 180.0;
-              if (a > Math.PI) {
-                a -= Math.PI * 2;
-              }
-              if (a < -Math.PI) {
-                a += Math.PI * 2;
-              }
-              if (Math.abs(a) > 130 * Math.PI / 180.0) {
-                this.lastAct = this.act;
-                delete this.actTime;
-                if (this.hits) {
-                  clearInterval(this.hits);
-                  delete this.hits;
-                }
-              }
-              const af = 30 + Math.random() * 80;
-              a = Math.min(Math.abs(a), af * Math.PI / 180.0) *
-                Math.sign(a);
-              this.hitDir = vec3.fromAngles(0, this.hitDir.toAngle() *
-                  Math.PI / 180.0 + a)
-                .multiply(10000);
-              this.fighter.doHit({
-                x: this.fighter.pos.x + this.hitDir.x,
-                y: this.fighter.pos.y + this.hitDir.y,
-              });
-            } else {
-              this.lastAct = this.act;
-              delete this.actTime;
-              if (this.hits) {
-                clearInterval(this.hits);
-                delete this.hits;
-              }
-            }
-          }, 500 * this.fighter.hitSpeed);
         } else if (lastActIsMove && Math.random() < this.opts.MOVE_VER) {
           if (Math.random() < 0.5) {
             this.act = 'left';
@@ -474,10 +471,6 @@ export class Mob {
       if (this.actTime <= 0) {
         this.lastAct = this.act;
         delete this.actTime;
-        if (this.hits) {
-          clearInterval(this.hits);
-          delete this.hits;
-        }
       }
     }
     if (!this.actTime && !this.fighter.inHit && this.act) {

@@ -572,11 +572,11 @@ export const stage1__boss1 = {
 
   AGRO_D: 50,
   RUN_D: 150,
-  HIT_D: [120, 250],
+  HIT_D: [120, 180],
   HIT_VER: 0.9,
-  HIT_TIME: [0.2, 4],
-  JUMP_HIT_VER: 0.02,
-  ROLL_HIT_VER: 0.04,
+  HIT_TIME: [0.5, 5],
+  JUMP_HIT_VER: 0.2,
+  ROLL_HIT_VER: 0.1,
   MOVE_VER: 0.5,
   MOVE_TIME: [0.5, 1],
   LONG_MOVE_VER: 0.1,
@@ -586,7 +586,7 @@ export const stage1__boss1 = {
   ROLL_TIME: [5, 15],
   JUMP_TIME: [10, 15],
 
-  VOIDS_COUNT: 3000,
+  VOIDS_COUNT: 5000,
 
   FIGHTER: {
     LANG_RU: 'Истяженная оболочка Тит',
@@ -605,7 +605,7 @@ export const stage1__boss1 = {
     BALANCE: 100,
     HP: 400,
     MP: 100,
-    STAMINA: 1000,
+    STAMINA: 2000,
   },
 
   leftHand(parent) {
