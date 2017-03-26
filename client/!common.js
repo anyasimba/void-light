@@ -179,6 +179,8 @@ function createLayer() {
 }
 
 function create() {
+  loadingProgress(0, 'map');
+
   game.ui = new Phaser.Group(game)
 
   function resize(e) {
@@ -230,10 +232,16 @@ function create() {
 
   const preUpdate = game.scene.preUpdate;
   game.scene.preUpdate = () => {
+    global.lmx = global.mx;
+    global.lmy = global.my;
     global.mx = ((game.input.x * game.resF - game.width * 0.5) /
       game.sceneWrap.scale.x - game.scene.x) / game.scaleFactor;
     global.my = ((game.input.y * game.resF - game.height * 0.5) /
       game.sceneWrap.scale.y - game.scene.y) / game.scaleFactor;
+    const dv = new vec3(mx - lmx, my - lmy);
+    global.mouseD = global.mouseD || dv;
+    mouseD.x += (dv.x - mouseD.x) * 0.8;
+    mouseD.y += (dv.y - mouseD.y) * 0.8;
     global.dt = game.time.elapsed * 0.001;
     preUpdate.call(game.scene);
   }
@@ -262,7 +270,7 @@ let loadingProgressInterval;
 global.loadingProgressOpacity = 1;
 let loadingProgressText;
 
-function loadingProgress(v, text) {
+export function loadingProgress(v, text) {
   loadingProgressText = text || loadingProgressText;
 
   if (v === 0) {
@@ -275,7 +283,9 @@ function loadingProgress(v, text) {
     if (progress >= 100 && loadingProgressOpacity <= 0) {
       $('.loading-wrap').css('display', 'none');
       clearInterval(loadingProgressInterval);
+      loadingProgressInterval = undefined;
     } else {
+      $('.loading-wrap').css('display', 'block');
       loadingProgressValue +=
         (loadingProgressTargetValue - loadingProgressValue) * 0.1;
       if (progress >= 100) {
@@ -398,10 +408,11 @@ function createGame() {
           totalLoaded, totalFiles) => {
           loadingProgress(progress);
         });
+
         console.log('Game preloaded');
       },
       create: create,
-      update() {
+      async update() {
         if (!game.isCreated) {
           return;
         }
@@ -529,7 +540,8 @@ function createGame() {
         if (client.needLoadMap) {
           console.log('loading map...');
           delete client.needLoadMap;
-          loadingProgress(0, 'map');
+
+          game.layer.sub.ground.removeAll();
 
           client.w = client.map.width * WALL_SIZE;
           client.h = client.map.height * WALL_SIZE;
@@ -618,7 +630,7 @@ function createGame() {
 
           const renderMaskAffect = (image, x, y) => {
             const v = new Phaser.Image(game, 0, 0, image);
-            v.scale.set(2 * WALL_SIZE * AF * scaleF / v.width);
+            v.scale.set(8 * WALL_SIZE * AF * scaleF / v.width);
             v.x = -x * WALL_SIZE * AF * scaleF;
             v.y = -y * WALL_SIZE * AF * scaleF;
             maskView.anchor.set(0.5);
@@ -630,32 +642,19 @@ function createGame() {
             bmd.alphaMask(v, maskView);
             return new Phaser.Image(game, 0, 0, bmd);
           }
-          const wholeView = [
-            renderMaskAffect('whole', 0, 0),
-            renderMaskAffect('whole', 1, 0),
-            renderMaskAffect('whole', 0, 1),
-            renderMaskAffect('whole', 1, 1),
-          ];
-          const iceView = [
-            renderMaskAffect('ice', 0, 0),
-            renderMaskAffect('ice', 1, 0),
-            renderMaskAffect('ice', 0, 1),
-            renderMaskAffect('ice', 1, 1),
-          ];
-          const slowView = [
-            renderMaskAffect('dirt', 0, 0),
-            renderMaskAffect('dirt', 1, 0),
-            renderMaskAffect('dirt', 0, 1),
-            renderMaskAffect('dirt', 1, 1),
-          ];
-          const lavaView = [
-            renderMaskAffect('lava', 0, 0),
-            renderMaskAffect('lava', 1, 0),
-            renderMaskAffect('lava', 0, 1),
-            renderMaskAffect('lava', 1, 1),
-          ];
+          const wholeView = [];
+          const iceView = [];
+          const slowView = [];
+          const lavaView = [];
+          for (let i = 0; i < 16; ++i) {
+            wholeView.push(renderMaskAffect('whole', i % 4, (i / 4) % 4));
+            iceView.push(renderMaskAffect('ice', i % 4, (i / 4) % 4));
+            slowView.push(renderMaskAffect('dirt', i % 4, (i / 4) % 4));
+            lavaView.push(renderMaskAffect('lava', i % 4, (i / 4) % 4));
+          }
 
-          loadingProgress(10);
+          loadingProgress(60);
+          await sleep(50);
           for (let y = 0; y < client.map.height; ++y) {
             for (let x = 0; x < client.map.width; ++x) {
               const i = y * client.map.width + x;
@@ -672,17 +671,17 @@ function createGame() {
                   view = bricksView;
                   break;
                 case 'whole':
-                  view = wholeView[x % 2 + (y % 2) * 2];
+                  view = wholeView[x % 4 + (y % 4) * 4];
                   padShift = 1;
                   break;
                 case 'ice':
-                  view = iceView[x % 2 + (y % 2) * 2];
+                  view = iceView[x % 4 + (y % 4) * 4];
                   break;
                 case 'slow':
-                  view = slowView[x % 2 + (y % 2) * 2];
+                  view = slowView[x % 4 + (y % 4) * 4];
                   break;
                 case 'lava':
-                  view = lavaView[x % 2 + (y % 2) * 2];
+                  view = lavaView[x % 4 + (y % 4) * 4];
                   padShift = 1;
                   break;
                 default:
@@ -708,8 +707,8 @@ function createGame() {
               }
 
               for (let i = 2; i < ln; ++i) {
-                let pad = (i - 2) * WALL_SIZE * 0.25 / (ln - 3) + Math.random() *
-                  WALL_SIZE / 6;
+                let pad = (i - 2) * WALL_SIZE * 0.25 / (ln - 3) +
+                  Math.random() * WALL_SIZE / 6;
 
                 let px = 0;
                 let py = 0;
@@ -749,7 +748,8 @@ function createGame() {
             }
           }
           console.log('done', xn * yn);
-          loadingProgress(50);
+          loadingProgress(80);
+          await sleep(50);
 
           const groundSprite = game.layer.sub.ground.add(new Phaser.TileSprite(
             game, 0, 0, game.w * 2, game.h * 2, 'ground'));
@@ -763,7 +763,6 @@ function createGame() {
           game.mapTextures = textures;
           for (let x = 0; x < xn; ++x) {
             for (let y = 0; y < yn; ++y) {
-              const sprites = [];
               for (let i = 0; i < ln; ++i) {
                 if (textures[i][x][y].isUsed) {
                   const sprite = new Phaser.Sprite(
@@ -771,7 +770,6 @@ function createGame() {
                     textures[i][x][y]);
                   textures[i][x][y].sprite = sprite;
                   sprite.scale.set(1 / scaleF);
-                  sprites.push(sprite);
 
                   if (i < 2) {
                     if (i === 1) {
@@ -790,9 +788,12 @@ function createGame() {
           }
 
           loadingProgress(100);
+          await sleep(50);
+          disableMessage();
         }
 
-        if (game.cameraPos && global.AF) {
+        const texs = game.mapTextures;
+        if (game.cameraPos && global.AF && texs) {
           const ln = WALL_LAYERS.length + 2;
           let gbx = game.cameraPos.x - game.w * 0.5 / game.sceneWrap.scale.x;
           gbx -= (AF - 1) * 0.5 * WALL_SIZE;
@@ -807,7 +808,6 @@ function createGame() {
           gey += (AF - 1) * 0.5 * WALL_SIZE;
           gey = Math.floor(gey / ts);
 
-          const texs = game.mapTextures;
           gbx = Math.max(0, Math.min(texs[0].length - 1, gbx));
           gby = Math.max(0, Math.min(texs[0][0].length - 1, gby));
           gex = Math.max(0, Math.min(texs[0].length - 1, gex));

@@ -217,6 +217,9 @@ export class Mob {
   }
 
   canNextHit() {
+    if (!this.actTime) {
+      return;
+    }
     if (Math.random() < this.opts.ROLL_HIT_VER) {
       this.fighter.doRoll();
     }
@@ -240,10 +243,6 @@ export class Mob {
       if (Math.abs(a) > 130 * Math.PI / 180.0) {
         this.lastAct = this.act;
         delete this.actTime;
-        if (this.hits) {
-          clearInterval(this.hits);
-          delete this.hits;
-        }
       }
       const af = 30 + Math.random() * 80;
       a = Math.min(Math.abs(a), af * Math.PI / 180.0) *

@@ -491,6 +491,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
 
     this.hitVec = new vec3(opts).subtract(this.pos).unit();
     this.hitStage = opts.hitStage || 1;
+    this.hitType = opts.type;
 
     this.clearSteps();
     global[this.kind + '__doHit'].call(this);
@@ -514,6 +515,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     this.emitAll('hit', {
       hitVec: this.hitVec,
       hitStage: this.hitStage,
+      hitType: this.hitType,
       isRollHit: this.isRollHit,
       isJumpHit: this.isJumpHit,
     });

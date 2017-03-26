@@ -93,6 +93,7 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
 
       isExit: opts.isExit,
       exitWay: opts.exitWay,
+      target: opts.target,
 
       progress: 0,
     });
@@ -132,6 +133,7 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
     if (this.isExit) {
       player.wait(4);
       player.speed.init();
+      player.owner.changeZone(this.exitWay, this.target);
       return;
     }
     if (this.isOpening || this.isClosing) {

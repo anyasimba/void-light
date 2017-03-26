@@ -120,7 +120,7 @@ export class GameLevelZone {
     const objects = this.map.layers[1];
     for (const k in objects.objects) {
       const o = objects.objects[k];
-      const slug = this.map.dictionary[o.gid] || o.name;
+      let slug = this.map.dictionary[o.gid];
       const x = o.x / 32 * WALL_SIZE + WALL_SIZE * 0.5;
       const y = o.y / 32 * WALL_SIZE + WALL_SIZE * 0.5;
       const data = {
@@ -135,10 +135,11 @@ export class GameLevelZone {
       };
       Object.assign(data, o.properties);
 
-      if (slug && !o.name) {
+      if (slug) {
         data.mapY -= WALL_SIZE;
         switch (slug) {
           case 'born':
+            data.name = o.name;
             this.playerPoints.push(data);
             break;
           case 'checkpoint':
@@ -156,11 +157,13 @@ export class GameLevelZone {
             this.enemyPoints.push(data);
         }
       } else if (o.name) {
+        slug = o.name;
+        data.slug = o.name;
         switch (o.name) {
           case 'Door':
             this.mapObjects[data.mapID] = new Door(this, data);
             break;
-          case 'Door':
+          case 'Exit':
             data.isExit = true;
             data.exitWay = o.type;
             this.mapObjects[data.mapID] = new Door(this, data);
@@ -275,8 +278,8 @@ export class GameLevelZone {
     this.tempMobs = [];
   }
 
-  addClient(client) {
-    this.rebornPlayer(client.player);
+  addClient(client, target) {
+    this.rebornPlayer(client.player, target);
     client.player.isAlive = true;
     this.addObject(client.player);
 
@@ -297,25 +300,38 @@ export class GameLevelZone {
     this.emitTo(newClient);
     this.clients.push(newClient);
   }
-  rebornPlayer(player) {
-    if (player.owner.params.checkpoint) {
+  rebornPlayer(player, target) {
+    if (!target && player.owner.params.checkpoint) {
+      const checkpoint = player.owner.params.checkpoint;
+      if (checkpoint.mapName !== this.mapName) {
+        player.owner.changeZone(checkpoint.mapName);
+        return;
+      }
       const p = player.owner.params.checkpoint.pos;
       let px = p.x;
       let py = p.y;
       if (p.name !== undefined) {
         px *= WALL_SIZE;
         py *= WALL_SIZE;
+        const a = Math.random() * Math.PI * 2;
+        player.pos = {
+          x: px + Math.cos(a) * WALL_SIZE * 2,
+          y: py + Math.sin(a) * WALL_SIZE * 2,
+        };
+        Checkpoint.USE(player);
+        return;
       }
-      const a = Math.random() * Math.PI * 2;
-      player.pos = {
-        x: px + Math.cos(a) * WALL_SIZE * 2,
-        y: py + Math.sin(a) * WALL_SIZE * 2,
-      };
-      Checkpoint.USE(player);
-      return;
     }
-    const i = Math.floor(Math.random() * this.playerPoints.length);
-    const p = this.playerPoints[i];
+    target = target || '1';
+    const points = [];
+    for (let i = 0; i < this.playerPoints.length; ++i) {
+      const p = this.playerPoints[i];
+      if (p.name === target) {
+        points.push(p);
+      }
+    }
+    const i = Math.floor(Math.random() * points.length);
+    const p = points[i];
     player.pos = p;
   }
 

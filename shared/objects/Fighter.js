@@ -341,6 +341,7 @@ export class Fighter {
     delete this.isCanNextHit;
     delete this.hitVec;
     delete this.hitStage;
+    delete this.hitType;
     delete this.inHit;
     delete this.isJumpHit;
     delete this.isRollHit;

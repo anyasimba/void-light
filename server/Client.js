@@ -223,6 +223,16 @@ export class Client extends global.Client {
 
     console.log('User login', this.username);
   }
+  changeZone(mapName, target) {
+    this.emit('map', {
+      name: mapName,
+    });
+
+    let complex = 0;
+    this.gameLevelZone.removeClient(this);
+    this.gameLevelZone = getGameLevelZone(mapName, complex);
+    this.gameLevelZone.addClient(this, target);
+  }
 
   emit(event, data) {
     this.packets = this.packets || [];
@@ -239,12 +249,10 @@ export class Client extends global.Client {
 
   async onDisconnect() {
     if (this.username) {
-      console.log("SET TIMEOUT!!!");
       this.disconnectTimeout = setTimeout(() => {
         if (!this.username) {
           return;
         }
-        console.log('WTF');
         delete clients[this.username];
 
         if (this.gameLevelZone) {

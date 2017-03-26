@@ -115,6 +115,39 @@ export class Door extends mix(global.Door, MixGameObject) {
       } else if (this.sound) {
         this.sound.volume = this.soundVolume() * 0.3;
       }
+    } else {
+      if (Math.random() < dt * 10) {
+        const g = new Phaser.Graphics(game, 0, 0);
+        this.middleGroup.add(g);
+        g.lineStyle(3, 0x8833AA, 0.5);
+        g.beginFill(0x8822FF, 0.01);
+        const PAD = 0.5 + Math.random() * 0.7;
+        g.drawRect(
+          this.size.x * (1 - PAD) * 0.5,
+          this.size.y * (1 - PAD) * 0.5,
+          this.size.x * PAD, this.size.y * PAD);
+        g.endFill();
+        g.blendMode = PIXI.blendModes.ADD;
+        const speed = Math.random() * 100;
+        const v = new vec3();
+        v.x = Math.random() - 0.5;
+        v.y = Math.random() - 0.5;
+        g.x = -v.x * 100;
+        g.y = -v.y * 100;
+        let time = 0;
+        g.update = () => {
+          g.x += v.x * dt * speed;
+          g.y += v.y * dt * speed;
+          g.alpha = time;
+          time += dt;
+          if (time > 1) {
+            g.alpha = 2 - time;
+          }
+          if (time >= 2) {
+            g.destroy();
+          }
+        }
+      }
     }
   }
 }

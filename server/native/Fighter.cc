@@ -276,22 +276,22 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
     self->waitTime -= dt;
   }
 
-  remove_if(&self->timeouts, [&](auto &timeout) {
-    if (timeout.fn == nullptr) {
-      return true;
-    }
+  for(int i = 0; i < self->timeouts.size(); ++i) {
+    auto &timeout = self->timeouts[i];
     timeout.time -= dt;
     if (timeout.time > 0.f) {
-      return false;
+      continue;
     }
 
     auto fnPtr = std::move(timeout.fn);
+    self->timeouts.erase(self->timeouts.begin() + i);
+    
     Local<Function> fn = Local<Function>::New(isolate, *fnPtr);
     Local<Object> js = Local<Object>::New(isolate, self->js);
     fn->Call(js, 0, nullptr);
 
-    return true;
-  });
+    break;
+  }
 
   remove_if(&self->effects, [&](auto &effect) {
     effect.time -= dt;

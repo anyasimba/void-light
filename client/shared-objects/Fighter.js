@@ -287,8 +287,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     if (this.id === client.playerID) {
       client.player = this;
-
-      makeSuperMessage('все будет напрасно', '#2299FF');
     }
 
     this.moveTime = 0;
@@ -318,6 +316,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.isJumpHit = data.isJumpHit;
     this.hitVec = new vec3(data.hitVec);
     this.hitStage = data.hitStage;
+    this.hitType = data.hitType;
 
     if (this.hitStage === 1) {
       const hands = this.hands;

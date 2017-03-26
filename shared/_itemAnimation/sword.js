@@ -2,6 +2,19 @@ export function ia_sword__doHit(opts) {
   opts = opts || {};
   const ia_sword = {
     1: function () {
+      console.log(this.hitType);
+      if (this.hitType === 0) {
+        ia_sword[10].call(this);
+        return;
+      }
+      if (this.hitType === 1) {
+        ia_sword[10].call(this);
+        return;
+      }
+      if (this.hitType === 3) {
+        ia_sword[2].call(this);
+        return;
+      }
       if (this.inJump || this.inRoll || this.inBlock) {
         ia_sword[10].call(this);
         return;

@@ -135,9 +135,33 @@ export class Client extends global.Client {
       if (global.mouseCapture) {
         return;
       }
+      let type = 0;
+      const m = new vec3(mx, my).subtract(client.player.pos);
+      let a = m.toAngle() - mouseD.toAngle();
+      if (a > 180) {
+        a = 360 - a;
+      }
+      if (a < -180) {
+        a = -360 - a;
+      }
+      if (mouseD.length() < 10) {
+        type = 0;
+      } else {
+        if (Math.abs(a) < 45) {
+          type = 1;
+        }
+        if (a > 45) {
+          type = 2;
+        }
+        if (a < -45) {
+          type = 3;
+        }
+      }
+      console.log(type);
       this.emit('mouseDown', {
         'x': mx,
         'y': my,
+        'type': type,
       });
     });
 
@@ -248,8 +272,19 @@ export class Client extends global.Client {
   async onMap(data) {
     this.mapName = data.name;
 
+    for (const k in gameObjects) {
+      const o = gameObjects[k];
+      o.destructor();
+    }
+
+    loadingProgress(0, 'map');
+    await sleep(100);
+
     const mapData = await httpGet('maps/' + this.mapName + '.json');
     this.map = JSON.parse(mapData);
+
+    loadingProgress(50, 'map');
+    await sleep(100);
 
     this.needLoadMap = true;
   }
