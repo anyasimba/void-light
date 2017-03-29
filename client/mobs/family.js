@@ -3,12 +3,12 @@ export const mobs__hands__family = {
     update() {
       this.view.x = this.pos.x + this.parent.moveShift + 1;
       this.view.y = this.pos.y - this.parent.moveShift * 2 + 2;
-      this.view.angle = this.angle + 90;
+      this.view.angle = this.angle + 50;
 
       this.group.angle = this.sideAngle;
     },
     onStun() {
-      let time = 0;
+      let time = this.parent.stunDelay || 0;
 
       const step1 = 0.2;
       this.parent.step(time, () => {
@@ -57,12 +57,12 @@ export const mobs__hands__family = {
     update() {
       this.view.x = this.pos.x + this.parent.moveShift + 1;
       this.view.y = this.pos.y - this.parent.moveShift * 2 + 2;
-      this.view.angle = this.angle + 90;
+      this.view.angle = this.angle + 130;
 
       this.group.angle = this.sideAngle;
     },
     onStun() {
-      let time = 0;
+      let time = this.parent.stunDelay || 0;
 
       const step1 = 0.2;
       this.parent.step(time, () => {
@@ -116,7 +116,7 @@ export const mobs__weapon__family = {
       this.group.angle = this.sideAngle;
     },
     onStun() {
-      let time = 0;
+      let time = this.parent.stunDelay || 0;
 
       const step1 = 0.2;
       this.parent.step(time, () => {
@@ -168,7 +168,7 @@ export const mobs__weapon__family = {
       this.view.angle = this.angle + 90;
     },
     onStun() {
-      let time = 0;
+      let time = this.parent.stunDelay || 0;
 
       const step1 = 0.2;
       this.parent.step(time, () => {

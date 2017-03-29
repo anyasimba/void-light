@@ -253,6 +253,7 @@ export class Mob {
       this.fighter.doHit({
         x: this.fighter.pos.x + this.hitDir.x,
         y: this.fighter.pos.y + this.hitDir.y,
+        type: Math.floor(Math.random() * 5),
       });
     } else {
       this.lastAct = this.act;
@@ -424,6 +425,7 @@ export class Mob {
           this.fighter.doHit({
             x: this.fighter.pos.x + this.hitDir.x,
             y: this.fighter.pos.y + this.hitDir.y,
+            type: Math.floor(Math.random() * 5),
           });
 
           this.actTime = (this.opts.HIT_TIME[0] +

@@ -57,7 +57,7 @@ export class Checkpoint extends mix(global.Checkpoint, MixNativeGameObject,
         count: 3,
       });
     }
-    player.owner.saveParam('items', 'list', player.owner.params.items.list);
+    player.owner.saveSharedParam('items', 'list', player.owner.params.items.list);
     player.owner.emit('items', player.owner.params.items);
     player.hp = player.HP;
     player.stamina = player.STAMINA;

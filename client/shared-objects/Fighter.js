@@ -1,17 +1,14 @@
-export function convertHSL(id, image, H, S, RS) {
-  return image;
-  global.HSL = global.HSL || {};
-  const key = id + '_' + H + '_' + S + '_' + RS;
-  if (!HSL[id]) {
-    console.log(key);
-    const bmd = new Phaser.BitmapData(game, null, image.width, image.height);
-    bmd.load(image);
-    bmd.setHSL(H, S, null);
-    bmd.shiftHSL(H, RS, null);
-    HSL[id] = bmd;
-  }
-  image.destroy();
-  return new Phaser.Image(game, 0, 0, HSL[id]);
+export function makeHSL(hsl) {
+  const g = new Phaser.Group(game, 0, 0, null);
+  g.isHSL = true;
+  g.gray = g.add(new Phaser.Image(game, 0, 0, hsl.gray));
+  g.color = g.add(new Phaser.Image(game, 0, 0, hsl.color));
+  g.color.blendMode = PIXI.blendModes.ADD;
+  g.ambient = g.add(new Phaser.Image(game, 0, 0, hsl.ambient));
+  g.ambient.blendMode = PIXI.blendModes.ADD;
+  g.special = g.add(new Phaser.Image(game, 0, 0, hsl.special));
+  g.special.blendMode = PIXI.blendModes.ADD;
+  return g;
 }
 
 export class Fighter extends mix(global.Fighter, MixGameObject) {
@@ -45,8 +42,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     return [outer, inner, text];
   }
-  static createView(isHost, kind, name, size, H, S, RS) {
+  static createView(isHost, kind, name, size) {
     let orient = Math.floor(Math.random() * 2);
+    let scale = 0.25;
 
     let images;
     if (kind === 'mob') {
@@ -54,16 +52,24 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       if (!opts.CAN_MIRROR_VIEW) {
         orient = 0;
       }
-      const hitView = new Phaser.Image(game, 0, 0, opts.HIT_VIEW || opts.VIEW);
-      hitView.tint = 0xFF3300;
+
+      const hitView = makeHSL(hslMap[opts.HIT_VIEW || opts.VIEW]);
+      hitView.gray.tint = 0xFF3300;
+      hitView.color.tint = 0xFF3300;
+      hitView.ambient.tint = 0xFF3300;
+      hitView.special.tint = 0xFF3300;
+
+      const view = makeHSL(hslMap[opts.VIEW]);
+      view.color.tint = 0x00aaff;
+      view.ambient.tint = 0x00aaff;
+      view.special.tint = 0x00aaff;
+
       images = [
-        new Phaser.Image(game, 0, 0, opts.VIEW),
+        view,
         new Phaser.Image(game, 0, 0, opts.BACK_VIEW),
         hitView,
       ];
-      images[0].scale.set(opts.SCALE || 1);
-      images[1].scale.set(opts.SCALE || 1);
-      images[2].scale.set(opts.SCALE || 1);
+      scale = opts.SCALE || 1;
     } else {
       const hitView = new Phaser.Image(game, 0, 0, 'player');
       hitView.tint = 0xFF3300;
@@ -72,9 +78,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         new Phaser.Image(game, 0, 0, 'player-back'),
         hitView,
       ];
-      images[0].scale.set(0.25);
-      images[1].scale.set(0.25);
-      images[2].scale.set(0.25);
     }
     let ID = '';
     if (kind === 'player') {
@@ -86,36 +89,53 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     for (const k in images) {
       let image = images[k];
 
-      image = convertHSL(ID + k, image, H, S, RS);
-      images[k] = image;
+      const prepare = (image) => {
+        image.anchor.x = 0.5;
+        image.anchor.y = 0.5;
+        image.scale.set(scale);
+        image.angle = 90;
+        if (orient) {
+          image.scale.x = -image.scale.x;
+        }
+        image.smoothed = true;
+      };
 
-      image.anchor.x = 0.5;
-      image.anchor.y = 0.5;
-      image.angle = 90;
-      if (orient) {
-        image.scale.x = -image.scale.x;
+      if (image.isHSL) {
+        prepare(image.gray);
+        prepare(image.color);
+        prepare(image.ambient);
+        prepare(image.special);
+      } else {
+        prepare(image);
       }
-      image.smoothed = true;
     }
     return [images, orient];
   }
   static createDeadView(isHost, kind, name, size, orient, tint, H, S, RS) {
     let images;
+    let scale = 0.25;
     if (kind === 'mob') {
       const opts = global[name];
+      scale = opts.SCALE || 1;
+
+      const view = makeHSL(hslMap[opts.VIEW]);
+      view.color.tint = 0x00aaff;
+      view.ambient.tint = 0x00aaff;
+      view.special.tint = 0x00aaff;
+      const deadView = makeHSL(hslMap[opts.DEAD_VIEW || opts.VIEW]);
+      deadView.color.tint = 0x00aaff;
+      deadView.ambient.tint = 0x00aaff;
+      deadView.special.tint = 0x00aaff;
+
       images = [
-        new Phaser.Image(game, 0, 0, opts.VIEW),
-        new Phaser.Image(game, 0, 0, opts.DEAD_VIEW),
+        view,
+        deadView,
       ];
-      images[0].scale.set(opts.SCALE || 1);
-      images[1].scale.set(opts.SCALE || 1);
     } else {
       images = [
         new Phaser.Image(game, 0, 0, 'player'),
         new Phaser.Image(game, 0, 0, 'player-back'),
       ]
-      images[0].scale.set(0.25);
-      images[1].scale.set(0.25);
     }
     let ID = '';
     if (kind === 'player') {
@@ -125,27 +145,31 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
     for (const k in images) {
       let image = images[k];
-      image = convertHSL(ID + '_dead_' + k, image, H, S, RS);
-      images[k] = image;
-      image.anchor.x = 0.5;
-      image.anchor.y = 0.5;
-      image.angle = 90;
-      image.tint = tint;
-      if (orient) {
-        image.scale.x = -image.scale.x;
+
+      const prepare = (image) => {
+        image.anchor.x = 0.5;
+        image.anchor.y = 0.5;
+        image.scale.set(scale);
+        image.angle = 90;
+        if (orient) {
+          image.scale.x = -image.scale.x;
+        }
+        image.smoothed = true;
+      };
+
+      if (image.isHSL) {
+        prepare(image.gray);
+        prepare(image.color);
+        prepare(image.ambient);
+        prepare(image.special);
+      } else {
+        prepare(image);
       }
-      image.smoothed = true;
     }
 
     return images;
   }
-  static createFootView(isHost, kind, name, size, H, S, RS) {
-    let ID = '';
-    if (kind === 'player') {
-      ID = 'player';
-    } else {
-      ID = name;
-    }
+  static createFootView(isHost, kind, name, size) {
     if (kind === 'mob') {
       const opts = global[name];
       if (!opts.LEFT_FOOT_VIEW) {
@@ -153,23 +177,31 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
       let views = [];
       //
-      {
-        let image = new Phaser.Image(game, 0, 0, opts.LEFT_FOOT_VIEW);
-        image = convertHSL(ID + '_foot1', image, H, S, RS);
-        image.mirror = true;
+      const prepare = (image) => {
         image.anchor.x = 0.5;
         image.anchor.y = 0.5;
         image.angle = 90;
         image.smoothed = true;
-        views.push(image);
+      }; {
+        const view = makeHSL(hslMap[opts.LEFT_FOOT_VIEW]);
+        view.color.tint = 0x00aaff;
+        view.ambient.tint = 0x00aaff;
+        view.special.tint = 0x00aaff;
+        prepare(view.gray);
+        prepare(view.color);
+        prepare(view.ambient);
+        prepare(view.special);
+        views.push(view);
       } {
-        let image = new Phaser.Image(game, 0, 0, opts.RIGHT_FOOT_VIEW);
-        image = convertHSL(ID + '_foot2', image, H, S, RS);
-        image.anchor.x = 0.5;
-        image.anchor.y = 0.5;
-        image.angle = 90;
-        image.smoothed = true;
-        views.push(image);
+        const view = makeHSL(hslMap[opts.RIGHT_FOOT_VIEW]);
+        view.color.tint = 0x00aaff;
+        view.ambient.tint = 0x00aaff;
+        view.special.tint = 0x00aaff;
+        prepare(view.gray);
+        prepare(view.color);
+        prepare(view.ambient);
+        prepare(view.special);
+        views.push(view);
       }
 
       return views;
@@ -183,6 +215,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     data.look = new vec3(data.look);
 
     super(data, data);
+
+    this.angle = 0;
 
     this.viewsForTint = [];
 
@@ -212,8 +246,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.viewsForTint.push(this.views[2]);
 
     this.footViews = Fighter.createFootView(
-      this.id === client.playerID, this.kind, this.name, this.size,
-      this.H, this.S, this.RS);
+      this.id === client.playerID, this.kind, this.name, this.size);
     if (this.footViews) {
       this.footViewsRoot = new Phaser.Group(game);
       this.bottomGroup.add(this.footViewsRoot);
@@ -318,20 +351,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.hitStage = data.hitStage;
     this.hitType = data.hitType;
 
-    if (this.hitStage === 1) {
-      const hands = this.hands;
-      for (const k in hands) {
-        const hand = hands[k];
-        if (hand) {
-          hand.reborn();
-        }
-      }
-    }
-
     this.clearSteps();
     global[this.kind + '__doHit'].call(this);
   }
   onBreakHit(data) {
+    if (data.block) {
+      this.playSound('block');
+    }
     this.clearSteps();
     this.finishHit();
   }
@@ -343,6 +369,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.clearSteps();
     this.finishHit();
     this.stunTime = data.time;
+    this.stunDelay = data.delay;
+    console.log(data);
   }
   onWait(data) {
     if (this.stunTime) {
@@ -467,8 +495,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.kind, this.name,
       this.size,
       this.orient,
-      this.baseTint,
-      this.H, this.S, this.RS);
+      this.baseTint);
 
     group.add(deadViews[1]);
     group.add(deadViews[0]);
@@ -511,7 +538,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     this.group.x = this.pos.x + sideVec.x * this.moveShift * 3;
     this.group.y = this.pos.y + sideVec.y * this.moveShift * 3;
-    this.group.angle = this.look.toAngle();
+    this.group.angle = this.angle + this.look.toAngle();
     this.group.scale.x = this.scale;
     this.group.scale.y = this.scale;
 
@@ -630,6 +657,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
   }
 
+  checkBlock(opts) {}
   doDamageRadialArea(opts) {
     if (!this.hitVec) {
       return;
@@ -637,9 +665,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     const g = new Phaser.Graphics(game, this.pos.x, this.pos.y);
     g.blendMode = PIXI.blendModes.ADD;
 
+
+    g.lineStyle(20, 0x444444, 0.05);
     g.beginFill(0x444444, 0.2);
-    const a = this.hitVec.toAngle() * Math.PI / 180.0 * this.rollSY;
-    opts.a *= Math.PI / 180.0;
+
     if (opts.hand === 2) {
       opts.d -= this.weapon2.pos.length();
       opts.d *= this.scale * (this.weapon2.bodyScale || 1);
@@ -649,25 +678,26 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       opts.d *= this.scale * (this.weapon.bodyScale || 1);
       opts.d += this.weapon.pos.length() * this.scale;
     }
-    const a1 = -opts.a;
-    const a2 = opts.a;
-    g.arc(0, 0, opts.d * this.rollSX, a1, a2);
 
-    const p1 = {
-      x: Math.cos(a1) * opts.d * this.rollSX,
-      y: Math.sin(a1) * opts.d * this.rollSX,
+    const da = (opts.da || 0) * Math.PI / 180.0;
+    const hitP = new vec3(
+      Math.cos(da) * this.rollSX,
+      Math.sin(da) * this.rollSY
+    );
+    const d = opts.d * hitP.length();
+
+    opts.a *= Math.PI / 180.0;
+    let af = (Math.abs(this.rollSY) - 1) * Math.abs(Math.cos(da)) + 1;
+    if (this.rollSX !== 1) {
+      af = (Math.abs(this.rollSX) - 1) * Math.abs(Math.sin(da)) + 1;
     }
-    const p2 = {
-      x: Math.cos(a2) * opts.d * this.rollSX,
-      y: Math.sin(a2) * opts.d * this.rollSX,
-    }
-    g.drawPolygon([{
-      x: 0,
-      y: 0
-    }, p1, p2, ]);
-    g.angle = this.hitVec.toAngle();
+    const a1 = opts.a * af;
+    const a2 = -opts.a * af;
+    g.arc(0, 0, d, a1, a2, true);
+
+    g.angle = this.hitVec.toAngle() + hitP.toAngle();
     g.update = () => {
-      g.alpha -= dt * 2;
+      g.alpha -= dt * 1.5;
       if (g.alpha <= 0.0) {
         g.destroy();
       }

@@ -1,175 +1,116 @@
-export function ia__hands__doHit(opts) {
-  opts = opts || {};
-  return {
+export function ia_hands__doHit(begin, wait, end, imp, f, af, a) {
+  begin *= f;
+  wait *= f;
+  end *= f;
+  af *= f;
+
+  const moveset = {
+    0: function () {
+      switch (this.curHitType) {
+        case 1:
+          moveset.forward[this.curHitStage].call(this, true);
+          break;
+        case 2:
+        case 3:
+          moveset.side[this.curHitStage].call(this, true);
+          break;
+        case 4:
+          moveset.backstep.call(this);
+          break;
+        default:
+          moveset.top[this.curHitStage].call(this, true);
+      }
+    },
     1: function () {
-      let time = 0;
-
-      const step1 = 0.3 * this.hitSpeed;
-      this.step(time, () => {
-        this.canNextHit();
-        this.weapon.stage(step1, easing.easeInQuad, {
-          pos: new vec3({
-            x: -40,
-            y: 40,
-          }),
-          angle: 135,
-          vAngle: 0,
-          sideAngle: -50,
-        });
-      });
-      time += step1;
-
-      const step2 = 0.1;
-      this.step(time, () => {
-        this.playHit();
-        this.weapon.stage(step2, easing.easeOutQuad, {
-          sideAngle: -200,
-        });
-        this.addImpulse(1700);
-      });
-      this.step(time + 0.05, () => {
-        const damageOpts = {
-          d: 280,
-          a: 70,
-          impulse: 1700,
+      this.curHitStage = this.hitStage;
+      this.curHitType = this.hitType;
+      if (this.curHitType !== 4) {
+        if (this.isJumpHit) {
+          this.curHitType = 0;
+          moveset.top[this.curHitStage].call(this);
+          return;
         }
-        if (this.inRoll) {
-          damageOpts.a = 80;
-          damageOpts.d = 320;
+        if (this.isRollHit) {
+          this.curHitType = 1;
+          moveset.forward[this.curHitStage].call(this);
+          return;
         }
-        if (this.inJump) {
-          damageOpts.d = 320;
+        if (this.inBlock) {
+          this.curHitStage += 4;
         }
-        this.doDamageRadialArea(damageOpts);
-      });
-      time += step2 + 0.2 * this.hitSpeed;
-
-      const step3 = 0.9 * this.hitSpeed;
-      this.step(time, () => {
-        this.checkNextHit(2);
-        this.weapon.finalStage(step3, easing.easeInOutQuad);
-      });
-      time += step3;
-
-      this.step(time, () => {
-        this.finishHit();
-      });
+      }
+      switch (this.curHitType) {
+        case 1:
+          moveset.forward[this.curHitStage].call(this);
+          break;
+        case 2:
+        case 3:
+          moveset.side[this.curHitStage].call(this);
+          break;
+        case 4:
+          moveset.backstep.call(this);
+          break;
+        default:
+          moveset.top[this.curHitStage].call(this);
+      }
     },
     2: function () {
-      this.canNextHit();
-
-      let time = 0;
-
-      const step1 = 0.1 * this.hitSpeed;
-      this.step(time, () => {
-        this.canNextHit();
-        this.weapon.finalStage(step1 + 0.05 * this.hitSpeed, easing.easeInQuad);
-        this.weapon2.stage(step1, easing.easeInQuad, {
-          pos: new vec3({
-            x: -40,
-            y: -40,
-          }),
-          angle: -135,
-          vAngle: 0,
-          sideAngle: 50,
-        });
-      });
-      time += step1;
-
-      const step2 = 0.1;
-      this.step(time + 0.05, () => {
-        const damageOpts = {
-          d: 280,
-          a: 70,
-          impulse: 1300,
-          hand: 2,
-        }
-        if (this.inRoll) {
-          damageOpts.a = 80;
-          damageOpts.d = 320;
-        }
-        if (this.inJump) {
-          damageOpts.d = 320;
-        }
-        this.doDamageRadialArea(damageOpts);
-      });
-      this.step(time, () => {
-        this.addImpulse(1300);
-        this.playHit();
-        this.weapon2.stage(step2, easing.easeOutQuad, {
-          sideAngle: 200,
-        });
-      });
-      time += step2 + 0.2 * this.hitSpeed;
-
-      const step3 = 0.9 * this.hitSpeed;
-      this.step(time, () => {
-        this.checkNextHit(3);
-        this.weapon2.finalStage(step3, easing.easeInOutQuad);
-      });
-      time += step3;
-
-      this.step(time, () => {
-        this.finishHit();
-      });
+      moveset[1].call(this);
     },
     3: function () {
-      this.canNextHit();
-
-      let time = 0;
-
-      const step1 = 0.1 * this.hitSpeed;
-      this.step(time, () => {
-        this.canNextHit();
-        this.weapon2.finalStage(step1 + 0.05 * this.hitSpeed, easing.easeInQuad);
-        this.weapon.stage(step1, easing.easeInQuad, {
-          pos: new vec3({
-            x: -40,
-            y: 40,
-          }),
-          angle: 135,
-          vAngle: 0,
-          sideAngle: -50,
-        });
-      });
-      time += step1;
-
-      const step2 = 0.1;
-      this.step(time + 0.05, () => {
-        const damageOpts = {
-          d: 280,
-          a: 70,
-          impulse: 1500,
-        }
-        if (this.inRoll) {
-          damageOpts.a = 80;
-          damageOpts.d = 320;
-        }
-        if (this.inJump) {
-          damageOpts.d = 320;
-        }
-        this.doDamageRadialArea(damageOpts);
-      });
-      this.step(time, () => {
-        this.addImpulse(1500);
-        this.weapon2.finalStage(step2, easing.easeInQuad);
-        this.playHit();
-        this.weapon.stage(step1, easing.easeOutQuad, {
-          sideAngle: -200,
-        });
-      });
-      time += step2 + 0.2 * this.hitSpeed;
-
-      const step3 = 0.9 * this.hitSpeed;
-      this.step(time, () => {
-        this.checkNextHit(2);
-        this.weapon.finalStage(step3, easing.easeInOutQuad);
-      });
-      time += step3;
-
-      this.step(time, () => {
-        this.finishHit();
-      });
+      moveset[1].call(this);
+    },
+    4: function () {
+      moveset[1].call(this);
+      this.hitStage = 3;
     },
   };
+  moveset.backstep = ia_backstep(
+    begin, wait, end,
+    800 * imp,
+    10 * a, 0, 240, 40, 70, 0, -50, 0,
+    10, -10);
+  moveset.top = [];
+  moveset.forward = [];
+  moveset.side = [];
+  for (let i = 0; i < 4; ++i) {
+    const j = i + 1;
+    moveset.top[j] = ia_top(
+      1.3 * begin - i * 0.04 * af, wait - i * 0.04 * af, 1.5 * end,
+      400 * imp,
+      30 * a, 0, 260, 50, 75, 50, 170 - i * 10, 0,
+      30 - i * 5, -30 + i * 5);
+    moveset.forward[j] = ia_forward(
+      1.3 * begin - i * 0.04 * af, wait - i * 0.04 * af, 1.5 * end,
+      800 * imp,
+      10 * a, 0, 280, 10, 50, 0, 70 - i * 10, 0,
+      30 - i * 5, -30 + i * 5);
+    moveset.side[j] = ia_side(
+      begin - i * 0.04 * af, wait - i * 0.04 * af, end,
+      600 * imp,
+      (40 + i * 5) * a, 20 * a, 260,
+      70, 0, 0, 0,
+      30 + i * 5, -30 - i * 5);
+  }
+  for (let i = 0; i < 4; ++i) {
+    const j = i + 5;
+    moveset.top[j] = ia_top(
+      begin - i * 0.04 * af, wait - i * 0.04 * af, end,
+      300 * imp,
+      10 * a, 0, 260, 50, 75, 50, 170 - i * 10, 0,
+      30 - i * 5, -30 + i * 5);
+    moveset.forward[j] = ia_forward(
+      begin - i * 0.04 * af, wait - i * 0.04 * af, end,
+      700 * imp,
+      10 * a, 0, 280, 10, 50, 0, 70 - i * 10, 0,
+      30 - i * 5, -30 + i * 5);
+    moveset.side[j] = ia_side(
+      begin - i * 0.04 * af, wait - i * 0.04 * af, end,
+      500 * imp,
+      (20 + i * 5) * a, 20 * a, 260,
+      70, 0, 0, 0,
+      30 + i * 5, -30 - i * 5);
+  }
+
+  return moveset;
 }

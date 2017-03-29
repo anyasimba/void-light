@@ -94,6 +94,7 @@ export class Fighter {
         hand.clearAnimations();
       }
     }
+    this.clearAnimations();
   }
 
   update() {
@@ -271,6 +272,7 @@ export class Fighter {
             vAngle: 60,
           });
         }
+        this.finalStage(0.2, easing.easeInOutCubic);
       }
       this.waitTime -= dt;
       if (this.waitTime <= 0) {
@@ -285,6 +287,7 @@ export class Fighter {
             hand.finalStage(0.2, easing.easeInOutCubic);
           }
         }
+        this.finalStage(0.2, easing.easeInOutCubic);
       }
     }
 
@@ -379,12 +382,25 @@ export class Fighter {
     };
     this.look = this.speed.unit();
   }
+
+  finalStage(duration, fn) {
+    this.stage(duration, fn, {
+      angle: 0,
+    });
+  }
 }
 
 export function player__doHit() {
-  if (this.weapon) {
-    global[this.weapon.slug + '__doHit'][this.hitStage].call(this);
+  if (!this.weapon) {
+    return;
   }
+  if (!global[this.weapon.slug + '__doHit']) {
+    return;
+  }
+  if (!global[this.weapon.slug + '__doHit'][this.hitStage]) {
+    return;
+  }
+  global[this.weapon.slug + '__doHit'][this.hitStage].call(this);
 }
 export function mob__doHit() {
   global[this.name + '__doHit'][this.hitStage].call(this);

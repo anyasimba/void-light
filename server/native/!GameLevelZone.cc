@@ -82,7 +82,7 @@ struct GameLevelZone {
   vector<GameLevelZoneObject *> objects;
 
   static int CELL_SIZE() {
-    return WALL_SIZE * 8;
+    return WALL_SIZE * 4;
   }
 };
 
@@ -143,8 +143,8 @@ void GameLevelZone__addObject(const FunctionCallbackInfo<Value>& args) {
   object->isNeedDestroy = false;
   object->isStatic = js->GET("isStatic")->BooleanValue();
   object->hasCells = false;
-  object->AREA_W = 500;
-  object->AREA_H = 500;
+  object->AREA_W = 300;
+  object->AREA_H = 300;
 
   object->groundFriction = 1.f;
   object->groundAffectTime = -1.f;

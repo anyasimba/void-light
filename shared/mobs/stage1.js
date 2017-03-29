@@ -1,63 +1,31 @@
-export const stage1__mob1__doHit = ia__hands__doHit({});
-export const stage1__mob1a__doHit = ia__hands__doHit({});
-export const stage1__mob1b__doHit = ia__hands__doHit({});
-export const stage1__mob1c__doHit = ia__hands__doHit({});
-export const stage1__mob1boss__doHit = ia__hands__doHit({});
+export const stage1__mob1__doHit = ia_hands__doHit(
+  0.2, 0.3, 0.3,
+  1, 1, 0, 0.9);
+export const stage1__mob1a__doHit = ia_hands__doHit(
+  0.2, 0.3, 0.3,
+  1, 1, 0, 1.4);
+export const stage1__mob1b__doHit = ia_hands__doHit(
+  0.2, 0.3, 0.3,
+  1, 1, 0, 1.4);
+export const stage1__mob1c__doHit = ia_hands__doHit(
+  0.2, 0.3, 0.3,
+  1, 1, 0, 1.4);
+export const stage1__mob1boss__doHit = ia_hands__doHit(
+  0.2, 0.3, 0.3,
+  1, 1, 0, 1.4);
 
-export const stage1__mob2__doHit = ia_sword__doHit({
-  begin: 1,
-  wait: 0.2,
-  end: 1,
-  impulse: 700,
-  begin2: 0.3,
-  wait2: 0.2,
-  end2: 1,
-  impulse2: 600,
-  begin3: 0.5,
-  wait3: 0.2,
-  end3: 1,
-  impulse3: 500,
-});
-export const stage1__mob2a__doHit = ia_sword__doHit({
-  begin: 0.5,
-  wait: 0.2,
-  end: 1,
-  impulse: 700,
-  begin2: 0.3,
-  wait2: 0,
-  end2: 1,
-  impulse2: 600,
-  begin3: 0.5,
-  wait3: 0,
-  end3: 1,
-  impulse3: 500,
-});
-export const stage1__mob2b__doHit = ia_axe__doHit();
-export const stage1__mob2c__doHit = ia_sword__doHit({
-  begin: 0.5,
-  wait: 0.2,
-  end: 1,
-  impulse: 700,
-  begin2: 0.3,
-  wait2: 0,
-  end2: 1,
-  impulse2: 600,
-  begin3: 0.5,
-  wait3: 0,
-  end3: 1,
-  impulse3: 500,
-});
-export const stage1__boss1__doHit = ia_sword__doHit({
-  begin: 0.5,
-  wait: 0.3,
-  end: 2.5,
-  impulse: 1200,
-  begin2: 0.1,
-  wait2: 0,
-  end2: 2.5,
-  impulse2: 1200,
-  begin3: 0.2,
-  wait3: 0,
-  end3: 2.5,
-  impulse3: 1200,
-});
+export const stage1__mob2__doHit = ia_sword__doHit(
+  0.2, 0.3, 0.3,
+  1.5, 2, 0.5, 1.4);
+export const stage1__mob2a__doHit = ia_sword__doHit(
+  0.2, 0.3, 0.3,
+  1.5, 2, 0.5, 1.4);
+export const stage1__mob2b__doHit = ia_axe__doHit(
+  0.2, 0.3, 0.3,
+  1.5, 2, 0.5, 1.4);
+export const stage1__mob2c__doHit = ia_sword__doHit(
+  0.2, 0.3, 0.3,
+  1.5, 2, 0.5, 1.4);
+export const stage1__boss1__doHit = ia_sword__doHit(
+  0.2, 0.3, 0.3,
+  1.5, 1.5, 0.5, 1.4);

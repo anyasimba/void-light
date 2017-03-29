@@ -52,12 +52,12 @@ export const stage1__mob1 = {
       staminaTime: 1,
       hand: 1,
       pos: {
-        x: -15,
+        x: -40,
         y: 80,
       },
-      angle: 0,
-      vAngle: 20,
-      hAngle: 20,
+      angle: 40,
+      vAngle: 0,
+      hAngle: 0,
     });
   },
   leftHand(parent) {
@@ -70,12 +70,12 @@ export const stage1__mob1 = {
       staminaTime: 1,
       hand: 2,
       pos: {
-        x: -15,
+        x: -40,
         y: -80,
       },
-      angle: -0,
-      vAngle: 20,
-      hAngle: 20,
+      angle: -40,
+      vAngle: 0,
+      hAngle: 0,
     });
   },
 };
@@ -129,14 +129,14 @@ export const stage1__mob1a = {
       staminaTime: 0.4,
       hand: 1,
       pos: {
-        x: -15,
+        x: -40,
         y: 80,
       },
-      angle: 0,
-      vAngle: 20,
-      hAngle: 20,
+      angle: 40,
+      vAngle: 0,
+      hAngle: 0,
 
-      bodyScale: 3,
+      bodyScale: 1,
     });
   },
   leftHand(parent) {
@@ -149,12 +149,12 @@ export const stage1__mob1a = {
       staminaTime: 0.4,
       hand: 2,
       pos: {
-        x: -15,
+        x: -40,
         y: -80,
       },
-      angle: -0,
-      vAngle: 20,
-      hAngle: 20,
+      angle: -40,
+      vAngle: 0,
+      hAngle: 0,
 
       bodyScale: 1,
     });
@@ -210,12 +210,14 @@ export const stage1__mob1b = {
       staminaTime: 0.4,
       hand: 1,
       pos: {
-        x: -15,
+        x: -40,
         y: 80,
       },
-      angle: 0,
-      vAngle: 20,
-      hAngle: 20,
+      angle: 30,
+      vAngle: 0,
+      hAngle: 0,
+
+      bodyScale: 2,
     });
   },
   leftHand(parent) {
@@ -228,12 +230,12 @@ export const stage1__mob1b = {
       staminaTime: 0.4,
       hand: 2,
       pos: {
-        x: -15,
+        x: -40,
         y: -80,
       },
-      angle: -0,
-      vAngle: 20,
-      hAngle: 20,
+      angle: -50,
+      vAngle: 0,
+      hAngle: 0,
     });
   },
 };
@@ -291,12 +293,14 @@ export const stage1__mob1c = {
       staminaTime: 0.4,
       hand: 1,
       pos: {
-        x: -15,
+        x: -40,
         y: 80,
       },
-      angle: 0,
-      vAngle: 20,
-      hAngle: 20,
+      angle: 30,
+      vAngle: 0,
+      hAngle: 0,
+
+      bodyScale: 1.5,
     });
   },
   leftHand(parent) {
@@ -309,12 +313,14 @@ export const stage1__mob1c = {
       staminaTime: 0.4,
       hand: 2,
       pos: {
-        x: -15,
+        x: -40,
         y: -80,
       },
-      angle: -0,
-      vAngle: 20,
-      hAngle: 20,
+      angle: -30,
+      vAngle: 0,
+      hAngle: 0,
+
+      bodyScale: 1.5,
     });
   },
 };
@@ -594,7 +600,7 @@ export const stage1__boss1 = {
 
     moveTimeF: 0.8,
 
-    hitSpeed: 1.2,
+    hitSpeed: 3,
     damage: 18,
 
     ACC: 400,

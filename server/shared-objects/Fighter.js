@@ -463,22 +463,24 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     }
   }
 
-  doHit(opts) {
-    if (!this.weapon) {
-      return;
-    }
-    if (this.stamina <= 0) {
-      return;
-    }
-    if (this.stunTime || this.waitTime) {
-      return;
-    }
-    if (this.inHit && this.isCanNextHit) {
-      this.needNextHit = opts;
-      return;
-    }
-    if (this.inHit) {
-      return;
+  doHit(opts, afterBlock) {
+    if (!afterBlock) {
+      if (!this.weapon) {
+        return;
+      }
+      if (this.stamina <= 0) {
+        return;
+      }
+      if (this.stunTime || this.waitTime) {
+        return;
+      }
+      if (this.inHit && this.isCanNextHit) {
+        this.needNextHit = opts;
+        return;
+      }
+      if (this.inHit) {
+        return;
+      }
     }
     this.inHit = true;
 
@@ -491,25 +493,28 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
 
     this.hitVec = new vec3(opts).subtract(this.pos).unit();
     this.hitStage = opts.hitStage || 1;
-    this.hitType = opts.type;
+    if (afterBlock) {
+      this.hitStage = 0;
+    }
+    this.hitType = opts.type || 0;
+    this.lastHitOpts = opts;
 
-    this.clearSteps();
-    global[this.kind + '__doHit'].call(this);
-
-    if (this.isRollHit && this.isJumpHit) {
-      this.useStamina(
-        this.weapon.stamina * 2,
-        this.weapon.staminaTime * 1.6);
-    } else if (this.isRollHit) {
-      this.useStamina(
-        this.weapon.stamina * 1.3,
-        this.weapon.staminaTime * 1.2);
-    } else if (this.isJumpHit) {
-      this.useStamina(
-        this.weapon.stamina * 1.5,
-        this.weapon.staminaTime * 1.4);
-    } else {
-      this.useStamina(this.weapon.stamina, this.weapon.staminaTime);
+    if (!afterBlock) {
+      if (this.isRollHit && this.isJumpHit) {
+        this.useStamina(
+          this.weapon.stamina * 2,
+          this.weapon.staminaTime * 1.6);
+      } else if (this.isRollHit) {
+        this.useStamina(
+          this.weapon.stamina * 1.3,
+          this.weapon.staminaTime * 1.2);
+      } else if (this.isJumpHit) {
+        this.useStamina(
+          this.weapon.stamina * 1.5,
+          this.weapon.staminaTime * 1.4);
+      } else {
+        this.useStamina(this.weapon.stamina, this.weapon.staminaTime);
+      }
     }
 
     this.emitAll('hit', {
@@ -519,6 +524,9 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       isRollHit: this.isRollHit,
       isJumpHit: this.isJumpHit,
     });
+
+    this.clearSteps();
+    global[this.kind + '__doHit'].call(this);
   }
 
   checkNear(player) {
@@ -574,14 +582,16 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     });
   }
 
-  breakHit() {
+  breakHit(block) {
     this.clearSteps();
     this.finishHit();
     delete this.needNextHit;
     this.emitPos();
-    this.emitAll('breakHit', {});
+    this.emitAll('breakHit', {
+      block: block,
+    });
   }
-  stun(time) {
+  stun(time, delay) {
     if (this.stunTime === undefined) {
       if (this.waitTime) {
         if (this.waitFor) {
@@ -598,6 +608,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       this.emitPos();
       this.emitAll('stun', {
         time: time,
+        delay: delay,
       });
     }
   }
@@ -690,15 +701,20 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     }
     return true;
   }
-  doDamageRadialArea(opts) {
-    if (!this.isInGameLevelZone()) {
-      return;
-    }
-    if (!this.hitVec) {
-      return;
+  getHitOpts(opts) {
+    let rollSX = 1;
+    let rollSY = 1;
+    if (this.inRoll) {
+      const f = Math.sin(
+        (this.inRollTime / this.inRollDuration * 2 + 0.5) * Math.PI
+      );
+      if (this.inHit && !this.inJump) {
+        rollSY = f;
+      } else {
+        rollSX = f;
+      }
     }
 
-    opts.hitVec = this.hitVec.clone();
     if (opts.hand === 2) {
       if (this.weapon2 && this.weapon2.bodyScale) {
         opts.d -= this.weapon2.pos.length();
@@ -712,9 +728,47 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
         opts.d += this.weapon.pos.length();
       }
     }
-    opts.d *= this.scale;
+    const da = (opts.da || 0) * Math.PI / 180.0;
+    const hitP = new vec3(
+      Math.cos(da) * rollSX,
+      Math.sin(da) * rollSY
+    );
+    const a = (this.hitVec.toAngle() + hitP.toAngle()) * Math.PI / 180;
+    opts.hitVec = new vec3(
+      Math.cos(a),
+      Math.sin(a)
+    );
+    let af = (Math.abs(rollSY) - 1) * Math.abs(Math.cos(da)) + 1;
+    if (this.rollSX !== 1) {
+      af = (Math.abs(rollSX) - 1) * Math.abs(Math.sin(da)) + 1;
+    }
+    opts.a *= af;
+    opts.d *= this.scale * hitP.length();
+    return opts;
+  }
+  checkBlock(opts) {
+    if (!this.isInGameLevelZone()) {
+      return;
+    }
+    if (!this.hitVec) {
+      return;
+    }
 
-    this.gameLevelZone.doDamageRadialArea(this, opts);
+    if (this.gameLevelZone.checkBlock(this, this.getHitOpts(opts))) {
+      this.breakHit();
+      this.doHit(this.lastHitOpts, true);
+      return true;
+    }
+  }
+  doDamageRadialArea(opts) {
+    if (!this.isInGameLevelZone()) {
+      return;
+    }
+    if (!this.hitVec) {
+      return;
+    }
+
+    this.gameLevelZone.doDamageRadialArea(this, this.getHitOpts(opts));
   }
 
   onKeyC(opts) {
@@ -895,4 +949,6 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       this.onDie();
     }
   }
+
+  stage(duration, fn, opts) {}
 }

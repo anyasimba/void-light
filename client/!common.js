@@ -178,6 +178,96 @@ function createLayer() {
   return layer;
 }
 
+let hsl = [];
+let time;
+export let hslMap = {};
+
+function loadHsl(title, path) {
+  game.load.image(title, path);
+  hsl.push(title);
+}
+
+function processHsl(hsl) {
+  console.log(hsl);
+  let image = new Phaser.Image(game, 0, 0, hsl);
+  const makeRect = (color, blend) => {
+    let g = new Phaser.Graphics(game, 0, 0);
+    g.beginFill(color);
+    g.drawRect(0, 0, image.width, image.height);
+    g.endFill();
+    g.blendMode = blend;
+    return g;
+  };
+
+  let makeChannel = (mask1, mask2, f) => {
+    let rt = new Phaser.RenderTexture(
+      game, image.width, image.height, null, null, 1);
+
+    rt.renderXY(makeRect(0x000000, PIXI.blendModes.NORMAL), 0, 0, true);
+    rt.renderXY(image, 0, 0, false);
+    rt.renderXY(makeRect(mask1, PIXI.blendModes.LUMINOSITY), 0, 0, false);
+    rt.renderXY(makeRect(mask1, PIXI.blendModes.MULTIPLY), 0, 0, false);
+    rt.renderXY(makeRect(mask2, PIXI.blendModes.LIGHTEN), 0, 0, false);
+    rt.renderXY(makeRect(mask2, PIXI.blendModes.DIFFERENCE), 0, 0, false);
+
+    let s = new Phaser.Image(game, 0, 0, rt);
+    s.blendMode = PIXI.blendModes.ADD;
+    let rt2 = new Phaser.RenderTexture(
+      game, image.width, image.height, null, null, 1);
+    rt2.renderXY(s, 0, 0, true);
+    s.alpha = 255 / (255 - f) - 1;
+    rt2.renderXY(s, 0, 0, false);
+    return rt2;
+  }
+  let finishChannel = (rt, f) => {
+    rt.renderXY(makeRect(0xFFFFFF, PIXI.blendModes.HUE), 0, 0, false);
+    let s = new Phaser.Image(game, 0, 0, rt);
+    s.blendMode = PIXI.blendModes.ADD;
+    let rt2 = new Phaser.RenderTexture(
+      game, image.width, image.height, null, null, 1);
+    rt2.renderXY(s, 0, 0, true);
+    for (let i = 0; i < Math.floor(255 / f - 1); ++i) {
+      rt2.renderXY(s, 0, 0, false);
+    }
+    s.alpha = (255 - Math.floor(255 / f) * f) / f;
+    rt2.renderXY(s, 0, 0, false);
+    return rt2;
+  }
+
+
+  let rt = new Phaser.RenderTexture(
+    game, image.width, image.height, null, null, 1);
+  rt.renderXY(makeRect(0x000000, PIXI.blendModes.NORMAL), 0, 0, true);
+  rt.renderXY(image, 0, 0, false);
+
+  let red = makeChannel(0xFF0000, 0x4c0000, 76);
+  const redS = new Phaser.Image(game, 0, 0, red);
+  redS.blendMode = PIXI.blendModes.DIFFERENCE;
+  rt.renderXY(redS, 0, 0, false);
+  red = finishChannel(red, 76);
+  let green = makeChannel(0x00FF00, 0x009600, 150);
+  const greenS = new Phaser.Image(game, 0, 0, green);
+  greenS.blendMode = PIXI.blendModes.DIFFERENCE;
+  rt.renderXY(greenS, 0, 0, false);
+  green = finishChannel(green, 150);
+  let blue = makeChannel(0x0000FF, 0x00001c, 28);
+  const blueS = new Phaser.Image(game, 0, 0, blue);
+  blueS.blendMode = PIXI.blendModes.DIFFERENCE;
+  rt.renderXY(blueS, 0, 0, false);
+  blue = finishChannel(blue, 28);
+
+  const bmd = new Phaser.BitmapData(game, null, image.width, image.height);
+  bmd.alphaMask(new Phaser.Image(game, 0, 0, rt), image);
+
+  hslMap[hsl] = {
+    gray: bmd,
+    color: red,
+    ambient: green,
+    special: blue,
+  };
+  console.log(performance.now() - time);
+}
+
 function create() {
   loadingProgress(0, 'map');
 
@@ -218,6 +308,10 @@ function create() {
 
   game.scene.add(game.ui);
   initUI();
+  time = performance.now();
+  for (let i = 0; i < hsl.length; ++i) {
+    processHsl(hsl[i]);
+  }
 
   game.backSound = game.add.sound('back', 0.5, true);
   game.backSound.play();
@@ -232,16 +326,10 @@ function create() {
 
   const preUpdate = game.scene.preUpdate;
   game.scene.preUpdate = () => {
-    global.lmx = global.mx;
-    global.lmy = global.my;
     global.mx = ((game.input.x * game.resF - game.width * 0.5) /
       game.sceneWrap.scale.x - game.scene.x) / game.scaleFactor;
     global.my = ((game.input.y * game.resF - game.height * 0.5) /
       game.sceneWrap.scale.y - game.scene.y) / game.scaleFactor;
-    const dv = new vec3(mx - lmx, my - lmy);
-    global.mouseD = global.mouseD || dv;
-    mouseD.x += (dv.x - mouseD.x) * 0.8;
-    mouseD.y += (dv.y - mouseD.y) * 0.8;
     global.dt = game.time.elapsed * 0.001;
     preUpdate.call(game.scene);
   }
@@ -308,26 +396,26 @@ function createGame() {
         game.load.image('light', 'assets/light.png');
         game.load.image('ground-mask', 'assets/ground-mask.png');
 
-        game.load.image('shield', 'assets/shield.png');
-        game.load.image('sword', 'assets/sword.png');
-        game.load.image('axe', 'assets/axe.png');
+        loadHsl('shield', 'assets/shield.png');
+        loadHsl('sword', 'assets/sword.png');
+        loadHsl('axe', 'assets/axe.png');
 
-        game.load.image('player', 'assets/player.png');
-        game.load.image('player-back', 'assets/player-back.png');
+        loadHsl('player', 'assets/player.png');
+        loadHsl('player-back', 'assets/player-back.png');
 
-        game.load.image('stage1__mob1', 'assets/stage1__mob1.png');
-        game.load.image('stage1__mob1--back',
+        loadHsl('stage1__mob1--back',
           'assets/stage1__mob1--back.png');
-        game.load.image('stage1__mob1--hit',
+        loadHsl('stage1__mob1--hit',
           'assets/stage1__mob1--hit.png');
-        game.load.image('stage1__mob1--dead',
+        loadHsl('stage1__mob1--dead',
           'assets/stage1__mob1--dead.png');
-        game.load.image('stage1__mob1--foot',
+        loadHsl('stage1__mob1--foot',
           'assets/stage1__mob1--foot.png');
-        game.load.image('stage1__mob1--hand',
+        loadHsl('stage1__mob1--hand',
           'assets/stage1__mob1--hand.png');
 
-        game.load.image('checkpoint', 'assets/checkpoint.png');
+        loadHsl('checkpoint', 'assets/checkpoint.png');
+        loadHsl('stage1__mob1', 'assets/stage1__mob1.png');
         game.load.image('item__heal__regular',
           'assets/item__heal__regular.png');
         game.load.image('item__heal__stone', 'assets/item__heal__stone.png');
@@ -640,6 +728,7 @@ function createGame() {
             let bmd = game.make.bitmapData(
               WALL_SIZE * AF * scaleF, WALL_SIZE * AF * scaleF);
             bmd.alphaMask(v, maskView);
+
             return new Phaser.Image(game, 0, 0, bmd);
           }
           const wholeView = [];

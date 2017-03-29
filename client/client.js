@@ -24,8 +24,6 @@ export class Client extends global.Client {
       ['d', getCookie('key__d') || Phaser.Keyboard.D],
     ];
 
-    game.input.mouse.requestPointerLock();
-
     const keysState = {};
     global.keysState = keysState;
     let look = new vec3();
@@ -120,6 +118,13 @@ export class Client extends global.Client {
       });
 
     game.input.onDown.add(() => {
+      global.lmx = global.mx;
+      global.lmy = global.my;
+    });
+    game.input.onUp.add(() => {
+      if (!global.lmx) {
+        return;
+      }
       if (global.mouseCapture) {
         global.mouseCapture();
       }
@@ -136,15 +141,16 @@ export class Client extends global.Client {
         return;
       }
       let type = 0;
-      const m = new vec3(mx, my).subtract(client.player.pos);
+      const m = (new vec3(lmx, lmy)).subtract(client.player.pos);
+      const mouseD = (new vec3(mx, my)).subtract(new vec3(lmx, lmy));
       let a = m.toAngle() - mouseD.toAngle();
       if (a > 180) {
-        a = 360 - a;
+        a -= 360;
       }
       if (a < -180) {
-        a = -360 - a;
+        a += 360;
       }
-      if (mouseD.length() < 10) {
+      if (mouseD.length() < 40) {
         type = 0;
       } else {
         if (Math.abs(a) < 45) {
@@ -156,11 +162,13 @@ export class Client extends global.Client {
         if (a < -45) {
           type = 3;
         }
+        if (Math.abs(a) > 135) {
+          type = 4;
+        }
       }
-      console.log(type);
       this.emit('mouseDown', {
-        'x': mx,
-        'y': my,
+        'x': lmx,
+        'y': lmy,
         'type': type,
       });
     });

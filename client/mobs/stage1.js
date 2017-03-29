@@ -24,14 +24,21 @@ export const weapon__stage1__mob1__rightHand__default = new class {
     this.onStun = mobs__hands__family.rightHand.onStun;
   }
   createView(isHost, kind) {
-    const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--hand');
-    image.scale.x = 1;
-    image.scale.y = 1;
-    image.anchor.x = 0.2;
-    image.anchor.y = 0.8;
-    image.smoothed = true;
-    image.isHSL = true;
-    return image;
+    const prepare = (image) => {
+      image.anchor.x = 0.2;
+      image.anchor.y = 0.8;
+      image.smoothed = true;
+    }
+
+    const view = makeHSL(hslMap['stage1__mob1--hand']);
+    view.color.tint = 0x00aaff;
+    view.ambient.tint = 0x00aaff;
+    view.special.tint = 0x00aaff;
+    prepare(view.gray);
+    prepare(view.color);
+    prepare(view.ambient);
+    prepare(view.special);
+    return view;
   }
 }
 export const weapon__stage1__mob1__leftHand__default = new class {
@@ -40,14 +47,22 @@ export const weapon__stage1__mob1__leftHand__default = new class {
     this.onStun = mobs__hands__family.leftHand.onStun;
   }
   createView(isHost, kind) {
-    const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--hand');
-    image.scale.x = -1;
-    image.scale.y = 1;
-    image.anchor.x = 0.2;
-    image.anchor.y = 0.8;
-    image.smoothed = true;
-    image.isHSL = true;
-    return image;
+    const prepare = (image) => {
+      image.scale.x = -1;
+      image.anchor.x = 0.2;
+      image.anchor.y = 0.8;
+      image.smoothed = true;
+    }
+
+    const view = makeHSL(hslMap['stage1__mob1--hand']);
+    view.color.tint = 0x00aaff;
+    view.ambient.tint = 0x00aaff;
+    view.special.tint = 0x00aaff;
+    prepare(view.gray);
+    prepare(view.color);
+    prepare(view.ambient);
+    prepare(view.special);
+    return view;
   }
 }
 export const stage1__mob1a = {
@@ -77,14 +92,21 @@ export const weapon__stage1__mob1a__rightHand__default = new class {
     this.onStun = mobs__hands__family.rightHand.onStun;
   }
   createView(isHost, kind) {
-    const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--hand');
-    image.scale.x = 1;
-    image.scale.y = 1;
-    image.anchor.x = 0.2;
-    image.anchor.y = 0.8;
-    image.smoothed = true;
-    image.tint = 0x449933;
-    return image;
+    const prepare = (image) => {
+      image.anchor.x = 0.2;
+      image.anchor.y = 0.8;
+      image.smoothed = true;
+    }
+
+    const view = makeHSL(hslMap['stage1__mob1--hand']);
+    view.color.tint = 0x00aaff;
+    view.ambient.tint = 0x00aaff;
+    view.special.tint = 0x00aaff;
+    prepare(view.gray);
+    prepare(view.color);
+    prepare(view.ambient);
+    prepare(view.special);
+    return view;
   }
 }
 export const weapon__stage1__mob1a__leftHand__default = new class {
@@ -93,14 +115,22 @@ export const weapon__stage1__mob1a__leftHand__default = new class {
     this.onStun = mobs__hands__family.leftHand.onStun;
   }
   createView(isHost, kind) {
-    const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--hand');
-    image.scale.x = -1;
-    image.scale.y = 1;
-    image.anchor.x = 0.2;
-    image.anchor.y = 0.8;
-    image.smoothed = true;
-    image.tint = 0x449933;
-    return image;
+    const prepare = (image) => {
+      image.scale.x = -1;
+      image.anchor.x = 0.2;
+      image.anchor.y = 0.8;
+      image.smoothed = true;
+    }
+
+    const view = makeHSL(hslMap['stage1__mob1--hand']);
+    view.color.tint = 0x00aaff;
+    view.ambient.tint = 0x00aaff;
+    view.special.tint = 0x00aaff;
+    prepare(view.gray);
+    prepare(view.color);
+    prepare(view.ambient);
+    prepare(view.special);
+    return view;
   }
 }
 export const stage1__mob1b = {
@@ -130,14 +160,21 @@ export const weapon__stage1__mob1b__rightHand__default = new class {
     this.onStun = mobs__hands__family.rightHand.onStun;
   }
   createView(isHost, kind) {
-    const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--hand');
-    image.scale.x = 1;
-    image.scale.y = 1;
-    image.anchor.x = 0.2;
-    image.anchor.y = 0.8;
-    image.smoothed = true;
-    image.tint = 0x444433;
-    return image;
+    const prepare = (image) => {
+      image.anchor.x = 0.2;
+      image.anchor.y = 0.8;
+      image.smoothed = true;
+    }
+
+    const view = makeHSL(hslMap['stage1__mob1--hand']);
+    view.color.tint = 0x00aaff;
+    view.ambient.tint = 0x00aaff;
+    view.special.tint = 0x00aaff;
+    prepare(view.gray);
+    prepare(view.color);
+    prepare(view.ambient);
+    prepare(view.special);
+    return view;
   }
 }
 export const weapon__stage1__mob1b__leftHand__default = new class {
@@ -146,14 +183,22 @@ export const weapon__stage1__mob1b__leftHand__default = new class {
     this.onStun = mobs__hands__family.leftHand.onStun;
   }
   createView(isHost, kind) {
-    const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--hand');
-    image.scale.x = -1;
-    image.scale.y = 1;
-    image.anchor.x = 0.2;
-    image.anchor.y = 0.8;
-    image.smoothed = true;
-    image.tint = 0x444433;
-    return image;
+    const prepare = (image) => {
+      image.scale.x = -1;
+      image.anchor.x = 0.2;
+      image.anchor.y = 0.8;
+      image.smoothed = true;
+    }
+
+    const view = makeHSL(hslMap['stage1__mob1--hand']);
+    view.color.tint = 0x00aaff;
+    view.ambient.tint = 0x00aaff;
+    view.special.tint = 0x00aaff;
+    prepare(view.gray);
+    prepare(view.color);
+    prepare(view.ambient);
+    prepare(view.special);
+    return view;
   }
 }
 export const stage1__mob1c = {
@@ -183,14 +228,21 @@ export const weapon__stage1__mob1c__rightHand__default = new class {
     this.onStun = mobs__hands__family.rightHand.onStun;
   }
   createView(isHost, kind) {
-    const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--hand');
-    image.scale.x = 1;
-    image.scale.y = 1;
-    image.anchor.x = 0.2;
-    image.anchor.y = 0.8;
-    image.smoothed = true;
-    image.tint = 0x334466;
-    return image;
+    const prepare = (image) => {
+      image.anchor.x = 0.2;
+      image.anchor.y = 0.8;
+      image.smoothed = true;
+    }
+
+    const view = makeHSL(hslMap['stage1__mob1--hand']);
+    view.color.tint = 0x00aaff;
+    view.ambient.tint = 0x00aaff;
+    view.special.tint = 0x00aaff;
+    prepare(view.gray);
+    prepare(view.color);
+    prepare(view.ambient);
+    prepare(view.special);
+    return view;
   }
 }
 export const weapon__stage1__mob1c__leftHand__default = new class {
@@ -199,14 +251,22 @@ export const weapon__stage1__mob1c__leftHand__default = new class {
     this.onStun = mobs__hands__family.leftHand.onStun;
   }
   createView(isHost, kind) {
-    const image = new Phaser.Image(game, 0, 0, 'stage1__mob1--hand');
-    image.scale.x = -1;
-    image.scale.y = 1;
-    image.anchor.x = 0.2;
-    image.anchor.y = 0.8;
-    image.smoothed = true;
-    image.tint = 0x334466;
-    return image;
+    const prepare = (image) => {
+      image.scale.x = -1;
+      image.anchor.x = 0.2;
+      image.anchor.y = 0.8;
+      image.smoothed = true;
+    }
+
+    const view = makeHSL(hslMap['stage1__mob1--hand']);
+    view.color.tint = 0x00aaff;
+    view.ambient.tint = 0x00aaff;
+    view.special.tint = 0x00aaff;
+    prepare(view.gray);
+    prepare(view.color);
+    prepare(view.ambient);
+    prepare(view.special);
+    return view;
   }
 }
 

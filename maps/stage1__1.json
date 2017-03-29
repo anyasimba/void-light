@@ -97,11 +97,11 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":1312,
-                 "y":3712
+                 "x":1248,
+                 "y":3392
                 }, 
                 {
-                 "height":1280,
+                 "height":704,
                  "id":94,
                  "name":"BossArea",
                  "properties":
@@ -115,8 +115,8 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":1344,
-                 "x":640,
+                 "width":608,
+                 "x":960,
                  "y":3040
                 }, 
                 {
@@ -952,17 +952,6 @@
                  "y":2336
                 }, 
                 {
-                 "height":32,
-                 "id":282,
-                 "name":"Door",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":96,
-                 "x":1280,
-                 "y":4384
-                }, 
-                {
                  "gid":39,
                  "height":32,
                  "id":283,
@@ -1562,6 +1551,30 @@
                  "width":160,
                  "x":736,
                  "y":5024
+                }, 
+                {
+                 "gid":21,
+                 "height":32,
+                 "id":357,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":2144,
+                 "y":1120
+                }, 
+                {
+                 "gid":22,
+                 "height":32,
+                 "id":358,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":2528,
+                 "y":960
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1570,7 +1583,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":355,
+ "nextobjectid":361,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tileheight":32,
