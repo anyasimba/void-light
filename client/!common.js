@@ -179,16 +179,14 @@ function createLayer() {
 }
 
 let hsl = [];
-let time;
 export let hslMap = {};
 
-function loadHsl(title, path) {
+export function loadHsl(title, path) {
   game.load.image(title, path);
   hsl.push(title);
 }
 
 function processHsl(hsl) {
-  console.log(hsl);
   let image = new Phaser.Image(game, 0, 0, hsl);
   const makeRect = (color, blend) => {
     let g = new Phaser.Graphics(game, 0, 0);
@@ -265,7 +263,6 @@ function processHsl(hsl) {
     ambient: green,
     special: blue,
   };
-  console.log(performance.now() - time);
 }
 
 function create() {
@@ -308,7 +305,6 @@ function create() {
 
   game.scene.add(game.ui);
   initUI();
-  time = performance.now();
   for (let i = 0; i < hsl.length; ++i) {
     processHsl(hsl[i]);
   }
@@ -393,89 +389,15 @@ function createGame() {
         $('.loading-wrap').css('display', 'block');
         global.lightAlpha = 0.1;
 
-        game.load.image('light', 'assets/light.png');
-        game.load.image('ground-mask', 'assets/ground-mask.png');
-
-        loadHsl('shield', 'assets/shield.png');
-        loadHsl('sword', 'assets/sword.png');
-        loadHsl('axe', 'assets/axe.png');
-
-        loadHsl('player', 'assets/player.png');
-        loadHsl('player-back', 'assets/player-back.png');
-
-        loadHsl('stage1__mob1--back',
-          'assets/stage1__mob1--back.png');
-        loadHsl('stage1__mob1--hit',
-          'assets/stage1__mob1--hit.png');
-        loadHsl('stage1__mob1--dead',
-          'assets/stage1__mob1--dead.png');
-        loadHsl('stage1__mob1--foot',
-          'assets/stage1__mob1--foot.png');
-        loadHsl('stage1__mob1--hand',
-          'assets/stage1__mob1--hand.png');
+        loadAudio();
+        loadPlayer();
+        loadWeapon();
+        loadStage1();
+        loadStage1__mobs();
 
         loadHsl('checkpoint', 'assets/checkpoint.png');
-        loadHsl('stage1__mob1', 'assets/stage1__mob1.png');
-        game.load.image('item__heal__regular',
-          'assets/item__heal__regular.png');
-        game.load.image('item__heal__stone', 'assets/item__heal__stone.png');
-        game.load.image('item__stamina__stone',
-          'assets/item__stamina__stone.png');
-
-        game.load.image('ground', 'assets/ground.jpg');
-        game.load.image('bricks', 'assets/bricks.jpg');
-        game.load.image('stone', 'assets/stone.png');
-        game.load.image('ice', 'assets/ice.png');
-        game.load.image('dirt', 'assets/dirt.png');
-        game.load.image('whole', 'assets/whole.png');
-        game.load.image('lava', 'assets/lava.png');
-        game.load.image('door', 'assets/door.png');
-
-        game.load.audio('back',
-          'assets/back__doxent_-_Forgotten_Land.ogg');
-        game.load.audio('bossBack',
-          'assets/bossBack__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.ogg'
-        );
-
-        game.load.audio('door',
-          'assets/door__233389__laiaoreka__automatic-door.ogg');
-
-        game.load.audio('boss',
-          'assets/boss__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.ogg');
-        game.load.audio('hit',
-          'assets/hit__86003__nextmaking__hitting-body-with-blood.ogg'
-        );
-        game.load.audio('hit1',
-          'assets/hit1__351754__urupin__whistle-of-a-twig-in-air.ogg');
-        game.load.audio('hit2',
-          'assets/hit2__351754__urupin__whistle-of-a-twig-in-air.ogg');
-        game.load.audio('hit3',
-          'assets/hit3__351754__urupin__whistle-of-a-twig-in-air.ogg');
-        game.load.audio('hit4',
-          'assets/hit4__351754__urupin__whistle-of-a-twig-in-air.ogg');
-        game.load.audio('hit5',
-          'assets/hit5__351754__urupin__whistle-of-a-twig-in-air.ogg');
-
-        game.load.audio('block',
-          'assets/block__326845__johnbuhr__sword-clash-25.ogg');
-
-        game.load.audio('jump',
-          'assets/jump__260188__splicesound__young-boy-grunts-for-body-impact.ogg'
-        );
-        game.load.audio('mobJump',
-          'assets/mob1Jump__181068__lolamadeus__zombie-vocals-grunts.ogg'
-        );
-
-        game.load.audio('mob1Die',
-          'assets/mob1Die__76964__michel88__grunt2.ogg');
-        game.load.audio('youDied',
-          'assets/youDied__onlymeith_-_Toward_Isolation.ogg');
-
-        game.load.audio('bossArea',
-          'assets/bossArea__377887__debsound__monster-072.ogg');
-        game.load.audio('bossDead',
-          'assets/bossDead__56304__syna-max__monster-death-scream.ogg'
-        );
+        game.load.image('light', 'assets/light.png');
+        game.load.image('ground-mask', 'assets/ground-mask.png');
 
         game.stage.backgroundColor = 0x101010;
 

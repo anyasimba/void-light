@@ -60,9 +60,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       hitView.special.tint = 0xFF3300;
 
       const view = makeHSL(hslMap[opts.VIEW]);
-      view.color.tint = 0x00aaff;
-      view.ambient.tint = 0x00aaff;
-      view.special.tint = 0x00aaff;
 
       images = [
         view,
@@ -111,7 +108,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
     return [images, orient];
   }
-  static createDeadView(isHost, kind, name, size, orient, tint, H, S, RS) {
+  static createDeadView(isHost, kind, name, size, orient, tint) {
     let images;
     let scale = 0.25;
     if (kind === 'mob') {
@@ -119,13 +116,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       scale = opts.SCALE || 1;
 
       const view = makeHSL(hslMap[opts.VIEW]);
-      view.color.tint = 0x00aaff;
-      view.ambient.tint = 0x00aaff;
-      view.special.tint = 0x00aaff;
+      view.color.tint = tint;
+      view.ambient.tint = tint;
+      view.special.tint = tint;
       const deadView = makeHSL(hslMap[opts.DEAD_VIEW || opts.VIEW]);
-      deadView.color.tint = 0x00aaff;
-      deadView.ambient.tint = 0x00aaff;
-      deadView.special.tint = 0x00aaff;
+      deadView.color.tint = tint;
+      deadView.ambient.tint = tint;
+      deadView.special.tint = tint;
 
       images = [
         view,
@@ -184,9 +181,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         image.smoothed = true;
       }; {
         const view = makeHSL(hslMap[opts.LEFT_FOOT_VIEW]);
-        view.color.tint = 0x00aaff;
-        view.ambient.tint = 0x00aaff;
-        view.special.tint = 0x00aaff;
         prepare(view.gray);
         prepare(view.color);
         prepare(view.ambient);
@@ -194,9 +188,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         views.push(view);
       } {
         const view = makeHSL(hslMap[opts.RIGHT_FOOT_VIEW]);
-        view.color.tint = 0x00aaff;
-        view.ambient.tint = 0x00aaff;
-        view.special.tint = 0x00aaff;
         prepare(view.gray);
         prepare(view.color);
         prepare(view.ambient);
@@ -315,7 +306,14 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       rgb.r = Math.floor(rgb.r * this.color.r / 255);
       rgb.g = Math.floor(rgb.g * this.color.g / 255);
       rgb.b = Math.floor(rgb.b * this.color.b / 255);
-      v.tint = RGBtoHEX(rgb.r, rgb.g, rgb.b);
+      let hex = RGBtoHEX(rgb.r, rgb.g, rgb.b);
+      if (v.isHSL) {
+        v.color.tint = hex;
+        v.ambient.tint = hex;
+        v.special.tint = hex;
+      } else {
+        v.tint = hex;
+      }
     }
 
     if (this.id === client.playerID) {
@@ -665,9 +663,20 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     const g = new Phaser.Graphics(game, this.pos.x, this.pos.y);
     g.blendMode = PIXI.blendModes.ADD;
 
-
-    g.lineStyle(20, 0x444444, 0.05);
-    g.beginFill(0x444444, 0.2);
+    let color = 0x444444;
+    let a = 0.2;
+    if (this.hitType === 0) {
+      color = 0x405045;
+    } else if (this.hitType === 1) {
+      color = 0x505040;
+    } else if (this.hitType === 2 || this.hitType === 3) {
+      color = 0x404550;
+    } else if (this.hitType === 4) {
+      color = 0x604040;
+      a = 0.4;
+    }
+    g.lineStyle(20, color, a * 0.25);
+    g.beginFill(color, a);
 
     if (opts.hand === 2) {
       opts.d -= this.weapon2.pos.length();

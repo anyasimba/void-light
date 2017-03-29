@@ -70,34 +70,34 @@ Object.assign(GameLevelZone.prototype, {
       other.hitType = 0;
     }
     if (source.hitType === 0 &&
-      other.hitType !== 0) {
+      other.hitType !== 2 &&
+      other.hitType !== 3 &&
+      other.hitType !== 4) {
 
       return;
     }
     if (source.hitType === 1 &&
       other.hitType !== 0 &&
-      other.hitType !== 2 &&
-      other.hitType !== 3) {
-
-      return;
-    }
-    if (source.hitType === 2 &&
-      other.hitType !== 3 &&
-      other.hitType !== 1) {
-
-      return;
-    }
-    if (source.hitType === 3 &&
-      other.hitType !== 2 &&
-      other.hitType !== 1) {
-
-      return;
-    }
-    if (source.hitType === 4 &&
       other.hitType !== 4) {
 
       return;
     }
+    if (source.hitType === 2 &&
+      other.hitType !== 1 &&
+      other.hitType !== 4) {
+
+      return;
+    }
+    if (source.hitType === 3 &&
+      other.hitType !== 1 &&
+      other.hitType !== 4) {
+
+      return;
+    }
+    if (source.hitType === 4) {
+      return;
+    }
+
     other.breakHit(true);
     if (other.inBlock) {
       other.stun(source.weapon.staminaTime * 2 + 0.1, 0.1);

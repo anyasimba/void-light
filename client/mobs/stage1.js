@@ -13,7 +13,8 @@ export const stage1__mob1 = {
 
   H: 0.5,
 
-  LIGHT: 0xFF44FF,
+  TINT: 0x4411f2,
+  LIGHT: 0x4411f2,
   LIGHT_I: 1,
   LIGHT_A: 1,
   LIGHT_SCALE: 12,
@@ -31,9 +32,9 @@ export const weapon__stage1__mob1__rightHand__default = new class {
     }
 
     const view = makeHSL(hslMap['stage1__mob1--hand']);
-    view.color.tint = 0x00aaff;
-    view.ambient.tint = 0x00aaff;
-    view.special.tint = 0x00aaff;
+    view.color.tint = 0x4411f2;
+    view.ambient.tint = 0x4411f2;
+    view.special.tint = 0x4411f2;
     prepare(view.gray);
     prepare(view.color);
     prepare(view.ambient);
@@ -55,9 +56,9 @@ export const weapon__stage1__mob1__leftHand__default = new class {
     }
 
     const view = makeHSL(hslMap['stage1__mob1--hand']);
-    view.color.tint = 0x00aaff;
-    view.ambient.tint = 0x00aaff;
-    view.special.tint = 0x00aaff;
+    view.color.tint = 0x4411f2;
+    view.ambient.tint = 0x4411f2;
+    view.special.tint = 0x4411f2;
     prepare(view.gray);
     prepare(view.color);
     prepare(view.ambient);
@@ -80,8 +81,8 @@ export const stage1__mob1a = {
 
   H: 0.5,
 
-  TINT: 0x449933,
-  LIGHT: 0x888888,
+  TINT: 0x990000,
+  LIGHT: 0x990000,
   LIGHT_I: 1,
   LIGHT_A: 1,
   LIGHT_SCALE: 8,
@@ -99,9 +100,9 @@ export const weapon__stage1__mob1a__rightHand__default = new class {
     }
 
     const view = makeHSL(hslMap['stage1__mob1--hand']);
-    view.color.tint = 0x00aaff;
-    view.ambient.tint = 0x00aaff;
-    view.special.tint = 0x00aaff;
+    view.color.tint = 0x990000;
+    view.ambient.tint = 0x990000;
+    view.special.tint = 0x990000;
     prepare(view.gray);
     prepare(view.color);
     prepare(view.ambient);
@@ -123,9 +124,9 @@ export const weapon__stage1__mob1a__leftHand__default = new class {
     }
 
     const view = makeHSL(hslMap['stage1__mob1--hand']);
-    view.color.tint = 0x00aaff;
-    view.ambient.tint = 0x00aaff;
-    view.special.tint = 0x00aaff;
+    view.color.tint = 0x990000;
+    view.ambient.tint = 0x990000;
+    view.special.tint = 0x990000;
     prepare(view.gray);
     prepare(view.color);
     prepare(view.ambient);
@@ -148,8 +149,8 @@ export const stage1__mob1b = {
 
   H: 0.5,
 
-  TINT: 0x444433,
-  LIGHT: 0x888888,
+  TINT: 0x18006a,
+  LIGHT: 0x18006a,
   LIGHT_I: 1,
   LIGHT_A: 1,
   LIGHT_SCALE: 8,
@@ -167,9 +168,9 @@ export const weapon__stage1__mob1b__rightHand__default = new class {
     }
 
     const view = makeHSL(hslMap['stage1__mob1--hand']);
-    view.color.tint = 0x00aaff;
-    view.ambient.tint = 0x00aaff;
-    view.special.tint = 0x00aaff;
+    view.color.tint = 0x18006a;
+    view.ambient.tint = 0x18006a;
+    view.special.tint = 0x18006a;
     prepare(view.gray);
     prepare(view.color);
     prepare(view.ambient);
@@ -191,9 +192,9 @@ export const weapon__stage1__mob1b__leftHand__default = new class {
     }
 
     const view = makeHSL(hslMap['stage1__mob1--hand']);
-    view.color.tint = 0x00aaff;
-    view.ambient.tint = 0x00aaff;
-    view.special.tint = 0x00aaff;
+    view.color.tint = 0x18006a;
+    view.ambient.tint = 0x18006a;
+    view.special.tint = 0x18006a;
     prepare(view.gray);
     prepare(view.color);
     prepare(view.ambient);
@@ -216,8 +217,8 @@ export const stage1__mob1c = {
 
   H: 0.5,
 
-  TINT: 0x334466,
-  LIGHT: 0x888888,
+  TINT: 0x3366ff,
+  LIGHT: 0x3366ff,
   LIGHT_I: 1,
   LIGHT_A: 1,
   LIGHT_SCALE: 8,
@@ -235,9 +236,9 @@ export const weapon__stage1__mob1c__rightHand__default = new class {
     }
 
     const view = makeHSL(hslMap['stage1__mob1--hand']);
-    view.color.tint = 0x00aaff;
-    view.ambient.tint = 0x00aaff;
-    view.special.tint = 0x00aaff;
+    view.color.tint = 0x3366ff;
+    view.ambient.tint = 0x3366ff;
+    view.special.tint = 0x3366ff;
     prepare(view.gray);
     prepare(view.color);
     prepare(view.ambient);
@@ -259,9 +260,9 @@ export const weapon__stage1__mob1c__leftHand__default = new class {
     }
 
     const view = makeHSL(hslMap['stage1__mob1--hand']);
-    view.color.tint = 0x00aaff;
-    view.ambient.tint = 0x00aaff;
-    view.special.tint = 0x00aaff;
+    view.color.tint = 0x3366ff;
+    view.ambient.tint = 0x3366ff;
+    view.special.tint = 0x3366ff;
     prepare(view.gray);
     prepare(view.color);
     prepare(view.ambient);
