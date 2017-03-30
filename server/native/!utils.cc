@@ -21,10 +21,11 @@ void remove_first(Collection *coll, T value) {
 template <typename Collection, typename Predicate>
 void for_continue_if(Collection *coll, Predicate pred) {
   for (size_t i = 0; i < coll->size(); ++i) {
-    bool stop = !pred((*coll)[i], [&] () {
+    auto remove = [&] () {
       coll->erase(coll->begin() + i);
       --i;
-    });
+    };
+    bool stop = !pred((*coll)[i], remove);
     if (stop) {
       break;
     }
