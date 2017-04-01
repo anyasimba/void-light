@@ -1,10 +1,7 @@
-export function ia_sword__doHit(m) {
+export function ia_dubina__doHit(m) {
   const moveset = {
     0: function () {
       switch (this.curHitType) {
-        case 1:
-          moveset.forward[this.curHitStage].call(this, true);
-          break;
         case 2:
           moveset.side[this.curHitStage].call(this, true);
           break;
@@ -25,7 +22,9 @@ export function ia_sword__doHit(m) {
       }
       switch (this.curHitType) {
         case 1:
-          moveset.forward[this.curHitStage].call(this);
+          this.curHitType = 0;
+          this.hitType = 0;
+          moveset.top[this.curHitStage].call(this);
           break;
         case 2:
           moveset.side[this.curHitStage].call(this);
@@ -49,9 +48,9 @@ export function ia_sword__doHit(m) {
     },
   };
   moveset.backstep = ia_backstep(
-    m[3][0], m[3][1], m[3][2],
-    m[3][3],
-    m[3][4], 0, 260, 40, 70, 0, -50, 0,
+    m[2][0], m[2][1], m[2][2],
+    m[2][3],
+    m[2][4], 0, 250, 40, 70, 0, -50, 0,
     10, -10);
   moveset.top = [];
   moveset.forward = [];
@@ -60,33 +59,27 @@ export function ia_sword__doHit(m) {
     const j = i + 1;
     moveset.top[j] = ia_top(m[0][i][0], m[0][i][1], m[0][i][2],
       m[0][i][3],
-      m[0][i][4], -5, 260, 50, 75, 50, 170 - i * 10, 0,
-      30 - i * 5, -30 + i * 5);
-    moveset.forward[j] = ia_forward(m[1][i][0], m[1][i][1], m[1][i][2],
-      m[1][i][3],
-      m[1][i][4], 0, 260, 10, 50, 0, 70 - i * 10, 0,
+      m[0][i][4],
+      0, 240, 50, 75, 50, 170 - i * 10, 0,
       30 - i * 5, -30 + i * 5);
     moveset.side[j] = ia_side(
-      m[2][i][0], m[2][i][1], m[2][i][2],
-      m[2][i][3],
-      m[2][i][4], -20, 275,
+      m[1][i][0], m[1][i][1], m[1][i][2],
+      m[1][i][3],
+      m[1][i][4], 0, 260,
       70, 0, 0, 0,
       30 + i * 5, -30 - i * 5);
   }
   for (let i = 0; i < 4; ++i) {
     const j = i + 5;
-    moveset.top[j] = ia_top(m[4][i][0], m[4][i][1], m[4][i][2],
-      m[4][i][3],
-      m[4][i][4], -5, 260, 50, 75, 50, 170 - i * 10, 0,
-      30 - i * 5, -30 + i * 5);
-    moveset.forward[j] = ia_forward(m[5][i][0], m[5][i][1], m[5][i][2],
-      m[5][i][3],
-      m[5][i][4], 0, 260, 10, 50, 0, 70 - i * 10, 0,
+    moveset.top[j] = ia_top(m[3][i][0], m[3][i][1], m[3][i][2],
+      m[3][i][3],
+      m[3][i][4],
+      0, 240, 50, 75, 50, 170 - i * 10, 0,
       30 - i * 5, -30 + i * 5);
     moveset.side[j] = ia_side(
-      m[6][i][0], m[6][i][1], m[6][i][2],
-      m[6][i][3],
-      m[6][i][4], -20, 275,
+      m[4][i][0], m[4][i][1], m[4][i][2],
+      m[4][i][3],
+      m[4][i][4], 0, 260,
       70, 0, 0, 0,
       30 + i * 5, -30 - i * 5);
   }

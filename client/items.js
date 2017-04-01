@@ -51,13 +51,13 @@ export const client__item__sword = {
   LANG_RU: 'Меч',
 
   createView() {
-    const image = new Phaser.Image(game, 0, 0, 'sword');
-    image.scale.x = 0.8;
-    image.scale.y = 1.2;
+    const image = weapon__sword__default.createView();
+    image.scale.set(0.4);
+    image.gray.anchor.set(0.5);
+    image.color.anchor.set(0.5);
+    image.ambient.anchor.set(0.5);
+    image.special.anchor.set(0.5);
     image.angle = 45;
-    image.anchor.x = 0.5;
-    image.anchor.y = 0.5;
-    image.smoothed = true;
     return image;
   },
 };
@@ -65,14 +65,13 @@ export const client__item__big__sword = {
   LANG_RU: 'Двуручный Меч',
 
   createView() {
-    const image = new Phaser.Image(game, 0, 0, 'sword');
-    image.scale.x = 0.8 * 1.5;
-    image.scale.y = 1.2 * 1.5;
+    const image = weapon__bigsword__default.createView();
+    image.scale.set(0.5);
+    image.gray.anchor.set(0.5);
+    image.color.anchor.set(0.5);
+    image.ambient.anchor.set(0.5);
+    image.special.anchor.set(0.5);
     image.angle = 45;
-    image.tint = 0x777755;
-    image.anchor.x = 0.5;
-    image.anchor.y = 0.5;
-    image.smoothed = true;
     return image;
   },
 };
@@ -80,13 +79,111 @@ export const client__item__axe = {
   LANG_RU: 'Топор',
 
   createView() {
-    const image = new Phaser.Image(game, 0, 0, 'axe');
-    image.scale.x = 0.8;
-    image.scale.y = 1.2;
+    const image = weapon__axe__default.createView();
+    image.scale.set(0.4);
+    image.gray.anchor.set(0.5);
+    image.color.anchor.set(0.5);
+    image.ambient.anchor.set(0.5);
+    image.special.anchor.set(0.5);
     image.angle = 45;
-    image.anchor.x = 0.5;
-    image.anchor.y = 0.5;
-    image.smoothed = true;
+    return image;
+  },
+};
+export const client__item__bigaxe = {
+  LANG_RU: 'Алебарда',
+
+  createView() {
+    const image = weapon__axe__default.createView();
+    image.scale.set(0.5);
+    image.gray.anchor.set(0.5);
+    image.color.anchor.set(0.5);
+    image.ambient.anchor.set(0.5);
+    image.special.anchor.set(0.5);
+    image.angle = 45;
+    return image;
+  },
+};
+export const client__item__kopie = {
+  LANG_RU: 'Копьё',
+
+  createView() {
+    const image = weapon__kopie__default.createView();
+    image.scale.set(0.5);
+    image.gray.anchor.set(0.5);
+    image.color.anchor.set(0.5);
+    image.ambient.anchor.set(0.5);
+    image.special.anchor.set(0.5);
+    image.angle = 45;
+    return image;
+  },
+};
+export const client__item__molot = {
+  LANG_RU: 'Молот',
+
+  createView() {
+    const image = weapon__molot__default.createView();
+    image.scale.set(0.4);
+    image.gray.anchor.set(0.5);
+    image.color.anchor.set(0.5);
+    image.ambient.anchor.set(0.5);
+    image.special.anchor.set(0.5);
+    image.angle = 45;
+    return image;
+  },
+};
+export const client__item__bigmolot = {
+  LANG_RU: 'Булава',
+
+  createView() {
+    const image = weapon__bigmolot__default.createView();
+    image.scale.set(0.5);
+    image.gray.anchor.set(0.5);
+    image.color.anchor.set(0.5);
+    image.ambient.anchor.set(0.5);
+    image.special.anchor.set(0.5);
+    image.angle = 45;
+    return image;
+  },
+};
+export const client__item__dubina = {
+  LANG_RU: 'Лапа великана',
+
+  createView() {
+    const image = weapon__dubina__default.createView();
+    image.scale.set(0.4);
+    image.gray.anchor.set(0.5);
+    image.color.anchor.set(0.5);
+    image.ambient.anchor.set(0.5);
+    image.special.anchor.set(0.5);
+    image.angle = 45;
+    return image;
+  },
+};
+export const client__item__bigdubina = {
+  LANG_RU: 'Лапа гиганта',
+
+  createView() {
+    const image = weapon__bigdubina__default.createView();
+    image.scale.set(0.5);
+    image.gray.anchor.set(0.5);
+    image.color.anchor.set(0.5);
+    image.ambient.anchor.set(0.5);
+    image.special.anchor.set(0.5);
+    image.angle = 45;
+    return image;
+  },
+};
+export const client__item__kinjal = {
+  LANG_RU: 'Кинжал',
+
+  createView() {
+    const image = weapon__kinjal__default.createView();
+    image.scale.set(0.4);
+    image.gray.anchor.set(0.5);
+    image.color.anchor.set(0.5);
+    image.ambient.anchor.set(0.5);
+    image.special.anchor.set(0.5);
+    image.angle = 45;
     return image;
   },
 };
@@ -94,13 +191,13 @@ export const client__item__shield = {
   LANG_RU: 'Щит',
 
   createView() {
-    const image = new Phaser.Image(game, 0, 0, 'shield');
-    image.scale.x = 2;
-    image.scale.y = 2;
+    const image = shield__default__default.createView();
+    image.scale.set(0.8);
+    image.gray.anchor.set(0.5);
+    image.color.anchor.set(0.5);
+    image.ambient.anchor.set(0.5);
+    image.special.anchor.set(0.5);
     image.angle = 45;
-    image.anchor.x = 0.5;
-    image.anchor.y = 0.5;
-    image.smoothed = true;
     return image;
   },
 };

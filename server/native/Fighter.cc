@@ -276,26 +276,26 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
     self->waitTime -= dt;
   }
 
-  for_continue_if(&self->timeouts, [&](auto &timeout, auto &remove) {
+  for(int i = 0; i < self->timeouts.size(); ++i) {
+    auto &timeout = self->timeouts[i];
     timeout.time -= dt;
     if (timeout.time > 0.f) {
-      return true;
+      continue;
     }
 
     auto fnPtr = std::move(timeout.fn);
-    remove();
-
+    self->timeouts.erase(self->timeouts.begin() + i);
+    
     Local<Function> fn = Local<Function>::New(isolate, *fnPtr);
     Local<Object> js = Local<Object>::New(isolate, self->js);
     fn->Call(js, 0, nullptr);
 
-    return false;
-  });
+    break;
+  }
 
-  for_continue_if(&self->effects, [&](auto &effect, auto &remove) {
+  remove_if(&self->effects, [&](auto &effect) {
     effect.time -= dt;
     if (effect.time <= 0.f) {
-      remove();
       return true;
     }
 
@@ -317,7 +317,7 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
         break;
     }
 
-    return true;
+    return false;
   });
 
   if (self->groundAffectTime >= 0.f) {

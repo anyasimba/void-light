@@ -36,6 +36,41 @@ export const item__axe = {
   WEAPON: 'weapon__axe__default',
   SLUG: 'ItemAxe',
 };
+export const item__bigaxe = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__bigaxe__default',
+  SLUG: 'ItemBigAxe',
+};
+export const item__kopie = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__kopie__default',
+  SLUG: 'ItemKopie',
+};
+export const item__molot = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__molot__default',
+  SLUG: 'ItemMolot',
+};
+export const item__bigmolot = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__bigmolot__default',
+  SLUG: 'ItemBigMolot',
+};
+export const item__dubina = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__dubina__default',
+  SLUG: 'ItemDubina',
+};
+export const item__bigdubina = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__bigdubina__default',
+  SLUG: 'ItemBigDubina',
+};
+export const item__kinjal = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__kinjal__default',
+  SLUG: 'ItemKinjal',
+};
 export const item__shield = {
   IS_UNIQUE: true,
   SHIELD: 'shield__default__default',

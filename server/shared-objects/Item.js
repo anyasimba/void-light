@@ -26,7 +26,7 @@ export function ItemSword(parent) {
     type: 'weapon',
     kind: 'sword',
     hand: 1,
-    scale_f: 0.6,
+    scale_f: 0.5,
     scale_d: 0,
     damage: 10,
     balance: 4,
@@ -47,10 +47,10 @@ export function ItemBigSword(parent) {
     type: 'weapon',
     kind: 'bigsword',
     hand: 1,
-    bodyScale: 2,
+    bodyScale: 2.5,
     scale_f: 0.8,
     scale_d: 0,
-    damage: 30,
+    damage: 20,
     balance: 10,
     stamina: 12,
     staminaTime: 1,
@@ -70,7 +70,7 @@ export function ItemAxe(parent) {
     kind: 'axe',
     hand: 1,
     scale_f: 0.5,
-    scale_d: 0.3,
+    scale_d: 0.5,
     damage: 8,
     balance: 4,
     stamina: 3,
@@ -82,6 +82,160 @@ export function ItemAxe(parent) {
     angle: 15,
     vAngle: 30,
     hAngle: 30,
+  });
+}
+export function ItemBigAxe(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'bigaxe',
+    hand: 1,
+    bodyScale: 2,
+    scale_f: 0.4,
+    scale_d: 0.6,
+    damage: 16,
+    balance: 4,
+    stamina: 3,
+    staminaTime: 0.4,
+    pos: {
+      x: -10,
+      y: 40,
+    },
+    angle: 15,
+    vAngle: 30,
+    hAngle: 30,
+  });
+}
+export function ItemKopie(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'kopie',
+    hand: 1,
+    bodyScale: 3,
+    scale_f: 0,
+    scale_d: 0.8,
+    damage: 10,
+    balance: 4,
+    stamina: 3,
+    staminaTime: 0.4,
+    pos: {
+      x: -10,
+      y: 40,
+    },
+    angle: 15,
+    vAngle: 30,
+    hAngle: 30,
+  });
+}
+export function ItemMolot(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'molot',
+    hand: 1,
+    bodyScale: 0.8,
+    scale_f: 0.6,
+    scale_d: 0.0,
+    damage: 12,
+    balance: 4,
+    stamina: 3,
+    staminaTime: 0.4,
+    pos: {
+      x: -10,
+      y: 40,
+    },
+    angle: 15,
+    vAngle: 30,
+    hAngle: 30,
+  });
+}
+export function ItemBigMolot(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'bigmolot',
+    hand: 1,
+    bodyScale: 2,
+    scale_f: 0.8,
+    scale_d: 0.0,
+    damage: 24,
+    balance: 4,
+    stamina: 3,
+    staminaTime: 0.4,
+    pos: {
+      x: -10,
+      y: 40,
+    },
+    angle: 15,
+    vAngle: 30,
+    hAngle: 30,
+  });
+}
+export function ItemDubina(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'dubina',
+    hand: 1,
+    bodyScale: 1.5,
+    scale_f: 0.5,
+    scale_d: 0.0,
+    damage: 14,
+    balance: 4,
+    stamina: 3,
+    staminaTime: 0.4,
+    pos: {
+      x: -10,
+      y: 40,
+    },
+    angle: 15,
+    vAngle: 30,
+    hAngle: 30,
+  });
+}
+export function ItemBigDubina(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'bigdubina',
+    hand: 1,
+    bodyScale: 2.5,
+    scale_f: 0.9,
+    scale_d: 0.0,
+    damage: 28,
+    balance: 4,
+    stamina: 3,
+    staminaTime: 0.4,
+    pos: {
+      x: -10,
+      y: 40,
+    },
+    angle: 15,
+    vAngle: 30,
+    hAngle: 30,
+  });
+}
+export function ItemKinjal(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'kinjal',
+    hand: 1,
+    bodyScale: 0.7,
+    scale_f: 0,
+    scale_d: 0.9,
+    damage: 7,
+    balance: 3,
+    stamina: 3,
+    staminaTime: 0.4,
+    pos: {
+      x: -10,
+      y: 40,
+    },
+    angle: 15,
+    vAngle: 20,
+    hAngle: 20,
   });
 }
 export function ItemShield(parent) {

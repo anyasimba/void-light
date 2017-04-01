@@ -46,7 +46,7 @@ export function ia_top(
           angle: 90,
           vAngle: 0,
           hAngle: ha2,
-          sideAngle: (-90 - faceA2_ - (da + a) * Math.sign(faceA1_)),
+          sideAngle: (-90 - faceA2_ + (da - a) * Math.sign(faceA1_)),
         });
         this.stage(step0, easing.easeOutQuad, {
           angle: faceA2_,
@@ -76,7 +76,7 @@ export function ia_top(
         angle: (90 + ba_),
         vAngle: va1,
         hAngle: ha1,
-        sideAngle: (-90 - (da + a) * Math.sign(faceA1_)) - faceA1_,
+        sideAngle: (-90 + (da + a) * Math.sign(faceA1_)) - faceA1_,
       });
       this.stage(step1, easing.easeInQuad, {
         angle: faceA1_,
@@ -95,7 +95,7 @@ export function ia_top(
         angle: 90,
         vAngle: 0,
         hAngle: ha2,
-        sideAngle: (-90 - (da + a) * Math.sign(faceA1_)) - faceA2_,
+        sideAngle: (-90 + (da - a) * Math.sign(faceA1_)) - faceA2_,
       });
       this.stage(step2, easing.easeOutQuad, {
         angle: faceA2_,

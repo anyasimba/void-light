@@ -62,6 +62,10 @@ export function loadWeapon() {
   loadHsl('shield', 'assets/weapon/shield.png');
   loadHsl('sword', 'assets/weapon/sword.png');
   loadHsl('axe', 'assets/weapon/axe.png');
+  loadHsl('kopie', 'assets/weapon/kopie.png');
+  loadHsl('molot', 'assets/weapon/molot.png');
+  loadHsl('dubina', 'assets/weapon/dubina.png');
+  loadHsl('kinjal', 'assets/weapon/kinjal.png');
 }
 
 export function loadStage1() {

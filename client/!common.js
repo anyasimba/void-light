@@ -175,94 +175,8 @@ function createLayer() {
     game, 0, 0, rt));
   layer.sub.light.scale.set(1 / q);
   layer.sub.light.blendMode = PIXI.blendModes.MULTIPLY;
+  layer.sub.light.smoothed = true;
   return layer;
-}
-
-let hsl = [];
-export let hslMap = {};
-
-export function loadHsl(title, path) {
-  game.load.image(title, path);
-  hsl.push(title);
-}
-
-function processHsl(hsl) {
-  let image = new Phaser.Image(game, 0, 0, hsl);
-  const makeRect = (color, blend) => {
-    let g = new Phaser.Graphics(game, 0, 0);
-    g.beginFill(color);
-    g.drawRect(0, 0, image.width, image.height);
-    g.endFill();
-    g.blendMode = blend;
-    return g;
-  };
-
-  let makeChannel = (mask1, mask2, f) => {
-    let rt = new Phaser.RenderTexture(
-      game, image.width, image.height, null, null, 1);
-
-    rt.renderXY(makeRect(0x000000, PIXI.blendModes.NORMAL), 0, 0, true);
-    rt.renderXY(image, 0, 0, false);
-    rt.renderXY(makeRect(mask1, PIXI.blendModes.LUMINOSITY), 0, 0, false);
-    rt.renderXY(makeRect(mask1, PIXI.blendModes.MULTIPLY), 0, 0, false);
-    rt.renderXY(makeRect(mask2, PIXI.blendModes.LIGHTEN), 0, 0, false);
-    rt.renderXY(makeRect(mask2, PIXI.blendModes.DIFFERENCE), 0, 0, false);
-
-    let s = new Phaser.Image(game, 0, 0, rt);
-    s.blendMode = PIXI.blendModes.ADD;
-    let rt2 = new Phaser.RenderTexture(
-      game, image.width, image.height, null, null, 1);
-    rt2.renderXY(s, 0, 0, true);
-    s.alpha = 255 / (255 - f) - 1;
-    rt2.renderXY(s, 0, 0, false);
-    return rt2;
-  }
-  let finishChannel = (rt, f) => {
-    rt.renderXY(makeRect(0xFFFFFF, PIXI.blendModes.HUE), 0, 0, false);
-    let s = new Phaser.Image(game, 0, 0, rt);
-    s.blendMode = PIXI.blendModes.ADD;
-    let rt2 = new Phaser.RenderTexture(
-      game, image.width, image.height, null, null, 1);
-    rt2.renderXY(s, 0, 0, true);
-    for (let i = 0; i < Math.floor(255 / f - 1); ++i) {
-      rt2.renderXY(s, 0, 0, false);
-    }
-    s.alpha = (255 - Math.floor(255 / f) * f) / f;
-    rt2.renderXY(s, 0, 0, false);
-    return rt2;
-  }
-
-
-  let rt = new Phaser.RenderTexture(
-    game, image.width, image.height, null, null, 1);
-  rt.renderXY(makeRect(0x000000, PIXI.blendModes.NORMAL), 0, 0, true);
-  rt.renderXY(image, 0, 0, false);
-
-  let red = makeChannel(0xFF0000, 0x4c0000, 76);
-  const redS = new Phaser.Image(game, 0, 0, red);
-  redS.blendMode = PIXI.blendModes.DIFFERENCE;
-  rt.renderXY(redS, 0, 0, false);
-  red = finishChannel(red, 76);
-  let green = makeChannel(0x00FF00, 0x009600, 150);
-  const greenS = new Phaser.Image(game, 0, 0, green);
-  greenS.blendMode = PIXI.blendModes.DIFFERENCE;
-  rt.renderXY(greenS, 0, 0, false);
-  green = finishChannel(green, 150);
-  let blue = makeChannel(0x0000FF, 0x00001c, 28);
-  const blueS = new Phaser.Image(game, 0, 0, blue);
-  blueS.blendMode = PIXI.blendModes.DIFFERENCE;
-  rt.renderXY(blueS, 0, 0, false);
-  blue = finishChannel(blue, 28);
-
-  const bmd = new Phaser.BitmapData(game, null, image.width, image.height);
-  bmd.alphaMask(new Phaser.Image(game, 0, 0, rt), image);
-
-  hslMap[hsl] = {
-    gray: bmd,
-    color: red,
-    ambient: green,
-    special: blue,
-  };
 }
 
 function create() {
@@ -305,6 +219,7 @@ function create() {
 
   game.scene.add(game.ui);
   initUI();
+
   for (let i = 0; i < hsl.length; ++i) {
     processHsl(hsl[i]);
   }
@@ -780,6 +695,7 @@ function createGame() {
                     game, x * ts, y * ts,
                     textures[i][x][y]);
                   textures[i][x][y].sprite = sprite;
+                  sprite.smoothed = true;
                   sprite.scale.set(1 / scaleF);
 
                   if (i < 2) {
@@ -802,7 +718,6 @@ function createGame() {
           await sleep(50);
           disableMessage();
         }
-
         const texs = game.mapTextures;
         if (game.cameraPos && global.AF && texs) {
           const ln = WALL_LAYERS.length + 2;

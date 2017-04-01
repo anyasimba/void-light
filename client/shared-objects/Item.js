@@ -52,30 +52,14 @@ export class Item extends mix(global.Item, MixGameObject) {
   }
 }
 
-export const weapon__sword__default = new class {
-  createView(isHost, kind) {
-    let color = 0xFFFFFF;
-    if (isHost) {
-      color = 0xFFFFFF;
-    } else if (kind === 'player') {
-      color = 0x55FF00;
-    }
-    const image = new Phaser.Image(game, 0, 0, 'sword');
-    image.scale.x = 0.8;
-    image.scale.y = 1.4;
-    image.anchor.x = 0.5;
-    image.anchor.y = 0.8;
-    image.tint = color;
-    image.smoothed = true;
-    return image;
-  }
+const weapon__family = {
   update() {
     this.view.x = this.pos.x + this.parent.moveShift + 1;
     this.view.y = this.pos.y - this.parent.moveShift * 2 + 2;
     this.view.angle = this.angle + 90;
 
     this.group.angle = this.sideAngle;
-  }
+  },
   onStun() {
     let time = this.parent.stunDelay || 0;
 
@@ -120,165 +104,191 @@ export const weapon__sword__default = new class {
       this.parent.step(step3, step2FN);
     };
     this.parent.step(time, step2FN);
+  },
+}
+
+export const weapon__sword__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView() {
+    const image = makeHSL(hslMap['sword'], 0.5, 0.75, [
+      0xFFFFFF,
+      0x888888,
+      0x888888,
+      0x000000
+    ]);
+    image.scale.x = 0.5;
+    image.scale.y = 0.5;
+    return image;
   }
 }
 export const weapon__bigsword__default = new class {
-  createView(isHost, kind) {
-    let color = 0xFFFFFF;
-    if (isHost) {
-      color = 0xFFFFFF;
-    } else if (kind === 'player') {
-      color = 0x55FF00;
-    }
-    const image = new Phaser.Image(game, 0, 0, 'sword');
-    image.scale.x = 0.8;
-    image.scale.y = 1.4;
-    image.anchor.x = 0.5;
-    image.anchor.y = 0.8;
-    image.tint = multiplyTint(color, 0x777755);
-    image.smoothed = true;
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView() {
+    const image = makeHSL(hslMap['sword'], 0.5, 0.75, [
+      0xFFFFFF,
+      0x8899AA,
+      0x8899AA,
+      0x8899AA
+    ]);
+    image.scale.x = 0.5;
+    image.scale.y = 0.5;
     return image;
-  }
-  update() {
-    this.view.x = this.pos.x + this.parent.moveShift + 1;
-    this.view.y = this.pos.y - this.parent.moveShift * 2 + 2;
-    this.view.angle = this.angle + 90;
-
-    this.group.angle = this.sideAngle;
-  }
-  onStun() {
-    let time = this.parent.stunDelay || 0;
-
-    const step1 = 0.2;
-    this.parent.step(time, () => {
-      this.stage(step1, easing.easeOutCubic, {
-        pos: {
-          x: -40,
-          y: 40,
-        },
-        angle: 140,
-        vAngle: 0,
-        hAngle: 0,
-        sideAngle: -30,
-      });
-    });
-    time += step1;
-
-    let step2FN, step3FN;
-    step2FN = () => {
-      const step2 = 1;
-      this.stage(step2, easing.easeInOutCubic, {
-        pos: {
-          x: -40,
-          y: 40,
-        },
-        angle: 120,
-        sideAngle: -50,
-      });
-      this.parent.step(step2, step3FN);
-    };
-    step3FN = () => {
-      const step3 = 1;
-      this.stage(step3, easing.easeInOutCubic, {
-        pos: {
-          x: -40,
-          y: 40,
-        },
-        angle: 120,
-        sideAngle: -50,
-      });
-      this.parent.step(step3, step2FN);
-    };
-    this.parent.step(time, step2FN);
   }
 }
 
 export const weapon__axe__default = new class {
-  createView(isHost, kind) {
-    let color = 0xFFFFFF;
-    if (isHost) {
-      color = 0xFFFFFF;
-    } else if (kind === 'player') {
-      color = 0x55FF00;
-    }
-    const image = new Phaser.Image(game, 0, 0, 'axe');
-    image.scale.x = 0.8;
-    image.scale.y = 1.4;
-    image.anchor.x = 0.5;
-    image.anchor.y = 0.8;
-    image.tint = color;
-    image.smoothed = true;
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView() {
+    const image = makeHSL(hslMap['axe'], 0.5, 0.75, [
+      0xFFFFFF,
+      0x888888,
+      0x888888,
+      0x000000
+    ]);
+    image.scale.x = 0.5;
+    image.scale.y = 0.5;
     return image;
   }
-  update() {
-    this.view.x = this.pos.x + this.parent.moveShift + 1;
-    this.view.y = this.pos.y - this.parent.moveShift * 2 + 2;
-    this.view.angle = this.angle + 90;
-
-    this.group.angle = this.sideAngle;
+}
+export const weapon__bigaxe__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
   }
-  onStun() {
-    let time = this.parent.stunDelay || 0;
-
-    const step1 = 0.2;
-    this.parent.step(time, () => {
-      this.stage(step1, easing.easeOutCubic, {
-        pos: {
-          x: -40,
-          y: 40,
-        },
-        angle: 140,
-        vAngle: 0,
-        hAngle: 0,
-        sideAngle: -30,
-      });
-    });
-    time += step1;
-
-    let step2FN, step3FN;
-    step2FN = () => {
-      const step2 = 1;
-      this.stage(step2, easing.easeInOutCubic, {
-        pos: {
-          x: -40,
-          y: 40,
-        },
-        angle: 120,
-        sideAngle: -50,
-      });
-      this.parent.step(step2, step3FN);
-    };
-    step3FN = () => {
-      const step3 = 1;
-      this.stage(step3, easing.easeInOutCubic, {
-        pos: {
-          x: -40,
-          y: 40,
-        },
-        angle: 120,
-        sideAngle: -50,
-      });
-      this.parent.step(step3, step2FN);
-    };
-    this.parent.step(time, step2FN);
+  createView() {
+    const image = makeHSL(hslMap['axe'], 0.5, 0.75, [
+      0xFFFFFF,
+      0x8899AA,
+      0x8899AA,
+      0x8899AA
+    ]);
+    image.scale.x = 0.5;
+    image.scale.y = 0.5;
+    return image;
+  }
+}
+export const weapon__kopie__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView(isHost, kind) {
+    const image = makeHSL(hslMap['kopie'], 0.5, 0.75, [
+      0xFFFFFF,
+      0x888888,
+      0x888888,
+      0x660088,
+    ]);
+    image.scale.x = 0.4;
+    image.scale.y = 0.4;
+    return image;
+  }
+}
+export const weapon__molot__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView() {
+    const image = makeHSL(hslMap['molot'], 0.5, 0.75, [
+      0xFFFFFF,
+      0x888888,
+      0x888888,
+      0xBB8888
+    ]);
+    image.scale.x = 0.6;
+    image.scale.y = 0.6;
+    return image;
+  }
+}
+export const weapon__bigmolot__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView() {
+    const image = makeHSL(hslMap['molot'], 0.5, 0.75, [
+      0xFFFFFF,
+      0x8899AA,
+      0x8899AA,
+      0x8899AA
+    ]);
+    image.scale.x = 0.6;
+    image.scale.y = 0.6;
+    return image;
+  }
+}
+export const weapon__dubina__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView() {
+    const image = makeHSL(hslMap['dubina'], 0.5, 0.75, [
+      0xFFFFFF,
+      0x888888,
+      0x888888,
+      0xCCAA99,
+    ]);
+    image.scale.x = 0.6;
+    image.scale.y = 0.6;
+    return image;
+  }
+}
+export const weapon__bigdubina__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView() {
+    const image = makeHSL(hslMap['dubina'], 0.5, 0.75, [
+      0xFFFFFF,
+      0x8899AA,
+      0x8899AA,
+      0x8899AA
+    ]);
+    image.scale.x = 0.6;
+    image.scale.y = 0.6;
+    return image;
+  }
+}
+export const weapon__kinjal__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView() {
+    const image = makeHSL(hslMap['kinjal'], 0.5, 0.75, [
+      0xFFFFFF,
+      0x8899AA,
+      0x8899AA,
+      0x8899AA
+    ]);
+    image.scale.x = 0.9;
+    image.scale.y = 0.9;
+    return image;
   }
 }
 
 export const shield__default__default = new class {
-  createView(isHost, kind) {
-    let color = 0xFFFFFF;
-    if (isHost) {
-      color = 0xFFFFFF;
-    } else if (kind === 'player') {
-      color = 0x55FF00;
-    }
-    const image = new Phaser.Image(game, 0, 0, 'shield');
-    image.scale.x = 1.4;
-    image.scale.y = 1.4;
-    image.anchor.x = 0.5;
-    image.anchor.y = 0.5;
-    image.tint = color;
-    image.smoothed = true;
+  createView() {
+    const image = makeHSL(hslMap['shield'], 0.5, 0.5, [
+      0xBBBBBB,
+      0xBBBBBB,
+      0xBBBBBB,
+      0x6699BB
+    ]);
+    image.scale.x = 0.8;
+    image.scale.y = 0.8;
     return image;
   }
   update() {

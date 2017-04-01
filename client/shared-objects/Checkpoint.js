@@ -1,8 +1,8 @@
 export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
-  static createView() {
-    const view = new Phaser.Image(
-      game, 0, 0, 'checkpoint');
-    view.anchor.set(0.5);
+  static createView(gray, color, ambient, special) {
+    const view = makeHSL(hslMap['checkpoint'], 0.5, 0.5, [
+      gray, color, ambient, special
+    ]);
     return view;
   }
 
@@ -14,10 +14,14 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
     this.group.x = this.pos.x;
     this.group.y = this.pos.y;
 
-    this.view = Checkpoint.createView();
-    this.view2 = Checkpoint.createView();
-    this.view3 = Checkpoint.createView();
-    this.view4 = Checkpoint.createView();
+    this.view = Checkpoint.createView(
+      0xFFFFFF, 0x4200ff, 0x0006ff, 0xFFFFFF);
+    this.view2 = Checkpoint.createView(
+      0xFFFFFF, 0x0006ff, 0x006cff, 0xFFFFFF);
+    this.view3 = Checkpoint.createView(
+      0xFFFFFF, 0x006cff, 0x00deff, 0xFFFFFF);
+    this.view4 = Checkpoint.createView(
+      0xFFFFFF, 0x00deff, 0x00ff96, 0xFFFFFF);
 
     const f = 0.8;
     this.view.scale.x = 0.8 * f;

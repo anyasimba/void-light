@@ -122,7 +122,7 @@ export class GameLevelZone {
       const o = objects.objects[k];
       let slug = this.map.dictionary[o.gid];
       const x = o.x / 32 * WALL_SIZE + WALL_SIZE * 0.5;
-      const y = o.y / 32 * WALL_SIZE + WALL_SIZE * 0.5;
+      const y = o.y / 32 * WALL_SIZE - WALL_SIZE * 0.5;
       const data = {
         mapID: o.id,
         mapX: (o.x + o.width * 0.5) / 32 * WALL_SIZE,
@@ -145,16 +145,21 @@ export class GameLevelZone {
           case 'checkpoint':
             this.mapObjects[data.mapID] = new Checkpoint(this, data);
             break;
-          default:
-            if (slug.slice(0, 6) === 'item__') {
-              this.mapObjects[data.mapID] = new ItemOnMap(this, data);
-              break;
-            }
-            if (slug.slice(0, 7) === 'decor__') {
-              this.mapObjects[data.mapID] = new Decor(this, data);
-              break;
-            }
+          case 'main_npc':
+          case 'other_npc':
+          case 'bad_npc':
+          case 'mob':
+          case 'boss':
+            data.slug = o.name;
             this.enemyPoints.push(data);
+            break;
+          case 'item':
+            data.slug = o.name;
+            this.mapObjects[data.mapID] = new ItemOnMap(this, data);
+            break;
+          case 'decor__light':
+            this.mapObjects[data.mapID] = new Decor(this, data);
+            break;
         }
       } else if (o.name) {
         slug = o.name;

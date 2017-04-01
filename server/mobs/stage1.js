@@ -28,7 +28,7 @@ export const stage1__mob1 = {
 
     moveTimeF: 0.8,
 
-    hitSpeed: 3,
+    hitSpeed: 1,
     damage: 15,
 
     ACC: 400,
@@ -39,7 +39,7 @@ export const stage1__mob1 = {
     BALANCE: 60,
     HP: 300,
     MP: 100,
-    STAMINA: 50,
+    STAMINA: 200,
   },
 
   rightHand(parent) {
@@ -105,7 +105,7 @@ export const stage1__mob1a = {
 
     moveTimeF: 0.8,
 
-    hitSpeed: 2,
+    hitSpeed: 1,
     damage: 10,
 
     ACC: 300,
@@ -116,7 +116,7 @@ export const stage1__mob1a = {
     BALANCE: 20,
     HP: 50,
     MP: 100,
-    STAMINA: 50,
+    STAMINA: 200,
   },
 
   rightHand(parent) {
@@ -126,7 +126,7 @@ export const stage1__mob1a = {
       kind: 'stage1__mob1a__rightHand',
       balance: 2,
       stamina: 4,
-      staminaTime: 0.4,
+      staminaTime: 0.6,
       hand: 1,
       pos: {
         x: -40,
@@ -186,7 +186,7 @@ export const stage1__mob1b = {
 
     moveTimeF: 0.8,
 
-    hitSpeed: 1.5,
+    hitSpeed: 1,
     damage: 20,
 
     ACC: 500,
@@ -269,7 +269,7 @@ export const stage1__mob1c = {
 
     moveTimeF: 0.8,
 
-    hitSpeed: 4,
+    hitSpeed: 1,
     damage: 30,
 
     ACC: 200,
@@ -350,7 +350,7 @@ export const stage1__mob2 = {
 
     moveTimeF: 1.2,
 
-    hitSpeed: 2,
+    hitSpeed: 1,
     damage: 20,
 
     ACC: 500,
@@ -384,10 +384,10 @@ export const stage1__mob2 = {
   },
 };
 export const stage1__mob2a = {
-  AGRO_D: 7,
-  RUN_D: 150,
+  AGRO_D: 5,
+  RUN_D: 40,
   HIT_D: [120, 250],
-  HIT_VER: 0.9,
+  HIT_VER: 0.6,
   HIT_TIME: [0.2, 3],
   JUMP_HIT_VER: 0.02,
   ROLL_HIT_VER: 0.04,
@@ -406,20 +406,20 @@ export const stage1__mob2a = {
     LANG_RU: 'Высосанный',
     name: 'stage1__mob2a',
 
-    moveTimeF: 1.2,
+    moveTimeF: 0.9,
 
-    hitSpeed: 1.5,
-    damage: 20,
+    hitSpeed: 1,
+    damage: 15,
 
     ACC: 400,
-    RUN_ACC: 600,
+    RUN_ACC: 500,
     BODY_SIZE: 40,
     SCALE: 1.5,
 
     BALANCE: 10,
     HP: 30,
     MP: 100,
-    STAMINA: 40,
+    STAMINA: 100,
   },
 
   rightHand(parent) {
@@ -430,7 +430,7 @@ export const stage1__mob2a = {
       hand: 1,
       balance: 2,
       stamina: 3,
-      staminaTime: 0.4,
+      staminaTime: 0.6,
       pos: {
         x: -25,
         y: 25,
@@ -466,7 +466,7 @@ export const stage1__mob2b = {
 
     moveTimeF: 1.2,
 
-    hitSpeed: 2,
+    hitSpeed: 1,
     damage: 15,
 
     ACC: 400,
@@ -524,7 +524,7 @@ export const stage1__mob2c = {
 
     moveTimeF: 1.2,
 
-    hitSpeed: 2,
+    hitSpeed: 1,
     damage: 20,
 
     ACC: 400,
@@ -576,10 +576,10 @@ export const stage1__mob2c = {
 export const stage1__boss1 = {
   IS_BOSS: true,
 
-  AGRO_D: 50,
-  RUN_D: 150,
+  AGRO_D: 20,
+  RUN_D: 50,
   HIT_D: [120, 180],
-  HIT_VER: 0.9,
+  HIT_VER: 0.7,
   HIT_TIME: [0.5, 4],
   JUMP_HIT_VER: 0.2,
   ROLL_HIT_VER: 0.1,
@@ -595,12 +595,12 @@ export const stage1__boss1 = {
   VOIDS_COUNT: 5000,
 
   FIGHTER: {
-    LANG_RU: 'Истяженная оболочка Тит',
+    LANG_RU: 'Истяженная оболочка',
     name: 'stage1__boss1',
 
-    moveTimeF: 0.8,
+    moveTimeF: 0.5,
 
-    hitSpeed: 3,
+    hitSpeed: 1.6,
     damage: 18,
 
     ACC: 400,

@@ -160,10 +160,10 @@ export class Client extends global.Client {
           type = 2;
         }
         if (a < -45) {
-          type = 3;
+          type = 2;
         }
         if (Math.abs(a) > 135) {
-          type = 4;
+          type = 3;
         }
       }
       this.emit('mouseDown', {

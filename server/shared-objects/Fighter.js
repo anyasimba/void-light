@@ -452,6 +452,14 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     }
   }
   onDie(source) {
+    if (this.waitTime) {
+      if (this.waitFor) {
+        this.waitFor.breakAction();
+      }
+      delete this.waitTime;
+      delete this.inWait;
+    }
+
     delete this.isAlive;
     this.finishHit();
     this.clearSteps();
@@ -638,6 +646,9 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     }
   }
   checkNextHit(i) {
+    if (this.owner.checkNextHit) {
+      this.owner.checkNextHit();
+    }
     if (this.needNextHit) {
       const opts = this.needNextHit;
       delete this.needNextHit;
@@ -790,6 +801,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       delete this.canItem;
       this.owner.emit('stopCan', {});
 
+      console.log(item.slug);
       const itemData = global[item.slug];
       if (itemData.IS_UNIQUE) {
         this.owner.params.items.list.push({
@@ -871,6 +883,11 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
         this.useStamina(3, 0.5);
       }
 
+      if (this.absLook && gameObjects[this.absLook]) {
+        this.look = gameObjects[this.absLook].pos.subtract(this.pos)
+          .unit();
+      }
+
       const rollData = {
         duration: 0.7 / this.moveTimeF,
         afterTime: 0.3 / this.moveTimeF,
@@ -891,7 +908,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
         Math.min(this.speed.length() / 700, 0.8);
       rollData.forceInJump *= 0.5 +
         Math.min(this.speed.length() / 700, 0.8);
-      this.rollBlockTime = rollData.duration + 0.1;
+      this.rollBlockTime = rollData.duration + 0.05;
       native.Fighter__onRoll(this.native, rollData);
       this.emitAll('roll', rollData);
       this.emitPos();
@@ -910,6 +927,11 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
         this.useStamina(8, 0.8);
       } else {
         this.useStamina(4, 0.8);
+      }
+
+      if (this.absLook && gameObjects[this.absLook]) {
+        this.look = gameObjects[this.absLook].pos.subtract(this.pos)
+          .unit();
       }
 
       const jumpData = {

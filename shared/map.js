@@ -10,7 +10,8 @@ export function loadMapDictionary(map) {
     for (const k in set.tiles) {
       const tile = set.tiles[k];
       const id = firstgid + parseInt(k);
-      const slug = tile.image.slice(prefix.length, -4);
+      let slug = tile.image.slice(prefix.length, -4);
+      slug = slug.slice(slug.indexOf('/') + 1);
       tiles[id] = slug;
     }
   }

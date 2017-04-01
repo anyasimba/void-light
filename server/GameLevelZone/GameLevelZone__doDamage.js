@@ -56,6 +56,15 @@ Object.assign(GameLevelZone.prototype, {
     const rel = source.pos
       .subtract(other.pos);
     let a = Math.abs(rel.toAngle() - other.look.toAngle());
+    if (other.inHit) {
+      a = Math.abs(rel.toAngle() - other.hitVec.toAngle());
+    }
+    if (other.absLook && !other.inHit) {
+      if (gameObjects[other.absLook]) {
+        const pos = gameObjects[other.absLook].subtract(other.pos);
+        a = Math.abs(rel.toAngle() - pos.toAngle());
+      }
+    }
     if (a > 180) {
       a = 360 - a;
     }
@@ -71,38 +80,31 @@ Object.assign(GameLevelZone.prototype, {
     }
     if (source.hitType === 0 &&
       other.hitType !== 2 &&
-      other.hitType !== 3 &&
-      other.hitType !== 4) {
+      other.hitType !== 3) {
 
       return;
     }
     if (source.hitType === 1 &&
       other.hitType !== 0 &&
-      other.hitType !== 4) {
+      other.hitType !== 3) {
 
       return;
     }
     if (source.hitType === 2 &&
       other.hitType !== 1 &&
-      other.hitType !== 4) {
+      other.hitType !== 3) {
 
       return;
     }
-    if (source.hitType === 3 &&
-      other.hitType !== 1 &&
-      other.hitType !== 4) {
-
-      return;
-    }
-    if (source.hitType === 4) {
+    if (source.hitType === 3) {
       return;
     }
 
     other.breakHit(true);
     if (other.inBlock) {
-      other.stun(source.weapon.staminaTime * 2 + 0.1, 0.1);
+      other.stun(source.weapon.staminaTime * 2);
     } else {
-      other.stun(source.weapon.staminaTime + 0.1, 0.1);
+      other.stun(source.weapon.staminaTime);
     }
     return true;
   },
@@ -144,6 +146,15 @@ Object.assign(GameLevelZone.prototype, {
     const rel = source.pos
       .subtract(other.pos);
     let a = Math.abs(rel.toAngle() - other.look.toAngle());
+    if (other.inHit) {
+      a = Math.abs(rel.toAngle() - other.hitVec.toAngle());
+    }
+    if (other.absLook && !other.inHit) {
+      if (gameObjects[other.absLook]) {
+        const pos = gameObjects[other.absLook].pos.subtract(other.pos);
+        a = Math.abs(rel.toAngle() - pos.toAngle());
+      }
+    }
     if (a > 180) {
       a = 360 - a;
     }
@@ -178,7 +189,7 @@ Object.assign(GameLevelZone.prototype, {
       !other.inHit;
     let isBackstep = false;
     let isRemoveBlock = false;
-    if (source.hitType === 4) {
+    if (source.hitType === 3) {
       if (a > 90) {
         isBackstep = true;
         damageF *= 3;
