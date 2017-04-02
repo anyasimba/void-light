@@ -53,10 +53,8 @@ export const client__item__sword = {
   createView() {
     const image = weapon__sword__default.createView();
     image.scale.set(0.4);
-    image.gray.anchor.set(0.5);
-    image.color.anchor.set(0.5);
-    image.ambient.anchor.set(0.5);
-    image.special.anchor.set(0.5);
+    image.tex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
   },
@@ -67,10 +65,8 @@ export const client__item__big__sword = {
   createView() {
     const image = weapon__bigsword__default.createView();
     image.scale.set(0.5);
-    image.gray.anchor.set(0.5);
-    image.color.anchor.set(0.5);
-    image.ambient.anchor.set(0.5);
-    image.special.anchor.set(0.5);
+    image.tex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
   },
@@ -81,10 +77,8 @@ export const client__item__axe = {
   createView() {
     const image = weapon__axe__default.createView();
     image.scale.set(0.4);
-    image.gray.anchor.set(0.5);
-    image.color.anchor.set(0.5);
-    image.ambient.anchor.set(0.5);
-    image.special.anchor.set(0.5);
+    image.tex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
   },
@@ -95,10 +89,8 @@ export const client__item__bigaxe = {
   createView() {
     const image = weapon__axe__default.createView();
     image.scale.set(0.5);
-    image.gray.anchor.set(0.5);
-    image.color.anchor.set(0.5);
-    image.ambient.anchor.set(0.5);
-    image.special.anchor.set(0.5);
+    image.tex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
   },
@@ -109,10 +101,8 @@ export const client__item__kopie = {
   createView() {
     const image = weapon__kopie__default.createView();
     image.scale.set(0.5);
-    image.gray.anchor.set(0.5);
-    image.color.anchor.set(0.5);
-    image.ambient.anchor.set(0.5);
-    image.special.anchor.set(0.5);
+    image.tex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
   },
@@ -123,10 +113,8 @@ export const client__item__molot = {
   createView() {
     const image = weapon__molot__default.createView();
     image.scale.set(0.4);
-    image.gray.anchor.set(0.5);
-    image.color.anchor.set(0.5);
-    image.ambient.anchor.set(0.5);
-    image.special.anchor.set(0.5);
+    image.tex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
   },
@@ -137,10 +125,8 @@ export const client__item__bigmolot = {
   createView() {
     const image = weapon__bigmolot__default.createView();
     image.scale.set(0.5);
-    image.gray.anchor.set(0.5);
-    image.color.anchor.set(0.5);
-    image.ambient.anchor.set(0.5);
-    image.special.anchor.set(0.5);
+    image.tex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
   },
@@ -151,10 +137,8 @@ export const client__item__dubina = {
   createView() {
     const image = weapon__dubina__default.createView();
     image.scale.set(0.4);
-    image.gray.anchor.set(0.5);
-    image.color.anchor.set(0.5);
-    image.ambient.anchor.set(0.5);
-    image.special.anchor.set(0.5);
+    image.tex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
   },
@@ -165,10 +149,8 @@ export const client__item__bigdubina = {
   createView() {
     const image = weapon__bigdubina__default.createView();
     image.scale.set(0.5);
-    image.gray.anchor.set(0.5);
-    image.color.anchor.set(0.5);
-    image.ambient.anchor.set(0.5);
-    image.special.anchor.set(0.5);
+    image.tex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
   },
@@ -179,10 +161,8 @@ export const client__item__kinjal = {
   createView() {
     const image = weapon__kinjal__default.createView();
     image.scale.set(0.4);
-    image.gray.anchor.set(0.5);
-    image.color.anchor.set(0.5);
-    image.ambient.anchor.set(0.5);
-    image.special.anchor.set(0.5);
+    image.tex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
   },
@@ -193,10 +173,8 @@ export const client__item__shield = {
   createView() {
     const image = shield__default__default.createView();
     image.scale.set(0.8);
-    image.gray.anchor.set(0.5);
-    image.color.anchor.set(0.5);
-    image.ambient.anchor.set(0.5);
-    image.special.anchor.set(0.5);
+    image.tex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
   },

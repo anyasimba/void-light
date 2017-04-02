@@ -48,7 +48,9 @@ export function mongoFind(table, k) {
 
 async function mongoConnect(url) {
   return exitOnErrorAsync(() => {
-    const { MongoClient } = require('mongodb');
+    const {
+      MongoClient
+    } = require('mongodb');
     return MongoClient.connect(url);
   });
 }

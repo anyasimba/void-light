@@ -26,7 +26,6 @@ export const weapon__stage1__mob1__rightHand__default = new class {
     this.onStun = mobs__hands__family.rightHand.onStun;
   }
   createView(isHost, kind) {
-
     const view = makeHSL(hslMap['stage1__mob1--hand'], 0.2, 0.8, [
       0x333333,
       0x111111,
@@ -45,17 +44,14 @@ export const weapon__stage1__mob1__leftHand__default = new class {
     const prepare = (image) => {
       image.scale.x = -1;
     }
-
     const view = makeHSL(hslMap['stage1__mob1--hand'], 0.2, 0.8, [
       0x333333,
       0x111111,
       0x201000,
       0xc02010
     ]);
-    prepare(view.gray);
-    prepare(view.color);
-    prepare(view.ambient);
-    prepare(view.special);
+    prepare(view.tex);
+    prepare(view.addTex);
     return view;
   }
 }
@@ -102,20 +98,13 @@ export const weapon__stage1__mob1a__leftHand__default = new class {
     this.onStun = mobs__hands__family.leftHand.onStun;
   }
   createView(isHost, kind) {
-    const prepare = (image) => {
-      image.scale.x = -1;
-    }
-
     const view = makeHSL(hslMap['stage1__mob1--hand'], 0.2, 0.8, [
       0x444444,
       0x222222,
       0x201010,
       0x201010
     ]);
-    prepare(view.gray);
-    prepare(view.color);
-    prepare(view.ambient);
-    prepare(view.special);
+    view.scale.x = -1;
     return view;
   }
 }
@@ -162,23 +151,13 @@ export const weapon__stage1__mob1b__leftHand__default = new class {
     this.onStun = mobs__hands__family.leftHand.onStun;
   }
   createView(isHost, kind) {
-    const prepare = (image) => {
-      image.scale.x = -1;
-    }
-
     const view = makeHSL(hslMap['stage1__mob1--hand'], 0.2, 0.8, [
       0x444444,
       0x222222,
       0x201010,
       0x201010
     ]);
-    view.color.tint = 0x18006a;
-    view.ambient.tint = 0x18006a;
-    view.special.tint = 0x18006a;
-    prepare(view.gray);
-    prepare(view.color);
-    prepare(view.ambient);
-    prepare(view.special);
+    view.scale.x = -1;
     return view;
   }
 }
@@ -225,20 +204,13 @@ export const weapon__stage1__mob1c__leftHand__default = new class {
     this.onStun = mobs__hands__family.leftHand.onStun;
   }
   createView(isHost, kind) {
-    const prepare = (image) => {
-      image.scale.x = -1;
-    }
-
     const view = makeHSL(hslMap['stage1__mob1--hand'], 0.2, 0.8, [
       0x444444,
       0x222222,
       0x201010,
       0x201010
     ]);
-    prepare(view.gray);
-    prepare(view.color);
-    prepare(view.ambient);
-    prepare(view.special);
+    view.scale.x = -1;
     return view;
   }
 }

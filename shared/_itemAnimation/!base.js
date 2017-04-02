@@ -281,7 +281,6 @@ export function ia_side(
       weapon2.finalStage(begin * this.hitSpeed, easing.easeInQuad);
     }
     let time = 0;
-
     let faceA1_ = faceA1;
     let faceA2_ = faceA2;
     if (this.weaponMirror) {
@@ -292,15 +291,24 @@ export function ia_side(
     if (afterBlock) {
       const step0 = 0.2;
       this.step(time, () => {
+        let y = 60;
+        let angle = 135;
+        let sideAngle = -135;
+        if (hand === 2) {
+          y = -y;
+          angle = -angle;
+          sideAngle = -sideAngle;
+        }
+        sideAngle += -faceA2_ + (da - a) * Math.sign(faceA1_);
         weapon1.stage(step0, easing.easeOutQuad, {
           pos: new vec3({
             x: -60,
-            y: 60,
+            y: y,
           }),
-          angle: 135,
+          angle: angle,
           vAngle: va2,
           hAngle: ha2,
-          sideAngle: -135 - faceA2_ + (da - a) * Math.sign(faceA1_),
+          sideAngle: sideAngle,
         });
         this.stage(step0, easing.easeOutQuad, {
           angle: faceA2_,
@@ -322,15 +330,24 @@ export function ia_side(
     const step1 = begin * this.hitSpeed;
     this.step(time, () => {
       this.canNextHit();
+      let y = 60;
+      let angle = 135;
+      let sideAngle = -135;
+      if (hand === 2) {
+        y = -y;
+        angle = -angle;
+        sideAngle = -sideAngle;
+      }
+      sideAngle += -faceA2_ + (da + a) * Math.sign(faceA1_);
       weapon1.stage(step1, easing.easeInQuad, {
         pos: new vec3({
           x: -60,
-          y: 60,
+          y: y,
         }),
-        angle: 135,
+        angle: angle,
         vAngle: va1,
         hAngle: ha1,
-        sideAngle: -135 - faceA1_ + (da + a) * Math.sign(faceA1_),
+        sideAngle: sideAngle,
       });
       this.stage(step1, easing.easeInQuad, {
         angle: faceA1_,
@@ -341,8 +358,13 @@ export function ia_side(
     const step2 = 0.15;
     this.step(time, () => {
       this.playHit();
+      let sideAngle = -135;
+      if (hand === 2) {
+        sideAngle = -sideAngle;
+      }
+      sideAngle += -faceA2_ + (da - a) * Math.sign(faceA1_);
       weapon1.stage(step2, easing.easeOutQuad, {
-        sideAngle: -135 - faceA2_ + (da - a) * Math.sign(faceA1_),
+        sideAngle: sideAngle,
         vAngle: va2,
         hAngle: ha2,
       });
@@ -417,8 +439,8 @@ export function ia_backstep(
     this.step(time, () => {
       weapon1.stage(step1, easing.easeInQuad, {
         pos: new vec3({
-          y: 60,
           x: 0,
+          y: 60,
         }),
         angle: 90 - ba_,
         vAngle: va1,
@@ -436,8 +458,8 @@ export function ia_backstep(
       this.playHit();
       weapon1.stage(step2, easing.easeOutQuad, {
         pos: new vec3({
-          y: 60,
           x: 0,
+          y: 60,
         }),
         angle: 90,
         vAngle: va2,

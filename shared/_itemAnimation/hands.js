@@ -70,7 +70,7 @@ export function ia_hands__doHit(m) {
     moveset.side[j] = ia_side(
       m[2][i][0], m[2][i][1], m[2][i][2],
       m[2][i][3],
-      m[2][i][4], -40, 270,
+      m[2][i][4], 30, 270,
       70, 0, 0, 0,
       30 + i * 5, -30 - i * 5);
   }
@@ -88,7 +88,7 @@ export function ia_hands__doHit(m) {
     moveset.side[j] = ia_side(
       m[2][i][0], m[2][i][1], m[2][i][2],
       m[2][i][3],
-      m[2][i][4], -40, 270,
+      m[2][i][4], 30, 270,
       70, 0, 0, 0,
       30 + i * 5, -30 - i * 5);
   }

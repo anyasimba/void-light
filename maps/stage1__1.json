@@ -655,6 +655,54 @@
                  "width":672,
                  "x":4064,
                  "y":2816
+                }, 
+                {
+                 "gid":14,
+                 "height":32,
+                 "id":537,
+                 "name":"stage1__mob1",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":4480,
+                 "y":3936
+                }, 
+                {
+                 "gid":14,
+                 "height":32,
+                 "id":539,
+                 "name":"stage1__mob1a",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":4608,
+                 "y":4352
+                }, 
+                {
+                 "gid":14,
+                 "height":32,
+                 "id":540,
+                 "name":"stage1__mob1b",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":3872,
+                 "y":4448
+                }, 
+                {
+                 "gid":14,
+                 "height":32,
+                 "id":541,
+                 "name":"stage1__mob1c",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":3936,
+                 "y":4704
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -663,7 +711,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":537,
+ "nextobjectid":543,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tileheight":32,

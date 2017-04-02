@@ -98,7 +98,14 @@ export function makeTinted(tex, tint) {
 export function makeHSL(hsl, ax, ay, tints, g) {
   ax = ax || 0;
   ay = ay || 0;
-  g = g || new Phaser.Group(game, 0, 0, null);
+
+  let rt;
+  if (!g) {
+    g = new Phaser.Group(game, 0, 0, null);
+    g.rt = new Phaser.RenderTexture(
+      game, hsl.gray.width, hsl.gray.height, null, null, 1);
+  }
+  rt = g.rt;
   g.isHSL = true;
   g.hsl = hsl;
 
@@ -120,21 +127,29 @@ export function makeHSL(hsl, ax, ay, tints, g) {
   }
 
   g.removeAll();
-  g.gray = g.add(new Phaser.Image(game, 0, 0, hsl.grays[tints[0]]));
-  g.gray.anchor.x = ax;
-  g.gray.anchor.y = ay;
-  g.color = g.add(new Phaser.Image(game, 0, 0, hsl.colors[tints[1]]));
-  g.color.anchor.x = ax;
-  g.color.anchor.y = ay;
-  g.color.blendMode = PIXI.blendModes.ADD;
-  g.ambient = g.add(new Phaser.Image(game, 0, 0, hsl.ambients[tints[2]]));
-  g.ambient.anchor.x = ax;
-  g.ambient.anchor.y = ay;
-  g.ambient.blendMode = PIXI.blendModes.ADD;
-  g.special = g.add(new Phaser.Image(game, 0, 0, hsl.specials[tints[3]]));
-  g.special.anchor.x = ax;
-  g.special.anchor.y = ay;
-  g.special.blendMode = PIXI.blendModes.ADD;
+
+  let tex = new Phaser.Image(game, 0, 0, hsl.grays[tints[0]]);
+  tex.anchor.x = ax;
+  tex.anchor.y = ay;
+  g.add(tex);
+  g.tex = tex;
+  tex = new Phaser.Image(game, 0, 0, rt);
+  tex.anchor.x = ax;
+  tex.anchor.y = ay;
+  g.add(tex);
+  g.addTex = tex;
+  tex.blendMode = PIXI.blendModes.ADD;
+
+  const temp = new Phaser.Group(game, 0, 0, null);
+  tex = new Phaser.Image(game, 0, 0, hsl.colors[tints[1]]);
+  temp.add(tex);
+  tex = new Phaser.Image(game, 0, 0, hsl.ambients[tints[2]]);
+  tex.blendMode = PIXI.blendModes.ADD;
+  temp.add(tex);
+  tex = new Phaser.Image(game, 0, 0, hsl.specials[tints[3]]);
+  tex.blendMode = PIXI.blendModes.ADD;
+  temp.add(tex);
+  rt.renderXY(temp, 0, 0, true);
 
   return g;
 }

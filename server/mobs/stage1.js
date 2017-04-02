@@ -3,9 +3,9 @@ export const stage1__mob1 = {
   DIES_N: 2,
   DIES_SCALE: 0.6,
 
-  AGRO_D: 8,
-  RUN_D: 120,
-  HIT_D: [250, 450],
+  AGRO_D: 7,
+  RUN_D: 60,
+  HIT_D: [250, 350],
   HIT_VER: 0.6,
   HIT_TIME: [0.5, 2],
   JUMP_HIT_VER: 0.02,
@@ -28,7 +28,7 @@ export const stage1__mob1 = {
 
     moveTimeF: 0.8,
 
-    hitSpeed: 1,
+    hitSpeed: 1.5,
     damage: 15,
 
     ACC: 400,
@@ -80,9 +80,9 @@ export const stage1__mob1 = {
   },
 };
 export const stage1__mob1a = {
-  AGRO_D: 8,
-  RUN_D: 120,
-  HIT_D: [250, 450],
+  AGRO_D: 7,
+  RUN_D: 60,
+  HIT_D: [250, 350],
   HIT_VER: 0.6,
   HIT_TIME: [0.5, 2],
   JUMP_HIT_VER: 0.02,
@@ -161,9 +161,9 @@ export const stage1__mob1a = {
   },
 };
 export const stage1__mob1b = {
-  AGRO_D: 8,
-  RUN_D: 120,
-  HIT_D: [250, 450],
+  AGRO_D: 7,
+  RUN_D: 60,
+  HIT_D: [250, 350],
   HIT_VER: 0.6,
   HIT_TIME: [0.5, 2],
   JUMP_HIT_VER: 0.02,
@@ -244,9 +244,9 @@ export const stage1__mob1c = {
   DIES_N: 1,
   DIES_SCALE: 0.5,
 
-  AGRO_D: 8,
-  RUN_D: 200,
-  HIT_D: [250, 450],
+  AGRO_D: 7,
+  RUN_D: 60,
+  HIT_D: [250, 350],
   HIT_VER: 0.6,
   HIT_TIME: [0.5, 2],
   JUMP_HIT_VER: 0.02,

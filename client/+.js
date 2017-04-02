@@ -11,5 +11,6 @@ globally(require('./assets'));
 globally(require('./client'));
 globally(require('./HSL'));
 globally(require('./items'));
+globally(require('./map'));
 globally(require('./NPC'));
 globally(require('./ui'));

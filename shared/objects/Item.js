@@ -127,11 +127,11 @@ export const weapon__dubina__default__doHit = ia_dubina__doHit([
   player_moveset(0.3, 0.3, 0.2, 600, 80, 0.88, 0.9, 0.9),
 ]);
 export const weapon__bigdubina__default__doHit = ia_dubina__doHit([
-  player_moveset(0.5, 0.4, 0.5, 800, 10, 0.88, 0.9, 0.9),
-  player_moveset(0.5, 0.4, 0.5, 800, 100, 0.88, 0.9, 0.9), //
+  player_moveset(0.5, 0.6, 0.5, 800, 10, 0.88, 0.9, 0.9),
+  player_moveset(0.5, 0.6, 0.5, 800, 100, 0.88, 0.9, 0.9), //
   [0.7, 0.3, 0.3, 0, 15],
-  player_moveset(0.5, 0.4, 0.5, 800, 20, 0.88, 0.9, 0.9),
-  player_moveset(0.5, 0.4, 0.5, 800, 80, 0.88, 0.9, 0.9),
+  player_moveset(0.5, 0.6, 0.5, 800, 20, 0.88, 0.9, 0.9),
+  player_moveset(0.5, 0.6, 0.5, 800, 80, 0.88, 0.9, 0.9),
 ]);
 export const weapon__kinjal__default__doHit = ia_sword__doHit([
   player_moveset(0.1, 0.15, 0.1, 700, 30, 0.8, 1, 0.9),

@@ -49,7 +49,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
         ]);
 
       const view = makeHSL(hslMap[opts.VIEW], 0.5, 0.5, tints);
-      const backView = makeHSL(hslMap[opts.VIEW], 0.5, 0.5, tints);
+      const backView = makeHSL(
+        hslMap[opts.BACK_VIEW || opts.VIEW], 0.5, 0.5, tints);
 
       images = [
         view,
@@ -80,19 +81,11 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     for (const k in images) {
       let image = images[k];
-
-      const prepare = (image) => {
-        image.scale.set(scale);
-        image.angle = 90;
-        if (orient) {
-          image.scale.x = -image.scale.x;
-        }
-      };
-
-      prepare(image.gray);
-      prepare(image.color);
-      prepare(image.ambient);
-      prepare(image.special);
+      image.scale.set(scale);
+      image.angle = 90;
+      if (orient) {
+        image.scale.x = -image.scale.x;
+      }
     }
     return [images, orient];
   }
@@ -125,20 +118,12 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
     for (const k in images) {
       let image = images[k];
-
-      const prepare = (image) => {
-        image.scale.set(scale);
-        image.angle = 90;
-        if (orient) {
-          image.scale.x = -image.scale.x;
-        }
-        image.smoothed = true;
-      };
-
-      prepare(image.gray);
-      prepare(image.color);
-      prepare(image.ambient);
-      prepare(image.special);
+      image.scale.set(scale);
+      image.angle = 90;
+      if (orient) {
+        image.scale.x = -image.scale.x;
+      }
+      image.smoothed = true;
     }
 
     return images;
@@ -152,24 +137,16 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       let views = [];
       //
       const prepare = (image) => {
-        image.anchor.x = 0.5;
-        image.anchor.y = 0.5;
         image.angle = 90;
         image.smoothed = true;
       }; {
         const view = makeHSL(hslMap[opts.LEFT_FOOT_VIEW],
           0.5, 0.5, tints);
-        prepare(view.gray);
-        prepare(view.color);
-        prepare(view.ambient);
-        prepare(view.special);
+        prepare(view);
         views.push(view);
       } {
         const view = makeHSL(hslMap[opts.RIGHT_FOOT_VIEW], 0.5, 0.5, tints);
-        prepare(view.gray);
-        prepare(view.color);
-        prepare(view.ambient);
-        prepare(view.special);
+        prepare(view);
         views.push(view);
       }
 
@@ -680,7 +657,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
           g.destroy();
         }
       };
-      game.layer.sub.middle.add(g);
+      game.layer.sub.bottom.add(g);
     }
   }
 }
