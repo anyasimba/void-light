@@ -5,7 +5,7 @@ export const stage1__mob1 = {
 
   AGRO_D: 7,
   RUN_D: 60,
-  HIT_D: [250, 350],
+  HIT_D: [150, 250],
   HIT_VER: 0.6,
   HIT_TIME: [0.5, 2],
   JUMP_HIT_VER: 0.02,
@@ -29,7 +29,7 @@ export const stage1__mob1 = {
     moveTimeF: 0.8,
 
     hitSpeed: 1.5,
-    damage: 15,
+    damage: 20,
 
     ACC: 400,
     RUN_ACC: 700,
@@ -82,7 +82,7 @@ export const stage1__mob1 = {
 export const stage1__mob1a = {
   AGRO_D: 7,
   RUN_D: 60,
-  HIT_D: [250, 350],
+  HIT_D: [150, 250],
   HIT_VER: 0.6,
   HIT_TIME: [0.5, 2],
   JUMP_HIT_VER: 0.02,
@@ -163,7 +163,7 @@ export const stage1__mob1a = {
 export const stage1__mob1b = {
   AGRO_D: 7,
   RUN_D: 60,
-  HIT_D: [250, 350],
+  HIT_D: [150, 250],
   HIT_VER: 0.6,
   HIT_TIME: [0.5, 2],
   JUMP_HIT_VER: 0.02,
@@ -246,7 +246,7 @@ export const stage1__mob1c = {
 
   AGRO_D: 7,
   RUN_D: 60,
-  HIT_D: [250, 350],
+  HIT_D: [150, 250],
   HIT_VER: 0.6,
   HIT_TIME: [0.5, 2],
   JUMP_HIT_VER: 0.02,

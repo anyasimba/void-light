@@ -283,7 +283,7 @@ export class Mob {
       delete this.actTime;
       return;
     }
-    const af = 10 + Math.random() * 40;
+    const af = 20 + Math.random() * 15;
     a = Math.min(Math.abs(a), af * Math.PI / 180.0) *
       Math.sign(a);
     this.hitDir = vec3.fromAngles(0, this.hitDir.toAngle() *
