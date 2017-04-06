@@ -64,6 +64,7 @@ export class GameLevelZone {
   }
 
   loadMap(mapName) {
+    console.log('BEGIN load map', mapName);
     global.mapCache = global.mapCache || {};
     mapCache[mapName] = mapCache[mapName] || {};
     const cache = mapCache[mapName];
@@ -79,33 +80,41 @@ export class GameLevelZone {
     this.h = this.map.height * WALL_SIZE;
 
     if (!cache.grid) {
-      cache.grid = new Array(this.map.width);
+      cache.grid = new Array(6);
 
-      const ground = this.map.layers[0];
-      for (let y = 0; y < this.map.height; ++y) {
-        for (let x = 0; x < this.map.width; ++x) {
-          cache.grid[x] = cache.grid[x] || new Array(this.map.height);
-          cache.grid[x][y] = 0;
+      for (let j = 0; j < 6; ++j) {
+        cache.grid[j] = new Array(this.map.width);
 
-          const i = y * this.map.width + x;
-          const v = ground.data[i];
-          const slug = this.map.dictionary[v];
-          if (v !== 0) {
-            switch (slug) {
-              case 'ice':
-                cache.grid[x][y] = 5;
-                break;
-              case 'slow':
-                cache.grid[x][y] = 4;
-                break;
-              case 'lava':
-                cache.grid[x][y] = 3;
-                break;
-              case 'whole':
-                cache.grid[x][y] = 2;
-                break;
-              default:
-                cache.grid[x][y] = 1;
+        const ground = this.map.layers[j * 2];
+        for (let y = 0; y < this.map.height; ++y) {
+          for (let x = 0; x < this.map.width; ++x) {
+            cache.grid[j][x] = cache.grid[j][x] || new Array(this.map.height);
+            cache.grid[j][x][y] = [0, 0];
+
+            const i = y * this.map.width + x;
+            const v = ground.data[i];
+            const slug = this.map.dictionary[v];
+            if (v !== 0) {
+              switch (slug) {
+                case 'ice':
+                  cache.grid[j][x][y] = [5, 0];
+                  break;
+                case 'slow':
+                  cache.grid[j][x][y] = [4, 0];
+                  break;
+                case 'lava':
+                  cache.grid[j][x][y] = [3, 0];
+                  break;
+                case 'whole':
+                  cache.grid[j][x][y] = [2, 0];
+                  break;
+                default:
+                  if (slug.indexOf('_') > 0) {
+                    cache.grid[j][x][y] = [1, slug.slice(-1) * 100 / 6];
+                  } else {
+                    cache.grid[j][x][y] = [1, 100];
+                  }
+              }
             }
           }
         }
@@ -117,66 +126,69 @@ export class GameLevelZone {
 
     this.mapObjects = []
     this.bossAreas = [];
-    const objects = this.map.layers[1];
-    for (const k in objects.objects) {
-      const o = objects.objects[k];
-      let slug = this.map.dictionary[o.gid];
-      const x = o.x / 32 * WALL_SIZE + WALL_SIZE * 0.5;
-      const y = o.y / 32 * WALL_SIZE - WALL_SIZE * 0.5;
-      const data = {
-        mapID: o.id,
-        mapX: (o.x + o.width * 0.5) / 32 * WALL_SIZE,
-        mapY: (o.y + o.height * 0.5) / 32 * WALL_SIZE,
-        mapW: o.width / 32 * WALL_SIZE,
-        mapH: o.height / 32 * WALL_SIZE,
-        x: x,
-        y: y,
-        slug: slug,
-      };
-      Object.assign(data, o.properties);
+    for (let i = 0; i < 6; ++i) {
+      const objects = this.map.layers[i * 2 + 1];
+      for (const k in objects.objects) {
+        const o = objects.objects[k];
+        let slug = this.map.dictionary[o.gid];
+        const x = o.x / 32 * WALL_SIZE + WALL_SIZE * 0.5;
+        const y = o.y / 32 * WALL_SIZE - WALL_SIZE * 0.5;
+        const data = {
+          mapID: o.id,
+          mapX: (o.x + o.width * 0.5) / 32 * WALL_SIZE,
+          mapY: (o.y + o.height * 0.5) / 32 * WALL_SIZE,
+          mapW: o.width / 32 * WALL_SIZE,
+          mapH: o.height / 32 * WALL_SIZE,
+          x: x,
+          y: y,
+          z: i * 100,
+          slug: slug,
+        };
+        Object.assign(data, o.properties);
 
-      if (slug) {
-        data.mapY -= WALL_SIZE;
-        switch (slug) {
-          case 'born':
-            data.name = o.name;
-            this.playerPoints.push(data);
-            break;
-          case 'checkpoint':
-            this.mapObjects[data.mapID] = new Checkpoint(this, data);
-            break;
-          case 'main_npc':
-          case 'other_npc':
-          case 'bad_npc':
-          case 'mob':
-          case 'boss':
-            data.slug = o.name;
-            this.enemyPoints.push(data);
-            break;
-          case 'item':
-            data.slug = o.name;
-            this.mapObjects[data.mapID] = new ItemOnMap(this, data);
-            break;
-          case 'decor__light':
-            this.mapObjects[data.mapID] = new Decor(this, data);
-            break;
-        }
-      } else if (o.name) {
-        slug = o.name;
-        data.slug = o.name;
-        switch (o.name) {
-          case 'Door':
-            this.mapObjects[data.mapID] = new Door(this, data);
-            break;
-          case 'Exit':
-            data.isExit = true;
-            data.exitWay = o.type;
-            this.mapObjects[data.mapID] = new Door(this, data);
-            break;
-          case 'BossArea':
-            this.bossAreas.push(data);
-            break;
-          default:
+        if (slug) {
+          data.mapY -= WALL_SIZE;
+          switch (slug) {
+            case 'born':
+              data.name = o.name;
+              this.playerPoints.push(data);
+              break;
+            case 'checkpoint':
+              this.mapObjects[data.mapID] = new Checkpoint(this, data);
+              break;
+            case 'main_npc':
+            case 'other_npc':
+            case 'bad_npc':
+            case 'mob':
+            case 'boss':
+              data.slug = o.name;
+              this.enemyPoints.push(data);
+              break;
+            case 'item':
+              data.slug = o.name;
+              this.mapObjects[data.mapID] = new ItemOnMap(this, data);
+              break;
+            case 'decor__light':
+              this.mapObjects[data.mapID] = new Decor(this, data);
+              break;
+          }
+        } else if (o.name) {
+          slug = o.name;
+          data.slug = o.name;
+          switch (o.name) {
+            case 'Door':
+              this.mapObjects[data.mapID] = new Door(this, data);
+              break;
+            case 'Exit':
+              data.isExit = true;
+              data.exitWay = o.type;
+              this.mapObjects[data.mapID] = new Door(this, data);
+              break;
+            case 'BossArea':
+              this.bossAreas.push(data);
+              break;
+            default:
+          }
         }
       }
     }
@@ -197,6 +209,8 @@ export class GameLevelZone {
       }
       this.mobs.push(mob);
     }
+
+    console.log('[end] load map');
   }
 
   addObject(object) {
@@ -312,19 +326,23 @@ export class GameLevelZone {
         player.owner.changeZone(checkpoint.mapName);
         return;
       }
-      const p = player.owner.params.checkpoint.pos;
-      let px = p.x;
-      let py = p.y;
-      if (p.name !== undefined) {
-        px *= WALL_SIZE;
-        py *= WALL_SIZE;
-        const a = Math.random() * Math.PI * 2;
-        player.pos = {
-          x: px + Math.cos(a) * WALL_SIZE * 2,
-          y: py + Math.sin(a) * WALL_SIZE * 2,
-        };
-        Checkpoint.USE(player);
-        return;
+
+      if (player.owner.params.checkpoint.mapID) {
+        const checkpointObj = this.mapObjects[
+          player.owner.params.checkpoint.mapID.mapID];
+
+        if (checkpointObj && checkpointObj.isCheckpoint) {
+          let px = checkpointObj.pos.x;
+          let py = checkpointObj.pos.y;
+          const a = Math.random() * Math.PI * 2;
+          player.pos = {
+            x: px + Math.cos(a) * WALL_SIZE * 2,
+            y: py + Math.sin(a) * WALL_SIZE * 2,
+          };
+          player.z = checkpointObj.z;
+          Checkpoint.USE(player);
+          return;
+        }
       }
     }
     target = target || '1';
@@ -338,6 +356,7 @@ export class GameLevelZone {
     const i = Math.floor(Math.random() * points.length);
     const p = points[i];
     player.pos = p;
+    player.z = p.z;
   }
 
   emitTo(client) {

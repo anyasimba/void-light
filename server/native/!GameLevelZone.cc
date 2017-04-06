@@ -26,8 +26,14 @@ struct GameLevelZoneObject {
   bool isStatic;
 
   vec2 pos;
+  float z;
+  float speedZ;
+  bool isFall;
   vec2 beforePos;
   vec2 beforePos2;
+  float beforeZ;
+  float beforeSpeedZ;
+  bool beforeIsFall;
   vec2 speed;
   vec2 beforeSpeed;
   vec2 beforeSpeed2;
@@ -43,6 +49,7 @@ struct GameLevelZoneObject {
   BODY_TYPE_ENUM BODY_TYPE;
   float BODY_P1;
   float BODY_P2;
+  float BODY_P3;
   bool isBodyChecked;
 
   vector<GameLevelZoneObjectCell> cells;
@@ -53,6 +60,9 @@ struct GameLevelZoneObject {
 };
 NUMBER_PROPERTY(GameLevelZoneObject, PosX, pos.x);
 NUMBER_PROPERTY(GameLevelZoneObject, PosY, pos.y);
+NUMBER_PROPERTY(GameLevelZoneObject, Z, z);
+NUMBER_PROPERTY(GameLevelZoneObject, SpeedZ, speedZ);
+NUMBER_PROPERTY(GameLevelZoneObject, IsFall, isFall);
 NUMBER_PROPERTY(GameLevelZoneObject, SpeedX, speed.x);
 NUMBER_PROPERTY(GameLevelZoneObject, SpeedY, speed.y);
 NUMBER_PROPERTY(GameLevelZoneObject, GroundFriction, groundFriction);
@@ -74,9 +84,14 @@ void GameLevelZoneObject__getOthers(const FunctionCallbackInfo<Value>& args) {
   args.GetReturnValue().Set(array);
 }
 
+struct GroundCell {
+  int type;
+  float z;
+};
+
 struct GameLevelZone {
   Local<Object> js;
-  vector<vector<int>> grid;
+  vector<vector<vector<GroundCell>>> grid;
 
   vector<vector<vector<GameLevelZoneObject *>>> cells;
   vector<GameLevelZoneObject *> objects;
@@ -98,18 +113,25 @@ void new__GameLevelZone(const FunctionCallbackInfo<Value>& args) {
   self->js = args[0]->ToObject();
 
   Local<Array> grid = Local<Array>::Cast(args[1]);
-  self->grid.resize(grid->Length());
-  for (int x = 0; x < (int)grid->Length(); ++x) {
-    Local<Array> col = Local<Array>::Cast(grid->Get(x));
-    self->grid[x].resize(col->Length());
-    for (int y = 0; y < (int)col->Length(); ++y) {
-      int v = (int)col->Get(y)->NumberValue();
-      self->grid[x][y] = v;
+  self->grid.resize(6);
+  for (int i = 0; i < 6; ++i) {
+    Local<Array> layer = Local<Array>::Cast(grid->Get(i));
+    self->grid[i].resize(layer->Length());
+    for (int x = 0; x < (int)layer->Length(); ++x) {
+      Local<Array> col = Local<Array>::Cast(layer->Get(x));
+      self->grid[i][x].resize(col->Length());
+      for (int y = 0; y < (int)col->Length(); ++y) {
+        Local<Array> set = Local<Array>::Cast(col->Get(y));
+        GroundCell cell;
+        cell.type = (int)set->Get(0)->NumberValue();
+        cell.z = (float)set->Get(1)->NumberValue();
+        self->grid[i][x][y] = cell;
+      }
     }
   }
 
-  const int cell_w = (int)ceil(self->grid.size() * WALL_SIZE / self->CELL_SIZE());
-  const int cell_h = (int)ceil(self->grid[0].size() * WALL_SIZE / self->CELL_SIZE());
+  const int cell_w = (int)ceil(self->grid[0].size() * WALL_SIZE / self->CELL_SIZE());
+  const int cell_h = (int)ceil(self->grid[0][0].size() * WALL_SIZE / self->CELL_SIZE());
   self->cells.resize(cell_w);
   for (int x = 0; x < cell_w; ++x) {
     self->cells[x].resize(cell_h);
@@ -138,6 +160,7 @@ void GameLevelZone__addObject(const FunctionCallbackInfo<Value>& args) {
     object->BODY_TYPE = STATIC_RECT;
     object->BODY_P1 = (float) body->GET("w")->NumberValue();
     object->BODY_P2 = (float) body->GET("h")->NumberValue();
+    object->BODY_P3 = (float) body->GET("z2")->NumberValue();
   }
 
   object->isNeedDestroy = false;
@@ -145,6 +168,9 @@ void GameLevelZone__addObject(const FunctionCallbackInfo<Value>& args) {
   object->hasCells = false;
   object->AREA_W = 300;
   object->AREA_H = 300;
+
+  object->speedZ = 0;
+  object->isFall = false;
 
   object->groundFriction = 1.f;
   object->groundAffectTime = -1.f;

@@ -113,7 +113,8 @@ export class Fighter {
       !this.inJump &&
       !this.inRoll &&
       !this.stunTime &&
-      !this.waitTime;
+      !this.waitTime &&
+      this.groundFriction >= 0.0;
     if (isMove) {
       let a = 0;
       if (this.inRun) {
@@ -139,7 +140,7 @@ export class Fighter {
     }
 
     let FRICTION_F = this.groundFriction;
-    if (this.inJump) {
+    if (this.inJump || this.isFall) {
       FRICTION_F = 0.0;
     } else if (this.inRoll) {
       FRICTION_F = 0.5;
@@ -214,19 +215,6 @@ export class Fighter {
       this.afterRollTime -= dt;
       if (this.afterRollTime <= 0) {
         delete this.afterRollTime;
-      }
-    }
-    if (this.inJump) {
-      this.inJump.time += dt;
-      if (this.inJump.time >= this.inJump.duration) {
-        this.afterJumpTime = this.inJump.afterTime;
-        delete this.inJump;
-      }
-    }
-    if (this.afterJumpTime) {
-      this.afterJumpTime -= dt;
-      if (this.afterJumpTime <= 0) {
-        delete this.afterJumpTime;
       }
     }
     if (this.stunTime !== undefined) {
@@ -375,11 +363,9 @@ export class Fighter {
     } else {
       this.speed = this.speed.unit().multiply(data.force);
     }
-    this.inJump = {
-      time: 0,
-      duration: data.duration,
-      afterTime: data.afterTime,
-    };
+    this.inJump = true;
+    this.isFall = true;
+    this.speedZ = data.z;
     this.look = this.speed.unit();
   }
 
@@ -388,6 +374,8 @@ export class Fighter {
       angle: 0,
     });
   }
+
+  createBullet() {}
 }
 
 export function player__doHit() {

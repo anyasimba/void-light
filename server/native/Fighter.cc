@@ -38,8 +38,6 @@ struct Fighter: GameLevelZoneObject {
   float afterRollTime;
   float rollBlockTime;
   bool inJump;
-  float inJumpTime;
-  float inJumpAfterTime;
   float afterJumpTime;
 
   float stunTime;
@@ -175,7 +173,8 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
     !self->inJump &&
     !self->inRoll &&
     self->stunTime <= 0.f &&
-    self->waitTime <= 0.f;
+    self->waitTime <= 0.f &&
+    !self->isFall;
 
   if (isMove) {
     float a = 0;
@@ -200,7 +199,7 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
 
   // Friction.
   float FRICTION_F = self->groundFriction;
-  if (self->inJump) {
+  if (self->inJump || self->isFall) {
     FRICTION_F = 0.f;
   } else if (self->inRoll) {
     FRICTION_F = 0.5f;
@@ -256,13 +255,6 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
   }
   if (self->afterRollTime > 0.f) {
     self->afterRollTime -= dt;
-  }
-  if (self->inJump) {
-    self->inJumpTime -= dt;
-    if (self->inJumpTime <= 0.f) {
-      self->inJump = false;
-      self->afterJumpTime = self->inJumpAfterTime;
-    }
   }
   if (self->afterJumpTime > 0.f) {
     self->afterJumpTime -= dt;
@@ -368,8 +360,8 @@ void Fighter__onJump(const FunctionCallbackInfo<Value>& args) {
     self->speed = self->speed.unit() * (float) opts->GET("force")->NumberValue();
   }
   self->inJump = true;
-  self->inJumpTime = (float) opts->GET("duration")->NumberValue();
-  self->inJumpAfterTime = (float) opts->GET("afterTime")->NumberValue();
+  self->isFall = true;
+  self->speedZ = -(float) opts->GET("z")->NumberValue();
   self->look = self->speed.unit();
 }
 void Fighter__step(const FunctionCallbackInfo<Value>& args) {

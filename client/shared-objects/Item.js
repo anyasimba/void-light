@@ -117,7 +117,6 @@ export const weapon__sword__default = new class {
       0xFFFFFF,
       0x888888,
       0x888888,
-      0x000000
     ]);
     image.scale.x = 0.5;
     image.scale.y = 0.5;
@@ -141,6 +140,23 @@ export const weapon__bigsword__default = new class {
     return image;
   }
 }
+export const weapon__bigsword2__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView() {
+    const image = makeHSL(hslMap['sword'], 0.5, 0.75, [
+      0xCCAAFF,
+      0x444444,
+      0x5599FF,
+      0x5599FF
+    ]);
+    image.scale.x = 0.5;
+    image.scale.y = 0.5;
+    return image;
+  }
+}
 
 export const weapon__axe__default = new class {
   constructor() {
@@ -152,7 +168,6 @@ export const weapon__axe__default = new class {
       0xFFFFFF,
       0x888888,
       0x888888,
-      0x000000
     ]);
     image.scale.x = 0.5;
     image.scale.y = 0.5;
@@ -340,5 +355,23 @@ export const shield__default__default = new class {
       this.parent.step(step3, step2FN);
     };
     this.parent.step(time, step2FN);
+  }
+}
+
+export const weapon__luk__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView() {
+    const image = makeHSL(hslMap['luk'], 0.5, 0.5, [
+      0xFFFFFF,
+      0x8899AA,
+      0x8899AA,
+      0x8899AA
+    ]);
+    image.scale.x = -0.9;
+    image.scale.y = 0.9;
+    return image;
   }
 }

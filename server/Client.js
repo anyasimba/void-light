@@ -604,6 +604,7 @@ export class Client extends global.Client {
       params.Dexterity, 10, 2, 30, 1, 50, 0.5, 0.25) * 0.3;
     this.player.hitSpeed = 0.9 + 0.5 / (this.getStep(
       params.Dexterity, 10, 0.1, 30, 0.3, 50, 0.5, 1) * 0.1 + 1);
+
     if (this.player.emitParams) {
       this.player.emitParams();
     }

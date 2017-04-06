@@ -54,6 +54,7 @@ export const client__item__sword = {
     const image = weapon__sword__default.createView();
     image.scale.set(0.4);
     image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
     image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
@@ -66,6 +67,20 @@ export const client__item__big__sword = {
     const image = weapon__bigsword__default.createView();
     image.scale.set(0.5);
     image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
+    image.angle = 45;
+    return image;
+  },
+};
+export const client__item__big__sword2 = {
+  LANG_RU: 'Меч синего пламени',
+
+  createView() {
+    const image = weapon__bigsword2__default.createView();
+    image.scale.set(0.5);
+    image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
     image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
@@ -78,6 +93,7 @@ export const client__item__axe = {
     const image = weapon__axe__default.createView();
     image.scale.set(0.4);
     image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
     image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
@@ -90,6 +106,7 @@ export const client__item__bigaxe = {
     const image = weapon__axe__default.createView();
     image.scale.set(0.5);
     image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
     image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
@@ -102,6 +119,7 @@ export const client__item__kopie = {
     const image = weapon__kopie__default.createView();
     image.scale.set(0.5);
     image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
     image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
@@ -114,6 +132,7 @@ export const client__item__molot = {
     const image = weapon__molot__default.createView();
     image.scale.set(0.4);
     image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
     image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
@@ -126,6 +145,7 @@ export const client__item__bigmolot = {
     const image = weapon__bigmolot__default.createView();
     image.scale.set(0.5);
     image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
     image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
@@ -138,6 +158,7 @@ export const client__item__dubina = {
     const image = weapon__dubina__default.createView();
     image.scale.set(0.4);
     image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
     image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
@@ -150,6 +171,7 @@ export const client__item__bigdubina = {
     const image = weapon__bigdubina__default.createView();
     image.scale.set(0.5);
     image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
     image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
@@ -162,6 +184,7 @@ export const client__item__kinjal = {
     const image = weapon__kinjal__default.createView();
     image.scale.set(0.4);
     image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
     image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;
@@ -174,6 +197,20 @@ export const client__item__shield = {
     const image = shield__default__default.createView();
     image.scale.set(0.8);
     image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
+    image.angle = 45;
+    return image;
+  },
+};
+export const client__item__luk = {
+  LANG_RU: 'Лук',
+
+  createView() {
+    const image = weapon__luk__default.createView();
+    image.scale.set(0.8);
+    image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
     image.addTex.anchor.set(0.5);
     image.angle = 45;
     return image;

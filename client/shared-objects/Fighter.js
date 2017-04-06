@@ -165,7 +165,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.angle = 0;
 
 
-    this.tints = [0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF];
+    this.tints = [0xFFFFFF];
     if (this.kind === 'mob') {
       const opts = global[this.name];
 
@@ -180,9 +180,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
 
       let tint = opts.TINT;
-      if (opts.TINT === undefined) {
-        tint = 0xFFFFFF;
-      }
       if (opts.GRAY_TINT === undefined) {
         this.tints[0] = tint;
       } else {
@@ -203,6 +200,15 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       } else {
         this.tints[3] = opts.SPECIAL_TINT;
       }
+      if (opts.ADD_COLOR_TINT !== undefined) {
+        this.tints[4] = opts.ADD_COLOR_TINT;
+      }
+      if (opts.ADD_AMBIENT_TINT !== undefined) {
+        this.tints[5] = opts.ADD_AMBIENT_TINT;
+      }
+      if (opts.ADD_SPECIAL_TINT !== undefined) {
+        this.tints[6] = opts.ADD_SPECIAL_TINT;
+      }
     } else {
       this.light = genLight();
       this.light.scale.set(12 * this.light.f);
@@ -213,9 +219,15 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       if (this.id !== client.playerID) {
         this.tints[0] = 0x88FF33;
         this.tints[1] = 0x88FF33;
-        this.tints[2] = 0x88FF33;
+        this.tints[2] = 0x111111;
         this.tints[3] = 0x88FF33;
         this.light.tint = 0x88FF33;
+      } else {
+        this.tints[0] = 0xFFFFFF;
+        this.tints[1] = 0x999999;
+        this.tints[2] = 0x111111;
+        this.tints[3] = 0xCCCCCC;
+        this.light.tint = 0xFFFFFF;
       }
     }
 
@@ -278,11 +290,15 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
   onPos(data) {
     this.pos.init(data.pos);
+    this.z = data.z;
+    this.speedZ = data.speedZ;
+    this.isFall = data.isFall;
     this.speed.init(data.speed);
     this.inputMove.init(data.inputMove);
     this.absLook = data.absLook;
     this.inRun = data.inRun;
     this.inBlock = data.inBlock;
+    this.inJump = data.inJump;
     this.groundFriction = data.groundFriction;
   }
   onParams(data) {
@@ -316,7 +332,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.finishHit();
     this.stunTime = data.time;
     this.stunDelay = data.delay;
-    console.log(data);
   }
   onWait(data) {
     if (this.stunTime) {
@@ -457,7 +472,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
       group.alpha = 1 - group.time / 60;
     };
-    game.layer.sub.deads.add(group);
+    game.layers[0].sub.deads.add(group);
   }
 
   update() {
@@ -484,13 +499,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     if (!this.visible) {
       return;
-    }
-
-    if (this.inJump) {
-      const f = Math.sin(
-        (this.inJump.time / this.inJump.duration) * Math.PI) * 0.2;
-      this.group.scale.x = this.scale * (1 + f);
-      this.group.scale.y = this.scale * (1 + f);
     }
 
     this.views[0].visible = true;
@@ -585,8 +593,12 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
     }
 
-    if (game.layer.sub.light && this.light) {
-      const light = game.layer.sub.light;
+    let l = Math.floor(this.z / 100.0);
+    l = Math.min(l, 5);
+    l = Math.max(l, 0);
+    if (this.light) {
+      this.light.alpha = game.layers[l].sub.mix7.alpha * lightAlpha;
+      const light = game.light;
       const lx = 0; //game.w * 0.5;
       const ly = 0; //game.h * 0.5;
       const x = (this.pos.x - game.ui.x + lx) / light.scale.x;
@@ -657,7 +669,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
           g.destroy();
         }
       };
-      game.layer.sub.bottom.add(g);
+      let l = Math.floor(this.z / 100.0);
+      l = Math.min(l, 5);
+      l = Math.max(l, 0);
+      game.layers[l].sub.mix1.add(g);
     }
   }
 }

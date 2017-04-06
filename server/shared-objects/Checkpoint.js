@@ -1,15 +1,18 @@
-export class Checkpoint extends mix(global.Checkpoint, MixNativeGameObject,
+export class Checkpoint extends mix(
+  global.Checkpoint,
+  MixNativeGameObject,
   MixGameObject) {
+
   get state() {
     return {
       pos: this.pos.clone(),
+      z: this.z,
       size: this.size,
     };
   }
 
   get slug() {
     return this.gameLevelZone.mapConfig.LANG_RU;
-
   }
 
   preCreate(opts) {
@@ -17,6 +20,7 @@ export class Checkpoint extends mix(global.Checkpoint, MixNativeGameObject,
       kind: 'staticRect',
       w: WALL_SIZE,
       h: WALL_SIZE,
+      z2: 60,
     }
 
     this.native = native.new__Checkpoint(this, opts);
@@ -24,10 +28,14 @@ export class Checkpoint extends mix(global.Checkpoint, MixNativeGameObject,
   constructor(gameLevelZone, opts) {
     super({
       isStatic: true,
+      isCheckpoint: true,
 
       pos: new vec3(opts.mapX, opts.mapY),
+      z: opts.z,
       size: 400,
     });
+
+    this.opts = opts;
 
     gameLevelZone.addObject(this);
   }
@@ -36,7 +44,9 @@ export class Checkpoint extends mix(global.Checkpoint, MixNativeGameObject,
     if (object.type === 'Fighter' && object.kind === 'player') {
       const dx = Math.abs(this.pos.x - object.pos.x);
       const dy = Math.abs(this.pos.y - object.pos.y);
-      if (Math.sqrt(dx * dx + dy * dy) < this.size) {
+      if (Math.sqrt(dx * dx + dy * dy) < this.size &&
+        Math.abs(this.z + 20.0 - object.z) <= 20.0) {
+
         object.canCheckpoint = this;
       }
     }
@@ -66,9 +76,8 @@ export class Checkpoint extends mix(global.Checkpoint, MixNativeGameObject,
   }
   use(player) {
     Checkpoint.USE(player);
-    player.owner.saveParam('checkpoint', 'pos', {
-      x: this.pos.x / WALL_SIZE,
-      y: this.pos.y / WALL_SIZE,
+    player.owner.saveParam('checkpoint', 'mapID', {
+      mapID: this.opts.mapID,
       name: this.slug,
     });
     player.owner.saveParam('checkpoint', 'mapName', this.gameLevelZone.mapName);

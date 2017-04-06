@@ -29,6 +29,8 @@ Object.assign(GameLevelZone.prototype, {
       switch (other.type) {
         case 'Door':
           break;
+        case 'Bullet':
+          break;
         default:
           canDamage = true;
       }
@@ -53,6 +55,10 @@ Object.assign(GameLevelZone.prototype, {
     return hasBlock;
   },
   doBlock(source, opts, other) {
+    if (Math.abs(source.z - other.z) > 30) {
+      return;
+    }
+
     const rel = source.pos
       .subtract(other.pos);
     let a = Math.abs(rel.toAngle() - other.look.toAngle());
@@ -117,6 +123,8 @@ Object.assign(GameLevelZone.prototype, {
       switch (other.type) {
         case 'Door':
           break;
+        case 'Bullet':
+          break;
         default:
           canDamage = true;
       }
@@ -143,6 +151,27 @@ Object.assign(GameLevelZone.prototype, {
     }
   },
   doDamage(source, opts, other) {
+    if (other.rollBlockTime && !other.inHit && !other.inJump) {
+      return;
+    }
+    const isInvade = source.invade || other.invade;
+    if (source.kind === other.kind && !isInvade) {
+      return;
+    }
+
+    let superHit;
+    if (Math.abs(source.z - other.z) > 30 || source.speedZ >= 150) {
+      if (source.z < other.z ||
+        Math.abs(source.z - other.z) > 80 ||
+        source.speedZ < 150 ||
+        !source.isFall) {
+
+        return;
+      } else {
+        superHit = true;
+      }
+    }
+
     const rel = source.pos
       .subtract(other.pos);
     let a = Math.abs(rel.toAngle() - other.look.toAngle());
@@ -224,10 +253,14 @@ Object.assign(GameLevelZone.prototype, {
         source.damage_d * source.weapon.scale_d +
         source.weapon.damage;
     }
-    if (isInBlock) {
+    if (isInBlock && !superHit) {
       damage = 0;
     }
     damage *= damageF;
+    if (superHit) {
+      damage *= 4;
+      damage += other.HP * 0.4;
+    }
     damage = Math.floor(damage);
     other.useHP(damage, 8);
     other.emitAll('otherHit', {

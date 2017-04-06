@@ -86,6 +86,15 @@ export const weapon__bigsword__default__doHit = ia_sword__doHit([
   player_moveset(0.3, 0.3, 0.4, 900, 10, 0.88, 1, 1),
   player_moveset(0.5, 0.5, 0.5, 700, 60, 0.88, 0.9, 1.1),
 ]);
+export const weapon__bigsword2__default__doHit = ia_sword__doHit([
+  player_moveset(0.3, 0.3, 0.4, 1200, 50, 0.85, 0.9, 1.2),
+  player_moveset(0.4, 0.2, 0.4, 1500, 10, 0.85, 1, 1),
+  player_moveset(0.4, 0.4, 0.5, 1200, 90, 0.85, 0.9, 1.3), //
+  [0.5, 0.3, 0.3, 0, 10],
+  player_moveset(0.3, 0.3, 0.4, 1200, 50, 0.85, 0.9, 1.1),
+  player_moveset(0.2, 0.2, 0.4, 1500, 10, 0.85, 1, 1),
+  player_moveset(0.4, 0.4, 0.5, 1200, 90, 0.85, 0.9, 1.1),
+]);
 export const weapon__axe__default__doHit = ia_axe__doHit([
   player_moveset(0.15, 0.3, 0.2, 600, 70, 0.88, 0.9, 0.9),
   player_moveset(0.15, 0.3, 0.2, 600, 100, 0.88, 0.9, 0.9), //
@@ -142,3 +151,4 @@ export const weapon__kinjal__default__doHit = ia_sword__doHit([
   player_moveset(0.1, 0.15, 0.1, 700, 10, 0.8, 1, 1),
   player_moveset(0.1, 0.15, 0.1, 700, 40, 0.8, 1, 1.1),
 ]);
+export const weapon__luk__default__doHit = ia_luk__doHit();

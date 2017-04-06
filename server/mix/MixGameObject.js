@@ -94,6 +94,29 @@ export const MixNativeGameObject = base => class extends base {
     native.GameLevelZoneObject__setPosX(this.native, v.x);
     native.GameLevelZoneObject__setPosY(this.native, v.y);
   }
+  get z() {
+    return native.GameLevelZoneObject__getZ(this.native);
+  }
+  set z(v) {
+    native.GameLevelZoneObject__setZ(this.native, v);
+  }
+  get speedZ() {
+    return native.GameLevelZoneObject__getSpeedZ(this.native);
+  }
+  set speedZ(v) {
+    native.GameLevelZoneObject__setSpeedZ(this.native, v);
+  }
+  get isFall() {
+    return native.GameLevelZoneObject__getIsFall(this.native) !== 0;
+  }
+  set isFall(v) {
+    if (v) {
+      v = 1;
+    } else {
+      v = 0;
+    }
+    native.GameLevelZoneObject__setIsFall(this.native, v);
+  }
   get speed() {
     return new vec3(
       native.GameLevelZoneObject__getSpeedX(this.native),

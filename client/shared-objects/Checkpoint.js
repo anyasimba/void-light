@@ -1,7 +1,7 @@
 export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
   static createView(gray, color, ambient, special) {
     const view = makeHSL(hslMap['checkpoint'], 0.5, 0.5, [
-      gray, color, ambient, special
+      gray, color, null, special, null, ambient
     ]);
     return view;
   }
@@ -77,8 +77,12 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
       this.view3.y + Math.sin(this.view3.angle * Math.PI / 180) * 200;
     this.view4.angle -= dt * 2;
 
-    if (game.layer.sub.light) {
-      const light = game.layer.sub.light;
+    let l = Math.floor(this.z / 100.0);
+    l = Math.min(l, 5);
+    l = Math.max(l, 0);
+    if (this.light) {
+      const alpha = game.layers[l].sub.mix7.alpha;
+      const light = game.light;
 
       const f = 1 / light.scale.x;
       const lx = 0; //game.w * 0.5;
@@ -87,19 +91,19 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
       const y = (this.pos.y - game.ui.y + ly) * f;
 
       this.light.scale.set(3 * this.light.f);
-      this.light.alpha = 0.7 * lightAlpha;
+      this.light.alpha = 0.7 * lightAlpha * alpha;
       light.texture.renderXY(
         this.light, x + this.view.x * f, y + this.view.y * f, false);
       this.light.scale.set(5 * this.light.f);
-      this.light.alpha = 0.7 * lightAlpha;
+      this.light.alpha = 0.7 * lightAlpha * alpha;
       light.texture.renderXY(
         this.light, x + this.view2.x * f, y + this.view2.y * f, false);
       this.light.scale.set(10 * this.light.f);
-      this.light.alpha = 0.8 * lightAlpha;
+      this.light.alpha = 0.8 * lightAlpha * alpha;
       light.texture.renderXY(
         this.light, x + this.view3.x * f, y + this.view3.y * f, false);
       this.light.scale.set(7 * this.light.f);
-      this.light.alpha = 1 * lightAlpha;
+      this.light.alpha = 1 * lightAlpha * alpha;
       light.texture.renderXY(
         this.light, x + this.view4.x * f, y + this.view4.y * f, false);
     }

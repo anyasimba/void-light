@@ -59,13 +59,14 @@ export function loadPlayer() {
 }
 
 export function loadWeapon() {
-  loadHsl('shield', 'assets/weapon/shield.png');
   loadHsl('sword', 'assets/weapon/sword.png');
   loadHsl('axe', 'assets/weapon/axe.png');
   loadHsl('kopie', 'assets/weapon/kopie.png');
   loadHsl('molot', 'assets/weapon/molot.png');
   loadHsl('dubina', 'assets/weapon/dubina.png');
   loadHsl('kinjal', 'assets/weapon/kinjal.png');
+  loadHsl('shield', 'assets/weapon/shield.png');
+  loadHsl('luk', 'assets/weapon/luk.png');
 }
 
 export function loadStage1() {
@@ -92,4 +93,17 @@ export function loadStage1__mobs() {
     'assets/stage1__mobs/stage1__mob1--foot.png');
   loadHsl('stage1__mob1--hand',
     'assets/stage1__mobs/stage1__mob1--hand.png');
+
+  loadHsl('stage1__mob3',
+    'assets/stage1__mobs/stage1__mob3.png');
+  loadHsl('stage1__mob3--back',
+    'assets/stage1__mobs/stage1__mob3--back.png');
+  loadHsl('stage1__mob3--hit',
+    'assets/stage1__mobs/stage1__mob3--hit.png');
+  loadHsl('stage1__mob3--dead',
+    'assets/stage1__mobs/stage1__mob3--dead.png');
+  loadHsl('stage1__mob3--foot',
+    'assets/stage1__mobs/stage1__mob3--foot.png');
+  loadHsl('stage1__mob3--hand',
+    'assets/stage1__mobs/stage1__mob3--hand.png');
 }

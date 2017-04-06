@@ -9,6 +9,9 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       lang: this.lang,
 
       pos: this.pos,
+      z: this.z,
+      speedZ: this.speedZ,
+      isFall: this.isFall,
       speed: this.speed,
       inputMove: this.inputMove,
       absLook: this.absLook,
@@ -51,12 +54,16 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
   emitPos() {
     this.emitAll('pos', {
       pos: this.pos,
+      z: this.z,
+      speedZ: this.speedZ,
+      isFall: this.isFall,
       speed: this.speed,
       inputMove: this.inputMove,
       absLook: this.absLook,
 
       inRun: this.inRun,
       inBlock: this.inBlock,
+      inJump: this.inJump,
 
       groundFriction: this.groundFriction,
     });
@@ -436,6 +443,10 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     };
     this.look.init(0, 1, 0);
     this.speed.init();
+    this.speedZ = 0;
+    this.isFall = false;
+    this.inJump = false;
+    this.afterJumpTime = -1.0;
 
     delete this.area;
 
@@ -544,7 +555,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
 
     const D = (this.body.size + player.body.size) * 0.5 + WALL_SIZE * 2;
     const d = this.pos.subtract(player.pos).length();
-    if (d < D) {
+    if (d < D && Math.abs(this.z + 20.0 - player.z) <= 20.0) {
       player.canTalk = this;
     }
   }
@@ -801,7 +812,6 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       delete this.canItem;
       this.owner.emit('stopCan', {});
 
-      console.log(item.slug);
       const itemData = global[item.slug];
       if (itemData.IS_UNIQUE) {
         this.owner.params.items.list.push({
@@ -920,7 +930,8 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       !this.inRoll &&
       !this.afterJumpTime &&
       !this.stunTime &&
-      !this.waitTime;
+      !this.waitTime &&
+      !this.isFall;
 
     if (canJump) {
       if (this.inHit || this.inBlock) {
@@ -935,10 +946,11 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       }
 
       const jumpData = {
-        duration: 0.8,
+        z: 130,
         afterTime: 0.3 / this.moveTimeF,
-        force: 700 * (this.moveTimeF * 0.4 + 0.6),
+        force: 800 * (this.moveTimeF * 0.4 + 0.6),
       };
+      this.inJumpAfterTime = jumpData.afterTime;
       if (this.inHit && this.hitStage !== 1) {
         jumpData.force = 300;
       }
@@ -957,6 +969,12 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     native.Fighter__clearSteps(this.native);
   }
 
+  fallGood() {
+    if (this.inJump) {
+      this.inJump = false;
+      this.afterJumpTime = this.inJumpAfterTime;
+    }
+  }
   fall() {
     this.hp = 0;
     this.speed = new vec3();
@@ -973,4 +991,15 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
   }
 
   stage(duration, fn, opts) {}
+
+  createBullet() {
+    if (!this.inHit) {
+      return;
+    }
+
+    new Bullet(this, {
+      pos: this.pos.clone(),
+      speed: this.hitVec.unit().multiply(2200),
+    });
+  }
 }

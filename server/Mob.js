@@ -29,18 +29,23 @@ export class Mob {
 
     this.fighter = new Fighter(this, this.opts.FIGHTER);
     if (opts.rightHand) {
-      opts.rightHand(this.fighter);
+      const itemOpts = patch(opts.rightHand);
+      itemOpts.parent = this.fighter;
+      new Item(itemOpts);
     }
     if (opts.leftHand) {
-      opts.leftHand(this.fighter);
+      const itemOpts = patch(opts.leftHand);
+      itemOpts.parent = this.fighter;
+      new Item(itemOpts);
     }
 
-    this.reborn();
-
     this.genGrid(
+      Math.floor(opts.z / 100.0),
       Math.floor(opts.x / WALL_SIZE),
       Math.floor(opts.y / WALL_SIZE)
     );
+
+    this.reborn();
   }
 
   reborn() {
@@ -61,16 +66,15 @@ export class Mob {
       x: this.opts.x,
       y: this.opts.y,
     };
+    this.fighter.z = this.opts.z;
 
     this.fighter.reborn();
     this.fighter.emitPos();
 
     this.fighter.area = this.area;
-
-    this.fighter.doJump();
   }
 
-  genGrid(x, y) {
+  genGrid(i, x, y) {
     const grid = this.gameLevelZone.grid;
     grid.pathGrids = grid.pathGrids || {};
     const gridID = x + 'x' + y;
@@ -79,6 +83,7 @@ export class Mob {
       pathGrid[x] = [];
       pathGrid[x][y] = 0;
       let queue = [{
+        i: i,
         x: x,
         y: y,
       }];
@@ -88,11 +93,23 @@ export class Mob {
         for (const i in q) {
           const p = q[i];
           const cost = pathGrid[p.x][p.y];
-          const check = (x, y, cost) => {
-            if (cost > 50) {
+          const check = (z, i, x, y, cost) => {
+            if (cost > 20) {
               return;
             }
-            if (grid[x] && (grid[x][y] === 1 || grid[x][y] === 2)) {
+            if (grid[i] && grid[i][x] && grid[i][x][y][0] === 2) {
+
+              return;
+            }
+            if (grid[i] && grid[i][x] &&
+              grid[i][x][y][0] === 1 && grid[i][x][y][1] - 100.0 / 6.0 > z
+            ) {
+
+              return;
+            }
+            if (grid[i] && grid[i][x] &&
+              grid[i][x][y][0] === 0 && i !== 2) {
+
               return;
             }
             if (pathGrid[x] && pathGrid[x][y] !== undefined &&
@@ -102,6 +119,7 @@ export class Mob {
             pathGrid[x] = pathGrid[x] || [];
             if (pathGrid[x][y] === undefined) {
               queue.push({
+                i: i,
                 x: x,
                 y: y,
               });
@@ -109,20 +127,29 @@ export class Mob {
             pathGrid[x][y] = cost;
           }
 
-          check(p.x + 1, p.y, cost + 1);
-          check(p.x - 1, p.y, cost + 1);
-          check(p.x, p.y + 1, cost + 1);
-          check(p.x, p.y - 1, cost + 1);
+          let z = 0;
+          if (grid[p.i] && grid[p.i][p.x] && grid[p.i][p.x][p.y]) {
+            z = grid[p.i][p.x][p.y][1];
+          }
 
-          check(p.x + 1, p.y + 1, cost + 1.414);
-          check(p.x - 1, p.y + 1, cost + 1.414);
-          check(p.x + 1, p.y - 1, cost + 1.414);
-          check(p.x - 1, p.y - 1, cost + 1.414);
+          check(z, p.i, p.x + 1, p.y, cost + 1);
+          check(z, p.i, p.x - 1, p.y, cost + 1);
+          check(z, p.i, p.x, p.y + 1, cost + 1);
+          check(z, p.i, p.x, p.y - 1, cost + 1);
+
+          check(z, p.i, p.x + 1, p.y + 1, cost + 1.414);
+          check(z, p.i, p.x - 1, p.y + 1, cost + 1.414);
+          check(z, p.i, p.x + 1, p.y - 1, cost + 1.414);
+          check(z, p.i, p.x - 1, p.y - 1, cost + 1.414);
         }
       }
     }
 
     this.pathGrid = grid.pathGrids[gridID];
+
+    if (grid[i] && grid[i][x] && grid[i][x][y]) {
+      this.opts.z += grid[i][x][y][1];
+    }
   }
 
   getNextPoint(x, y) {
@@ -174,7 +201,11 @@ export class Mob {
     if (!this.pathGrid[x] || this.pathGrid[x][y] === undefined) {
       return;
     }
-    this.opts.AGRO_D = Math.min(this.opts.AGRO_D, 40);
+
+    if (Math.floor(player.z / 100.0) !== Math.floor(this.opts.z / 100.0)) {
+      return;
+    }
+    this.opts.AGRO_D = Math.min(this.opts.AGRO_D, 16);
     if (this.target === player || this.pathGrid[x][y] <= this.opts.AGRO_D) {
       const setTarget = () => {
         if (this.opts.IS_BOSS && player.area !== this.area) {
@@ -199,7 +230,7 @@ export class Mob {
           if (!p) {
             break;
           }
-          const cost = this.onWay || 6;
+          const cost = this.onWay || 4;
           const d = Math.abs(p.x - tx) + Math.abs(p.y - ty);
           if (d > 0 && d < cost) {
             this.onWay = d;
@@ -347,7 +378,7 @@ export class Mob {
           (next.x * WALL_SIZE + WALL_SIZE * 0.5));
         const dy = Math.abs(this.fighter.pos.y -
           (next.y * WALL_SIZE + WALL_SIZE * 0.5));
-        if (dx + dy < WALL_SIZE * 1.5) {
+        if (dx + dy < WALL_SIZE) {
           this.path.pop();
           next = this.path[this.path.length - 1];
         } else {
@@ -364,7 +395,7 @@ export class Mob {
           (next.x * WALL_SIZE + WALL_SIZE * 0.5));
         const dy = Math.abs(this.fighter.pos.y -
           (next.y * WALL_SIZE + WALL_SIZE * 0.5));
-        if (dx + dy < WALL_SIZE * 1.5) {
+        if (dx + dy < WALL_SIZE) {
           next = undefined;
         }
       }
@@ -416,6 +447,9 @@ export class Mob {
 
         canAttack = d < this.attackDistance;
         if (d < this.attackDistance * 0.5 && Math.random() < 0.5) {
+          canAttack = undefined;
+        }
+        if (Math.abs(this.fighter.z - this.target.z) > 30) {
           canAttack = undefined;
         }
         this.canAttack = canAttack;

@@ -28,12 +28,18 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
       this.group.update = () => {
         this.update();
 
+        this.z = this.z || 0;
+        const p = game.cameraPos;
+        let px = p.x - this.group.x;
+        let py = p.y - this.group.y + 1500;
+
         const groups = [
           this.bottomGroup,
           this.middleGroup,
           this.topGroup,
           this.ceilGroup,
         ];
+        let i = 0;
         for (const k in groups) {
           const g = groups[k];
           g.x = this.group.x;
@@ -41,17 +47,24 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
           g.scale.x = this.group.scale.x;
           g.scale.y = this.group.scale.y;
           g.angle = this.group.angle;
+
+          if (i < 3) {
+            const f =
+              (pf / (pf + client.player.z - this.z - i * 100 / 6)) /
+              (pf / (pf + client.player.z - Math.min(this.lastL + i, 36) *
+                100 / 6));
+            g.scale.x *= f;
+            g.scale.y *= f;
+            g.x = p.x - px * f;
+            g.y = p.y - py * f + 1500;
+          }
+          ++i;
         }
         this.infoGroup.x = this.group.x;
         this.infoGroup.y = this.group.y;
       }
 
-      game.layer.sub.bottom.add(this.bottomGroup);
-      game.layer.sub.middle.add(this.middleGroup);
-      game.layer.sub.top.add(this.topGroup);
-      game.layer.sub.ceil.add(this.ceilGroup);
-      game.layer.sub.info.add(this.group);
-      game.layer.sub.info.add(this.infoGroup);
+      this.updateViewScale();
     }
   }
   update() {
@@ -59,6 +72,8 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
       super.update();
     }
     if (!this.parent && global.client && global.client.player) {
+      this.updateViewScale();
+
       global.ts = global.ts || 0;
       const cx = this.group.x;
       const cy = this.group.y;
@@ -78,9 +93,28 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
         this.bottomGroup.visible = false;
         this.middleGroup.visible = false;
         this.topGroup.visible = false;
+        this.infoGroup.visible = false;
         this.ceilGroup.visible = false;
       }
     }
+  }
+  updateViewScale() {
+    this.z = this.z || 0;
+    let l = Math.floor(this.z / 100.0 * 6 + 0.5);
+    l = Math.max(l, 0);
+
+    let li = Math.floor(this.z / 100.0 + 1 / 12);
+    li = Math.min(li, 5);
+    li = Math.max(li, 0);
+    if (l !== this.lastL) {
+      game.layers[li].sub['mix' + Math.min(l - li * 6 + 1, 7)].add(this.bottomGroup);
+      game.layers[li].sub['mix' + Math.min(l - li * 6 + 2, 7)].add(this.middleGroup);
+      game.layers[li].sub['mix' + Math.min(l - li * 6 + 3, 7)].add(this.topGroup);
+      game.layers[li].sub.ceil.add(this.ceilGroup);
+      game.layers[li].sub.info.add(this.group);
+      game.layers[li].sub.info.add(this.infoGroup);
+    }
+    this.lastL = l;
   }
   destructor() {
     --global.objectsNum;
@@ -96,7 +130,7 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
       group.angle = this.parent.middleGroup.angle;
 
       group.add(this.group);
-      game.layer.sub.middle.add(group);
+      game.layers[0].sub.mix3.add(group);
 
       let a = 1;
       const interval = setInterval(() => {

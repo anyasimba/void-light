@@ -3,7 +3,7 @@ void GameLevelZone__objectWithBodyOthers(GameLevelZone *self, GameLevelZoneObjec
 void GameLevelZone__updateObjectWithBodyCollisions(GameLevelZone *self, GameLevelZoneObject *object);
 void GameLevelZone__resolveCollision(GameLevelZone *self, GameLevelZoneObject *object, GameLevelZoneObject *other);
 void GameLevelZone__resolveCircle2CircleCollision(GameLevelZone *self, GameLevelZoneObject *object, GameLevelZoneObject *other);
-void GameLevelZone__resolveCircle2StaticRectCollision(GameLevelZone *, GameLevelZoneObject *, float x, float y, float w, float h);
+void GameLevelZone__resolveCircle2StaticRectCollision(GameLevelZone *, GameLevelZoneObject *, float x, float y, float w, float h, float z1, float z2);
 
 void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
   isolate = args.GetIsolate();
@@ -29,14 +29,26 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
     GameLevelZoneObject *object = self->objects[i];
 
     object->hasPosChange = false;
-    if (object->speed.length() > 0) {
+    if (object->speed.length() > 0 || object->speedZ != 0.f) {
       object->hasPosChange = true;
     }
 
     object->beforePos2 = object->pos;
+    object->beforeZ = object->z;
+    object->beforeSpeedZ = object->speedZ;
+    object->beforeIsFall = object->isFall;
     object->beforeSpeed2 = object->speed;
     object->beforeGroundFriction = object->groundFriction;
     object->isBodyChecked = false;
+    
+    if (object->isFall) {
+      object->speedZ += 300 * dt;
+      object->z -= object->speedZ * dt;
+      if (object->z < -200) {
+        Local<Object> js = Local<Object>::New(isolate, object->js);
+        Local<Function>::Cast(js->GET("fall"))->Call(js, 0, nullptr);
+      }
+    }
 
     GameLevelZone__updateObjectWithBodyCells(self, object);
     GameLevelZone__objectWithBodyOthers(self, object);
@@ -47,6 +59,12 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
     if (!object->hasPosChange) {
       continue;
     }
+
+    if (object->vtable != VTABLE::BULLET) {
+      object->isFall = true;
+      object->groundFriction = 0.f;
+    }
+
     object->isBodyChecked = true;
     GameLevelZone__updateObjectWithBodyCollisions(self, object);
   }
@@ -59,42 +77,78 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
 
     int cx = (int) floor(object->pos.x / WALL_SIZE);
     int cy = (int) floor(object->pos.y / WALL_SIZE);
-    if (cx >= 0 && cx < (int)self->grid.size()) {
-      if (cy >= 0 && cy < (int)self->grid[cx].size()) {
-        if (self->grid[cx][cy] == 2) {
-          if (!((Fighter *)object)->inJump) {
-            Local<Object> js = Local<Object>::New(isolate, object->js);
-            Local<Function>::Cast(js->GET("fall"))->Call(js, 0, nullptr);
-          }
-        } else if (self->grid[cx][cy] == 3) {
-          if (!((Fighter *)object)->inJump) {
-            if (object->groundAffectTime < 0.f) {
-              object->groundAffectTime = 0.f;
+
+    if (object->vtable != VTABLE::BULLET) {
+      int gridI = max(0, (int)floor(object->beforeZ / 100.f));
+      float floorZ = float(gridI) * 100.f;
+      if (object->beforeZ >= floorZ && object->z <= floorZ) {
+        if (gridI < 6) {
+          auto &grid = self->grid[gridI];
+
+          if (cx >= 0 && cx < (int)grid.size()) {
+            if (cy >= 0 && cy < (int)grid[cx].size()) {
+              bool hasFloor = false;
+              if (gridI == 2) {
+                hasFloor = true;
+              } else if (grid[cx][cy].type != 0) {
+                hasFloor = true;
+              }
+
+              if (gridI > 0) {
+                auto &grid2 = self->grid[gridI - 1];
+                if (grid2[cx][cy].z >= 100.f) {
+                  hasFloor = true;
+                }
+              }
+
+              if (hasFloor && grid[cx][cy].type != 2) {
+                object->isFall = false;
+                object->speedZ = 0.f;
+                object->z = floorZ;
+                object->groundFriction = 1.f;
+                if (object->beforeIsFall) {
+                  Local<Object> js = Local<Object>::New(isolate, object->js);
+                  Local<Function>::Cast(js->GET("fallGood"))->Call(js, 0, nullptr);
+                }
+              }
+
+              if (grid[cx][cy].type == 2) {
+                object->isFall = true;
+              } else if (grid[cx][cy].type == 3) {
+                if (object->groundAffectTime < 0.f) {
+                  object->groundAffectTime = 0.f;
+                }
+              } else if (grid[cx][cy].type == 4) {
+                object->groundFriction = 1.5f;
+              } else if (grid[cx][cy].type == 5) {
+                object->groundFriction = 0.f;
+              } else {
+                object->groundAffectTime = -1.f;
+                object->groundFriction = 1.f;
+              }
             }
-          } else {
-            object->groundAffectTime = -1.f;
           }
-        } else if (self->grid[cx][cy] == 4) {
-          object->groundFriction = 1.5f;
-        } else if (self->grid[cx][cy] == 5) {
-          object->groundFriction = 0.f;
-        } else {
-          object->groundAffectTime = -1.f;
-          object->groundFriction = 1.f;
         }
+      } else {
+        object->groundAffectTime = -1.f;
       }
     }
     for (int x = -1; x <= 1; ++x) {
       for (int y = -1; y <= 1; ++y) {
         const int X = x + cx;
         const int Y = y + cy;
-        if (X >= 0 && X < (int)self->grid.size()) {
-          if (Y >= 0 && Y < (int)self->grid[X].size()) {
-            if (self->grid[X][Y] == 1) {
-              float rx = (X + 0.5f) * WALL_SIZE;
-              float ry = (Y + 0.5f) * WALL_SIZE;
-              GameLevelZone__resolveCircle2StaticRectCollision(
-                self, object, rx, ry, (float) WALL_SIZE, (float) WALL_SIZE);
+        int gridI = max(0, (int)floor(object->beforeZ / 100.f));
+        if (gridI < 6) {
+          auto &grid = self->grid[gridI];
+          if (X >= 0 && X < (int)grid.size()) {
+            if (Y >= 0 && Y < (int)grid[X].size()) {
+              if (grid[X][Y].type == 1) {
+                float rx = (X + 0.5f) * WALL_SIZE;
+                float ry = (Y + 0.5f) * WALL_SIZE;
+                float floorZ = float(gridI) * 100.f;
+                GameLevelZone__resolveCircle2StaticRectCollision(
+                  self, object, rx, ry, (float) WALL_SIZE, (float) WALL_SIZE, floorZ, floorZ + grid[X][Y].z);
+              }
             }
           }
         }
@@ -111,6 +165,7 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
     bool hasChange =
       object->beforePos2.x != object->pos.x ||
       object->beforePos2.y != object->pos.y ||
+      object->beforeZ != object->z ||
       object->beforeSpeed2.x != object->speed.x ||
       object->beforeSpeed2.y != object->speed.y ||
       object->beforeGroundFriction != object->groundFriction;
@@ -194,11 +249,11 @@ void GameLevelZone__resolveCollision(GameLevelZone *self, GameLevelZoneObject *o
   }
   if (object->BODY_TYPE == CIRCLE && other->BODY_TYPE == STATIC_RECT) {
     GameLevelZone__resolveCircle2StaticRectCollision(self, object,
-      other->pos.x, other->pos.y, other->BODY_P1, other->BODY_P2);
+      other->pos.x, other->pos.y, other->BODY_P1, other->BODY_P2, other->z, other->z + other->BODY_P3);
   }
   if (object->BODY_TYPE == STATIC_RECT && other->BODY_TYPE == CIRCLE) {
     GameLevelZone__resolveCircle2StaticRectCollision(self, other,
-      object->pos.x, object->pos.y, object->BODY_P1, object->BODY_P2);
+      object->pos.x, object->pos.y, object->BODY_P1, object->BODY_P2, object->z, object->z + object->BODY_P3);
   }
 }
 void GameLevelZone__resolveCircle2CircleCollision(GameLevelZone *self, GameLevelZoneObject *object, GameLevelZoneObject *other) {
@@ -207,6 +262,62 @@ void GameLevelZone__resolveCircle2CircleCollision(GameLevelZone *self, GameLevel
   float dy = object->pos.y - other->pos.y;
   float d = sqrt(dx * dx + dy * dy);
   if (d < bodyD) {
+
+    if (object->vtable == VTABLE::BULLET) {
+      Local<Object> js = Local<Object>::New(isolate, object->js);
+      Local<Object> js2 = Local<Object>::New(isolate, other->js);
+      const unsigned argc = 1;
+      Local<Value> argv[argc] = { js2 };
+      Local<Function>::Cast(js->GET("onCollision"))->Call(js, argc, argv);
+      return;
+    }
+    if (other->vtable == VTABLE::BULLET) {
+      Local<Object> js = Local<Object>::New(isolate, other->js);
+      Local<Object> js2 = Local<Object>::New(isolate, object->js);
+      const unsigned argc = 1;
+      Local<Value> argv[argc] = { js2 };
+      Local<Function>::Cast(js->GET("onCollision"))->Call(js, argc, argv);
+      return;
+    }
+
+    if (object->beforeZ + 40.f < other->z && object->z + 40.f >= other->z) {
+      object->isFall = true;
+      object->z = other->z - 40.f;
+      object->speedZ = (float)fabs(object->speedZ) * 0.5f;
+      object->groundFriction = 0.f;
+      object->hasPosChange = true;
+
+      other->isFall = false;
+      other->speedZ = -(float)fabs(other->speedZ) * 0.5f;
+      other->groundFriction = 1.f;
+      other->hasPosChange = true;
+      if (other->beforeIsFall) {
+        Local<Object> js = Local<Object>::New(isolate, other->js);
+        Local<Function>::Cast(js->GET("fallGood"))->Call(js, 0, nullptr);
+      }
+      return;
+    }
+    if (object->beforeZ >= other->z + 40.f && object->z <= other->z + 40.f) {
+      other->isFall = true;
+      other->speedZ = (float)fabs(other->speedZ) * 0.5f;
+      other->groundFriction = 0.f;
+      other->hasPosChange = true;
+      
+      object->isFall = false;
+      object->z = other->z + 40.f;
+      object->speedZ = -(float)fabs(object->speedZ) * 0.5f;
+      object->groundFriction = 1.f;
+      object->hasPosChange = true;
+      if (object->beforeIsFall) {
+        Local<Object> js = Local<Object>::New(isolate, object->js);
+        Local<Function>::Cast(js->GET("fallGood"))->Call(js, 0, nullptr);
+      }
+      return;
+    }
+    if (object->z + 40.f < other->z || object->z >= other->z + 40.f) {
+      return;
+    }
+
     other->hasPosChange = true;
     float x = dx / d;
     float y = dy / d;
@@ -224,7 +335,7 @@ void GameLevelZone__resolveCircle2CircleCollision(GameLevelZone *self, GameLevel
   }
 }
 void GameLevelZone__resolveCircle2StaticRectCollision(
-  GameLevelZone * self, GameLevelZoneObject *object, float x, float y, float w, float h) {
+  GameLevelZone * self, GameLevelZoneObject *object, float x, float y, float w, float h, float z1, float z2) {
 
   float bodyDX = (object->BODY_P1 + w) * 0.5f;
   float bodyDY = (object->BODY_P1 + h) * 0.5f;
@@ -244,6 +355,48 @@ void GameLevelZone__resolveCircle2StaticRectCollision(
     } else if (dy < 0 && -dy < bodyDY) {
       isHasCollision = true;
     }
+  }
+
+  if (fabs(dy) <= h * 0.5f && fabs(dx) <= w * 0.5f) {
+    if (object->beforeZ < z1 && object->z >= z1) {
+      object->isFall = true;
+      object->z = z1;
+      object->speedZ = (float)fabs(object->speedZ) * 0.5f;
+      object->groundFriction = 0.f;
+      object->hasPosChange = true;
+      return;
+    }
+    if (object->beforeZ >= z2 && object->z <= z2) {
+      object->isFall = false;
+      object->z = z2;
+      object->speedZ = -(float)fabs(object->speedZ) * 0.5f;
+      object->groundFriction = 1.f;
+      object->hasPosChange = true;
+      if (object->beforeIsFall) {
+        Local<Object> js = Local<Object>::New(isolate, object->js);
+        Local<Function>::Cast(js->GET("fallGood"))->Call(js, 0, nullptr);
+      }
+      return;
+    }
+  }
+  if (fabs(dy) < bodyDY && fabs(dx) < bodyDX) {
+    if (z2 > object->z && z2 - object->z <= 100.f/6.f + 0.01f) {
+      if (fabs(dy) <= h * 0.5f && fabs(dx) <= w * 0.5f) {
+        object->z += (z2 - object->z) * 0.5f;
+        object->speedZ = -(float)fabs(object->speedZ) * 0.5f;
+        object->isFall = false;
+        object->groundFriction = 1.f;
+        object->hasPosChange = true;
+        if (object->beforeIsFall) {
+          Local<Object> js = Local<Object>::New(isolate, object->js);
+          Local<Function>::Cast(js->GET("fallGood"))->Call(js, 0, nullptr);
+        }
+      }
+      return;
+    }
+  }
+  if (object->z < z1 || object->z >= z2) {
+    return;
   }
 
   float x1 = (x - w * 0.5f);
@@ -274,6 +427,7 @@ void GameLevelZone__resolveCircle2StaticRectCollision(
   }
 
   if (isHasCollision) {
+    object->hasPosChange = true;
     float dx = object->beforePos.x - x;
     float dy = object->beforePos.y - y;
 

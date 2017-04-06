@@ -1,7 +1,9 @@
-export class ItemOnMap extends mix(global.ItemOnMap, MixNativeGameObject, MixGameObject) {
+export class ItemOnMap extends mix(global.ItemOnMap, MixNativeGameObject,
+  MixGameObject) {
   get state() {
     return {
       pos: this.pos.clone(),
+      z: this.z,
     };
   }
 
@@ -23,6 +25,7 @@ export class ItemOnMap extends mix(global.ItemOnMap, MixNativeGameObject, MixGam
       slug: opts.slug,
 
       pos: new vec3(opts.mapX, opts.mapY),
+      z: opts.z,
       count: opts.count,
     });
 
@@ -34,7 +37,9 @@ export class ItemOnMap extends mix(global.ItemOnMap, MixNativeGameObject, MixGam
     const dy = Math.abs(this.pos.y - player.pos.y);
     const dw = WALL_SIZE * 2;
     const dh = WALL_SIZE * 2;
-    if (dx < dw && dy < dh) {
+    if (dx < dw && dy < dh &&
+      Math.abs(this.z + 20.0 - player.z) <= 20.0) {
+
       player.canItem = this;
     }
   }

@@ -2,6 +2,7 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
   get state() {
     return {
       pos: this.pos.clone(),
+      z: this.z,
       size: this.size.clone(),
       basePos: this.basePos.clone(),
       baseSize: this.baseSize.clone(),
@@ -77,6 +78,7 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
       kind: 'staticRect',
       w: opts.size.x,
       h: opts.size.y,
+      z2: 500.0 / 6.0,
     }
 
     this.native = native.new__Door(this);
@@ -87,6 +89,7 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
       isStatic: true,
 
       pos: new vec3(opts.mapX, opts.mapY),
+      z: opts.z,
       size: new vec3(opts.mapW, opts.mapH),
       basePos: new vec3(opts.mapX, opts.mapY),
       baseSize: new vec3(opts.mapW, opts.mapH),
@@ -110,7 +113,9 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
       const dy = Math.abs(this.pos.y - object.pos.y);
       const dw = this.size.x * 0.5 + WALL_SIZE;
       const dh = this.size.y * 0.5 + WALL_SIZE;
-      if (dx < dw && dy < dh) {
+      if (dx < dw && dy < dh &&
+        Math.abs(this.z + 20.0 - object.z) <= 20.0) {
+
         object.canOpenDoor = this;
       }
     }

@@ -13,10 +13,11 @@ export class Bullet extends mix(global.Bullet, MixGameObject) {
   constructor(data) {
     super(data, {
       pos: new vec3(data.pos),
+      z: data.z,
       speed: new vec3(data.speed),
       view: Bullet.createView(),
     });
-    this.group.add(this.view);
+    this.middleGroup.add(this.view);
   }
   destructor() {
     super.destructor();
@@ -26,9 +27,8 @@ export class Bullet extends mix(global.Bullet, MixGameObject) {
 
   update() {
     super.update();
-
-    this.view.x = this.pos.x;
-    this.view.y = this.pos.y;
+    this.group.x = this.pos.x;
+    this.group.y = this.pos.y;
     this.view.scale.y = 3000 / (this.speed.length() + 3000);
     this.view.angle = Math.atan2(this.speed.y, this.speed.x) * 180 / Math.PI;
   }
@@ -36,5 +36,6 @@ export class Bullet extends mix(global.Bullet, MixGameObject) {
   onPos(data) {
     this.pos.init(data.pos);
     this.speed.init(data.speed);
+    this.z = data.z;
   }
 }

@@ -35,7 +35,7 @@ using namespace std;
   NODE_SET_METHOD(exports, #CLASS"__get"#FN, CLASS##__get##FN);\
   NODE_SET_METHOD(exports, #CLASS"__set"#FN, CLASS##__set##FN);
 
-const int WALL_SIZE = 160;
+const int WALL_SIZE = 240;
 
 #include "!math.cc"
 #include "!utils.cc"
@@ -54,6 +54,9 @@ void init(Local<Object> exports) {
   NODE_SET_METHOD(exports, "GameLevelZone__removeObject", GameLevelZone__removeObject);
   SET_NUMBER_PROPERTY(GameLevelZoneObject, PosX, pos.x);
   SET_NUMBER_PROPERTY(GameLevelZoneObject, PosY, pos.y);
+  SET_NUMBER_PROPERTY(GameLevelZoneObject, Z, z);
+  SET_NUMBER_PROPERTY(GameLevelZoneObject, SpeedZ, speedZ);
+  SET_NUMBER_PROPERTY(GameLevelZoneObject, IsFall, isFall);
   SET_NUMBER_PROPERTY(GameLevelZoneObject, SpeedX, speed.x);
   SET_NUMBER_PROPERTY(GameLevelZoneObject, SpeedY, speed.y);
   SET_NUMBER_PROPERTY(GameLevelZoneObject, GroundFriction, groundFriction);

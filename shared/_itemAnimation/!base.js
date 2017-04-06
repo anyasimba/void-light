@@ -495,3 +495,41 @@ export function ia_backstep(
     });
   }
 }
+
+export function ia_luk() {
+  return function () {
+    let time = 0;
+
+    const step1 = 0.1 * this.hitSpeed;
+    this.step(time, () => {
+      this.weapon.stage(step1, easing.easeInQuad, {
+        pos: new vec3({
+          x: 0,
+          y: 0,
+        }),
+        angle: 0,
+        vAngle: 0,
+        hAngle: 0,
+        sideAngle: -90,
+      });
+    });
+    time += step1 + 0.2;
+
+    const step2 = 0.1;
+    this.step(time, () => {
+      this.createBullet();
+    });
+    time += step2;
+
+    const step3 = 0.2 * this.hitSpeed;
+    this.step(time, () => {
+      this.weapon.finalStage(step3, easing.easeInOutQuad);
+      this.checkNextHit(this.hitStage + 1);
+    });
+    time += step3;
+
+    this.step(time, () => {
+      this.finishHit();
+    });
+  }
+}

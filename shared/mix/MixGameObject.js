@@ -74,6 +74,11 @@ export const MixGameObject = base => class extends base {
   }
 
   update() {
+    if (this.isFall) {
+      this.speedZ += 300 * dt;
+      this.z -= this.speedZ * dt;
+    }
+
     for (let i = 0; i < this.children.length; ++i) {
       this.children[i].update();
     }

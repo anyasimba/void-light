@@ -31,14 +31,18 @@ export class ItemOnMap extends mix(global.ItemOnMap, MixGameObject) {
     this.addLight.tint = 0x5599FF;
     this.addLight.scale.set(2);
     this.addLight.alpha = 0.2;
-    this.infoGroup.add(this.addLight);
+    this.topGroup.add(this.addLight);
   }
 
   update() {
     super.update();
 
-    if (game.layer.sub.light) {
-      const light = game.layer.sub.light;
+    let l = Math.floor(this.z / 100.0);
+    l = Math.min(l, 5);
+    l = Math.max(l, 0);
+    if (this.light) {
+      this.light.alpha = game.layers[l].sub.mix7.alpha * lightAlpha;
+      const light = game.light;
       const x = (this.pos.x - game.ui.x) / light.scale.x;
       const y = (this.pos.y - game.ui.y) / light.scale.y;
       light.texture.renderXY(this.light, x, y, false);

@@ -4,15 +4,29 @@ export class Bullet {
   }
 
   static get BODY_SIZE() {
-    return 10;
+    return 40;
   }
 
   get CELL_SIZE() {
     return 100;
   }
+  get FRICTION() {
+    return 1500;
+  }
+
+  constructor() {
+    this.type = 'Bullet';
+  }
 
   update() {
-    vec3.multiply(this.speed, Math.pow(1.1, dt * 60));
+    if (this.speed.length() > this.FRICTION * dt) {
+      vec3.subtract(this.speed,
+        this.speed
+        .unit()
+        .multiply(this.FRICTION * dt));
+    } else {
+      this.speed.init();
+    }
     vec3.add(this.pos, this.speed.multiply(dt));
   }
 }

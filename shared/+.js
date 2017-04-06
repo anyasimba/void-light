@@ -1,5 +1,6 @@
 globally(require('./_itemAnimation/_itemAnimation'));
 globally(require('./mix/MixGameObject'));
+globally(require('./mobs/family'));
 globally(require('./mobs/stage1'));
 globally(require('./objects/+'));
 globally(require('./quests/stage1'));
