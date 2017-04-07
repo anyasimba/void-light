@@ -247,19 +247,21 @@ Object.assign(GameLevelZone.prototype, {
       }
     }
 
+    if (superHit) {
+      damageF = 4;
+    }
     let damage = source.damage;
     if (!damage) {
       damage = source.damage_f * source.weapon.scale_f +
         source.damage_d * source.weapon.scale_d +
         source.weapon.damage;
     }
-    if (isInBlock && !superHit) {
-      damage = 0;
-    }
     damage *= damageF;
     if (superHit) {
-      damage *= 4;
       damage += other.HP * 0.4;
+    }
+    if (isInBlock && !superHit) {
+      damage = 0;
     }
     damage = Math.floor(damage);
     other.useHP(damage, 8);

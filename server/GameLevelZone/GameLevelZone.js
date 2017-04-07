@@ -102,10 +102,13 @@ export class GameLevelZone {
             }
             if (v !== 0) {
               switch (slug) {
+                case 'toxic':
+                  cache.grid[j][x][y] = [6, h];
+                  break;
                 case 'ice':
                   cache.grid[j][x][y] = [5, h];
                   break;
-                case 'slow':
+                case 'water':
                   cache.grid[j][x][y] = [4, h];
                   break;
                 case 'lava':

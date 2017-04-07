@@ -51,6 +51,13 @@ export class Client extends global.Client {
         r.y = move.x * l.x - move.y * l.y;
         move = r;
       }
+      const r = new vec3();
+      let a = game.cameraAngle + 90;
+      const cx = Math.cos(a * Math.PI / 180.0);
+      const cy = -Math.sin(a * Math.PI / 180.0);
+      r.x = -move.x * cy - move.y * cx;
+      r.y = move.x * cx - move.y * cy;
+      move = r;
       this.emit('move', move);
     };
     for (const set of keys) {
@@ -230,6 +237,7 @@ export class Client extends global.Client {
     const id = packet.data[1].id;
     const parentID = packet.data[1].parentID;
     let name = packet.data[0];
+    console.log(id, parentID, name);
     const data = {};
     for (const k in packet.data[1]) {
       data[k] = packet.data[1][k];
@@ -291,7 +299,7 @@ export class Client extends global.Client {
     const mapData = await httpGet('maps/' + this.mapName + '.json');
     this.map = JSON.parse(mapData);
 
-    loadingProgress(50, 'map');
+    loadingProgress(30, 'map');
     await sleep(100);
 
     this.needLoadMap = true;

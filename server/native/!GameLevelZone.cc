@@ -32,7 +32,9 @@ struct GameLevelZoneObject {
   vec2 beforePos;
   vec2 beforePos2;
   float beforeZ;
+  float beforeZ2;
   float beforeSpeedZ;
+  float beforeSpeedZ2;
   bool beforeIsFall;
   vec2 speed;
   vec2 beforeSpeed;

@@ -62,6 +62,8 @@ export async function loadMap() {
     'leaves5',
     'sand',
     'stones',
+    'toxic',
+    'water',
     'whole',
   ];
   const wallTexs = [
@@ -114,7 +116,7 @@ export async function loadMap() {
       textures[i][2] = [];
     }
 
-    loadingProgress(Math.floor(i / 6 * 100 + 20 / 6));
+    loadingProgress(Math.floor((i + 1) / 6 * 30 + 30));
     await sleep(10);
     for (let y = client.map.height - 1; y >= 0; --y) {
       for (let x = client.map.width - 1; x >= 0; --x) {
@@ -161,6 +163,7 @@ export async function loadMap() {
         switch (slug) {
           case 'whole':
           case 'lava':
+          case 'toxic':
             padShift = 1;
             break;
           case 'bricks':
@@ -253,7 +256,7 @@ export async function loadMap() {
       }
     }
     console.log('done', xn * yn);
-    loadingProgress(Math.floor(i / 6 * 100 + 60 / 6));
+    loadingProgress(Math.floor((i + 1) / 6 * 60 + 30));
 
     await sleep(10);
 

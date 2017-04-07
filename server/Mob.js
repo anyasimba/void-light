@@ -97,19 +97,18 @@ export class Mob {
             if (cost > 20) {
               return;
             }
-            if (grid[i] && grid[i][x] && grid[i][x][y][0] === 2) {
+            if (!grid[i] || !grid[i][x] || !grid[i][x][y]) {
+              return;
+            }
+            if (grid[i][x][y][0] === 2) {
+              return;
+            }
+            if (grid[i][x][y][0] === 1 &&
+              grid[i][x][y][1] - 100.0 / 6.0 > z) {
 
               return;
             }
-            if (grid[i] && grid[i][x] &&
-              grid[i][x][y][0] === 1 && grid[i][x][y][1] - 100.0 / 6.0 > z
-            ) {
-
-              return;
-            }
-            if (grid[i] && grid[i][x] &&
-              grid[i][x][y][0] === 0 && i !== 2) {
-
+            if (grid[i][x][y][0] === 0 && i !== 2) {
               return;
             }
             if (pathGrid[x] && pathGrid[x][y] !== undefined &&

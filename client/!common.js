@@ -306,7 +306,6 @@ global.loadingProgressOpacity = 1;
 let loadingProgressText;
 
 export function loadingProgress(v, text) {
-  console.log('wtf!', v, text);
   loadingProgressText = text || loadingProgressText;
 
   if (v === 0) {
@@ -454,8 +453,9 @@ function createGame() {
 
           const makeSubLayer3D = (layer, i, f) => {
             const p = game.cameraPos;
-            let px = p.x;
-            let py = p.y + 1500;
+            const a = -game.cameraAngle + 90;
+            let px = p.x + 1500 * Math.cos(a * Math.PI / 180.0);
+            let py = p.y + 1500 * Math.sin(a * Math.PI / 180.0);
             // if (p.angle && !isNaN(p.angle)) {
             //   px -= Math.cos(p.angle * Math.PI / 180) * 1400;
             //   py -= Math.sin(p.angle * Math.PI / 180) * 1400;
@@ -466,7 +466,7 @@ function createGame() {
 
             let cd = client.player.z / 100 - Math.floor(i / 6);
             if (cd >= 0) {
-              let d = client.player.z / 100 - i / 6;
+              let d = client.player.z / 100 - i / 3;
               layer.alpha = 1 - Math.max(Math.min(d - 0.5, 1), 0);
             } else if (cd >= -3 / 6) {
               layer.alpha = 1 + cd * 2;
@@ -493,12 +493,21 @@ function createGame() {
                 layer.sub['mixDead' + (j + 1)], i,
                 pf / (pf + z - j * 100 / 6));
             }
-            makeSubLayer3D(layer.sub.info, i + 5, pf / (pf + z - 500 / 6));
-            makeSubLayer3D(layer.sub.ceil, i + 7, pf / (pf + z - 700 / 6));
+            makeSubLayer3D(
+              layer.sub.info, i + 5, pf / (pf + z - 500 / 6));
+            makeSubLayer3D(
+              layer.sub.ceil, i + 7, pf / (pf + z - 700 / 6));
           }
 
+          game.cameraAngle = game.cameraAngle || 0;
           for (let i = 0; i < 6; ++i) {
-            makeLayer3D(game.layers[i], i * 6, client.player.z - i * 100);
+            const l = game.layers[i];
+            l.angle = game.cameraAngle;
+            let p = game.cameraPos;
+            let a = p.toAngle() + l.angle;
+            l.x = p.x - Math.cos(a * Math.PI / 180.0) * p.length();
+            l.y = p.y - Math.sin(a * Math.PI / 180.0) * p.length();
+            makeLayer3D(l, i * 6, client.player.z - i * 100);
           }
 
           game.ui.x = -game.scene.x / game.scaleFactor - game.w * 0.5 /
@@ -568,7 +577,7 @@ function createGame() {
             const texs = game.mapTextures[i];
 
             for (let j = 0; j < ln; ++j) {
-              for (let x = gex; x >= gbx; --x) {
+              for (let x = gbx; x <= gex; ++x) {
                 for (let y = gey; y >= gby; --y) {
                   for (let l = 0; l < 3; ++l) {
                     if (!texs[j][l][x]) {
