@@ -143,49 +143,27 @@ function checkIfBothReady() {
   }
 };
 
-export const WALL_LAYERS = [{
-  slug: 'walls',
-}, {
-  slug: 'walls2',
-}, {
-  slug: 'walls3',
-}, {
-  slug: 'walls4',
-}, {
-  slug: 'walls5',
-}, {
-  slug: 'walls6',
-}, {
-  slug: 'walls7',
-}, ];
-
 function createLayer() {
   const layer = new Phaser.Group(game);
   layer.sub = {};
   layer.sub.ground = layer.add(new Phaser.Group(game));
-  layer.sub.affects = layer.add(new Phaser.Group(game));
-  layer.sub.affects2 = layer.add(new Phaser.Group(game));
-  layer.sub.walls = layer.add(new Phaser.Group(game));
-  layer.sub.deads = layer.add(new Phaser.Group(game));
-  layer.sub.mix1 = layer.add(new Phaser.Group(game));
-  layer.sub.walls2 = layer.add(new Phaser.Group(game));
-  layer.sub.mix2 = layer.add(new Phaser.Group(game));
-  layer.sub.walls3 = layer.add(new Phaser.Group(game));
-  layer.sub.mix3 = layer.add(new Phaser.Group(game));
-  layer.sub.walls4 = layer.add(new Phaser.Group(game));
-  layer.sub.mix4 = layer.add(new Phaser.Group(game));
-  layer.sub.walls5 = layer.add(new Phaser.Group(game));
-  layer.sub.mix5 = layer.add(new Phaser.Group(game));
-  layer.sub.walls6 = layer.add(new Phaser.Group(game));
-  layer.sub.mix6 = layer.add(new Phaser.Group(game));
+  for (let i = 1; i <= 6; ++i) {
+    layer.sub['walls' + i] = layer.add(new Phaser.Group(game));
+    layer.sub['affects1' + i] = layer.add(new Phaser.Group(game));
+    layer.sub['affects2' + i] = layer.add(new Phaser.Group(game));
+    layer.sub['mix' + i] = layer.add(new Phaser.Group(game));
+    layer.sub['mixDead' + i] = layer.add(new Phaser.Group(game));
+  }
   layer.sub.ceil = layer.add(new Phaser.Group(game));
+  layer.sub.affects17 = layer.add(new Phaser.Group(game));
+  layer.sub.affects27 = layer.add(new Phaser.Group(game));
   layer.sub.walls7 = layer.add(new Phaser.Group(game));
   layer.sub.mix7 = layer.add(new Phaser.Group(game));
+  layer.sub.mixDead7 = layer.add(new Phaser.Group(game));
   layer.sub.info = layer.add(new Phaser.Group(game));
 
   return layer;
 }
-
 
 export function resize(e) {
   const w = window.innerWidth;
@@ -241,12 +219,36 @@ function create() {
   game.textEvents1 = game.scene.add(new Phaser.Group(game));
   game.textEvents2 = game.scene.add(new Phaser.Group(game));
 
-  game.scene.add(game.ui);
-  initUI();
-
   for (let i = 0; i < hsl.length; ++i) {
     processHsl(hsl[i]);
   }
+
+  game.scene.add(game.ui);
+  initUI();
+
+  // let x = 0;
+  // let y = 0;
+  // const g = new Phaser.Graphics(game, 0, 0);
+  // g.beginFill(0x000000);
+  // g.drawRect(0, 0, 10000, 10000);
+  // g.endFill();
+  // game.ui.add(g);
+
+  // game.ui.add(new Phaser.Image(game, x, y, hslMap['stage1__mob1'].gray));
+  // x += hslMap['stage1__mob1'].gray.width;
+  // y += 0;
+
+  // game.ui.add(new Phaser.Image(game, x, y, hslMap['stage1__mob1'].color));
+  // x += hslMap['stage1__mob1'].gray.width;
+  // y += 0;
+
+  // game.ui.add(new Phaser.Image(game, x, y, hslMap['stage1__mob1'].ambient));
+  // x += hslMap['stage1__mob1'].gray.width;
+  // y += 0;
+
+  // game.ui.add(new Phaser.Image(game, x, y, hslMap['stage1__mob1'].special));
+  // x += hslMap['stage1__mob1'].gray.width;
+  // y += 0;
 
   game.backSound = game.add.sound('back', 0.5, true);
   game.backSound.play();
@@ -272,19 +274,29 @@ function create() {
   game.isCreated = true;
 }
 
-export function makeDarken(view) {
+export function makeDarken(view, color) {
   const v = new Phaser.Sprite(game, 0, 0, view.texture);
   const rt = new Phaser.RenderTexture(
     game, v.width, v.height, null, null, 1);
 
+  const g = new Phaser.Graphics(game, 0, 0);
+  g.beginFill(0x000000, 1);
+  g.drawRect(0, 0, v.width, v.height);
+  g.endFill();
+
   const filter = new Phaser.Graphics(game, 0, 0);
-  filter.beginFill(0xAAAAAA, 1);
+  filter.beginFill(color, 1);
   filter.drawRect(0, 0, v.width, v.height);
   filter.endFill();
   filter.blendMode = PIXI.blendModes.MULTIPLY;
-  rt.renderXY(v, 0, 0, true);
+
+  rt.renderXY(g, 0, 0, true);
+  rt.renderXY(v, 0, 0, false);
   rt.renderXY(filter, 0, 0, false);
-  return rt;
+
+  let bmd = game.make.bitmapData(v.width, v.height);
+  bmd.alphaMask(rt, view);
+  return bmd;
 }
 
 global.loadingProgressValue = 0;
@@ -294,6 +306,7 @@ global.loadingProgressOpacity = 1;
 let loadingProgressText;
 
 export function loadingProgress(v, text) {
+  console.log('wtf!', v, text);
   loadingProgressText = text || loadingProgressText;
 
   if (v === 0) {
@@ -309,8 +322,12 @@ export function loadingProgress(v, text) {
       loadingProgressInterval = undefined;
     } else {
       $('.loading-wrap').css('display', 'block');
-      loadingProgressValue +=
-        (loadingProgressTargetValue - loadingProgressValue) * 0.3;
+      if (loadingProgressValue > loadingProgressTargetValue) {
+        loadingProgressValue = loadingProgressTargetValue;
+      } else {
+        loadingProgressValue +=
+          (loadingProgressTargetValue - loadingProgressValue) * 0.3;
+      }
       if (progress >= 100) {
         loadingProgressOpacity -= 0.1;
       }
@@ -459,26 +476,24 @@ function createGame() {
           };
           const makeLayer3D = (layer, i, z) => {
             makeSubLayer3D(layer.sub.ground, i, pf / (pf + z));
-            makeSubLayer3D(layer.sub.affects, i, pf / (pf + z));
-            makeSubLayer3D(layer.sub.affects2, i, pf / (pf + z));
-            makeSubLayer3D(layer.sub.deads, i, pf / (pf + z));
-            makeSubLayer3D(layer.sub.walls, i, pf / (pf + z));
-            makeSubLayer3D(layer.sub.mix1, i, pf / (pf + z));
-            makeSubLayer3D(layer.sub.mix2, i + 1, pf / (pf + z - 100 / 6));
-            makeSubLayer3D(layer.sub.walls2, i + 1, pf / (pf + z - 100 / 6));
-            makeSubLayer3D(layer.sub.mix3, i + 2, pf / (pf + z - 200 / 6));
-            makeSubLayer3D(layer.sub.walls3, i + 2, pf / (pf + z - 200 / 6));
-            makeSubLayer3D(layer.sub.mix4, i + 3, pf / (pf + z - 300 / 6));
-            makeSubLayer3D(layer.sub.walls4, i + 3, pf / (pf + z - 300 / 6));
-            makeSubLayer3D(layer.sub.mix5, i + 4, pf / (pf + z - 400 / 6));
-            makeSubLayer3D(layer.sub.walls5, i + 4, pf / (pf + z - 400 / 6));
-            makeSubLayer3D(layer.sub.mix6, i + 5, pf / (pf + z - 500 / 6));
-            makeSubLayer3D(layer.sub.walls6, i + 5, pf / (pf + z - 500 / 6));
+            for (let j = 0; j < 7; ++j) {
+              makeSubLayer3D(
+                layer.sub['affects1' + (j + 1)], i,
+                pf / (pf + z - j * 100 / 6));
+              makeSubLayer3D(
+                layer.sub['affects2' + (j + 1)], i,
+                pf / (pf + z - j * 100 / 6));
+              makeSubLayer3D(
+                layer.sub['walls' + (j + 1)], i,
+                pf / (pf + z - j * 100 / 6));
+              makeSubLayer3D(
+                layer.sub['mix' + (j + 1)], i,
+                pf / (pf + z - j * 100 / 6));
+              makeSubLayer3D(
+                layer.sub['mixDead' + (j + 1)], i,
+                pf / (pf + z - j * 100 / 6));
+            }
             makeSubLayer3D(layer.sub.info, i + 5, pf / (pf + z - 500 / 6));
-            makeSubLayer3D(layer.sub.mix7, i + 5.99,
-              pf / (pf + z - 600 / 6));
-            makeSubLayer3D(layer.sub.walls7, i + 5.99,
-              pf / (pf + z - 600 / 6));
             makeSubLayer3D(layer.sub.ceil, i + 7, pf / (pf + z - 700 / 6));
           }
 
@@ -523,7 +538,7 @@ function createGame() {
 
         if (game.cameraPos && global.AF && game.mapTextures) {
           for (let i = 0; i < 6; ++i) {
-            const ln = WALL_LAYERS.length + 2;
+            const ln = 7;
             let gbx = game.cameraPos.x -
               game.w * 0.5 / game.sceneWrap.scale.x;
             gbx -= (AF - 1) * 0.5 * WALL_SIZE;
@@ -541,15 +556,11 @@ function createGame() {
             gey += (AF - 1) * 0.5 * WALL_SIZE;
             gey = Math.floor(gey / ts);
 
-            game.layers[i].sub.affects.removeAll();
-            game.layers[i].sub.affects2.removeAll();
-            game.layers[i].sub.walls.removeAll();
-            game.layers[i].sub.walls2.removeAll();
-            game.layers[i].sub.walls3.removeAll();
-            game.layers[i].sub.walls4.removeAll();
-            game.layers[i].sub.walls5.removeAll();
-            game.layers[i].sub.walls6.removeAll();
-            game.layers[i].sub.walls7.removeAll();
+            for (let j = 1; j <= ln; ++j) {
+              game.layers[i].sub['affects1' + j].removeAll();
+              game.layers[i].sub['affects2' + j].removeAll();
+              game.layers[i].sub['walls' + j].removeAll();
+            }
 
             if (!game.mapTextures[i]) {
               continue;
@@ -557,22 +568,24 @@ function createGame() {
             const texs = game.mapTextures[i];
 
             for (let j = 0; j < ln; ++j) {
-              for (let x = gbx; x <= gex; ++x) {
-                for (let y = gby; y <= gey; ++y) {
-                  if (!texs[j][x]) {
-                    continue;
+              for (let x = gex; x >= gbx; --x) {
+                for (let y = gey; y >= gby; --y) {
+                  for (let l = 0; l < 3; ++l) {
+                    if (!texs[j][l][x]) {
+                      continue;
+                    }
+                    if (!texs[j][l][x][y]) {
+                      continue;
+                    }
+                    const tex = texs[j][l][x][y];
+                    const s = tex.sprite;
+                    if (game.layers[i].sub[s.target].alpha <= 0.0) {
+                      continue;
+                    }
+                    game.layers[i].sub[s.target].add(s);
+                    global.SPRITES_N = global.SPRITES_N || 0;
+                    ++global.SPRITES_N;
                   }
-                  if (!texs[j][x][y]) {
-                    continue;
-                  }
-                  const tex = texs[j][x][y];
-                  const s = tex.sprite;
-                  if (game.layers[i].sub[s.target].alpha <= 0.01) {
-                    continue;
-                  }
-                  game.layers[i].sub[s.target].add(s);
-                  global.SPRITES_N = global.SPRITES_N || 0;
-                  ++global.SPRITES_N;
                 }
               }
             }

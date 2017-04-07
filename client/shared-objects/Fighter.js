@@ -238,6 +238,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.kind, this.name, this.size, this.tints);
     this.views[1].visible = false;
     this.views[2].visible = false;
+    this.views[0].addTex.time = Math.random();
+    this.views[1].addTex.time = this.views[0].addTex.time;
+    this.views[2].addTex.time = this.views[0].addTex.time;
     if (this.kind === 'player') {
       this.middleGroup.add(this.views[0]);
       this.middleGroup.add(this.views[2]);
@@ -260,6 +263,8 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.footViewsRoot.add(this.footViews[1]);
       this.viewsForTint.push(this.footViews[0]);
       this.viewsForTint.push(this.footViews[1]);
+      this.footViews[0].addTex.time = this.views[0].addTex.time;
+      this.footViews[1].addTex.time = this.views[0].addTex.time;
     }
 
     if (this.kind === 'mob' || this.id !== client.playerID) {
@@ -472,7 +477,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
       group.alpha = 1 - group.time / 60;
     };
-    game.layers[0].sub.deads.add(group);
+    let l = Math.floor(this.z / 100.0 * 6 + 0.5);
+    l = Math.max(l, 0);
+
+    let li = Math.floor(this.z / 100.0 + 1 / 12);
+    li = Math.min(li, 5);
+    li = Math.max(li, 0);
+    game.layers[li].sub['mixDead' + Math.min(l - li * 6 + 1, 7)].add(group);
   }
 
   update() {

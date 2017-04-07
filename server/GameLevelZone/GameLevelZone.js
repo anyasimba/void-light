@@ -85,7 +85,8 @@ export class GameLevelZone {
       for (let j = 0; j < 6; ++j) {
         cache.grid[j] = new Array(this.map.width);
 
-        const ground = this.map.layers[j * 2];
+        const heights = this.map.layers[j * 3 + 1];
+        const ground = this.map.layers[j * 3];
         for (let y = 0; y < this.map.height; ++y) {
           for (let x = 0; x < this.map.width; ++x) {
             cache.grid[j][x] = cache.grid[j][x] || new Array(this.map.height);
@@ -94,26 +95,27 @@ export class GameLevelZone {
             const i = y * this.map.width + x;
             const v = ground.data[i];
             const slug = this.map.dictionary[v];
+            let h = heights.data[i];
+            const hSlug = this.map.dictionary[h];
+            if (h !== 0) {
+              h = hSlug.slice(-1) * 100 / 6;
+            }
             if (v !== 0) {
               switch (slug) {
                 case 'ice':
-                  cache.grid[j][x][y] = [5, 0];
+                  cache.grid[j][x][y] = [5, h];
                   break;
                 case 'slow':
-                  cache.grid[j][x][y] = [4, 0];
+                  cache.grid[j][x][y] = [4, h];
                   break;
                 case 'lava':
-                  cache.grid[j][x][y] = [3, 0];
+                  cache.grid[j][x][y] = [3, h];
                   break;
                 case 'whole':
-                  cache.grid[j][x][y] = [2, 0];
+                  cache.grid[j][x][y] = [2, h];
                   break;
                 default:
-                  if (slug.indexOf('_') > 0) {
-                    cache.grid[j][x][y] = [1, slug.slice(-1) * 100 / 6];
-                  } else {
-                    cache.grid[j][x][y] = [1, 100];
-                  }
+                  cache.grid[j][x][y] = [1, h];
               }
             }
           }
@@ -127,7 +129,7 @@ export class GameLevelZone {
     this.mapObjects = []
     this.bossAreas = [];
     for (let i = 0; i < 6; ++i) {
-      const objects = this.map.layers[i * 2 + 1];
+      const objects = this.map.layers[i * 3 + 2];
       for (const k in objects.objects) {
         const o = objects.objects[k];
         let slug = this.map.dictionary[o.gid];

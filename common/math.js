@@ -58,7 +58,7 @@ export function patch(s, t) {
     if (typeof t[k] === 'object' || typeof t[k] === 'array') {
       r[k] = patch(s[k] || {}, t[k]);
     } else {
-      r[k] = s[k];
+      r[k] = t[k];
     }
   }
   const tProto = Object.getPrototypeOf(t);

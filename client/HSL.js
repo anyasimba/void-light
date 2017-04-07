@@ -202,10 +202,14 @@ export function makeHSL(hsl, ax, ay, tints, g) {
   g.tex = tex;
   tex.blendMode = PIXI.blendModes.ADD;
 
-
   const rt2 = new Phaser.RenderTexture(
     game, hsl.gray.width, hsl.gray.height, null, null, 1);
   temp.removeAll();
+  tex = new Phaser.Graphics(game, 0, 0);
+  tex.beginFill(0x000000);
+  tex.drawRect(0, 0, hsl.gray.width, hsl.gray.height);
+  tex.endFill();
+  temp.add(tex);
   for (let i = 4; i <= 6; ++i) {
     if (tints[i] !== undefined && tints[i] !== null) {
       tex = new Phaser.Image(game, 0, 0, hsl.texs[i][tints[i]]);
@@ -225,6 +229,12 @@ export function makeHSL(hsl, ax, ay, tints, g) {
     tints[6]) {
 
     g.add(tex);
+    const addTex = tex;
+    g.update = () => {
+      addTex.time = addTex.time || Math.random();
+      addTex.time += dt;
+      addTex.alpha = (Math.sin(addTex.time * Math.PI) * 0.5 + 0.5);
+    }
   }
 
   return g;

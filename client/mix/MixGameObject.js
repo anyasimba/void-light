@@ -130,11 +130,17 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
       group.angle = this.parent.middleGroup.angle;
 
       group.add(this.group);
-      game.layers[0].sub.mix3.add(group);
+      let l = Math.floor(this.parent.z / 100.0 * 6 + 0.5);
+      l = Math.max(l, 0);
+
+      let li = Math.floor(this.parent.z / 100.0 + 1 / 12);
+      li = Math.min(li, 5);
+      li = Math.max(li, 0);
+      game.layers[li].sub['mix' + Math.min(l - li * 6 + 1, 7)].add(group);
 
       let a = 1;
       const interval = setInterval(() => {
-        a -= 0.33 / 30.0;
+        a -= 0.1 / 30.0;
         if (a <= 0) {
           clearInterval(interval);
           group.destroy();

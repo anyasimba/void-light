@@ -16,6 +16,8 @@ export class Item extends mix(global.Item, MixGameObject) {
     this.view = this.opts.createView(
       this.parent.id === client.playerID, this.parent.kind);
 
+    this.view.addTex.time = this.parent.views[0].addTex.time;
+
     this.sx = this.view.scale.x * this.bodyScale;
     this.sy = this.view.scale.y * this.bodyScale;
 

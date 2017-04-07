@@ -1,8 +1,4 @@
 export const stage1__mob1 = {
-  DIES: 1,
-  DIES_N: 2,
-  DIES_SCALE: 0.6,
-
   AGRO_D: 7,
   RUN_D: 60,
   HIT_D: [150, 250],
@@ -51,8 +47,8 @@ export const stage1__mob1 = {
     hand: 1,
     bodyScale: 1.3,
     pos: {
-      x: 10,
-      y: 0,
+      x: 0,
+      y: 10,
     },
     angle: 60,
     vAngle: 20,
@@ -67,8 +63,8 @@ export const stage1__mob1 = {
     hand: 2,
     bodyScale: 1.3,
     pos: {
-      x: 10,
-      y: -0,
+      x: 0,
+      y: -10,
     },
     angle: -60,
     vAngle: 20,
@@ -76,6 +72,19 @@ export const stage1__mob1 = {
   },
 };
 
-export const stage1__mob1a = patch(stage1__mob1);
+export const stage1__mob1a = patch(stage1__mob1, {
+  FIGHTER: {
+    LANG_RU: 'Пустынный элемент',
+    name: 'stage1__mob1a',
+  },
+  rightHand: {
+    type: 'weapon',
+    kind: 'stage1__mob1a__rightHand',
+  },
+  leftHand: {
+    type: 'weapon',
+    kind: 'stage1__mob1a__leftHand',
+  },
+});
 export const stage1__mob1b = patch(stage1__mob1);
 export const stage1__mob1c = patch(stage1__mob1);
