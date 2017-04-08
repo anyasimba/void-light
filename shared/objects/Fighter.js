@@ -114,7 +114,8 @@ export class Fighter {
       !this.inRoll &&
       !this.stunTime &&
       !this.waitTime &&
-      this.groundFriction >= 0.0;
+      this.groundFriction >= 0.0 &&
+      !this.isFall;
     if (isMove) {
       let a = 0;
       if (this.inRun) {

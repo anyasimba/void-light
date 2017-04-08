@@ -1,7 +1,7 @@
 export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
   static createView(gray, color, ambient, special) {
     const view = makeHSL(hslMap['checkpoint'], 0.5, 0.5, [
-      gray, color, null, special, null, ambient
+      gray, color, ambient, special, ambient, ambient
     ]);
     return view;
   }
@@ -41,6 +41,11 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
 
     this.view3.angle += 45;
     this.view4.angle -= 45;
+
+    this.view.addTex.time = 0;
+    this.view2.addTex.time = 0.5;
+    this.view3.addTex.time = 1;
+    this.view4.addTex.time = 1.5;
 
     this.bottomGroup.add(this.view);
     this.middleGroup.add(this.view2);

@@ -243,12 +243,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.views[2].addTex.time = this.views[0].addTex.time;
     if (this.kind === 'player') {
       this.middleGroup.add(this.views[0]);
+      this.middleGroup.add(this.views[1]);
       this.middleGroup.add(this.views[2]);
     } else {
       this.topGroup.add(this.views[0]);
+      this.middleGroup.add(this.views[1]);
       this.topGroup.add(this.views[2]);
     }
-    this.bottomGroup.add(this.views[1]);
     this.viewsForTint.push(this.views[0]);
     this.viewsForTint.push(this.views[1]);
     this.viewsForTint.push(this.views[2]);

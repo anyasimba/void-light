@@ -237,7 +237,6 @@ export class Client extends global.Client {
     const id = packet.data[1].id;
     const parentID = packet.data[1].parentID;
     let name = packet.data[0];
-    console.log(id, parentID, name);
     const data = {};
     for (const k in packet.data[1]) {
       data[k] = packet.data[1][k];

@@ -148,40 +148,43 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
         const int X = x + cx;
         const int Y = y + cy;
         int gridI = max(0, (int)floor(object->beforeZ / 100.f));
-        if (gridI < 6) {
-          auto &grid = self->grid[gridI];
-          if (X >= 0 && X < (int)grid.size()) {
-            if (Y >= 0 && Y < (int)grid[X].size()) {
-              if (grid[X][Y].type != 2 && !(grid[X][Y].type == 0 && gridI != 2)) {
-                float rx = (X + 0.5f) * WALL_SIZE;
-                float ry = (Y + 0.5f) * WALL_SIZE;
-                float floorZ = float(gridI) * 100.f;
-                if (GameLevelZone__resolveCircle2StaticRectCollision(
-                  self, object, rx, ry, (float) WALL_SIZE, (float) WALL_SIZE, floorZ, floorZ + grid[X][Y].z))
-                {
-                  if (grid[X][Y].type == 3) {
-                    if (object->groundAffectTime < 0.f) {
-                      object->groundAffectTime = 0.f;
+        for (int l = 0; l < 2; ++l) {
+          gridI += l;
+          if (gridI < 5) {
+            auto &grid = self->grid[gridI];
+            if (X >= 0 && X < (int)grid.size()) {
+              if (Y >= 0 && Y < (int)grid[X].size()) {
+                if (grid[X][Y].type != 2 && !(grid[X][Y].type == 0 && gridI != 2)) {
+                  float rx = (X + 0.5f) * WALL_SIZE;
+                  float ry = (Y + 0.5f) * WALL_SIZE;
+                  float floorZ = float(gridI) * 100.f;
+                  if (GameLevelZone__resolveCircle2StaticRectCollision(
+                    self, object, rx, ry, (float) WALL_SIZE, (float) WALL_SIZE, floorZ, floorZ + grid[X][Y].z))
+                  {
+                    if (grid[X][Y].type == 3) {
+                      if (object->groundAffectTime < 0.f) {
+                        object->groundAffectTime = 0.f;
+                      }
+                      noAffect = false;
+                    } else if (grid[X][Y].type == 6) {
+                      if (object->groundAffectTime < 0.f) {
+                        object->groundAffectTime = 0.f;
+                      }
+                      noAffect = false;
+                    } else {
+                      object->groundAffectTime = -1.f;
+                      noAffect = true;
                     }
-                    noAffect = false;
-                  } else if (grid[X][Y].type == 6) {
-                    if (object->groundAffectTime < 0.f) {
-                      object->groundAffectTime = 0.f;
-                    }
-                    noAffect = false;
-                  } else {
-                    object->groundAffectTime = -1.f;
-                    noAffect = true;
-                  }
 
-                  if (grid[X][Y].type == 4) {
-                    object->groundFriction = 1.3f;
-                  } else if (grid[X][Y].type == 5) {
-                    object->groundFriction = 0.f;
-                  }  else if (grid[X][Y].type == 6) {
-                    object->groundFriction = 1.4f;
-                  } else {
-                    object->groundFriction = 1.f;
+                    if (grid[X][Y].type == 4) {
+                      object->groundFriction = 1.3f;
+                    } else if (grid[X][Y].type == 5) {
+                      object->groundFriction = 0.f;
+                    }  else if (grid[X][Y].type == 6) {
+                      object->groundFriction = 1.4f;
+                    } else {
+                      object->groundFriction = 1.f;
+                    }
                   }
                 }
               }
@@ -422,7 +425,7 @@ bool GameLevelZone__resolveCircle2StaticRectCollision(
   }
   if (fabs(dy) < bodyDY && fabs(dx) < bodyDX) {
     if (z2 > object->z && z2 - object->z <= 100.f/6.f + 0.01f) {
-      if (fabs(dy) <= h * 0.5f && fabs(dx) <= w * 0.5f) {
+      if (fabs(dy) <= h * 0.5f + object->BODY_P2 * 0.25f && fabs(dx) <= w * 0.5f + object->BODY_P1 * 0.25f) {
         object->z += (z2 - object->z) * 0.5f;
         object->speedZ = -fmax(-object->speedZ, 0.f);
         object->isFall = false;

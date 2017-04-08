@@ -365,6 +365,9 @@ export const weapon__luk__default = new class {
     this.update = weapon__family.update;
     this.onStun = weapon__family.onStun;
   }
+  get isRange() {
+    return true;
+  }
   createView() {
     const image = makeHSL(hslMap['luk'], 0.5, 0.5, [
       0xFFFFFF,

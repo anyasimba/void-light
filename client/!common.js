@@ -151,12 +151,16 @@ function createLayer() {
     layer.sub['walls' + i] = layer.add(new Phaser.Group(game));
     layer.sub['affects1' + i] = layer.add(new Phaser.Group(game));
     layer.sub['affects2' + i] = layer.add(new Phaser.Group(game));
+    layer.sub['shadows1' + i] = layer.add(new Phaser.Group(game));
+    layer.sub['shadows2' + i] = layer.add(new Phaser.Group(game));
     layer.sub['mix' + i] = layer.add(new Phaser.Group(game));
     layer.sub['mixDead' + i] = layer.add(new Phaser.Group(game));
   }
   layer.sub.ceil = layer.add(new Phaser.Group(game));
   layer.sub.affects17 = layer.add(new Phaser.Group(game));
   layer.sub.affects27 = layer.add(new Phaser.Group(game));
+  layer.sub.shadows17 = layer.add(new Phaser.Group(game));
+  layer.sub.shadows27 = layer.add(new Phaser.Group(game));
   layer.sub.walls7 = layer.add(new Phaser.Group(game));
   layer.sub.mix7 = layer.add(new Phaser.Group(game));
   layer.sub.mixDead7 = layer.add(new Phaser.Group(game));
@@ -295,8 +299,9 @@ export function makeDarken(view, color) {
   rt.renderXY(filter, 0, 0, false);
 
   let bmd = game.make.bitmapData(v.width, v.height);
-  bmd.alphaMask(rt, view);
-  return bmd;
+  bmd.alphaMask(rt, v);
+  rt.renderXY(new Phaser.Image(game, 0, 0, bmd), 0, 0, true);
+  return rt;
 }
 
 global.loadingProgressValue = 0;
@@ -391,12 +396,16 @@ function createGame() {
         }
 
         if (client && client.player) {
+          let mf = 0.4;
+          if (client.player.weapon && client.player.weapon.opts.isRange) {
+            mf = 0.4;
+          }
           const targetX = client.player.pos.x +
             client.player.speed.x +
-            (mx - client.player.pos.x) * 0.2;
+            (mx - client.player.pos.x) * mf;
           const targetY = client.player.pos.y +
             client.player.speed.y +
-            (my - client.player.pos.y) * 0.2;
+            (my - client.player.pos.y) * mf;
           // let targetX = client.player.pos.x +
           //   client.player.speed.x;
           // let targetY = client.player.pos.y +
@@ -415,6 +424,8 @@ function createGame() {
           const f = (1 - Math.pow(0.1, dt * 0.6));
           game.scene.x += dx * f;
           game.scene.y += dy * f;
+          game.cameraZ = game.cameraZ || 0;
+          game.cameraZ += (client.player.z - game.cameraZ) * f
 
           const speed = client.player.speed.length();
           const zoom =
@@ -478,13 +489,19 @@ function createGame() {
             makeSubLayer3D(layer.sub.ground, i, pf / (pf + z));
             for (let j = 0; j < 7; ++j) {
               makeSubLayer3D(
+                layer.sub['walls' + (j + 1)], i,
+                pf / (pf + z - j * 100 / 6));
+              makeSubLayer3D(
                 layer.sub['affects1' + (j + 1)], i,
                 pf / (pf + z - j * 100 / 6));
               makeSubLayer3D(
                 layer.sub['affects2' + (j + 1)], i,
                 pf / (pf + z - j * 100 / 6));
               makeSubLayer3D(
-                layer.sub['walls' + (j + 1)], i,
+                layer.sub['shadows1' + (j + 1)], i,
+                pf / (pf + z - j * 100 / 6));
+              makeSubLayer3D(
+                layer.sub['shadows2' + (j + 1)], i,
                 pf / (pf + z - j * 100 / 6));
               makeSubLayer3D(
                 layer.sub['mix' + (j + 1)], i,
@@ -507,7 +524,7 @@ function createGame() {
             let a = p.toAngle() + l.angle;
             l.x = p.x - Math.cos(a * Math.PI / 180.0) * p.length();
             l.y = p.y - Math.sin(a * Math.PI / 180.0) * p.length();
-            makeLayer3D(l, i * 6, client.player.z - i * 100);
+            makeLayer3D(l, i * 6, game.cameraZ - i * 100);
           }
 
           game.ui.x = -game.scene.x / game.scaleFactor - game.w * 0.5 /
@@ -535,7 +552,7 @@ function createGame() {
             game.lightClear.blendMode = PIXI.blendModes.MULTIPLY;
 
             game.lightClear2 = new Phaser.Graphics(game);
-            game.lightClear2.beginFill(0x452025, lightAlpha);
+            game.lightClear2.beginFill(0x002040, lightAlpha);
             game.lightClear2.drawRect(0, 0, w, h);
             game.lightClear2.endFill();
             game.lightClear2.blendMode = PIXI.blendModes.ADD;
@@ -569,6 +586,8 @@ function createGame() {
               game.layers[i].sub['affects1' + j].removeAll();
               game.layers[i].sub['affects2' + j].removeAll();
               game.layers[i].sub['walls' + j].removeAll();
+              game.layers[i].sub['shadows1' + j].removeAll();
+              game.layers[i].sub['shadows2' + j].removeAll();
             }
 
             if (!game.mapTextures[i]) {
@@ -579,7 +598,7 @@ function createGame() {
             for (let j = 0; j < ln; ++j) {
               for (let x = gbx; x <= gex; ++x) {
                 for (let y = gey; y >= gby; --y) {
-                  for (let l = 0; l < 3; ++l) {
+                  for (let l = 0; l < 5; ++l) {
                     if (!texs[j][l][x]) {
                       continue;
                     }
@@ -602,7 +621,7 @@ function createGame() {
         }
 
         global.SPRITES_N = global.SPRITES_N || 0;
-        //console.log(global.SPRITES_N);
+        //console.log(global.SPRITES_N, game.stage.children.length);
         global.SPRITES_N = 0;
       },
 
