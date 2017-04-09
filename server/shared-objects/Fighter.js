@@ -9,6 +9,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       lang: this.lang,
 
       pos: this.pos,
+      look: this.look,
       z: this.z,
       speedZ: this.speedZ,
       isFall: this.isFall,
@@ -342,7 +343,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     super({
       lang: opts.LANG_RU,
 
-      look: new vec3,
+      look: opts.look || new vec3,
 
       kind: opts.kind,
       isPlayer: opts.isPlayer,
@@ -510,6 +511,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       this.isJumpHit = true;
     }
 
+    this.canBlockHit = true;
     this.hitVec = new vec3(opts).subtract(this.pos).unit();
     this.hitStage = opts.hitStage || 1;
     if (afterBlock) {
@@ -789,7 +791,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     if (!this.hitVec) {
       return;
     }
-
+    this.canBlockHit = false;
     this.gameLevelZone.doDamageRadialArea(this, this.getHitOpts(opts));
   }
 

@@ -277,11 +277,9 @@ export class Client extends global.Client {
   }
   onRestart(data) {
     this.mainTheme();
-    game.layers[0].sub.deads.removeAll();
     game.texts.removeAll();
   }
   onSoftRestart(data) {
-    game.layer.sub.deads.removeAll();
     game.texts.removeAll();
   }
   async onMap(data) {

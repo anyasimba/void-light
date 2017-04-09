@@ -36,24 +36,29 @@ export class Decor extends mix(global.Decor, MixGameObject) {
       this.addLight.tint = opts.LIGHT;
       this.addLight.scale.set(0.6);
       this.addLight.alpha = (opts.LIGHT_A || 1) * 0.2;
-      this.topGroup.add(this.addLight);
+      this.ceilGroup.add(this.addLight);
 
       this.addLight2 = genLight();
       this.addLight2.tint = 0xFFFFFF;
       this.addLight2.scale.set(0.07);
       this.addLight2.alpha = (opts.LIGHT_A || 1) * 0.5;
-      this.topGroup.add(this.addLight2);
+      this.ceilGroup.add(this.addLight2);
     }
   }
 
   update() {
     super.update();
 
-    let l = Math.floor(this.z / 100.0);
-    l = Math.min(l, 5);
+    this.z = this.z || 0;
+    let l = Math.floor(this.z / 100.0 * 6 + 0.5);
     l = Math.max(l, 0);
-    if (this.light) {
-      this.light.alpha = game.layers[l].sub.mix7.alpha * lightAlpha;
+
+    let li = Math.floor(this.z / 100.0 + 1 / 12);
+    li = Math.min(li, 5);
+    li = Math.max(li, 0);
+    if (game.light && this.light) {
+      this.light.alpha = game.layers[li]
+        .sub['mix' + Math.min(l - li * 6 + 1, 7)].alpha * lightAlpha;
       const light = game.light;
       const lx = 0; //game.w * 0.5;
       const ly = 0; //game.h * 0.5;

@@ -24,7 +24,7 @@ void Bullet__update(Bullet *self, GameLevelZone *gameLevelZone, float dt) {
     self->speed.init();
   }
 
-  if (self->speed.length() < 200) {
+  if (self->speed.length() < 300) {
     Local<Object> js = Local<Object>::New(isolate, self->js);
     Local<Function>::Cast(js->GET("destructor"))->Call(js, 0, nullptr);
   }

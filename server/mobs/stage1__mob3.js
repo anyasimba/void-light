@@ -1,8 +1,4 @@
 export const stage1__mob3 = {
-  DIES: 1,
-  DIES_N: 2,
-  DIES_SCALE: 0.6,
-
   AGRO_D: 7,
   RUN_D: 60,
   HIT_D: [150, 250],
@@ -37,7 +33,7 @@ export const stage1__mob3 = {
     SCALE: 1.5,
 
     BALANCE: 60,
-    HP: 50,
+    HP: 30,
     MP: 100,
     STAMINA: 200,
   },
@@ -48,6 +44,9 @@ export const stage1__mob3 = {
     balance: 5,
     stamina: 10,
     staminaTime: 1,
+    staminaUse: 5,
+    staminaUseTime: 0.5,
+    stunTime: 0.5,
     hand: 1,
     bodyScale: 1.5,
     pos: {
@@ -64,6 +63,9 @@ export const stage1__mob3 = {
     balance: 5,
     stamina: 10,
     staminaTime: 1,
+    staminaUse: 5,
+    staminaUseTime: 0.5,
+    stunTime: 0.5,
     hand: 2,
     bodyScale: 1.5,
     pos: {

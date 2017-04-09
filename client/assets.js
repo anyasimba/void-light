@@ -1,15 +1,13 @@
 export function loadAudio() {
   game.load.audio('back',
     'assets/audio/back__doxent_-_Forgotten_Land.ogg');
+
   game.load.audio('bossBack',
-    'assets/audio/bossBack__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.ogg'
-  );
+    'assets/audio/boss1__Dark Descent (Extended Cut).ogg');
 
   game.load.audio('door',
     'assets/audio/door__233389__laiaoreka__automatic-door.ogg');
 
-  game.load.audio('boss',
-    'assets/audio/boss__essesq_-_Dark_Dicey_Sci_Fi_Soundtrack.ogg');
   game.load.audio('hit',
     'assets/audio/hit__86003__nextmaking__hitting-body-with-blood.ogg'
   );

@@ -168,6 +168,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.tints = [0xFFFFFF];
     if (this.kind === 'mob') {
       const opts = global[this.name];
+      if (!opts) {
+        console.error('no opts for mob: ' + this.name);
+      }
 
       if (opts.LIGHT) {
         this.light = genLight();
@@ -605,11 +608,16 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
     }
 
-    let l = Math.floor(this.z / 100.0);
-    l = Math.min(l, 5);
+    this.z = this.z || 0;
+    let l = Math.floor(this.z / 100.0 * 6 + 0.5);
     l = Math.max(l, 0);
-    if (this.light) {
-      this.light.alpha = game.layers[l].sub.mix7.alpha * lightAlpha;
+
+    let li = Math.floor(this.z / 100.0 + 1 / 12);
+    li = Math.min(li, 5);
+    li = Math.max(li, 0);
+    if (game.light && this.light) {
+      this.light.alpha = game.layers[li]
+        .sub['mix' + Math.min(l - li * 6 + 1, 7)].alpha * lightAlpha;
       const light = game.light;
       const lx = 0; //game.w * 0.5;
       const ly = 0; //game.h * 0.5;
@@ -625,13 +633,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       return;
     }
 
-    let color = 0x444444;
+    let color = 0x606060;
     if (this.hitType === 0) {
-      color = 0x607040;
+      color = 0xffd200;
     } else if (this.hitType === 1) {
-      color = 0x604070;
+      color = 0xba00ff;
     } else if (this.hitType === 2) {
-      color = 0x406070;
+      color = 0x00c0ff;
     } else if (this.hitType === 3) {
       color = 0xFF0000;
     }
@@ -664,12 +672,12 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     for (let i = 0; i < 2; ++i) {
       const g = new Phaser.Graphics(game, this.pos.x, this.pos.y);
       g.blendMode = PIXI.blendModes.ADD;
-      g.lineStyle(4, color, 0.03);
+      g.lineStyle(4, color, 0.02);
       g.beginFill(color, 0.2);
       if (i === 1) {
         g.blendMode = PIXI.blendModes.MULTIPLY;
-        g.lineStyle(4, color, 0.05);
-        g.beginFill(color, 0.3);
+        g.lineStyle(4, color, 0.04);
+        g.beginFill(color, 0.2);
       }
 
       g.arc(0, 0, d, a1, a2, true);
@@ -681,10 +689,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
           g.destroy();
         }
       };
-      let l = Math.floor(this.z / 100.0);
-      l = Math.min(l, 5);
+      let l = Math.floor(this.z / 100.0 * 6 + 0.5);
       l = Math.max(l, 0);
-      game.layers[l].sub.mix1.add(g);
+
+      let li = Math.floor(this.z / 100.0 + 1 / 12);
+      li = Math.min(li, 5);
+      li = Math.max(li, 0);
+      game.layers[li].sub['mix' + Math.min(l - li * 6 + 2, 7)].add(g);
     }
   }
 }

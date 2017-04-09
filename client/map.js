@@ -9,12 +9,14 @@ export async function loadMap() {
 
   let scaleF;
   if (false) {
-    scaleF = Math.round(game.scaleFactor * 8) / 16;
+    scaleF = Math.round(game.scaleFactor * 8) / 8;
+    global.ts = WALL_SIZE * 2;
   } else {
     scaleF = game.scaleFactor;
-    console.log('tex scale factor', scaleF);
+    global.ts = WALL_SIZE * 2;
   }
-  global.ts = WALL_SIZE * 2;
+  scaleF *= 0.8;
+  console.log('tex scale factor', scaleF);
   const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
   const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
 
@@ -233,6 +235,9 @@ export async function loadMap() {
           } else if ((le - lb) === 5) {
             conf = [lb, lb + 3, le];
           }
+          if (lb > 0) {
+            conf.unshift(0);
+          }
 
           if (!isWall) {
             for (let i = 0; i < conf.length; ++i) {
@@ -282,6 +287,9 @@ export async function loadMap() {
                 s.scale.x = v.scale.x;
                 s.scale.y = v.scale.y;
                 textures[k][padShift][cx][cy].add(s);
+                // textures[k][padShift][cx][cy] = s;
+                // s.x += cx * ts;
+                // s.y += cy * ts;
               }
             }
             continue;
@@ -356,6 +364,9 @@ export async function loadMap() {
               s.tileScale.x = v.tileScale.x;
               s.tileScale.y = v.tileScale.y;
               textures[k][padS][cx][cy].add(s);
+              // textures[k][padS][cx][cy] = s;
+              // s.x += cx * ts;
+              // s.y += cy * ts;
             }
           }
         }
@@ -412,8 +423,8 @@ export async function loadMap() {
   const groundSprite = game.layers[2].sub.ground.add(new Phaser.TileSprite(
     game, -game.w * 0.5, -game.h * 0.5, game.w * 2, game.h * 2,
     floorTex));
-  groundSprite.tileScale.set(4 * WALL_SIZE / floorTex.width * game.scaleFactor *
-    0.9);
+  const grassScale = game.scaleFactor * 0.9;
+  groundSprite.tileScale.set(4 * WALL_SIZE / floorTex.width * grassScale);
   groundSprite.update = () => {
     groundSprite.x = game.ui.x - game.w * 0.5;
     groundSprite.y = game.ui.y - game.h * 0.5;
@@ -424,11 +435,9 @@ export async function loadMap() {
     groundSprite.height = Math.max(Math.min(
       game.h * 2, client.h - groundSprite.y), 0);
     groundSprite.tilePosition.x = -groundSprite.x / 4 / WALL_SIZE * floorTex
-      .width /
-      game.scaleFactor / 0.9;
+      .width / grassScale;
     groundSprite.tilePosition.y = -groundSprite.y / 4 / WALL_SIZE * floorTex
-      .width /
-      game.scaleFactor / 0.9;
+      .width / grassScale;
   };
 
   loadingProgress(100);

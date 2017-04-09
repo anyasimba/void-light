@@ -98,6 +98,8 @@ struct GameLevelZone {
   vector<vector<vector<GameLevelZoneObject *>>> cells;
   vector<GameLevelZoneObject *> objects;
 
+  float dt;
+
   static int CELL_SIZE() {
     return WALL_SIZE * 4;
   }

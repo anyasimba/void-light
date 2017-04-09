@@ -17,7 +17,7 @@ export const mobs__hands__family = {
             x: -40,
             y: 40,
           },
-          angle: 60,
+          angle: 120,
           vAngle: 0,
           hAngle: 0,
           sideAngle: -30,
@@ -71,7 +71,7 @@ export const mobs__hands__family = {
             x: -40,
             y: -40,
           },
-          angle: -60,
+          angle: -120,
           sideAngle: 30,
         });
       });
@@ -154,7 +154,7 @@ export const mobs__weapon__family = {
             y: 40,
           },
           angle: 120,
-          sideAngle: -50,
+          sideAngle: -30,
         });
         this.parent.step(step3, step2FN);
       };

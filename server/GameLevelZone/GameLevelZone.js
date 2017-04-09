@@ -138,6 +138,15 @@ export class GameLevelZone {
         let slug = this.map.dictionary[o.gid];
         const x = o.x / 32 * WALL_SIZE + WALL_SIZE * 0.5;
         const y = o.y / 32 * WALL_SIZE - WALL_SIZE * 0.5;
+        let z = i * 100;
+
+        if (o.name !== 'Door' && o.name !== 'Exit') {
+          const cx = Math.floor(x / WALL_SIZE);
+          const cy = Math.floor(y / WALL_SIZE);
+          if (this.grid[i] && this.grid[i][cx] && this.grid[i][cx][cy]) {
+            z += this.grid[i][cx][cy][1];
+          }
+        }
         const data = {
           mapID: o.id,
           mapX: (o.x + o.width * 0.5) / 32 * WALL_SIZE,
@@ -146,7 +155,7 @@ export class GameLevelZone {
           mapH: o.height / 32 * WALL_SIZE,
           x: x,
           y: y,
-          z: i * 100,
+          z: z,
           slug: slug,
         };
         Object.assign(data, o.properties);
@@ -201,7 +210,12 @@ export class GameLevelZone {
     this.mobs = [];
     for (const k in this.enemyPoints) {
       const p = this.enemyPoints[k];
-      Object.assign(p, global[p.slug]);
+      const opts = global[p.slug];
+      if (!opts) {
+        console.error('no opts for mob: ' + p.slug);
+        process.exit(1);
+      }
+      Object.assign(p, opts);
       const mob = new Mob(this, p);
       this.mapObjects[p.mapID] = mob;
       for (const k in this.bossAreas) {

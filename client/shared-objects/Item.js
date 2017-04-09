@@ -299,10 +299,9 @@ export const weapon__kinjal__default = new class {
 export const shield__default__default = new class {
   createView() {
     const image = makeHSL(hslMap['shield'], 0.5, 0.5, [
-      0xBBBBBB,
-      0xBBBBBB,
-      0xBBBBBB,
-      0x6699BB
+      0xFFFFFF,
+      0x888888,
+      0x888888,
     ]);
     image.scale.x = 0.8;
     image.scale.y = 0.8;

@@ -55,6 +55,12 @@ Object.assign(GameLevelZone.prototype, {
     return hasBlock;
   },
   doBlock(source, opts, other) {
+    if (other.kind === 'mob' && other.owner.opts.IS_BOSS) {
+      return;
+    }
+    if (!other.canBlockHit) {
+      return;
+    }
     if (Math.abs(source.z - other.z) > 30) {
       return;
     }
@@ -108,9 +114,9 @@ Object.assign(GameLevelZone.prototype, {
 
     other.breakHit(true);
     if (other.inBlock) {
-      other.stun(source.weapon.staminaTime * 2);
+      other.stun(source.weapon.stunTime * 2);
     } else {
-      other.stun(source.weapon.staminaTime);
+      other.stun(source.weapon.stunTime);
     }
     return true;
   },
@@ -152,23 +158,29 @@ Object.assign(GameLevelZone.prototype, {
   },
   doDamage(source, opts, other) {
     if (other.rollBlockTime && !other.inHit && !other.inJump) {
-      return;
+      return true;
     }
     const isInvade = source.invade || other.invade;
     if (source.kind === other.kind && !isInvade) {
-      return;
+      return true;
     }
 
     let superHit;
-    if (Math.abs(source.z - other.z) > 30 || source.speedZ >= 150) {
-      if (source.z < other.z ||
-        Math.abs(source.z - other.z) > 80 ||
-        source.speedZ < 150 ||
-        !source.isFall) {
+    if (source.z > other.z &&
+      Math.abs(source.z - other.z) > 80 &&
+      source.speedZ < 150) {
 
+      superHit = true;
+    } else {
+      let wd = 30;
+      if (source.hitType === 0) {
+        wd = 40;
+      }
+      if (source.weapon && source.weapon.isRange) {
+        wd = 60;
+      }
+      if (Math.abs(source.z - other.z) > wd) {
         return;
-      } else {
-        superHit = true;
       }
     }
 
@@ -223,10 +235,10 @@ Object.assign(GameLevelZone.prototype, {
         isBackstep = true;
         damageF *= 3;
         isInBlock = false;
-        other.stun(source.weapon.staminaTime + 1);
+        other.stun(source.weapon.stunTime + 0.5);
       } else if (isInBlock) {
         isRemoveBlock = true;
-        other.stun(source.weapon.staminaTime * 2 + 2);
+        other.stun(source.weapon.stunTime * 2 + 0.5);
       } else {
         isInBlock = true;
       }
@@ -237,13 +249,13 @@ Object.assign(GameLevelZone.prototype, {
     if (!isBackstep && !isRemoveBlock) {
       if (isInBlock) {
         other.useStamina(
-          source.weapon.stamina * balanceF * 2,
-          source.weapon.staminaTime * 2);
+          source.weapon.staminaUse * balanceF * 2,
+          source.weapon.staminaUseTime * 2);
       } else {
         other.useBalance(source.weapon.balance * balanceF, 1);
         other.useStamina(
-          source.weapon.stamina * balanceF,
-          source.weapon.staminaTime);
+          source.weapon.staminaUse * balanceF,
+          source.weapon.staminaUseTime);
       }
     }
 
@@ -271,6 +283,8 @@ Object.assign(GameLevelZone.prototype, {
     });
     if (other.hp <= 0) {
       other.onDie(source);
+    } else if (other.kind === 'mob') {
+      other.owner.target = source;
     }
     if (other.inHit && other.balance <= other.BALANCE * 0.5) {
       other.breakHit();
@@ -278,12 +292,12 @@ Object.assign(GameLevelZone.prototype, {
 
     if (!isBackstep && !isRemoveBlock) {
       if (!isInBlock && other.balance <= 0) {
-        other.stun(source.weapon.staminaTime);
+        other.stun(source.weapon.stunTime);
         other.balance = other.BALANCE;
       } else if (!isInBlock && other.balance <= other.BALANCE * 0.5) {
         other.stun(0.2);
       } else if (isInBlock && other.stamina <= 0) {
-        other.stun(source.weapon.staminaTime * 2);
+        other.stun(source.weapon.stunTime * 2);
         other.balance = other.BALANCE;
       }
     }
@@ -301,6 +315,8 @@ Object.assign(GameLevelZone.prototype, {
       other.speed = other.speed.add(opts.hitVec.multiply(
         opts.impulse * source.scale));
     }
+    other.isFall = false;
+    other.speedZ = 0;
     other.emitPos();
   },
 });

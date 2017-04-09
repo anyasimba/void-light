@@ -82,11 +82,16 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
       this.view3.y + Math.sin(this.view3.angle * Math.PI / 180) * 200;
     this.view4.angle -= dt * 2;
 
-    let l = Math.floor(this.z / 100.0);
-    l = Math.min(l, 5);
+    this.z = this.z || 0;
+    let l = Math.floor(this.z / 100.0 * 6 + 0.5);
     l = Math.max(l, 0);
-    if (this.light) {
-      const alpha = game.layers[l].sub.mix7.alpha;
+
+    let li = Math.floor(this.z / 100.0 + 1 / 12);
+    li = Math.min(li, 5);
+    li = Math.max(li, 0);
+    if (game.light && this.light) {
+      const alpha = game.layers[li]
+        .sub['mix' + Math.min(l - li * 6 + 1, 7)].alpha;
       const light = game.light;
 
       const f = 1 / light.scale.x;

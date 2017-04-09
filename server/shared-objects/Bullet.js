@@ -57,9 +57,12 @@ export class Bullet extends mix(
       return;
     }
     this.emitPos();
-    this.owner.gameLevelZone.doDamage(this.owner, {
-      hitVec: this.speed.unit(),
-    }, target)
+    if (this.owner.gameLevelZone.doDamage(this.owner, {
+        hitVec: this.speed.unit(),
+      }, target)) {
+
+      return;
+    }
     this.destructor();
   }
 }

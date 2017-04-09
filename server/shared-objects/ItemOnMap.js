@@ -35,8 +35,8 @@ export class ItemOnMap extends mix(global.ItemOnMap, MixNativeGameObject,
   checkNear(player) {
     const dx = Math.abs(this.pos.x - player.pos.x);
     const dy = Math.abs(this.pos.y - player.pos.y);
-    const dw = WALL_SIZE * 2;
-    const dh = WALL_SIZE * 2;
+    const dw = WALL_SIZE * 0.45;
+    const dh = WALL_SIZE * 0.45;
     if (dx < dw && dy < dh &&
       Math.abs(this.z + 20.0 - player.z) <= 20.0) {
 

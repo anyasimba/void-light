@@ -190,6 +190,26 @@ export function resize(e) {
   game.ui.scale.set(uiS / s);
   game.scaleFactor = s;
   game.uiScaleFactor = uiS;
+
+  if (global.client && client.player) {
+    const targetX = client.player.pos.x;
+    const targetY = client.player.pos.y;
+
+    const dx = -targetX * game.scaleFactor -
+      game.scene.x;
+    const dy = -targetY * game.scaleFactor -
+      game.scene.y;
+
+    const f = (1 - Math.pow(0.1, dt * 0.6));
+    game.scene.x = -targetX * game.scaleFactor;
+    game.scene.y = -targetY * game.scaleFactor;
+    game.cameraZ = client.player.z;
+
+    game.cameraPos = new vec3({
+      x: -game.scene.x / game.scaleFactor,
+      y: -game.scene.y / game.scaleFactor,
+    });
+  }
 }
 
 function create() {
@@ -238,20 +258,20 @@ function create() {
   // g.endFill();
   // game.ui.add(g);
 
-  // game.ui.add(new Phaser.Image(game, x, y, hslMap['stage1__mob1'].gray));
-  // x += hslMap['stage1__mob1'].gray.width;
+  // game.ui.add(new Phaser.Image(game, x, y, hslMap['player'].gray));
+  // x += hslMap['player'].gray.width;
   // y += 0;
 
-  // game.ui.add(new Phaser.Image(game, x, y, hslMap['stage1__mob1'].color));
-  // x += hslMap['stage1__mob1'].gray.width;
+  // game.ui.add(new Phaser.Image(game, x, y, hslMap['player'].color));
+  // x += hslMap['player'].gray.width;
   // y += 0;
 
-  // game.ui.add(new Phaser.Image(game, x, y, hslMap['stage1__mob1'].ambient));
-  // x += hslMap['stage1__mob1'].gray.width;
+  // game.ui.add(new Phaser.Image(game, x, y, hslMap['player'].ambient));
+  // x += hslMap['player'].gray.width;
   // y += 0;
 
-  // game.ui.add(new Phaser.Image(game, x, y, hslMap['stage1__mob1'].special));
-  // x += hslMap['stage1__mob1'].gray.width;
+  // game.ui.add(new Phaser.Image(game, x, y, hslMap['player'].special));
+  // x += hslMap['player'].gray.width;
   // y += 0;
 
   game.backSound = game.add.sound('back', 0.5, true);
@@ -392,6 +412,25 @@ function createGame() {
 
         if (client.needLoadMap) {
           delete client.needLoadMap;
+
+          const targetX = client.player.pos.x;
+          const targetY = client.player.pos.y;
+
+          const dx = -targetX * game.scaleFactor -
+            game.scene.x;
+          const dy = -targetY * game.scaleFactor -
+            game.scene.y;
+
+          const f = (1 - Math.pow(0.1, dt * 0.6));
+          game.scene.x = -targetX * game.scaleFactor;
+          game.scene.y = -targetY * game.scaleFactor;
+          game.cameraZ = client.player.z;
+
+          game.cameraPos = new vec3({
+            x: -game.scene.x / game.scaleFactor,
+            y: -game.scene.y / game.scaleFactor,
+          });
+
           loadMap();
         }
 
@@ -425,8 +464,7 @@ function createGame() {
           game.scene.x += dx * f;
           game.scene.y += dy * f;
           game.cameraZ = game.cameraZ || 0;
-          game.cameraZ += (client.player.z - game.cameraZ) * f
-
+          game.cameraZ += (client.player.z - game.cameraZ) * f;
           const speed = client.player.speed.length();
           const zoom =
             (game.preZoom || 1) *
@@ -459,10 +497,10 @@ function createGame() {
           // game.cameraPos.y += Math.sin(game.cameraPos.angle * Math.PI / 180) *
           //   1000;
 
-          global.pf = 500;
+          global.pf = 600;
           game.sceneWrap.scale.set(game.zoomF);
 
-          const makeSubLayer3D = (layer, i, f) => {
+          const makeSubLayer3D = (layer, ci, i, f) => {
             const p = game.cameraPos;
             const a = -game.cameraAngle + 90;
             let px = p.x + 1500 * Math.cos(a * Math.PI / 180.0);
@@ -475,45 +513,58 @@ function createGame() {
             layer.x = -px * (f - 1);
             layer.y = -py * (f - 1);
 
-            let cd = client.player.z / 100 - Math.floor(i / 6);
+            let cz = client.player.z + 100 / 12;
+            let cd = Math.floor(cz / 100) - Math.floor(ci / 6);
+            let cd2 = cz / 100 - Math.floor(ci / 6);
             if (cd >= 0) {
-              let d = client.player.z / 100 - i / 3;
-              layer.alpha = 1 - Math.max(Math.min(d - 0.5, 1), 0);
-            } else if (cd >= -3 / 6) {
+              const pz = cz / 100;
+              const lz = (ci + i) / 6;
+              layer.alpha = 1;
+              let d = pz - lz;
+              if (d < 0) {
+                layer.alpha = 1 - Math.pow(-d, 0.05) * 0.7;
+              }
+              if (cd > 0) {
+                layer.alpha = 0;
+              }
+            } else if (cd2 >= -3 / 6) {
               layer.alpha = 1 + cd * 2;
             } else {
               layer.alpha = 0;
             }
+            layer.alpha = Math.max(layer.alpha, 0);
+            layer.alpha = Math.min(layer.alpha, 1);
           };
           const makeLayer3D = (layer, i, z) => {
-            makeSubLayer3D(layer.sub.ground, i, pf / (pf + z));
+            makeSubLayer3D(layer.sub.ground, i, 0, pf / (pf + z));
+            const wf = -1;
             for (let j = 0; j < 7; ++j) {
               makeSubLayer3D(
-                layer.sub['walls' + (j + 1)], i,
+                layer.sub['walls' + (j + 1)], i + j, wf,
                 pf / (pf + z - j * 100 / 6));
               makeSubLayer3D(
-                layer.sub['affects1' + (j + 1)], i,
+                layer.sub['affects1' + (j + 1)], i + j, wf,
                 pf / (pf + z - j * 100 / 6));
               makeSubLayer3D(
-                layer.sub['affects2' + (j + 1)], i,
+                layer.sub['affects2' + (j + 1)], i + j, wf,
                 pf / (pf + z - j * 100 / 6));
               makeSubLayer3D(
-                layer.sub['shadows1' + (j + 1)], i,
+                layer.sub['shadows1' + (j + 1)], i + j, wf,
                 pf / (pf + z - j * 100 / 6));
               makeSubLayer3D(
-                layer.sub['shadows2' + (j + 1)], i,
+                layer.sub['shadows2' + (j + 1)], i + j, wf,
                 pf / (pf + z - j * 100 / 6));
               makeSubLayer3D(
-                layer.sub['mix' + (j + 1)], i,
+                layer.sub['mix' + (j + 1)], i + j, -4,
                 pf / (pf + z - j * 100 / 6));
               makeSubLayer3D(
-                layer.sub['mixDead' + (j + 1)], i,
+                layer.sub['mixDead' + (j + 1)], i + j, -4,
                 pf / (pf + z - j * 100 / 6));
             }
             makeSubLayer3D(
-              layer.sub.info, i + 5, pf / (pf + z - 500 / 6));
+              layer.sub.info, i + 3, -3, pf / (pf + z - 500 / 6));
             makeSubLayer3D(
-              layer.sub.ceil, i + 7, pf / (pf + z - 700 / 6));
+              layer.sub.ceil, i + 3, -3, pf / (pf + z - 700 / 6));
           }
 
           game.cameraAngle = game.cameraAngle || 0;

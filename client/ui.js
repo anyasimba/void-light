@@ -305,7 +305,7 @@ export function initUI() {
 }
 
 export function makeSuperMessage(text, color) {
-  game.actionPreZoom = 1.3;
+  game.actionPreZoom = 1.2;
   let cb;
 
   const interval = setInterval(() => {
@@ -354,7 +354,7 @@ export function makeSuperMessage(text, color) {
       }
       if (time >= 2) {
         group.destroy();
-        if (game.actionPreZoom === 1.3) {
+        if (game.actionPreZoom === 1.2) {
           game.actionPreZoom = 1;
         }
       }
@@ -370,7 +370,7 @@ export function makeSuperMessage(text, color) {
 
 export function makeMessage(text, color, font) {
   disableMessage();
-  game.actionPreZoom = 1.2;
+  game.actionPreZoom = 1;
 
   const group = new Phaser.Group(game);
 

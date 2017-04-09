@@ -5,12 +5,14 @@ void GameLevelZone__resolveCollision(GameLevelZone *self, GameLevelZoneObject *o
 void GameLevelZone__resolveCircle2CircleCollision(GameLevelZone *self, GameLevelZoneObject *object, GameLevelZoneObject *other);
 bool GameLevelZone__resolveCircle2StaticRectCollision(GameLevelZone *, GameLevelZoneObject *, float x, float y, float w, float h, float z1, float z2);
 
+
 void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
   isolate = args.GetIsolate();
   HandleScope scope(isolate);
 
   GameLevelZone *self = (GameLevelZone *)node::Buffer::Data(args[0]->ToObject());
   float dt = (float) args[1]->NumberValue();
+  self->dt = dt;
 
   for (int i = 0; i < (int)self->objects.size(); ++i) {
     GameLevelZoneObject *object = self->objects[i];
@@ -306,78 +308,80 @@ void GameLevelZone__resolveCircle2CircleCollision(GameLevelZone *self, GameLevel
   float dx = object->pos.x - other->pos.x;
   float dy = object->pos.y - other->pos.y;
   float d = sqrt(dx * dx + dy * dy);
-  if (d < bodyD) {
 
-    if (object->vtable == VTABLE::BULLET) {
-      Local<Object> js = Local<Object>::New(isolate, object->js);
-      Local<Object> js2 = Local<Object>::New(isolate, other->js);
-      const unsigned argc = 1;
-      Local<Value> argv[argc] = { js2 };
-      Local<Function>::Cast(js->GET("onCollision"))->Call(js, argc, argv);
-      return;
-    }
-    if (other->vtable == VTABLE::BULLET) {
-      Local<Object> js = Local<Object>::New(isolate, other->js);
-      Local<Object> js2 = Local<Object>::New(isolate, object->js);
-      const unsigned argc = 1;
-      Local<Value> argv[argc] = { js2 };
-      Local<Function>::Cast(js->GET("onCollision"))->Call(js, argc, argv);
-      return;
-    }
-
-    if (object->beforeZ + 40.f < other->z && object->z + 40.f >= other->z) {
-      object->isFall = true;
-      object->z = other->z - 40.f;
-      object->speedZ = (float)fabs(object->speedZ) * 0.5f;
-      object->groundFriction = 0.f;
-      object->hasPosChange = true;
-
-      other->isFall = false;
-      other->speedZ = -(float)fabs(other->speedZ) * 0.5f;
-      other->groundFriction = 1.f;
-      other->hasPosChange = true;
-      if (other->beforeIsFall) {
-        Local<Object> js = Local<Object>::New(isolate, other->js);
-        Local<Function>::Cast(js->GET("fallGood"))->Call(js, 0, nullptr);
-      }
-      return;
-    }
-    if (object->beforeZ >= other->z + 40.f && object->z <= other->z + 40.f) {
-      other->isFall = true;
-      other->speedZ = (float)fabs(other->speedZ) * 0.5f;
-      other->groundFriction = 0.f;
-      other->hasPosChange = true;
-      
-      object->isFall = false;
-      object->z = other->z + 40.f;
-      object->speedZ = -(float)fabs(object->speedZ) * 0.5f;
-      object->groundFriction = 1.f;
-      object->hasPosChange = true;
-      if (object->beforeIsFall) {
-        Local<Object> js = Local<Object>::New(isolate, object->js);
-        Local<Function>::Cast(js->GET("fallGood"))->Call(js, 0, nullptr);
-      }
-      return;
-    }
-    if (object->z + 40.f < other->z || object->z >= other->z + 40.f) {
-      return;
-    }
-
-    other->hasPosChange = true;
-    float x = dx / d;
-    float y = dy / d;
-    float rd = bodyD - d;
-    vec2 v = vec2(rd * x, rd * y);
-    object->pos += v;
-    other->pos -= v;
-
-    v = v.unit();
-
-    float force = object->speed.length() + other->speed.length();
-    float imp = 0.5f;
-    object->speed += v * (force * imp);
-    other->speed -= v * (force * imp);
+  if (d > bodyD) {
+    return;
   }
+
+  if (object->vtable == VTABLE::BULLET) {
+    Local<Object> js = Local<Object>::New(isolate, object->js);
+    Local<Object> js2 = Local<Object>::New(isolate, other->js);
+    const unsigned argc = 1;
+    Local<Value> argv[argc] = { js2 };
+    Local<Function>::Cast(js->GET("onCollision"))->Call(js, argc, argv);
+    return;
+  }
+  if (other->vtable == VTABLE::BULLET) {
+    Local<Object> js = Local<Object>::New(isolate, other->js);
+    Local<Object> js2 = Local<Object>::New(isolate, object->js);
+    const unsigned argc = 1;
+    Local<Value> argv[argc] = { js2 };
+    Local<Function>::Cast(js->GET("onCollision"))->Call(js, argc, argv);
+    return;
+  }
+
+  if (object->beforeZ + 40.f < other->z && object->z + 40.f >= other->z) {
+    object->isFall = true;
+    object->z = other->z - 40.f;
+    object->speedZ = (float)fabs(object->speedZ) * 0.5f;
+    object->groundFriction = 0.f;
+    object->hasPosChange = true;
+
+    other->isFall = false;
+    other->speedZ = -(float)fabs(other->speedZ) * 0.5f;
+    other->groundFriction = 1.f;
+    other->hasPosChange = true;
+    if (other->beforeIsFall) {
+      Local<Object> js = Local<Object>::New(isolate, other->js);
+      Local<Function>::Cast(js->GET("fallGood"))->Call(js, 0, nullptr);
+    }
+    return;
+  }
+  if (object->beforeZ >= other->z + 40.f && object->z <= other->z + 40.f) {
+    other->isFall = true;
+    other->speedZ = (float)fabs(other->speedZ) * 0.5f;
+    other->groundFriction = 0.f;
+    other->hasPosChange = true;
+    
+    object->isFall = false;
+    object->z = other->z + 40.f;
+    object->speedZ = -(float)fabs(object->speedZ) * 0.5f;
+    object->groundFriction = 1.f;
+    object->hasPosChange = true;
+    if (object->beforeIsFall) {
+      Local<Object> js = Local<Object>::New(isolate, object->js);
+      Local<Function>::Cast(js->GET("fallGood"))->Call(js, 0, nullptr);
+    }
+    return;
+  }
+  if (object->z + 40.f < other->z || object->z >= other->z + 40.f) {
+    return;
+  }
+
+  other->hasPosChange = true;
+  float x = dx / d;
+  float y = dy / d;
+  float rd = bodyD - d;
+  vec2 v = vec2(rd * x, rd * y);
+  object->pos += v;
+  other->pos -= v;
+
+  v = v.unit();
+
+  float force = object->speed.length() + other->speed.length();
+  float imp = 0.5f;
+  object->speed += v * (force * imp);
+  other->speed -= v * (force * imp);
 }
 bool GameLevelZone__resolveCircle2StaticRectCollision(
   GameLevelZone * self, GameLevelZoneObject *object, float x, float y, float w, float h, float z1, float z2) {
@@ -402,44 +406,47 @@ bool GameLevelZone__resolveCircle2StaticRectCollision(
     }
   }
 
-  if (fabs(dy) <= h * 0.5f && fabs(dx) <= w * 0.5f) {
-    if (object->beforeZ < z1 && object->z >= z1) {
-      object->isFall = true;
-      object->z = z1;
-      object->speedZ = (float)fabs(object->speedZ) * 0.5f;
-      object->groundFriction = 0.f;
-      object->hasPosChange = true;
-      return false;
-    }
-    if (object->beforeZ >= z2 && object->z <= z2) {
-      object->isFall = false;
-      object->z = z2;
-      object->speedZ = -fmax(-object->speedZ, 0.f);
-      object->hasPosChange = true;
-      if (object->beforeIsFall) {
-        Local<Object> js = Local<Object>::New(isolate, object->js);
-        Local<Function>::Cast(js->GET("fallGood"))->Call(js, 0, nullptr);
+
+  if (object->vtable != VTABLE::BULLET) {
+    if (fabs(dy) <= h * 0.5f && fabs(dx) <= w * 0.5f) {
+      if (object->beforeZ < z1 && object->z >= z1) {
+        object->isFall = true;
+        object->z = z1;
+        object->speedZ = (float)fabs(object->speedZ) * 0.5f;
+        object->groundFriction = 0.f;
+        object->hasPosChange = true;
+        return false;
       }
-      return true;
-    }
-  }
-  if (fabs(dy) < bodyDY && fabs(dx) < bodyDX) {
-    if (z2 > object->z && z2 - object->z <= 100.f/6.f + 0.01f) {
-      if (fabs(dy) <= h * 0.5f + object->BODY_P2 * 0.25f && fabs(dx) <= w * 0.5f + object->BODY_P1 * 0.25f) {
-        object->z += (z2 - object->z) * 0.5f;
-        object->speedZ = -fmax(-object->speedZ, 0.f);
+      if (object->beforeZ >= z2 && object->z <= z2) {
         object->isFall = false;
+        object->z = z2;
+        object->speedZ = -fmax(-object->speedZ, 0.f);
         object->hasPosChange = true;
         if (object->beforeIsFall) {
           Local<Object> js = Local<Object>::New(isolate, object->js);
           Local<Function>::Cast(js->GET("fallGood"))->Call(js, 0, nullptr);
         }
+        return true;
       }
-      return true;
     }
-  }
-  if (object->z < z1 || object->z >= z2) {
-    return false;
+    if (fabs(dy) < bodyDY && fabs(dx) < bodyDX) {
+      if (z2 > object->z && z2 - object->z <= 100.f/6.f + 0.01f) {
+        if (fabs(dy) <= h * 0.5f + object->BODY_P2 * 0.25f && fabs(dx) <= w * 0.5f + object->BODY_P1 * 0.25f) {
+          object->z += 100.f * self->dt;
+          object->speedZ = -fmax(-object->speedZ, 0.f);
+          object->isFall = false;
+          object->hasPosChange = true;
+          if (object->beforeIsFall) {
+            Local<Object> js = Local<Object>::New(isolate, object->js);
+            Local<Function>::Cast(js->GET("fallGood"))->Call(js, 0, nullptr);
+          }
+        }
+        return true;
+      }
+    }
+    if (object->z < z1 || object->z >= z2) {
+      return false;
+    }
   }
 
   float x1 = (x - w * 0.5f);
@@ -469,61 +476,75 @@ bool GameLevelZone__resolveCircle2StaticRectCollision(
     isHasCollision = true;
   }
 
-  if (isHasCollision) {
-    object->hasPosChange = true;
-    float dx = object->beforePos.x - x;
-    float dy = object->beforePos.y - y;
 
-    float imp = 0.5f;
-    if (fabs(dy) <= h * 0.5f) {
-      if (dx > 0) {
-        object->pos.x = x + bodyDX;
-        object->speed.x = fabs(object->speed.x * imp);
-      } else {
-        object->pos.x = x - bodyDX;
-        object->speed.x = -fabs(object->speed.x * imp);
-      }
-    } else if (fabs(dx) <= w * 0.5f) {
-      if (dy > 0) {
-        object->pos.y = y + bodyDY;
-        object->speed.y = fabs(object->speed.y * imp);
-      } else {
-        object->pos.y = y - bodyDY;
-        object->speed.y = -fabs(object->speed.y * imp);
-      }
+  if (object->vtable == VTABLE::BULLET) {
+    if (object->z < z1 || object->z >= z2) {
+      isHasCollision = false;
+    }
+    if (isHasCollision) {
+      Local<Object> js = Local<Object>::New(isolate, object->js);
+      Local<Function>::Cast(js->GET("destructor"))->Call(js, 0, nullptr);
+      return false;
+    }
+  }
+
+  if (!isHasCollision) {
+    return false;
+  }
+
+  object->hasPosChange = true;
+  dx = object->beforePos.x - x;
+  dy = object->beforePos.y - y;
+
+  float imp = 0.5f;
+  if (fabs(dy) <= h * 0.5f) {
+    if (dx > 0) {
+      object->pos.x = x + bodyDX;
+      object->speed.x = fabs(object->speed.x * imp);
     } else {
-      if (dx < 0 && dy < 0) {
-        float dx = (object->pos.x - x1) / d1;
-        float dy = (object->pos.y - y1) / d1;
-        object->pos.x = x1 + dx * object->BODY_P1 * 0.5f;
-        object->pos.y = y1 + dy * object->BODY_P1 * 0.5f;
-        float force = object->speed.length();
-        object->speed += vec2(dx, dy) * force * imp;
-      }
-      if (dx < 0 && dy >= 0) {
-        float dx = (object->pos.x - x1) / d2;
-        float dy = (object->pos.y - y2) / d2;
-        object->pos.x = x1 + dx * object->BODY_P1 * 0.5f;
-        object->pos.y = y2 + dy * object->BODY_P1 * 0.5f;
-        float force = object->speed.length();
-        object->speed += vec2(dx, dy) * force * imp;
-      }
-      if (dx >= 0 && dy < 0) {
-        float dx = (object->pos.x - x2) / d3;
-        float dy = (object->pos.y - y1) / d3;
-        object->pos.x = x2 + dx * object->BODY_P1 * 0.5f;
-        object->pos.y = y1 + dy * object->BODY_P1 * 0.5f;
-        float force = object->speed.length();
-        object->speed += vec2(dx, dy) * force * imp;
-      }
-      if (dx >= 0 && dy >= 0) {
-        float dx = (object->pos.x - x2) / d4;
-        float dy = (object->pos.y - y2) / d4;
-        object->pos.x = x2 + dx * object->BODY_P1 * 0.5f;
-        object->pos.y = y2 + dy * object->BODY_P1 * 0.5f;
-        float force = object->speed.length();
-        object->speed += vec2(dx, dy) * force * imp;
-      }
+      object->pos.x = x - bodyDX;
+      object->speed.x = -fabs(object->speed.x * imp);
+    }
+  } else if (fabs(dx) <= w * 0.5f) {
+    if (dy > 0) {
+      object->pos.y = y + bodyDY;
+      object->speed.y = fabs(object->speed.y * imp);
+    } else {
+      object->pos.y = y - bodyDY;
+      object->speed.y = -fabs(object->speed.y * imp);
+    }
+  } else {
+    if (dx < 0 && dy < 0) {
+      float dx = (object->pos.x - x1) / d1;
+      float dy = (object->pos.y - y1) / d1;
+      object->pos.x = x1 + dx * object->BODY_P1 * 0.5f;
+      object->pos.y = y1 + dy * object->BODY_P1 * 0.5f;
+      float force = object->speed.length();
+      object->speed += vec2(dx, dy) * force * imp;
+    }
+    if (dx < 0 && dy >= 0) {
+      float dx = (object->pos.x - x1) / d2;
+      float dy = (object->pos.y - y2) / d2;
+      object->pos.x = x1 + dx * object->BODY_P1 * 0.5f;
+      object->pos.y = y2 + dy * object->BODY_P1 * 0.5f;
+      float force = object->speed.length();
+      object->speed += vec2(dx, dy) * force * imp;
+    }
+    if (dx >= 0 && dy < 0) {
+      float dx = (object->pos.x - x2) / d3;
+      float dy = (object->pos.y - y1) / d3;
+      object->pos.x = x2 + dx * object->BODY_P1 * 0.5f;
+      object->pos.y = y1 + dy * object->BODY_P1 * 0.5f;
+      float force = object->speed.length();
+      object->speed += vec2(dx, dy) * force * imp;
+    }
+    if (dx >= 0 && dy >= 0) {
+      float dx = (object->pos.x - x2) / d4;
+      float dy = (object->pos.y - y2) / d4;
+      object->pos.x = x2 + dx * object->BODY_P1 * 0.5f;
+      object->pos.y = y2 + dy * object->BODY_P1 * 0.5f;
+      float force = object->speed.length();
+      object->speed += vec2(dx, dy) * force * imp;
     }
   }
 

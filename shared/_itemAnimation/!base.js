@@ -480,7 +480,7 @@ export function ia_backstep(
         hand: hand,
       });
     });
-    time += step2 + wait * this.hitSpeed + 1;
+    time += step2 + wait * this.hitSpeed + 0.5;
 
     const step3 = end * this.hitSpeed;
     this.step(time, () => {

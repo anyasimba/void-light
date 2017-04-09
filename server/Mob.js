@@ -17,6 +17,9 @@ export class Mob {
       this.opts.FIGHTER[k] = opts.FIGHTER[k];
     }
     this.opts.FIGHTER.kind = 'mob';
+    this.opts.FIGHTER.look = new vec3(
+      Math.random() - 0.5, Math.random() - 0.5).unit();
+
     if (!this.opts.dies) {
       this.opts.FIGHTER.HP *=
         Math.pow(this.gameLevelZone.complex, 0.5) + 1;
@@ -94,7 +97,7 @@ export class Mob {
           const p = q[i];
           const cost = pathGrid[p.x][p.y];
           const check = (z, i, x, y, cost) => {
-            if (cost > 20) {
+            if (cost > 30) {
               return;
             }
             if (!grid[i] || !grid[i][x] || !grid[i][x][y]) {
@@ -145,10 +148,6 @@ export class Mob {
     }
 
     this.pathGrid = grid.pathGrids[gridID];
-
-    if (grid[i] && grid[i][x] && grid[i][x][y]) {
-      this.opts.z += grid[i][x][y][1];
-    }
   }
 
   getNextPoint(x, y) {
@@ -308,12 +307,15 @@ export class Mob {
     if (a < -Math.PI) {
       a += Math.PI * 2;
     }
-    if (Math.abs(a) > 130 * Math.PI / 180.0) {
+    if (!this.opts.IS_BOSS && Math.abs(a) > 130 * Math.PI / 180.0) {
       this.lastAct = this.act;
       delete this.actTime;
       return;
     }
-    const af = 20 + Math.random() * 15;
+    let af = 20 + Math.random() * 15;
+    if (this.opts.IS_BOSS) {
+      af *= 1.5;
+    }
     a = Math.min(Math.abs(a), af * Math.PI / 180.0) *
       Math.sign(a);
     this.hitDir = vec3.fromAngles(0, this.hitDir.toAngle() *
@@ -435,28 +437,25 @@ export class Mob {
           inRun = true;
         }
 
-        this.attackDistance = this.attackDistance ||
-          (this.opts.HIT_D[0] + this.opts.HIT_D[1] * Math.random()) *
-          this.fighter.scale;
-
-        const needForce = d > this.attackDistanced &&
-          d < this.attackDistance * 3 &&
+        const nearRange = this.opts.HIT_D[0] * this.fighter.scale;
+        const farRange = this.opts.HIT_D[1] * this.fighter.scale;
+        const needForce = d > farRange &&
+          d < farRange * 3 &&
           this.target.speed.length() > 50 &&
           Math.random() < 0.05;
 
-        canAttack = d < this.attackDistance;
-        if (d < this.attackDistance * 0.5 && Math.random() < 0.5) {
-          canAttack = undefined;
-        }
-        if (Math.abs(this.fighter.z - this.target.z) > 30) {
-          canAttack = undefined;
+        canAttack = d >= nearRange && d <= farRange;
+        if (!this.fighter.weapon.isRange) {
+          if (Math.abs(this.fighter.z - this.target.z) > 30) {
+            canAttack = undefined;
+          }
         }
         this.canAttack = canAttack;
         if (!canAttack) {
           if (needForce) {
             canAttack = true;
             inRun = true;
-          } else if (d < this.attackDistance * 0.5) {
+          } else if (d < nearRange) {
             nextX = this.fighter.pos.x * 2 - this.target.pos.x;
             nextY = this.fighter.pos.y * 2 - this.target.pos.y;
           } else {
@@ -492,7 +491,6 @@ export class Mob {
         }
       }
     }
-
     if (canAttack) {
       if (!this.fighter.inBlock) {
         this.fighter.onKeyR();
@@ -519,7 +517,8 @@ export class Mob {
           let type = Math.floor(Math.random() * 3);
           if (this.moveset) {
             const n = this.moveset[7];
-            this.movesetI = Math.floor(Math.random() * n);
+            const shift = Math.floor(performance.now() * 0.0003);
+            this.movesetI = Math.floor(shift % n);
             type = this.moveset[this.movesetI][0][0];
             this.checkHitDop(0);
           }

@@ -44,15 +44,6 @@ export const stage1__mob1__doHit = ia_hands__doHit(
 export const stage1__mob1a__moveset = stage1__mob1__moveset;
 export const stage1__mob1a__doHit = ia_hands__doHit(
   moveset(stage1__mob1a__moveset));
-
 export const stage1__mob1b__moveset = stage1__mob1__moveset;
 export const stage1__mob1b__doHit = ia_hands__doHit(
   moveset(stage1__mob1b__moveset));
-
-export const stage1__mob1c__moveset = stage1__mob1__moveset;
-export const stage1__mob1c__doHit = ia_hands__doHit(
-  moveset(stage1__mob1c__moveset));
-
-export const stage1__mob1boss__moveset = stage1__mob1__moveset;
-export const stage1__mob1boss__doHit = ia_hands__doHit(
-  moveset(stage1__mob1boss__moveset));
