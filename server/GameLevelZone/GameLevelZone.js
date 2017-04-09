@@ -140,7 +140,7 @@ export class GameLevelZone {
         const y = o.y / 32 * WALL_SIZE - WALL_SIZE * 0.5;
         let z = i * 100;
 
-        if (o.name !== 'Door' && o.name !== 'Exit') {
+        if (o.name !== 'Door' && o.name !== 'Exit' && o.name !== 'BossArea') {
           const cx = Math.floor(x / WALL_SIZE);
           const cy = Math.floor(y / WALL_SIZE);
           if (this.grid[i] && this.grid[i][cx] && this.grid[i][cx][cy]) {
@@ -553,7 +553,9 @@ export class GameLevelZone {
           if (client.player && client.player.hp > 0 && !client.player.area) {
             const dx = Math.abs(client.player.pos.x - area.mapX);
             const dy = Math.abs(client.player.pos.y - area.mapY);
-            if (dx < area.mapW * 0.5 && dy < area.mapH * 0.5) {
+            const areaZ = Math.floor(area.z / 100);
+            const pz = Math.floor(client.player.z / 100);
+            if (areaZ === pz && dx < area.mapW * 0.5 && dy < area.mapH * 0.5) {
               client.player.area = area;
               client.emit('bossArea', {});
             }
