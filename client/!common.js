@@ -148,20 +148,24 @@ function createLayer() {
   layer.sub = {};
   layer.sub.ground = layer.add(new Phaser.Group(game));
   for (let i = 1; i <= 6; ++i) {
-    layer.sub['walls' + i] = layer.add(new Phaser.Group(game));
-    layer.sub['affects1' + i] = layer.add(new Phaser.Group(game));
-    layer.sub['affects2' + i] = layer.add(new Phaser.Group(game));
-    layer.sub['shadows1' + i] = layer.add(new Phaser.Group(game));
-    layer.sub['shadows2' + i] = layer.add(new Phaser.Group(game));
+    layer.sub['layer' + i] = layer.add(new Phaser.Group(game));
+    const l = layer.sub['layer' + i];
+    layer.sub['walls' + i] = l.add(new Phaser.Group(game));
+    layer.sub['affects1' + i] = l.add(new Phaser.Group(game));
+    layer.sub['affects2' + i] = l.add(new Phaser.Group(game));
+    layer.sub['shadows1' + i] = l.add(new Phaser.Group(game));
+    layer.sub['shadows2' + i] = l.add(new Phaser.Group(game));
     layer.sub['mix' + i] = layer.add(new Phaser.Group(game));
     layer.sub['mixDead' + i] = layer.add(new Phaser.Group(game));
   }
+  layer.sub.layer7 = layer.add(new Phaser.Group(game));
+  const l = layer.sub.layer7;
   layer.sub.ceil = layer.add(new Phaser.Group(game));
-  layer.sub.affects17 = layer.add(new Phaser.Group(game));
-  layer.sub.affects27 = layer.add(new Phaser.Group(game));
-  layer.sub.shadows17 = layer.add(new Phaser.Group(game));
-  layer.sub.shadows27 = layer.add(new Phaser.Group(game));
-  layer.sub.walls7 = layer.add(new Phaser.Group(game));
+  layer.sub.affects17 = l.add(new Phaser.Group(game));
+  layer.sub.affects27 = l.add(new Phaser.Group(game));
+  layer.sub.shadows17 = l.add(new Phaser.Group(game));
+  layer.sub.shadows27 = l.add(new Phaser.Group(game));
+  layer.sub.walls7 = l.add(new Phaser.Group(game));
   layer.sub.mix7 = layer.add(new Phaser.Group(game));
   layer.sub.mixDead7 = layer.add(new Phaser.Group(game));
   layer.sub.info = layer.add(new Phaser.Group(game));
@@ -294,6 +298,7 @@ function create() {
     global.dt = game.time.elapsed * 0.001;
     preUpdate.call(game.scene);
   }
+  game.scene.smoothed = true;
 
   game.isCreated = true;
 }
@@ -514,24 +519,35 @@ function createGame() {
             layer.y = -py * (f - 1);
 
             let cz = client.player.z + 100 / 12;
-            let cd = Math.floor(cz / 100) - Math.floor(ci / 6);
-            let cd2 = cz / 100 - Math.floor(ci / 6);
+            let pz = Math.floor(cz / 100);
+            let clz = Math.floor(ci / 6);
+            let cd = pz - clz;
+            let cd2 = cz / 100 - clz;
+            let af = 1;
+            if (cd < 0) {
+              cd = -cd;
+              af = 2 / 6 + cd2 * 3;
+            }
             if (cd >= 0) {
               const pz = cz / 100;
               const lz = (ci + i) / 6;
               layer.alpha = 1;
               let d = pz - lz;
-              if (d < 0) {
-                layer.alpha = 1 - Math.pow(-d, 0.05) * 0.7;
+              let db = 0 / 6;
+              let de = 5 / 6;
+              if (d < -de) {
+                layer.alpha = 0;
+              } else if (d <= -db) {
+                layer.alpha = 1 - Math.pow(-(d + db) / (de - db), 0.5);
               }
               if (cd > 0) {
+                layer.alpha = 3 - cd2;
+              }
+              if (pz >= 2 && clz < 2) {
                 layer.alpha = 0;
               }
-            } else if (cd2 >= -3 / 6) {
-              layer.alpha = 1 + cd * 2;
-            } else {
-              layer.alpha = 0;
             }
+            layer.alpha *= af;
             layer.alpha = Math.max(layer.alpha, 0);
             layer.alpha = Math.min(layer.alpha, 1);
           };
@@ -539,23 +555,27 @@ function createGame() {
             makeSubLayer3D(layer.sub.ground, i, 0, pf / (pf + z));
             const wf = -1;
             for (let j = 0; j < 7; ++j) {
+              let k = i + j;
+              if (j === 6) {
+                k -= 0.0001;
+              }
               makeSubLayer3D(
-                layer.sub['walls' + (j + 1)], i + j, wf,
+                layer.sub['walls' + (j + 1)], k, wf,
                 pf / (pf + z - j * 100 / 6));
               makeSubLayer3D(
-                layer.sub['affects1' + (j + 1)], i + j, wf,
+                layer.sub['affects1' + (j + 1)], k, wf,
                 pf / (pf + z - j * 100 / 6));
               makeSubLayer3D(
-                layer.sub['affects2' + (j + 1)], i + j, wf,
+                layer.sub['affects2' + (j + 1)], k, wf,
                 pf / (pf + z - j * 100 / 6));
               makeSubLayer3D(
-                layer.sub['shadows1' + (j + 1)], i + j, wf,
+                layer.sub['shadows1' + (j + 1)], k, wf,
                 pf / (pf + z - j * 100 / 6));
               makeSubLayer3D(
-                layer.sub['shadows2' + (j + 1)], i + j, wf,
+                layer.sub['shadows2' + (j + 1)], k, wf,
                 pf / (pf + z - j * 100 / 6));
               makeSubLayer3D(
-                layer.sub['mix' + (j + 1)], i + j, -4,
+                layer.sub['mix' + (j + 1)], k, -4,
                 pf / (pf + z - j * 100 / 6));
               makeSubLayer3D(
                 layer.sub['mixDead' + (j + 1)], i + j, -4,
@@ -614,56 +634,66 @@ function createGame() {
         }
 
         if (game.cameraPos && global.AF && game.mapTextures) {
-          for (let i = 0; i < 6; ++i) {
-            const ln = 7;
-            let gbx = game.cameraPos.x -
-              game.w * 0.5 / game.sceneWrap.scale.x;
-            gbx -= (AF - 1) * 0.5 * WALL_SIZE;
-            gbx = Math.floor(gbx / ts);
-            let gby = game.cameraPos.y -
-              game.h * 0.5 / game.sceneWrap.scale.y;
-            gby -= (AF - 1) * 0.5 * WALL_SIZE;
-            gby = Math.floor(gby / ts);
-            let gex = game.cameraPos.x +
-              game.w * 0.5 / game.sceneWrap.scale.x;
-            gex += (AF - 1) * 0.5 * WALL_SIZE;
-            gex = Math.floor(gex / ts);
-            let gey = game.cameraPos.y +
-              game.h * 0.5 / game.sceneWrap.scale.y;
-            gey += (AF - 1) * 0.5 * WALL_SIZE;
-            gey = Math.floor(gey / ts);
+          if (game.lastCX !== Math.floor(game.cameraPos.x / WALL_SIZE) ||
+            game.lastCY !== Math.floor(game.cameraPos.y / WALL_SIZE)) {
 
-            for (let j = 1; j <= ln; ++j) {
-              game.layers[i].sub['affects1' + j].removeAll();
-              game.layers[i].sub['affects2' + j].removeAll();
-              game.layers[i].sub['walls' + j].removeAll();
-              game.layers[i].sub['shadows1' + j].removeAll();
-              game.layers[i].sub['shadows2' + j].removeAll();
-            }
+            game.lastCX = Math.floor(game.cameraPos.x / WALL_SIZE);
+            game.lastCY = Math.floor(game.cameraPos.y / WALL_SIZE);
 
-            if (!game.mapTextures[i]) {
-              continue;
-            }
-            const texs = game.mapTextures[i];
+            for (let i = 0; i < 6; ++i) {
+              const ln = 7;
+              const f = 1 /
+                game.sceneWrap.scale.x;
+              let gbx = game.cameraPos.x -
+                game.w * 0.5 / f;
+              gbx -= (AF - 1) * 0.5 * WALL_SIZE;
+              gbx = Math.floor(gbx / ts);
+              let gby = game.cameraPos.y -
+                game.h * 0.5 / f;
+              gby -= (AF - 1) * 0.5 * WALL_SIZE;
+              gby = Math.floor(gby / ts);
+              let gex = game.cameraPos.x +
+                game.w * 0.5 / f;
+              gex += (AF - 1) * 0.5 * WALL_SIZE;
+              gex = Math.floor(gex / ts);
+              let gey = game.cameraPos.y +
+                game.h * 0.5 / f;
+              gey += (AF - 1) * 0.5 * WALL_SIZE;
+              gey = Math.floor(gey / ts);
 
-            for (let j = 0; j < ln; ++j) {
-              for (let x = gbx; x <= gex; ++x) {
-                for (let y = gey; y >= gby; --y) {
-                  for (let l = 0; l < 5; ++l) {
-                    if (!texs[j][l][x]) {
-                      continue;
+              if (!game.mapTextures[i]) {
+                continue;
+              }
+              for (let j = 1; j <= ln; ++j) {
+                if (game.layers[i].sub['affects1' + j].alpha <= 0.0) {
+                  continue;
+                }
+                game.layers[i].sub['affects1' + j].removeAll();
+                game.layers[i].sub['affects2' + j].removeAll();
+                game.layers[i].sub['walls' + j].removeAll();
+                game.layers[i].sub['shadows1' + j].removeAll();
+                game.layers[i].sub['shadows2' + j].removeAll();
+              }
+
+              const texs = game.mapTextures[i];
+              for (let j = 0; j < ln; ++j) {
+                if (game.layers[i].sub['affects1' + (j + 1)].alpha <= 0.0) {
+                  continue;
+                }
+                for (let x = gbx; x <= gex; ++x) {
+                  for (let y = gey; y >= gby; --y) {
+                    for (let l = 0; l < 5; ++l) {
+                      if (!texs[j][l][x]) {
+                        continue;
+                      }
+                      if (!texs[j][l][x][y]) {
+                        continue;
+                      }
+                      const s = texs[j][l][x][y];
+                      game.layers[i].sub[s.target].add(s);
+                      global.SPRITES_N = global.SPRITES_N || 0;
+                      ++global.SPRITES_N;
                     }
-                    if (!texs[j][l][x][y]) {
-                      continue;
-                    }
-                    const tex = texs[j][l][x][y];
-                    const s = tex.sprite;
-                    if (game.layers[i].sub[s.target].alpha <= 0.0) {
-                      continue;
-                    }
-                    game.layers[i].sub[s.target].add(s);
-                    global.SPRITES_N = global.SPRITES_N || 0;
-                    ++global.SPRITES_N;
                   }
                 }
               }
