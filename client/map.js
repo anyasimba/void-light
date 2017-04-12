@@ -1,21 +1,17 @@
-export async function loadMap() {
-  console.log('loading map...');
+let scaleF;
 
-  // JUST DATA
-  client.w = client.map.width * WALL_SIZE;
-  client.h = client.map.height * WALL_SIZE;
+const views = {};
+const tileViews = {};
+const floorViews = {};
 
-  const dictionary = loadMapDictionary(client.map);
-
-  let scaleF = game.scaleFactor;
+export function loadMapAssets() {
+  loadingProgress(0, 'textures');
   global.ts = WALL_SIZE;
   const tc = 3;
   const rs = Math.min(WALL_SIZE * game.scaleFactor, 512 / tc);
   console.log('RS', rs);
   scaleF = rs / WALL_SIZE;
   console.log('tex scale factor', scaleF);
-  const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
-  const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
 
   const ln = 7;
 
@@ -32,8 +28,8 @@ export async function loadMap() {
   const renderMaskAffect = (image, x, y, w) => {
     const v = new Phaser.TileSprite(
       game, 0, 0,
-      WALL_SIZE * (2 + w + AF * 2) * scaleF,
-      WALL_SIZE * (2 + AF * 2) * scaleF,
+      Math.ceil(WALL_SIZE * (2 + w + AF * 2) * scaleF),
+      Math.ceil(WALL_SIZE * (2 + AF * 2) * scaleF),
       image);
     const f = tc * WALL_SIZE / v.texture.width * scaleF;
     v.tileScale.set(f);
@@ -85,8 +81,6 @@ export async function loadMap() {
     'grass2',
   ];
 
-  const views = {};
-  const tileViews = {};
   for (let j = 0; j < texs.length; ++j) {
     for (let i = 0; i < tc * tc; ++i) {
       const view = renderMaskAffect(texs[j], i % tc, Math.floor(i / tc) % tc,
@@ -101,8 +95,8 @@ export async function loadMap() {
       for (let k = 0; k < tc; ++k) {
         const rt = new Phaser.RenderTexture(
           game,
-          (AF + w) * WALL_SIZE * scaleF,
-          AF * WALL_SIZE * scaleF,
+          Math.ceil((AF + w) * WALL_SIZE * scaleF),
+          Math.ceil(AF * WALL_SIZE * scaleF),
           null, null, 1);
         let x = 0;
         let y = 0;
@@ -118,6 +112,8 @@ export async function loadMap() {
       }
     }
   }
+  loadingProgress(50, 'textures');
+
   for (let i = 0; i < wallTexs.length; ++i) {
     const slug = wallTexs[i];
     const v = new Phaser.Image(game, 0, 0, wallTexs[i]);
@@ -128,8 +124,8 @@ export async function loadMap() {
       for (let k = 0; k < tc; ++k) {
         const rt = new Phaser.RenderTexture(
           game,
-          (w + 1) * WALL_SIZE * scaleF,
-          WALL_SIZE * scaleF,
+          Math.ceil((w + 1) * WALL_SIZE * scaleF),
+          Math.ceil(WALL_SIZE * scaleF),
           null, null, 1);
         let x = -(tc - 1 - w) * WALL_SIZE * scaleF;
         let y = -k * WALL_SIZE * scaleF;
@@ -147,8 +143,8 @@ export async function loadMap() {
         console.log(WALL_SIZE * scaleF);
         const rt = new Phaser.RenderTexture(
           game,
-          WALL_SIZE * scaleF,
-          WALL_SIZE * scaleF,
+          Math.ceil(WALL_SIZE * scaleF),
+          Math.ceil(WALL_SIZE * scaleF),
           null, null, 1);
         let x = -l * WALL_SIZE * scaleF;
         let y = -k * WALL_SIZE * scaleF;
@@ -161,8 +157,8 @@ export async function loadMap() {
       }
     }
   }
+  loadingProgress(90, 'textures');
 
-  const floorViews = {};
   for (let i = 0; i < floorTexs.length; ++i) {
     const v = new Phaser.Image(game, 0, 0, floorTexs[i]);
     const f = tc * WALL_SIZE / v.texture.width * scaleF;
@@ -173,6 +169,22 @@ export async function loadMap() {
 
     floorViews[floorTexs[i]] = rt;
   }
+  loadingProgress(100, 'textures');
+}
+
+export async function loadMap() {
+  console.log('loading map...');
+
+  const tc = 3;
+  const ln = 7;
+
+  // JUST DATA
+  client.w = client.map.width * WALL_SIZE;
+  client.h = client.map.height * WALL_SIZE;
+  const xn = Math.ceil(client.map.width * WALL_SIZE / ts);
+  const yn = Math.ceil(client.map.height * WALL_SIZE / ts);
+
+  const dictionary = loadMapDictionary(client.map);
 
   for (let i = 0; i < 6; ++i) {
     const heights = client.map.layers[i * 3 + 1];

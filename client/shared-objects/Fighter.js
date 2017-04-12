@@ -608,16 +608,16 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       }
     }
 
+    if (!client.player) {
+      return;
+    }
     this.z = this.z || 0;
-    let l = Math.floor(this.z / 100.0 * 6 + 0.5);
+    let l = Math.floor(this.z / 100.0);
+    l = Math.min(l, 5);
     l = Math.max(l, 0);
-
-    let li = Math.floor(this.z / 100.0 + 1 / 12);
-    li = Math.min(li, 5);
-    li = Math.max(li, 0);
-    if (game.light && this.light) {
-      this.light.alpha = game.layers[li]
-        .sub['mix' + Math.min(l - li * 6 + 1, 7)].alpha * lightAlpha;
+    const pz = Math.floor(client.player.z / 100.0)
+    if (pz === l && game.light && this.light) {
+      this.light.alpha = lightAlpha;
       const light = game.light;
       const lx = 0; //game.w * 0.5;
       const ly = 0; //game.h * 0.5;

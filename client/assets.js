@@ -1,46 +1,77 @@
+function detectIE() {
+  var ua = window.navigator.userAgent;
+
+  var msie = ua.indexOf('MSIE ');
+  if (msie > 0) {
+    // IE 10 or older => return version number
+    return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+  }
+
+  var trident = ua.indexOf('Trident/');
+  if (trident > 0) {
+    // IE 11 => return version number
+    var rv = ua.indexOf('rv:');
+    return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+  }
+
+  var edge = ua.indexOf('Edge/');
+  if (edge > 0) {
+    // Edge (IE 12+) => return version number
+    return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+  }
+
+  // other browser
+  return false;
+}
+
 export function loadAudio() {
+  let fmt = '.ogg';
+  if (detectIE()) {
+    fmt = '.mp3';
+  }
   game.load.audio('back',
-    'assets/audio/back__doxent_-_Forgotten_Land.ogg');
+    'assets/audio/back__doxent_-_Forgotten_Land' + fmt);
 
   game.load.audio('bossBack',
-    'assets/audio/boss1__Dark Descent (Extended Cut).ogg');
+    'assets/audio/boss1__Dark Descent (Extended Cut)' + fmt);
 
   game.load.audio('door',
-    'assets/audio/door__233389__laiaoreka__automatic-door.ogg');
+    'assets/audio/door__233389__laiaoreka__automatic-door' + fmt);
 
   game.load.audio('hit',
-    'assets/audio/hit__86003__nextmaking__hitting-body-with-blood.ogg'
+    'assets/audio/hit__86003__nextmaking__hitting-body-with-blood' + fmt
   );
   game.load.audio('hit1',
-    'assets/audio/hit1__351754__urupin__whistle-of-a-twig-in-air.ogg');
+    'assets/audio/hit1__351754__urupin__whistle-of-a-twig-in-air' + fmt);
   game.load.audio('hit2',
-    'assets/audio/hit2__351754__urupin__whistle-of-a-twig-in-air.ogg');
+    'assets/audio/hit2__351754__urupin__whistle-of-a-twig-in-air' + fmt);
   game.load.audio('hit3',
-    'assets/audio/hit3__351754__urupin__whistle-of-a-twig-in-air.ogg');
+    'assets/audio/hit3__351754__urupin__whistle-of-a-twig-in-air' + fmt);
   game.load.audio('hit4',
-    'assets/audio/hit4__351754__urupin__whistle-of-a-twig-in-air.ogg');
+    'assets/audio/hit4__351754__urupin__whistle-of-a-twig-in-air' + fmt);
   game.load.audio('hit5',
-    'assets/audio/hit5__351754__urupin__whistle-of-a-twig-in-air.ogg');
+    'assets/audio/hit5__351754__urupin__whistle-of-a-twig-in-air' + fmt);
 
   game.load.audio('block',
-    'assets/audio/block__326845__johnbuhr__sword-clash-25.ogg');
+    'assets/audio/block__326845__johnbuhr__sword-clash-25' + fmt);
 
   game.load.audio('jump',
-    'assets/audio/jump__260188__splicesound__young-boy-grunts-for-body-impact.ogg'
+    'assets/audio/jump__260188__splicesound__young-boy-grunts-for-body-impact' +
+    fmt
   );
   game.load.audio('mobJump',
-    'assets/audio/mob1Jump__181068__lolamadeus__zombie-vocals-grunts.ogg'
+    'assets/audio/mob1Jump__181068__lolamadeus__zombie-vocals-grunts' + fmt
   );
 
   game.load.audio('mob1Die',
-    'assets/audio/mob1Die__76964__michel88__grunt2.ogg');
+    'assets/audio/mob1Die__76964__michel88__grunt2' + fmt);
   game.load.audio('youDied',
-    'assets/audio/youDied__onlymeith_-_Toward_Isolation.ogg');
+    'assets/audio/youDied__onlymeith_-_Toward_Isolation' + fmt);
 
   game.load.audio('bossArea',
-    'assets/audio/bossArea__377887__debsound__monster-072.ogg');
+    'assets/audio/bossArea__377887__debsound__monster-072' + fmt);
   game.load.audio('bossDead',
-    'assets/audio/bossDead__56304__syna-max__monster-death-scream.ogg'
+    'assets/audio/bossDead__56304__syna-max__monster-death-scream' + fmt
   );
 }
 

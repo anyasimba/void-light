@@ -25,7 +25,7 @@ export class Door extends mix(global.Door, MixGameObject) {
       this.bottomGroup.add(this.view);
 
       this.view2 = Door.createView();
-      this.view2.texture = makeDarken(this.view, 0x808080);
+      this.view2.texture = makeDarken(this.view2, 0x808080);
       this.view2.x = 0;
       this.view2.y = 0;
       this.view2.width = this.size.x;

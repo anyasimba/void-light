@@ -217,11 +217,14 @@ export function resize(e) {
 }
 
 function create() {
-  loadingProgress(0, 'map');
+  game.ui = new Phaser.Group(game);
 
-  game.ui = new Phaser.Group(game)
   resize();
   window.addEventListener('resize', resize);
+
+  loadMapAssets();
+
+  loadingProgress(0, 'map');
 
   global.client = new Client;
 
@@ -623,7 +626,7 @@ function createGame() {
             game.lightClear.blendMode = PIXI.blendModes.MULTIPLY;
 
             game.lightClear2 = new Phaser.Graphics(game);
-            game.lightClear2.beginFill(0x002040, lightAlpha);
+            game.lightClear2.beginFill(0x7090B0, lightAlpha);
             game.lightClear2.drawRect(0, 0, w, h);
             game.lightClear2.endFill();
             game.lightClear2.blendMode = PIXI.blendModes.ADD;

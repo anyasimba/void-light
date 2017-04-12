@@ -167,8 +167,8 @@ Object.assign(GameLevelZone.prototype, {
 
     let superHit;
     if (source.z > other.z &&
-      Math.abs(source.z - other.z) > 80 &&
-      source.speedZ < 150) {
+      Math.abs(source.z - other.z) < 80 &&
+      source.speedZ > 150) {
 
       superHit = true;
     } else {
