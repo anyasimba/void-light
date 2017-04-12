@@ -637,11 +637,11 @@ function createGame() {
         }
 
         if (game.cameraPos && global.AF && game.mapTextures) {
-          if (game.lastCX !== Math.floor(game.cameraPos.x / WALL_SIZE) ||
-            game.lastCY !== Math.floor(game.cameraPos.y / WALL_SIZE)) {
+          if (game.lastCX !== Math.floor(game.cameraPos.x / WALL_SIZE * 2) ||
+            game.lastCY !== Math.floor(game.cameraPos.y / WALL_SIZE * 2)) {
 
-            game.lastCX = Math.floor(game.cameraPos.x / WALL_SIZE);
-            game.lastCY = Math.floor(game.cameraPos.y / WALL_SIZE);
+            game.lastCX = Math.floor(game.cameraPos.x / WALL_SIZE * 2);
+            game.lastCY = Math.floor(game.cameraPos.y / WALL_SIZE * 2);
 
             for (let i = 0; i < 6; ++i) {
               const ln = 7;
@@ -673,7 +673,7 @@ function createGame() {
                 gbx = Math.floor(gbx / ts);
                 let gby = game.cameraPos.y -
                   game.h * 0.5 / f;
-                gby -= (AF - 1) * 0.5 * WALL_SIZE;
+                gby -= (AF + 2) * 0.5 * WALL_SIZE;
                 gby = Math.floor(gby / ts);
                 let gex = game.cameraPos.x +
                   game.w * 0.5 / f;
