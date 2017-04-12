@@ -94,7 +94,7 @@ export async function loadMap() {
       views[texs[j]] = views[texs[j]] || [];
       views[texs[j]].push(view);
 
-      view.darkView = new Phaser.Image(game, 0, 0, makeDarken(view, 0xBBBBBB));
+      view.darkView = new Phaser.Image(game, 0, 0, makeDarken(view, 0xA0A0A0));
     }
 
     for (let w = 1; w <= tc - 1; ++w) {
@@ -327,8 +327,8 @@ export async function loadMap() {
               let py = 0;
               let pad = 0;
               if (m === 1) {
-                px = -WALL_SIZE * 0.25;
-                py = -WALL_SIZE * 0.25;
+                px = -WALL_SIZE * 0.1;
+                py = -WALL_SIZE * 0.1;
               }
               const sx = (1 - px * 2 / AF / WALL_SIZE) / scaleF;
               const sy = (1 - py * 2 / AF / WALL_SIZE) / scaleF;
