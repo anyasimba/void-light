@@ -645,24 +645,6 @@ function createGame() {
 
             for (let i = 0; i < 6; ++i) {
               const ln = 7;
-              const f = 1 /
-                game.sceneWrap.scale.x;
-              let gbx = game.cameraPos.x -
-                game.w * 0.5 / f;
-              gbx -= (AF - 1) * 0.5 * WALL_SIZE;
-              gbx = Math.floor(gbx / ts);
-              let gby = game.cameraPos.y -
-                game.h * 0.5 / f;
-              gby -= (AF - 1) * 0.5 * WALL_SIZE;
-              gby = Math.floor(gby / ts);
-              let gex = game.cameraPos.x +
-                game.w * 0.5 / f;
-              gex += (AF - 1) * 0.5 * WALL_SIZE;
-              gex = Math.floor(gex / ts);
-              let gey = game.cameraPos.y +
-                game.h * 0.5 / f;
-              gey += (AF - 1) * 0.5 * WALL_SIZE;
-              gey = Math.floor(gey / ts);
 
               if (!game.mapTextures[i]) {
                 continue;
@@ -683,6 +665,25 @@ function createGame() {
                 if (game.layers[i].sub['affects1' + (j + 1)].alpha <= 0.0) {
                   continue;
                 }
+                const f = game.sceneWrap.scale.x *
+                  game.layers[i].sub['affects1' + (j + 1)].scale.x;
+                let gbx = game.cameraPos.x -
+                  game.w * 0.5 / f;
+                gbx -= (AF - 1) * 0.5 * WALL_SIZE;
+                gbx = Math.floor(gbx / ts);
+                let gby = game.cameraPos.y -
+                  game.h * 0.5 / f;
+                gby -= (AF - 1) * 0.5 * WALL_SIZE;
+                gby = Math.floor(gby / ts);
+                let gex = game.cameraPos.x +
+                  game.w * 0.5 / f;
+                gex += (AF - 1) * 0.5 * WALL_SIZE;
+                gex = Math.floor(gex / ts);
+                let gey = game.cameraPos.y +
+                  game.h * 0.5 / f;
+                gey += (AF - 1) * 0.5 * WALL_SIZE;
+                gey = Math.floor(gey / ts);
+
                 for (let x = gbx; x <= gex; ++x) {
                   for (let y = gey; y >= gby; --y) {
                     for (let l = 0; l < 5; ++l) {
