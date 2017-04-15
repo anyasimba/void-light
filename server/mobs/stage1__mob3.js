@@ -77,6 +77,3 @@ export const stage1__mob3 = {
     hAngle: 0,
   },
 };
-export const stage1__mob3a = patch(stage1__mob3);
-export const stage1__mob3b = patch(stage1__mob3);
-export const stage1__mob3c = patch(stage1__mob3);

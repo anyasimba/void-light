@@ -6,8 +6,20 @@ export function loadHsl(title, path) {
   hsl.push(title);
 }
 
+function rescaleImage(tex) {
+  const v = new Phaser.Image(game, 0, 0, tex);
+  const f = 1;
+  v.scale.set(f);
+  const rt = new Phaser.RenderTexture(
+    game, v.width, v.height, null, null, true);
+  rt.renderXY(v, 0, 0, true);
+  rt.scaleF = f;
+  return rt;
+}
+
 export function processHsl(hsl) {
-  let image = new Phaser.Image(game, 0, 0, hsl);
+  const tex = rescaleImage(hsl);
+  let image = new Phaser.Image(game, 0, 0, tex);
   const makeRect = (color, blend) => {
     let g = new Phaser.Graphics(game, 0, 0);
     g.beginFill(color);
@@ -84,6 +96,7 @@ export function processHsl(hsl) {
     color: red,
     ambient: green,
     special: blue,
+    scaleF: tex.scaleF,
   };
 }
 
@@ -236,6 +249,10 @@ export function makeHSL(hsl, ax, ay, tints, g) {
       addTex.alpha = (Math.sin(addTex.time * Math.PI) * 0.5 + 0.5);
     }
   }
+
+  g.blackTex.scale.set(1 / hsl.scaleF);
+  g.tex.scale.set(1 / hsl.scaleF);
+  g.addTex.scale.set(1 / hsl.scaleF);
 
   return g;
 }

@@ -40,7 +40,7 @@ export const weapon__stage1__mob3__leftHand__default = new class {
   }
   createView() {
     const prepare = (image) => {
-      image.scale.x = -1;
+      image.scale.x *= -1;
     }
     const view = makeHSL(hslMap['stage1__mob3--hand'], 0.2, 0.8, [
       0x402020, 0x202020, [0x100000, 1],
@@ -52,12 +52,6 @@ export const weapon__stage1__mob3__leftHand__default = new class {
     return view;
   }
 }
-
-export const stage1__mob3a = patch(stage1__mob3);
-export const weapon__stage1__mob3a__rightHand__default = patch(
-  weapon__stage1__mob3__rightHand__default);
-export const weapon__stage1__mob3a__leftHand__default = patch(
-  weapon__stage1__mob3__leftHand__default);
 
 export const stage1__mob3b = patch(stage1__mob3);
 export const weapon__stage1__mob3b__rightHand__default = patch(

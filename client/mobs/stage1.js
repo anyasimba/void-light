@@ -1,3 +1,17 @@
 globally(require('./stage1__mob1.js'));
+globally(require('./stage1__mob1a.js'));
+globally(require('./stage1__mob1b.js'));
+globally(require('./stage1__mob1c.js'));
+globally(require('./stage1__mob1d.js'));
+globally(require('./stage1__mob1e.js'));
 globally(require('./stage1__mob2.js'));
+globally(require('./stage1__mob2a.js'));
+globally(require('./stage1__mob2b.js'));
+globally(require('./stage1__mob2c.js'));
+globally(require('./stage1__mob2d.js'));
+globally(require('./stage1__mob2e.js'));
 globally(require('./stage1__mob3.js'));
+globally(require('./stage1__mob3a.js'));
+globally(require('./stage1__mob3b.js'));
+globally(require('./stage1__mob3d.js'));
+globally(require('./stage1__mob3e.js'));

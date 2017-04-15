@@ -18,6 +18,10 @@ export function loadMapAssets() {
   const AF = 2.5;
   global.AF = AF;
 
+  let texNum = 0;
+  let wallTexNum = 0;
+  let floorTexNum = 0;
+
   const maskView = new Phaser.Image(game, 0, 0, 'ground-mask');
   maskView.scale.set(AF * WALL_SIZE / maskView.width * scaleF);
 
@@ -89,6 +93,8 @@ export function loadMapAssets() {
       views[texs[j]].push(view);
 
       view.darkView = new Phaser.Image(game, 0, 0, makeDarken(view, 0xA0A0A0));
+
+      texNum += 2;
     }
 
     for (let w = 1; w <= tc - 1; ++w) {
@@ -109,6 +115,8 @@ export function loadMapAssets() {
         tileViews[texs[j]][w][k] = rt;
 
         rt.darkView = makeDarken(new Phaser.Image(game, 0, 0, rt), 0xBBBBBB);
+
+        texNum += 2;
       }
     }
   }
@@ -135,6 +143,8 @@ export function loadMapAssets() {
         tileViews[slug][w][k] = rt;
 
         rt.darkView = makeDarken(new Phaser.Image(game, 0, 0, rt), 0xBBBBBB);
+
+        wallTexNum += 2;
       }
     }
 
@@ -154,6 +164,8 @@ export function loadMapAssets() {
         views[slug][l][k] = rt;
 
         rt.darkView = makeDarken(new Phaser.Image(game, 0, 0, rt), 0xBBBBBB);
+
+        wallTexNum += 2;
       }
     }
   }
@@ -168,7 +180,11 @@ export function loadMapAssets() {
     rt.renderXY(v, 0, 0, true);
 
     floorViews[floorTexs[i]] = rt;
+
+    floorTexNum += 1;
   }
+
+  console.log('Gen texs num', texNum, wallTexNum, floorTexNum);
   loadingProgress(100, 'textures');
 }
 
@@ -269,7 +285,7 @@ export async function loadMap() {
             if (h <= 0) {
               continue;
             }
-            let minH = h - 1;
+            let minH = h;
             for (let ix = x - 1; ix <= x + 1; ++ix) {
               for (let iy = y - 1; iy <= y + 1; ++iy) {
                 if (ix !== x && iy !== y) {
@@ -285,23 +301,24 @@ export async function loadMap() {
                 }
               }
             }
-
             lb = minH;
             le = h - 1;
           }
           let conf = [];
-          if (lb === le) {
-            conf = [lb];
-          } else if ((le - lb) === 1) {
-            conf = [lb, le];
-          } else if ((le - lb) === 2) {
-            conf = [lb, lb + 1, le];
-          } else if ((le - lb) === 3) {
-            conf = [lb, le];
-          } else if ((le - lb) === 4) {
-            conf = [lb, lb + 2, le];
-          } else if ((le - lb) === 5) {
-            conf = [lb, lb + 3, le];
+          if (m === 0 || lb < h) {
+            if (lb === le) {
+              conf = [lb];
+            } else if ((le - lb) === 1) {
+              conf = [lb, le];
+            } else if ((le - lb) === 2) {
+              conf = [lb, lb + 1, le];
+            } else if ((le - lb) === 3) {
+              conf = [lb, le];
+            } else if ((le - lb) === 4) {
+              conf = [lb, lb + 2, le];
+            } else if ((le - lb) === 5) {
+              conf = [lb, lb + 3, le];
+            }
           }
           if (m === 1) {
             conf.unshift(0);
@@ -459,25 +476,25 @@ export async function loadMap() {
   }
 
   // GLOBAL FLOOR
-  game.layers[2].sub.ground.removeAll();
-  const floorTex = floorViews['grass2'];
-  const groundSprite = game.layers[2].sub.ground.add(new Phaser.TileSprite(
-    game, -game.w * 0.5, -game.h * 0.5, game.w * 2, game.h * 2,
-    floorTex));
-  const grassScale = tc * WALL_SIZE / floorTex.width;
-  groundSprite.tileScale.set(grassScale);
-  groundSprite.update = () => {
-    groundSprite.x = game.ui.x - game.w * 0.5;
-    groundSprite.y = game.ui.y - game.h * 0.5;
-    groundSprite.x = Math.max(groundSprite.x, 0);
-    groundSprite.y = Math.max(groundSprite.y, 0);
-    groundSprite.width = Math.max(Math.min(
-      game.w * 2, client.w - groundSprite.x), 0);
-    groundSprite.height = Math.max(Math.min(
-      game.h * 2, client.h - groundSprite.y), 0);
-    groundSprite.tilePosition.x = (-groundSprite.x) / grassScale;
-    groundSprite.tilePosition.y = (-groundSprite.y) / grassScale;
-  }
+  // game.layers[2].sub.ground.removeAll();
+  // const floorTex = floorViews['grass2'];
+  // const groundSprite = game.layers[2].sub.ground.add(new Phaser.TileSprite(
+  //   game, -game.w * 0.5, -game.h * 0.5, game.w * 2, game.h * 2,
+  //   floorTex));
+  // const grassScale = tc * WALL_SIZE / floorTex.width;
+  // groundSprite.tileScale.set(grassScale);
+  // groundSprite.update = () => {
+  //   groundSprite.x = game.ui.x - game.w * 0.5;
+  //   groundSprite.y = game.ui.y - game.h * 0.5;
+  //   groundSprite.x = Math.max(groundSprite.x, 0);
+  //   groundSprite.y = Math.max(groundSprite.y, 0);
+  //   groundSprite.width = Math.max(Math.min(
+  //     game.w * 2, client.w - groundSprite.x), 0);
+  //   groundSprite.height = Math.max(Math.min(
+  //     game.h * 2, client.h - groundSprite.y), 0);
+  //   groundSprite.tilePosition.x = (-groundSprite.x) / grassScale;
+  //   groundSprite.tilePosition.y = (-groundSprite.y) / grassScale;
+  // }
   loadingProgress(100);
   await sleep(10);
   disableMessage();

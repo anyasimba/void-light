@@ -109,7 +109,7 @@ export class Fighter {
     vec3.multiply(this.speed, AIR_F);
 
     const isMove = this.inputMove.length() > 0 &&
-      !this.inHit &&
+      //!this.inHit &&
       !this.inJump &&
       !this.inRoll &&
       !this.stunTime &&
@@ -132,6 +132,10 @@ export class Fighter {
         a = this.ACC * 0.8;
       } else {
         a = this.ACC;
+      }
+
+      if (this.inHit) {
+        a *= 0.4;
       }
 
       vec3.add(this.speed,

@@ -32,9 +32,9 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
         const p = game.cameraPos;
         const a = -game.cameraAngle + 90;
         let px = p.x - this.group.x +
-          1500 * Math.cos(a * Math.PI / 180.0);
+          1500 * Math.cos(a * Math.PI / 180.0) * cameraDF;
         let py = p.y - this.group.y +
-          1500 * Math.sin(a * Math.PI / 180.0);
+          1500 * Math.sin(a * Math.PI / 180.0) * cameraDF;
 
         const groups = [
           this.bottomGroup,
@@ -58,8 +58,10 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
                 100 / 6));
             g.scale.x *= f;
             g.scale.y *= f;
-            g.x = p.x - px * f + 1500 * Math.cos(a * Math.PI / 180.0);
-            g.y = p.y - py * f + 1500 * Math.sin(a * Math.PI / 180.0);
+            g.x = p.x - px * f + 1500 * Math.cos(a * Math.PI / 180.0) *
+              cameraDF;
+            g.y = p.y - py * f + 1500 * Math.sin(a * Math.PI / 180.0) *
+              cameraDF;
           }
           ++i;
         }

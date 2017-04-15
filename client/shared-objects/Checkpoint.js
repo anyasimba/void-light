@@ -18,29 +18,46 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
       0xFFFFFF, 0x4200ff, 0x0006ff, 0xFFFFFF);
     this.view2 = Checkpoint.createView(
       0xFFFFFF, 0x0006ff, 0x006cff, 0xFFFFFF);
+    this.view2S = Checkpoint.createView(
+      0x000000, 0x000000, 0x000000, 0x000000);
     this.view3 = Checkpoint.createView(
       0xFFFFFF, 0x006cff, 0x00deff, 0xFFFFFF);
+    this.view3S = Checkpoint.createView(
+      0x000000, 0x000000, 0x000000, 0x000000);
     this.view4 = Checkpoint.createView(
       0xFFFFFF, 0x00deff, 0x00ff96, 0xFFFFFF);
+    this.view4S = Checkpoint.createView(
+      0x000000, 0x000000, 0x000000, 0x000000);
 
     const f = 0.8;
+    const SF = 1.1;
     this.view.scale.x = 0.8 * f;
     this.view.scale.y = 0.8 * f;
     this.view2.scale.x = -1.2 * f;
     this.view2.scale.y = 1.2 * f;
-
+    this.view2S.scale.x = -1.2 * f * SF;
+    this.view2S.scale.y = 1.2 * f * SF;
     this.view3.scale.x = -1.9 * f;
     this.view3.scale.y = 1.9 * f;
+    this.view3S.scale.x = -1.9 * f * SF;
+    this.view3S.scale.y = 1.9 * f * SF;
     this.view4.scale.x = 1.2 * f;
     this.view4.scale.y = 1.2 * f;
+    this.view4S.scale.x = 1.2 * f * SF;
+    this.view4S.scale.y = 1.2 * f * SF;
 
     this.view.alpha = 1;
     this.view2.alpha = 1;
+    this.view2S.alpha = 0.4;
     this.view3.alpha = 1;
+    this.view3S.alpha = 0.4;
     this.view4.alpha = 1;
+    this.view4S.alpha = 0.4;
 
     this.view3.angle += 45;
+    this.view3S.angle += 45;
     this.view4.angle -= 45;
+    this.view4S.angle -= 45;
 
     this.view.addTex.time = 0;
     this.view2.addTex.time = 0.5;
@@ -48,6 +65,9 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
     this.view4.addTex.time = 1.5;
 
     this.bottomGroup.add(this.view);
+    this.bottomGroup.add(this.view2S);
+    this.bottomGroup.add(this.view3S);
+    this.bottomGroup.add(this.view4S);
     this.middleGroup.add(this.view2);
     this.topGroup.add(this.view3);
     this.topGroup.add(this.view4);
@@ -69,18 +89,30 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
     this.view2.x = Math.cos(this.view.angle * Math.PI / 180) * 90;
     this.view2.y = Math.sin(this.view.angle * Math.PI / 180) * 90;
     this.view2.angle -= dt * 4;
+    this.view2S.x = Math.cos(this.view.angle * Math.PI / 180) * 90;
+    this.view2S.y = Math.sin(this.view.angle * Math.PI / 180) * 90;
+    this.view2S.angle -= dt * 4;
 
     this.view3.x =
       this.view2.x + Math.cos(this.view2.angle * Math.PI / 180) * 140;
     this.view3.y =
       this.view2.y + Math.sin(this.view2.angle * Math.PI / 180) * 140;
     this.view3.angle += dt * 3;
-
+    this.view3S.x =
+      this.view2.x + Math.cos(this.view2.angle * Math.PI / 180) * 140;
+    this.view3S.y =
+      this.view2.y + Math.sin(this.view2.angle * Math.PI / 180) * 140;
+    this.view3S.angle += dt * 3;
     this.view4.x =
       this.view3.x + Math.cos(this.view3.angle * Math.PI / 180) * 200;
     this.view4.y =
       this.view3.y + Math.sin(this.view3.angle * Math.PI / 180) * 200;
     this.view4.angle -= dt * 2;
+    this.view4S.x =
+      this.view3.x + Math.cos(this.view3.angle * Math.PI / 180) * 200;
+    this.view4S.y =
+      this.view3.y + Math.sin(this.view3.angle * Math.PI / 180) * 200;
+    this.view4S.angle -= dt * 2;
 
     if (!client.player) {
       return;

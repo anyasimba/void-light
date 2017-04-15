@@ -196,15 +196,30 @@ export class Mob {
     const tx = Math.floor(this.fighter.pos.x / WALL_SIZE);
     const ty = Math.floor(this.fighter.pos.y / WALL_SIZE);
 
+    const dx = this.fighter.pos.x - player.pos.x;
+    const dy = this.fighter.pos.y - player.pos.y;
+    const d = Math.sqrt(dx * dx + dy * dy);
+
+    const nearRange = this.opts.HIT_D[0] * this.fighter.scale;
+    const farRange = this.opts.HIT_D[1] * this.fighter.scale;
+
+    const canAttack = d >= nearRange && d <= farRange;
+
     if (!this.pathGrid[x] || this.pathGrid[x][y] === undefined) {
-      return;
+      if (!canAttack) {
+        return;
+      }
     }
 
     if (Math.floor(player.z / 100.0) !== Math.floor(this.opts.z / 100.0)) {
       return;
     }
     this.opts.AGRO_D = Math.min(this.opts.AGRO_D, 16);
-    if (this.target === player || this.pathGrid[x][y] <= this.opts.AGRO_D) {
+
+    if (canAttack ||
+      this.target === player ||
+      this.pathGrid[x][y] <= this.opts.AGRO_D) {
+
       const setTarget = () => {
         if (this.opts.IS_BOSS && player.area !== this.area) {
           return;
@@ -214,6 +229,10 @@ export class Mob {
         this.fighter.emitPos();
         this.path = [];
         delete this.onWay;
+
+        if (canAttack) {
+          return;
+        }
 
         let p = {
           x: x,
@@ -420,12 +439,16 @@ export class Mob {
       const px = Math.floor(this.target.pos.x / WALL_SIZE);
       const py = Math.floor(this.target.pos.y / WALL_SIZE);
 
+      const nearRange = this.opts.HIT_D[0] * this.fighter.scale;
+      const farRange = this.opts.HIT_D[1] * this.fighter.scale;
+      canAttack = d >= nearRange && d <= farRange;
+
       const needGoHome = !this.pathGrid[px] ||
         this.pathGrid[px][py] === undefined ||
         this.pathGrid[px][py] > this.opts.RUN_D ||
         this.target.isDestroyed ||
         !this.target.isAlive;
-      if (needGoHome) {
+      if (!canAttack && needGoHome) {
         delete this.target;
         delete this.path;
         delete this.onWay;
@@ -437,14 +460,11 @@ export class Mob {
           inRun = true;
         }
 
-        const nearRange = this.opts.HIT_D[0] * this.fighter.scale;
-        const farRange = this.opts.HIT_D[1] * this.fighter.scale;
         const needForce = d > farRange &&
           d < farRange * 3 &&
           this.target.speed.length() > 50 &&
           Math.random() < 0.05;
 
-        canAttack = d >= nearRange && d <= farRange;
         if (!this.fighter.weapon.isRange) {
           if (Math.abs(this.fighter.z - this.target.z) > 30) {
             canAttack = undefined;

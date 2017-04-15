@@ -41,18 +41,48 @@ export const stage1__mob3__moveset = [
 export const stage1__mob3__doHit = ia_hands__doHit(
   moveset(stage1__mob3__moveset));
 
+// a
 export const stage1__mob3a__moveset = stage1__mob3__moveset;
 export const stage1__mob3a__doHit = ia_hands__doHit(
   moveset(stage1__mob3a__moveset));
 
+// b
 export const stage1__mob3b__moveset = stage1__mob3__moveset;
 export const stage1__mob3b__doHit = ia_hands__doHit(
   moveset(stage1__mob3b__moveset));
+export const stage1__mob3b2__moveset = stage1__mob3__moveset;
+export const stage1__mob3b2__doHit = ia_hands__doHit(
+  moveset(stage1__mob3b2__moveset));
 
-export const stage1__mob3c__moveset = stage1__mob3__moveset;
-export const stage1__mob3c__doHit = ia_hands__doHit(
-  moveset(stage1__mob3c__moveset));
+// d
+export const stage1__mob3d__moveset = stage1__mob3__moveset;
+export const stage1__mob3d__doHit = ia_hands__doHit(
+  moveset(stage1__mob3d__moveset));
+export const stage1__mob3d2__moveset = stage1__mob3__moveset;
+export const stage1__mob3d2__doHit = ia_hands__doHit(
+  moveset(stage1__mob3d2__moveset));
+// d boss
+export const stage1__mob3d__boss1__moveset = stage1__mob3__moveset;
+export const stage1__mob3d__boss1__doHit = ia_hands__doHit(
+  moveset(stage1__mob3d__boss1__moveset));
 
-export const stage1__mob3boss__moveset = stage1__mob3__moveset;
-export const stage1__mob3boss__doHit = ia_hands__doHit(
-  moveset(stage1__mob3boss__moveset));
+// e
+export const stage1__mob3e__moveset = stage1__mob3__moveset;
+export const stage1__mob3e__doHit = ia_hands__doHit(
+  moveset(stage1__mob3e__moveset));
+export const stage1__mob3e2__moveset = stage1__mob3__moveset;
+export const stage1__mob3e2__doHit = ia_hands__doHit(
+  moveset(stage1__mob3e2__moveset));
+export const stage1__mob3e3__moveset = stage1__mob3__moveset;
+export const stage1__mob3e3__doHit = ia_hands__doHit(
+  moveset(stage1__mob3e3__moveset));
+export const stage1__mob3e4__moveset = stage1__mob3__moveset;
+export const stage1__mob3e4__doHit = ia_hands__doHit(
+  moveset(stage1__mob3e4__moveset));
+export const stage1__mob3e5__moveset = stage1__mob3__moveset;
+export const stage1__mob3e5__doHit = ia_hands__doHit(
+  moveset(stage1__mob3e5__moveset));
+// e boss
+export const stage1__mob3e__boss1__moveset = stage1__mob3__moveset;
+export const stage1__mob3e__boss1__doHit = ia_hands__doHit(
+  moveset(stage1__mob3e__boss1__moveset));

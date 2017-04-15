@@ -76,7 +76,7 @@ function buildFinalClientJS() {
   const browserify = require('browserify');
 
   browserify({
-      debug: true
+      //debug: true,
     })
     .transform('babelify', {
       'presets': ['es2015'],

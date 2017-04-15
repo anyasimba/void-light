@@ -161,11 +161,11 @@ function createLayer() {
   layer.sub.layer7 = layer.add(new Phaser.Group(game));
   const l = layer.sub.layer7;
   layer.sub.ceil = layer.add(new Phaser.Group(game));
+  layer.sub.walls7 = l.add(new Phaser.Group(game));
   layer.sub.affects17 = l.add(new Phaser.Group(game));
   layer.sub.affects27 = l.add(new Phaser.Group(game));
   layer.sub.shadows17 = l.add(new Phaser.Group(game));
   layer.sub.shadows27 = l.add(new Phaser.Group(game));
-  layer.sub.walls7 = l.add(new Phaser.Group(game));
   layer.sub.mix7 = layer.add(new Phaser.Group(game));
   layer.sub.mixDead7 = layer.add(new Phaser.Group(game));
   layer.sub.info = layer.add(new Phaser.Group(game));
@@ -265,20 +265,20 @@ function create() {
   // g.endFill();
   // game.ui.add(g);
 
-  // game.ui.add(new Phaser.Image(game, x, y, hslMap['player'].gray));
-  // x += hslMap['player'].gray.width;
+  // game.ui.add(new Phaser.Image(game, x, y, hslMap['stage1__mob3'].gray));
+  // x += hslMap['stage1__mob3'].gray.width;
   // y += 0;
 
-  // game.ui.add(new Phaser.Image(game, x, y, hslMap['player'].color));
-  // x += hslMap['player'].gray.width;
+  // game.ui.add(new Phaser.Image(game, x, y, hslMap['stage1__mob3'].color));
+  // x += hslMap['stage1__mob3'].gray.width;
   // y += 0;
 
-  // game.ui.add(new Phaser.Image(game, x, y, hslMap['player'].ambient));
-  // x += hslMap['player'].gray.width;
+  // game.ui.add(new Phaser.Image(game, x, y, hslMap['stage1__mob3'].ambient));
+  // x += hslMap['stage1__mob3'].gray.width;
   // y += 0;
 
-  // game.ui.add(new Phaser.Image(game, x, y, hslMap['player'].special));
-  // x += hslMap['player'].gray.width;
+  // game.ui.add(new Phaser.Image(game, x, y, hslMap['stage1__mob3'].special));
+  // x += hslMap['stage1__mob3'].gray.width;
   // y += 0;
 
   game.backSound = game.add.sound('back', 0.5, true);
@@ -508,11 +508,12 @@ function createGame() {
           global.pf = 600;
           game.sceneWrap.scale.set(game.zoomF);
 
+          global.cameraDF = global.cameraDF || 1;
           const makeSubLayer3D = (layer, ci, i, f) => {
             const p = game.cameraPos;
             const a = -game.cameraAngle + 90;
-            let px = p.x + 1500 * Math.cos(a * Math.PI / 180.0);
-            let py = p.y + 1500 * Math.sin(a * Math.PI / 180.0);
+            let px = p.x + 1500 * Math.cos(a * Math.PI / 180.0) * cameraDF;
+            let py = p.y + 1500 * Math.sin(a * Math.PI / 180.0) * cameraDF;
             // if (p.angle && !isNaN(p.angle)) {
             //   px -= Math.cos(p.angle * Math.PI / 180) * 1400;
             //   py -= Math.sin(p.angle * Math.PI / 180) * 1400;
@@ -543,12 +544,13 @@ function createGame() {
               } else if (d <= -db) {
                 layer.alpha = 1 - Math.pow(-(d + db) / (de - db), 0.5);
               }
+              //layer.alpha = 1;
               if (cd > 0) {
                 layer.alpha = 3 - cd2;
               }
-              if (pz >= 2 && clz < 2) {
-                layer.alpha = 0;
-              }
+              // if (pz >= 2 && clz < 2) {
+              //   layer.alpha = 0;
+              // }
             }
             layer.alpha *= af;
             layer.alpha = Math.max(layer.alpha, 0);
@@ -637,18 +639,25 @@ function createGame() {
         }
 
         if (game.cameraPos && global.AF && game.mapTextures) {
-          if (game.lastCX !== Math.floor(game.cameraPos.x / WALL_SIZE * 2) ||
-            game.lastCY !== Math.floor(game.cameraPos.y / WALL_SIZE * 2)) {
+          let CMF = 2;
+          if (game.lastCX !== Math.floor(game.cameraPos.x / WALL_SIZE * CMF) ||
+            game.lastCY !== Math.floor(game.cameraPos.y / WALL_SIZE * CMF)) {
 
-            game.lastCX = Math.floor(game.cameraPos.x / WALL_SIZE * 2);
-            game.lastCY = Math.floor(game.cameraPos.y / WALL_SIZE * 2);
+            game.lastCX = Math.floor(game.cameraPos.x / WALL_SIZE * CMF);
+            game.lastCY = Math.floor(game.cameraPos.y / WALL_SIZE * CMF);
 
-            for (let i = 0; i < 6; ++i) {
+            let vGrid = [];
+            for (let i = 5; i >= 0; --i) {
               const ln = 7;
 
               if (!game.mapTextures[i]) {
+                break;
+              }
+              if (game.layers[i].sub.affects11.alpha <= 0.0 &&
+                game.layers[i].sub.affects17.alpha <= 0.0) {
                 continue;
               }
+
               for (let j = 1; j <= ln; ++j) {
                 if (game.layers[i].sub['affects1' + j].alpha <= 0.0) {
                   continue;
@@ -661,27 +670,28 @@ function createGame() {
               }
 
               const texs = game.mapTextures[i];
-              for (let j = 0; j < ln; ++j) {
-                if (game.layers[i].sub['affects1' + (j + 1)].alpha <= 0.0) {
+              for (let j = ln - 1; j >= 0; --j) {
+                const la = game.layers[i].sub['affects1' + (j + 1)].alpha;
+                if (la <= 0.0) {
                   continue;
                 }
                 const f = game.sceneWrap.scale.x *
                   game.layers[i].sub['affects1' + (j + 1)].scale.x;
                 let gbx = game.cameraPos.x -
                   game.w * 0.5 / f;
-                gbx -= (AF - 1) * 0.5 * WALL_SIZE;
+                gbx -= (AF - 1) * 0.5 * WALL_SIZE / f;
                 gbx = Math.floor(gbx / ts);
                 let gby = game.cameraPos.y -
                   game.h * 0.5 / f;
-                gby -= (AF + 2) * 0.5 * WALL_SIZE;
+                gby -= (AF + 2) * 0.5 * WALL_SIZE / f;
                 gby = Math.floor(gby / ts);
                 let gex = game.cameraPos.x +
                   game.w * 0.5 / f;
-                gex += (AF - 1) * 0.5 * WALL_SIZE;
+                gex += (AF - 1) * 0.5 * WALL_SIZE / f;
                 gex = Math.floor(gex / ts);
                 let gey = game.cameraPos.y +
                   game.h * 0.5 / f;
-                gey += (AF - 1) * 0.5 * WALL_SIZE;
+                gey += (AF - 1) * 0.5 * WALL_SIZE / f;
                 gey = Math.floor(gey / ts);
 
                 for (let x = gbx; x <= gex; ++x) {
@@ -693,10 +703,70 @@ function createGame() {
                       if (!texs[j][l][x][y]) {
                         continue;
                       }
+                      if (vGrid[x] && vGrid[x][y] && vGrid[x][y][100] >= 9) {
+                        continue;
+                      }
+
                       const s = texs[j][l][x][y];
+                      if (s.used) {
+                        continue;
+                      }
+                      s.used = true;
                       game.layers[i].sub[s.target].add(s);
                       global.SPRITES_N = global.SPRITES_N || 0;
                       ++global.SPRITES_N;
+                    }
+                  }
+                }
+
+                if (la >= 1.0) {
+                  for (let x = gbx - 5; x <= gex + 5; ++x) {
+                    for (let y = gey + 5; y >= gby - 5; --y) {
+                      for (let l = 0; l < 5; ++l) {
+                        if (!texs[j][l][x]) {
+                          continue;
+                        }
+                        if (!texs[j][l][x][y]) {
+                          continue;
+                        }
+                        for (let ax = -1; ax <= 1; ++ax) {
+                          for (let ay = -1; ay <= 1; ++ay) {
+                            const rx = x + ax;
+                            const ry = y + ay;
+                            vGrid[rx] = vGrid[rx] || [];
+                            vGrid[rx][ry] = vGrid[rx][ry] || [];
+                            if (vGrid[rx][ry][100] &&
+                              vGrid[rx][ry][100] >= 9) {
+
+                              continue;
+                            }
+                            if (vGrid[rx][ry][101] !== i * 7 + j) {
+                              vGrid[rx][ry][101] = i * 7 + j;
+                              vGrid[rx][ry][100] = 0;
+                              delete vGrid[rx][ry][ax + ay * 10];
+                            }
+                            if (!vGrid[rx][ry][ax + ay * 10]) {
+                              vGrid[rx][ry][ax + ay * 10] = true;
+                              vGrid[rx][ry][100] += 1;
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+
+                for (let x = gbx; x <= gex; ++x) {
+                  for (let y = gey; y >= gby; --y) {
+                    for (let l = 0; l < 5; ++l) {
+                      if (!texs[j][l][x]) {
+                        continue;
+                      }
+                      if (!texs[j][l][x][y]) {
+                        continue;
+                      }
+                      const s = texs[j][l][x][y];
+                      s.used = false;
                     }
                   }
                 }
@@ -706,12 +776,16 @@ function createGame() {
         }
 
         global.SPRITES_N = global.SPRITES_N || 0;
-        //console.log(global.SPRITES_N, game.stage.children.length);
+        if (SPRITES_N && SPRITES_N !== global.SAVED_SPRITES_N) {
+          global.SAVED_SPRITES_N = SPRITES_N;
+        }
         global.SPRITES_N = 0;
       },
 
       render() {
-        game.debug.text(game.time.fps, 20, 20, '#FFFFFF');
+        global.SAVED_SPRITES_N = global.SAVED_SPRITES_N || '...';
+        game.debug.text(game.time.fps + ', ' + global.SAVED_SPRITES_N, 20,
+          20, '#FFFFFF');
       },
     });
 }

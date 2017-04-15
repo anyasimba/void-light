@@ -94,9 +94,7 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
           if (cx >= 0 && cx < (int)grid.size()) {
             if (cy >= 0 && cy < (int)grid[cx].size()) {
               bool hasFloor = false;
-              if (gridI == 2) {
-                hasFloor = true;
-              } else if (grid[cx][cy].type != 0) {
+              if (grid[cx][cy].type != 0) {
                 hasFloor = true;
               }
 
@@ -156,7 +154,7 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
             auto &grid = self->grid[gridI];
             if (X >= 0 && X < (int)grid.size()) {
               if (Y >= 0 && Y < (int)grid[X].size()) {
-                if (grid[X][Y].type != 2 && !(grid[X][Y].type == 0 && gridI != 2)) {
+                if (grid[X][Y].type != 2 && grid[X][Y].type != 0) {
                   float rx = (X + 0.5f) * WALL_SIZE;
                   float ry = (Y + 0.5f) * WALL_SIZE;
                   float floorZ = float(gridI) * 100.f;

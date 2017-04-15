@@ -169,7 +169,7 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
   self->speed *= AIR_F;
 
   bool isMove = self->inputMove.length() > 0 &&
-    !self->inHit &&
+    //!self->inHit &&
     !self->inJump &&
     !self->inRoll &&
     self->stunTime <= 0.f &&
@@ -192,6 +192,10 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
       a = self->ACC * 0.8f;
     } else {
       a = self->ACC;
+    }
+
+    if (self->inHit) {
+      a *= 0.4f;
     }
 
     self->speed += self->inputMove.unit() * (a + self->FRICTION) * A_AIR_F;
