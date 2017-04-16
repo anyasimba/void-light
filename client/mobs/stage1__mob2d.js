@@ -4,9 +4,9 @@ export const stage1__mob2d__sword = patch(stage1__mob2, {
   COLOR_TINT: 0x344047,
   AMBIENT_TINT: [0x84acce, 1],
   SPECIAL_TINT: 0xbecacc,
-  ADD_COLOR_TINT: 0x617280,
-  ADD_AMBIENT_TINT: 0x575f64,
-  ADD_SPECIAL_TINT: 0x1bfaed,
+  ADD_COLOR_TINT: 0xc4b27d,
+  ADD_AMBIENT_TINT: 0x8f8135,
+  ADD_SPECIAL_TINT: 0xfebf00,
 });
 export const weapon__stage1__mob2d__sword__default = patch(
   weapon__stage1__mob2__sword__default, {

@@ -159,7 +159,7 @@ export const stage1__mob2a3__sword__doHit = ia_sword__doHit(
   moveset(stage1__mob2a3__sword__moveset));
 // a 4
 export const stage1__mob2a4__sword__moveset = stage1__mob2__sword__moveset;
-export const stage1__mob2a4_sword__doHit = ia_sword__doHit(
+export const stage1__mob2a4__sword__doHit = ia_sword__doHit(
   moveset(stage1__mob2a4__sword__moveset));
 // a boss
 export const stage1__mob2a__boss1__moveset = [

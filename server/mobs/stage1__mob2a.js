@@ -257,11 +257,15 @@ export const stage1__mob2a__luk = patch(stage1__mob2, {
 
 // 2
 export const stage1__mob2a2__sword = patch(stage1__mob2, {
-  VOIDS_COUNT: 40,
+  VOIDS_COUNT: 140,
   FIGHTER: {
     LANG_RU: 'Отрешенный Рыцарь',
     name: 'stage1__mob2a2__sword',
-    hitSpeed: 2,
+    hitSpeed: 1.2,
+    SCALE: 2.4,
+    HP: 70,
+    BALANCE: 30,
+    damage: 20,
   },
   rightHand: {
     type: 'weapon',
