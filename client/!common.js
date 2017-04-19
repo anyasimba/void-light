@@ -545,7 +545,7 @@ function createGame() {
                 layer.alpha = 1 - Math.pow(-(d + db) / (de - db), 0.5);
               }
               if (cd > 0) {
-                layer.alpha = 1 - cd2;
+                layer.alpha = 2 - cd2;
               }
             }
             layer.alpha *= af;

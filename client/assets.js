@@ -99,18 +99,18 @@ export function loadWeapon() {
 }
 
 export function loadStage1() {
-  game.load.image('bricks', 'assets/stage1/bricks.jpg');
+  game.load.image('bricks', 'assets/stage1/bricks.png');
   game.load.image('bricks2', 'assets/stage1/bricks2.png');
   game.load.image('dirt', 'assets/stage1/dirt.png');
   game.load.image('dirt2', 'assets/stage1/dirt2.png');
   game.load.image('door', 'assets/stage1/door.png');
-  game.load.image('forest-ground', 'assets/stage1/forest-ground.jpg');
+  game.load.image('forest-ground', 'assets/stage1/forest-ground.png');
   game.load.image('grass', 'assets/stage1/grass.png');
   game.load.image('grass2', 'assets/stage1/grass2.png');
-  game.load.image('ground', 'assets/stage1/ground.jpg');
+  game.load.image('ground', 'assets/stage1/ground.png');
   game.load.image('ice', 'assets/stage1/ice.png');
   game.load.image('lava', 'assets/stage1/lava.png');
-  game.load.image('leaves', 'assets/stage1/leaves.jpg');
+  game.load.image('leaves', 'assets/stage1/leaves.png');
   game.load.image('leaves2', 'assets/stage1/leaves2.png');
   game.load.image('leaves3', 'assets/stage1/leaves3.png');
   game.load.image('leaves4', 'assets/stage1/leaves4.png');
