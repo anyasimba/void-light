@@ -28,7 +28,7 @@ export const stage1__mob2a__sword__shield = patch(stage1__mob2a__sword, {
 
 export const stage1__mob2a__bigsword = patch(stage1__mob2, {
   VOIDS_COUNT: 40,
-  HIT_D: [100, 450],
+  HIT_D: [0, 450],
   FIGHTER: {
     LANG_RU: 'Отрешенный Стражник',
     name: 'stage1__mob2a__bigsword',
@@ -77,7 +77,7 @@ export const stage1__mob2a__axe = patch(stage1__mob2, {
 
 export const stage1__mob2a__bigaxe = patch(stage1__mob2, {
   VOIDS_COUNT: 40,
-  HIT_D: [100, 350],
+  HIT_D: [0, 350],
   FIGHTER: {
     LANG_RU: 'Отрешенный Стражник',
     name: 'stage1__mob2a__bigaxe',
@@ -106,7 +106,7 @@ export const stage1__mob2a__bigaxe = patch(stage1__mob2, {
 export const stage1__mob2a__kopie = patch(stage1__mob2, {
   VOIDS_COUNT: 40,
   AGRO_D: 10,
-  HIT_D: [100, 600],
+  HIT_D: [0, 600],
   FIGHTER: {
     LANG_RU: 'Отрешенный Стражник',
     name: 'stage1__mob2a__kopie',
@@ -161,7 +161,7 @@ export const stage1__mob2a__molot = patch(stage1__mob2, {
 
 export const stage1__mob2a__bigmolot = patch(stage1__mob2, {
   VOIDS_COUNT: 40,
-  HIT_D: [100, 350],
+  HIT_D: [0, 350],
   FIGHTER: {
     LANG_RU: 'Отрешенный Стражник',
     name: 'stage1__mob2a__bigmolot',
@@ -219,7 +219,7 @@ export const stage1__mob2a__luk = patch(stage1__mob2, {
   AGRO_D: 6,
   RUN_D: 6,
   VOIDS_COUNT: 40,
-  HIT_D: [200, 1000],
+  HIT_D: [0, 1000],
   HIT_VER: 0.5,
   MOVE_VER: 0,
   MOVE_TIME: [0.5, 1],
@@ -274,11 +274,28 @@ export const stage1__mob2a2__sword = patch(stage1__mob2, {
 });
 // 3
 export const stage1__mob2a3__sword = patch(stage1__mob2, {
-  VOIDS_COUNT: 40,
+  VOIDS_COUNT: 300,
+  AGRO_D: 6,
+  RUN_D: 30,
+  HIT_D: [0, 150],
+  HIT_VER: 0.95,
+  MOVE_VER: 0.5,
+  MOVE_TIME: [0.5, 1],
+  LONG_MOVE_VER: 0.5,
+  LONG_MOVE_TIME: [1, 2],
+  STOP_TIME: [0.5, 0.5],
+
+  ROLL_TIME: [1, 2],
+  JUMP_TIME: [30, 60],
   FIGHTER: {
     LANG_RU: 'Адепт Отрешения',
     name: 'stage1__mob2a3__sword',
-    hitSpeed: 2,
+    moveTimeF: 2,
+    hitSpeed: 0.5,
+    SCALE: 1.5,
+    HP: 60,
+    BALANCE: 20,
+    damage: 20,
   },
   rightHand: {
     type: 'weapon',
@@ -287,15 +304,31 @@ export const stage1__mob2a3__sword = patch(stage1__mob2, {
 });
 // 4
 export const stage1__mob2a4__sword = patch(stage1__mob2, {
-  VOIDS_COUNT: 40,
+  VOIDS_COUNT: 500,
   FIGHTER: {
     LANG_RU: 'Чемпион',
     name: 'stage1__mob2a4__sword',
-    hitSpeed: 2,
+    hitSpeed: 0.9,
+    SCALE: 3,
+    HP: 150,
+    BALANCE: 50,
+    damage: 30,
   },
   rightHand: {
     type: 'weapon',
     kind: 'stage1__mob2a4__sword',
+  },
+  leftHand: {
+    type: 'shield',
+    kind: 'stage1__mob2a__default',
+    hand: 2,
+    pos: {
+      x: -15,
+      y: -30,
+    },
+    angle: -35,
+    vAngle: 0,
+    hAngle: 20,
   },
 });
 
@@ -304,7 +337,7 @@ export const stage1__mob2a__boss1 = patch(stage1__mob2, {
   IS_BOSS: true,
 
   VOIDS_COUNT: 2000,
-  HIT_D: [50, 250],
+  HIT_D: [0, 250],
   AGRO_D: 16,
   RUN_D: 24,
   FIGHTER: {

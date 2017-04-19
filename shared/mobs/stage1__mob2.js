@@ -241,6 +241,12 @@ export const stage1__mob2c2__sword__doHit = ia_sword__doHit(
 export const stage1__mob2d__sword__moveset = stage1__mob2__sword__moveset;
 export const stage1__mob2d__sword__doHit = ia_sword__doHit(
   moveset(stage1__mob2d__sword__moveset));
+export const stage1__mob2d2__sword__moveset = stage1__mob2__sword__moveset;
+export const stage1__mob2d2__sword__doHit = ia_sword__doHit(
+  moveset(stage1__mob2d2__sword__moveset));
+export const stage1__mob2d3__sword__moveset = stage1__mob2__sword__moveset;
+export const stage1__mob2d3__sword__doHit = ia_sword__doHit(
+  moveset(stage1__mob2d3__sword__moveset));
 // d boss
 export const stage1__mob2d__boss1__moveset = stage1__mob2__sword__moveset;
 export const stage1__mob2d__boss1__doHit = ia_sword__doHit(

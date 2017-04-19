@@ -902,7 +902,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
 
       const rollData = {
         duration: 0.7 / this.moveTimeF,
-        afterTime: 0.3 / this.moveTimeF,
+        afterTime: 0.25 / this.moveTimeF,
         force: 800 * (this.moveTimeF * 0.4 + 0.6) /
           (this.groundFriction * 0.2 + 0.8),
         forceInJump: 750 * (this.moveTimeF * 0.4 + 0.6) /
@@ -983,12 +983,24 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     this.emitParams();
     this.onDie();
   }
-  groundAffect() {
-    this.hp = Math.max(this.hp - 5, 0);
-    this.emitParams();
-    if (this.hp <= 0) {
-      this.speed = new vec3();
-      this.onDie();
+  groundAffect(type) {
+    if (type === 0) {
+      this.hp = Math.max(this.hp - 15, 0);
+      this.emitParams();
+      if (this.hp <= 0) {
+        this.speed = new vec3();
+        this.onDie();
+      }
+    } else if (type === 1) {
+      this.hp = Math.max(this.hp - 5, 0);
+      this.emitParams();
+      if (this.hp <= 0) {
+        this.speed = new vec3();
+        this.onDie();
+      }
+    } else if (type === 2) {
+      this.hp = Math.min(this.hp + 1, this.HP);
+      this.emitParams();
     }
   }
 
@@ -1001,7 +1013,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
 
     new Bullet(this, {
       pos: this.pos.clone(),
-      speed: this.hitVec.unit().multiply(2200),
+      speed: this.hitVec.unit().multiply(4400),
     });
   }
 }

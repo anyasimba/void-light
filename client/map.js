@@ -74,6 +74,7 @@ export function loadMapAssets() {
     'toxic',
     'water',
     'whole',
+    'deep-water',
   ];
   const wallTexs = [
     'bricks',
@@ -92,7 +93,7 @@ export function loadMapAssets() {
       views[texs[j]] = views[texs[j]] || [];
       views[texs[j]].push(view);
 
-      view.darkView = new Phaser.Image(game, 0, 0, makeDarken(view, 0xA0A0A0));
+      view.darkView = new Phaser.Image(game, 0, 0, makeDarken(view, 0x888888));
 
       texNum += 2;
     }

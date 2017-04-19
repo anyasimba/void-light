@@ -7,14 +7,6 @@ export function getGameLevelZone(mapName, complex) {
     return;
   }
 
-  if (opts.isPrivate) {
-    return new GameLevelZone(mapName, complex);
-  }
-
-  if (sharedZones[mapName] && sharedZones[mapName][complex]) {
-    return sharedZones[mapName][complex];
-  }
-
   return new GameLevelZone(mapName, complex);
 }
 
@@ -115,6 +107,7 @@ export class GameLevelZone {
                   cache.grid[j][x][y] = [3, h];
                   break;
                 case 'whole':
+                case 'deep-water':
                   cache.grid[j][x][y] = [2, h];
                   break;
                 default:
@@ -355,8 +348,8 @@ export class GameLevelZone {
           let py = checkpointObj.pos.y;
           const a = Math.random() * Math.PI * 2;
           player.pos = {
-            x: px + Math.cos(a) * WALL_SIZE * 2,
-            y: py + Math.sin(a) * WALL_SIZE * 2,
+            x: px + Math.cos(a) * WALL_SIZE,
+            y: py + Math.sin(a) * WALL_SIZE,
           };
           player.z = checkpointObj.z;
           Checkpoint.USE(player);

@@ -322,7 +322,10 @@ void Fighter__update(Fighter *self, GameLevelZone *gameLevelZone, float dt) {
     if (self->groundAffectTime <= 0.f) {
       self->groundAffectTime = 0.5f;
       Local<Object> js = Local<Object>::New(isolate, self->js);
-      Local<Function>::Cast(js->GET("groundAffect"))->Call(js, 0, nullptr);
+      Local<Number> type = Number::New(isolate, (double)self->groundAffectType);
+      const unsigned argc = 1;
+      Local<Value> argv[argc] = { type };
+      Local<Function>::Cast(js->GET("groundAffect"))->Call(js, argc, argv);
     }
   }
 }

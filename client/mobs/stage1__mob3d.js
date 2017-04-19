@@ -11,7 +11,7 @@ export const stage1__mob3d = patch(stage1__mob3, {
 export const weapon__stage1__mob3d__rightHand__default = patch(
   weapon__stage1__mob3__rightHand__default, {
     createView() {
-      const view = makeHSL(hslMap['stage1__mob3--hand'], 0.2, 0.8, [
+      const view = makeHSL(hslMap['stage1__mob3--hand'], 0.3, 0.7, [
         0xffffff, 0xb19c29, [0x3a3614, 1],
         0x3a3500, 0xc4b27d, 0x8f8135, 0xfebf00
       ]);
@@ -24,7 +24,7 @@ export const weapon__stage1__mob3d__leftHand__default = patch(
       const prepare = (image) => {
         image.scale.x *= -1;
       }
-      const view = makeHSL(hslMap['stage1__mob3--hand'], 0.2, 0.8, [
+      const view = makeHSL(hslMap['stage1__mob3--hand'], 0.3, 0.7, [
         0xffffff, 0xb19c29, [0x3a3614, 1],
         0x3a3500, 0xc4b27d, 0x8f8135, 0xfebf00
       ]);
@@ -47,7 +47,7 @@ export const stage1__mob3d2 = patch(stage1__mob3, {
 export const weapon__stage1__mob3d2__rightHand__default = patch(
   weapon__stage1__mob3__rightHand__default, {
     createView() {
-      const view = makeHSL(hslMap['stage1__mob3--hand'], 0.2, 0.8, [
+      const view = makeHSL(hslMap['stage1__mob3--hand'], 0.3, 0.7, [
         0xffffff, 0xce808d, [0x551525, 1],
         0x533541, 0x6d3949, 0x886b72, 0x930000
       ]);
@@ -60,7 +60,7 @@ export const weapon__stage1__mob3d2__leftHand__default = patch(
       const prepare = (image) => {
         image.scale.x *= -1;
       }
-      const view = makeHSL(hslMap['stage1__mob3--hand'], 0.2, 0.8, [
+      const view = makeHSL(hslMap['stage1__mob3--hand'], 0.3, 0.7, [
         0xffffff, 0xce808d, [0x551525, 1],
         0x533541, 0x6d3949, 0x886b72, 0x930000
       ]);
@@ -84,7 +84,7 @@ export const stage1__mob3d__boss1 = patch(stage1__mob3, {
 export const weapon__stage1__mob3d__boss1__rightHand__default = patch(
   weapon__stage1__mob3__rightHand__default, {
     createView() {
-      const view = makeHSL(hslMap['stage1__mob3--hand'], 0.2, 0.8, [
+      const view = makeHSL(hslMap['stage1__mob3--hand'], 0.3, 0.7, [
         0xffffff, 0x9bd3fb, [0x0e1d29, 1],
         0xcc0000, 0x727b84, 0x0b171e, 0xfcff00
       ]);
@@ -97,7 +97,7 @@ export const weapon__stage1__mob3d__boss1__leftHand__default = patch(
       const prepare = (image) => {
         image.scale.x *= -1;
       }
-      const view = makeHSL(hslMap['stage1__mob3--hand'], 0.2, 0.8, [
+      const view = makeHSL(hslMap['stage1__mob3--hand'], 0.3, 0.7, [
         0xffffff, 0x9bd3fb, [0x0e1d29, 1],
         0xcc0000, 0x727b84, 0x0b171e, 0xfcff00
       ]);

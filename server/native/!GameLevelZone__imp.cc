@@ -117,12 +117,19 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
 
               if (grid[cx][cy].type == 3) {
                 if (object->groundAffectTime < 0.f) {
-                  object->groundAffectTime = 0.f;
+                  object->groundAffectTime = 0.5f;
                 }
+                object->groundAffectType = 0;
               } else if (grid[cx][cy].type == 6) {
                 if (object->groundAffectTime < 0.f) {
-                  object->groundAffectTime = 0.f;
+                  object->groundAffectTime = 0.5f;
                 }
+                object->groundAffectType = 1;
+              } else if (grid[cx][cy].type == 4) {
+                if (object->groundAffectTime < 0.f) {
+                  object->groundAffectTime = 0.5f;
+                }
+                object->groundAffectType = 2;
               } else {
                 object->groundAffectTime = -1.f;
               }
@@ -150,7 +157,7 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
         int gridI = max(0, (int)floor(object->beforeZ / 100.f));
         for (int l = 0; l < 2; ++l) {
           gridI += l;
-          if (gridI < 5) {
+          if (gridI < 6) {
             auto &grid = self->grid[gridI];
             if (X >= 0 && X < (int)grid.size()) {
               if (Y >= 0 && Y < (int)grid[X].size()) {
@@ -161,15 +168,23 @@ void GameLevelZone__update(const FunctionCallbackInfo<Value>& args) {
                   if (GameLevelZone__resolveCircle2StaticRectCollision(
                     self, object, rx, ry, (float) WALL_SIZE, (float) WALL_SIZE, floorZ, floorZ + grid[X][Y].z))
                   {
-                    if (grid[X][Y].type == 3) {
+                    if (grid[cx][cy].type == 3) {
                       if (object->groundAffectTime < 0.f) {
-                        object->groundAffectTime = 0.f;
+                        object->groundAffectTime = 0.5f;
                       }
                       noAffect = false;
-                    } else if (grid[X][Y].type == 6) {
+                      object->groundAffectType = 0;
+                    } else if (grid[cx][cy].type == 6) {
                       if (object->groundAffectTime < 0.f) {
-                        object->groundAffectTime = 0.f;
+                        object->groundAffectTime = 0.5f;
                       }
+                      object->groundAffectType = 1;
+                      noAffect = false;
+                    } else if (grid[cx][cy].type == 4) {
+                      if (object->groundAffectTime < 0.f) {
+                        object->groundAffectTime = 0.5f;
+                      }
+                      object->groundAffectType = 2;
                       noAffect = false;
                     } else {
                       object->groundAffectTime = -1.f;
@@ -377,7 +392,7 @@ void GameLevelZone__resolveCircle2CircleCollision(GameLevelZone *self, GameLevel
   v = v.unit();
 
   float force = object->speed.length() + other->speed.length();
-  float imp = 0.5f;
+  float imp = 0.1f;
   object->speed += v * (force * imp);
   other->speed -= v * (force * imp);
 }
@@ -403,7 +418,6 @@ bool GameLevelZone__resolveCircle2StaticRectCollision(
       isHasCollision = true;
     }
   }
-
 
   if (object->vtable != VTABLE::BULLET) {
     if (fabs(dy) <= h * 0.5f && fabs(dx) <= w * 0.5f) {
@@ -494,7 +508,7 @@ bool GameLevelZone__resolveCircle2StaticRectCollision(
   dx = object->beforePos.x - x;
   dy = object->beforePos.y - y;
 
-  float imp = 0.5f;
+  float imp = 0.1f;
   if (fabs(dy) <= h * 0.5f) {
     if (dx > 0) {
       object->pos.x = x + bodyDX;

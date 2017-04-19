@@ -79,12 +79,16 @@ export const MixGameObject = base => class extends base {
       this.z -= this.speedZ * dt;
     }
 
-    for (let i = 0; i < this.children.length; ++i) {
-      this.children[i].update();
-    }
-
     if (super.update) {
       super.update();
+    }
+
+    if (this.visible === false) {
+      return;
+    }
+
+    for (let i = 0; i < this.children.length; ++i) {
+      this.children[i].update();
     }
 
     if (!this.animationsCount) {

@@ -1,23 +1,23 @@
 Трава
-stage1__mob1a  - Природный Элемент 	   		---	 [OK]
-stage1__mob1a2 - Элементаль Жизни		   	  ---  [OK]
-stage1__mob1a3 - Водный Элемент		   		  ---  [OK]
-stage1__mob1a4 - Водная Элементаль        ---  [OK]
+stage1__mob1a  - Природный Элемент
+stage1__mob1a2 - Элементаль Жизни
+stage1__mob1a3 - Водный Элемент
+stage1__mob1a4 - Водная Элементаль
 stage1__mob1a5 - Элемент Ветра
 stage1__mob1a6 - Воздушная Элементаль
 stage1__mob1a7 - Элементаль Шторма
-stage1__mob2a  - Отрешенный Стражник 	   	---	 [OK]
-stage1__mob2a2 - Отрешенный Рыцарь		   	---  [OK]
-stage1__mob2a3 - Адепт Отрешения		   	  ---
+stage1__mob2a  - Отрешенный Стражник
+stage1__mob2a2 - Отрешенный Рыцарь
+stage1__mob2a3 - Адепт Отрешения
 stage1__mob2a4 - Чемпион
-stage1__mob3a  - Грех Уныния		   	   	  ---  [OK]
+stage1__mob3a  - Грех Уныния
 (Боссы)
 stage1__mob1a__boss1 - Эссенция Чистой Жизни
-stage1__mob2a__boss1 - Ателард, Мастер Пыток    	---	 [OK]
+stage1__mob2a__boss1 - Ателард, Мастер Пыток
 
 Чернозем
-stage1__mob1b  - Элементаль Хаоса 	   		---	 [OK]
-stage1__mob1b2 - Темный Элемент 	   		  ---	 [OK]
+stage1__mob1b  - Элементаль Хаоса
+stage1__mob1b2 - Темный Элемент
 stage1__mob2b  - Погребенный
 stage1__mob2b2 - Темный Дух
 stage1__mob2b3 - Рыцарь Теней
@@ -26,7 +26,6 @@ stage1__mob3b  - Грех Сладострастия
 stage1__mob3b2 - Грех Зависти
 (Боссы)
 stage1__mob1b__boss1 - Ночной Кошмар
-stage1__mob1b__boss2 - Эссенция Чистой Пустоты
 stage1__mob2b__boss1 - Скелет
 
 Магический Лес
@@ -48,8 +47,6 @@ stage1__mob2d3 - Адепт Солнца
 stage1__mob3d  - Грех Алчности
 stage1__mob3d2 - Грех Обжорства
 (Боссы)
-stage1__mob1d__boss1 Эссенция Чистого Света
-stage1__mob2d__boss1 Сгнивший
 stage1__mob3d__boss1 Обжорство
 
 Лава
@@ -64,5 +61,4 @@ stage1__mob3e3 - Тяжкий Грех
 stage1__mob3e4 - Обыденный Грех
 stage1__mob3e5 - Демон
 (Боссы)
-stage1__mob1e__boss1 - Эссенция Чистого Огня
 stage1__mob3e__boss1 - Первый Грех

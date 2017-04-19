@@ -1,7 +1,7 @@
 export const stage1__mob1 = {
   AGRO_D: 4,
   RUN_D: 16,
-  HIT_D: [50, 360],
+  HIT_D: [0, 360],
   HIT_VER: 0.5,
   MOVE_VER: 0.5,
   MOVE_TIME: [0.5, 1],
@@ -23,7 +23,7 @@ export const stage1__mob1 = {
     hitSpeed: 1,
     damage: 8,
 
-    ACC: 400,
+    ACC: 100,
     RUN_ACC: 700,
     BODY_SIZE: 140,
     SCALE: 0.8,

@@ -1,7 +1,7 @@
 export const stage1__mob3 = {
   AGRO_D: 7,
   RUN_D: 60,
-  HIT_D: [150, 250],
+  HIT_D: [0, 250],
   HIT_VER: 0.6,
   HIT_TIME: [0.5, 2],
   JUMP_HIT_VER: 0.02,
@@ -27,7 +27,7 @@ export const stage1__mob3 = {
     hitSpeed: 1.5,
     damage: 20,
 
-    ACC: 400,
+    ACC: 100,
     RUN_ACC: 700,
     BODY_SIZE: 140,
     SCALE: 1.5,
@@ -48,7 +48,7 @@ export const stage1__mob3 = {
     staminaUseTime: 0.5,
     stunTime: 0.5,
     hand: 1,
-    bodyScale: 1.5,
+    bodyScale: 1.2,
     pos: {
       x: 30,
       y: 0,

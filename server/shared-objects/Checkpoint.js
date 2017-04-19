@@ -82,6 +82,7 @@ export class Checkpoint extends mix(
     });
     player.owner.saveParam('checkpoint', 'mapName', this.gameLevelZone.mapName);
     player.owner.emit('useCheckpoint', {});
+    this.gameLevelZone.restart();
 
     const mobs = this.gameLevelZone.mobs;
     for (const k in mobs) {

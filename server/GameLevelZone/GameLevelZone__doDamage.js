@@ -233,7 +233,7 @@ Object.assign(GameLevelZone.prototype, {
     if (source.hitType === 3) {
       if (a > 90) {
         isBackstep = true;
-        damageF *= 3;
+        damageF = 3;
         isInBlock = false;
         other.stun(source.weapon.stunTime + 0.5);
       } else if (isInBlock) {
@@ -246,7 +246,7 @@ Object.assign(GameLevelZone.prototype, {
       damageF *= 1.5;
     }
 
-    if (!isBackstep && !isRemoveBlock) {
+    if (source.hitType !== 3) {
       if (isInBlock) {
         other.useStamina(
           source.weapon.staminaUse * balanceF * 2,

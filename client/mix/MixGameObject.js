@@ -26,6 +26,10 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
       this.parent.infoGroup.add(this.infoGroup);
     } else {
       this.group.update = () => {
+        this.updateVisibility();
+        if (!this.visible) {
+          return;
+        }
         this.update();
 
         this.z = this.z || 0;
@@ -72,21 +76,36 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
       this.updateViewScale();
     }
   }
-  update() {
+  updateVisibility() {
     if (super.update) {
       super.update();
     }
     if (!this.parent && global.client && global.client.player) {
-      this.updateViewScale();
-
       global.ts = global.ts || 0;
-      const cx = this.group.x;
-      const cy = this.group.y;
+      const cx = this.pos.x;
+      const cy = this.pos.y;
       const dx = Math.abs(cx - game.cameraPos.x);
       const dy = Math.abs(cy - game.cameraPos.y);
       const fx = 1 / game.sceneWrap.scale.x;
       const fy = 1 / game.sceneWrap.scale.y;
-      if (dx < game.w * 0.5 * fx + 800 && dy < game.h * 0.5 * fy + 800) {
+      let w = 800;
+      let h = 800;
+      if (this.size && typeof this.size === 'object') {
+        w = this.size.x + 300;
+        h = this.size.y + 300;
+      }
+
+      this.z = this.z || 0;
+      let l = Math.floor(this.z / 100.0 * 6 + 0.5);
+      l = Math.max(l, 0);
+
+      let li = Math.floor(this.z / 100.0 + 1 / 12);
+      li = Math.min(li, 5);
+      li = Math.max(li, 0);
+      const la = game.layers[li].sub['mix' + Math.min(l - li * 6 + 1, 7)].alpha;
+
+      if (la <= 0.0 || (dx < game.w * 0.5 * fx + w && dy < game.h * 0.5 *
+          fy + h)) {
         this.visible = true;
         this.bottomGroup.visible = true;
         this.middleGroup.visible = true;
@@ -101,6 +120,16 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
         this.infoGroup.visible = false;
         this.ceilGroup.visible = false;
       }
+    }
+  }
+  update() {
+    if (this.parent) {
+      if (super.update) {
+        super.update();
+      }
+    }
+    if (!this.parent && global.client && global.client.player) {
+      this.updateViewScale();
     }
   }
   updateViewScale() {

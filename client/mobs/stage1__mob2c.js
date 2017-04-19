@@ -3,10 +3,10 @@ export const stage1__mob2c__sword = patch(stage1__mob2, {
   GRAY_TINT: 0xffffff,
   COLOR_TINT: 0x344047,
   AMBIENT_TINT: [0x84acce, 1],
-  SPECIAL_TINT: 0xbecacc,
+  SPECIAL_TINT: 0x555555,
   ADD_COLOR_TINT: 0x617280,
   ADD_AMBIENT_TINT: 0x575f64,
-  ADD_SPECIAL_TINT: 0x1bfaed,
+  ADD_SPECIAL_TINT: 0x000000,
 });
 export const weapon__stage1__mob2c__sword__default = patch(
   weapon__stage1__mob2__sword__default, {
@@ -23,13 +23,13 @@ export const weapon__stage1__mob2c__sword__default = patch(
   });
 // 2
 export const stage1__mob2c2__sword = patch(stage1__mob2, {
-  GRAY_TINT: 0xffffff,
-  COLOR_TINT: 0x344047,
-  AMBIENT_TINT: [0x84acce, 1],
-  SPECIAL_TINT: 0xbecacc,
-  ADD_COLOR_TINT: 0x617280,
-  ADD_AMBIENT_TINT: 0x575f64,
-  ADD_SPECIAL_TINT: 0x1bfaed,
+  GRAY_TINT: 0x000000,
+  COLOR_TINT: 0x697178,
+  AMBIENT_TINT: [0x282925, 1],
+  SPECIAL_TINT: 0x555555,
+  ADD_COLOR_TINT: 0x200400,
+  ADD_AMBIENT_TINT: 0x0f0000,
+  ADD_SPECIAL_TINT: 0x000000,
 });
 export const weapon__stage1__mob2c2__sword__default = patch(
   weapon__stage1__mob2__sword__default, {

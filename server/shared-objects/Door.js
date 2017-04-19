@@ -136,9 +136,10 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
 
   open(player) {
     if (this.isExit) {
-      player.wait(4);
+      player.wait(3);
       player.speed.init();
       player.owner.changeZone(this.exitWay, this.target);
+      delete player.canOpenDoor;
       return;
     }
     if (this.isOpening || this.isClosing) {

@@ -26,7 +26,7 @@ export const weapon__stage1__mob3__rightHand__default = new class {
     this.onStun = mobs__hands__family.rightHand.onStun;
   }
   createView() {
-    const view = makeHSL(hslMap['stage1__mob3--hand'], 0.2, 0.8, [
+    const view = makeHSL(hslMap['stage1__mob3--hand'], 0.3, 0.7, [
       0x402020, 0x202020, [0x100000, 1],
       0xFF2200,
     ]);
@@ -42,7 +42,7 @@ export const weapon__stage1__mob3__leftHand__default = new class {
     const prepare = (image) => {
       image.scale.x *= -1;
     }
-    const view = makeHSL(hslMap['stage1__mob3--hand'], 0.2, 0.8, [
+    const view = makeHSL(hslMap['stage1__mob3--hand'], 0.3, 0.7, [
       0x402020, 0x202020, [0x100000, 1],
       0xFF2200,
     ]);

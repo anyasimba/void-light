@@ -45,6 +45,7 @@ struct GameLevelZoneObject {
   float groundFriction;
 
   float groundAffectTime;
+  int groundAffectType;
 
   short AREA_W;
   short AREA_H;
@@ -160,18 +161,20 @@ void GameLevelZone__addObject(const FunctionCallbackInfo<Value>& args) {
   if (strcmp(*String::Utf8Value(kind), "circle") == 0) {
     object->BODY_TYPE = CIRCLE;
     object->BODY_P1 = (float) body->GET("size")->NumberValue();
+    object->AREA_W = object->BODY_P1 + 300;
+    object->AREA_H = object->BODY_P1 + 300;
   } else if (strcmp(*String::Utf8Value(kind), "staticRect") == 0) {
     object->BODY_TYPE = STATIC_RECT;
     object->BODY_P1 = (float) body->GET("w")->NumberValue();
     object->BODY_P2 = (float) body->GET("h")->NumberValue();
     object->BODY_P3 = (float) body->GET("z2")->NumberValue();
+    object->AREA_W = object->BODY_P1 + 300;
+    object->AREA_H = object->BODY_P2 + 300;
   }
 
   object->isNeedDestroy = false;
   object->isStatic = js->GET("isStatic")->BooleanValue();
   object->hasCells = false;
-  object->AREA_W = 300;
-  object->AREA_H = 300;
 
   object->speedZ = 0;
   object->isFall = false;

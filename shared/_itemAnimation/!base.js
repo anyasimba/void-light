@@ -435,28 +435,10 @@ export function ia_backstep(
       faceA2_ = -faceA2;
     }
 
-    const step1 = begin * this.hitSpeed;
-    this.step(time, () => {
-      weapon1.stage(step1, easing.easeInQuad, {
-        pos: new vec3({
-          x: 0,
-          y: 60,
-        }),
-        angle: 90 - ba_,
-        vAngle: va1,
-        hAngle: ha1,
-        sideAngle: -90 - faceA1_,
-      });
-      this.stage(step1, easing.easeInQuad, {
-        angle: faceA1_,
-      });
-    });
-    time += step1 + 0.2;
-
-    const step2 = 0.15;
+    const step1 = 0.15;
     this.step(time, () => {
       this.playHit();
-      weapon1.stage(step2, easing.easeOutQuad, {
+      weapon1.stage(step1, easing.easeOutQuad, {
         pos: new vec3({
           x: 0,
           y: 60,
@@ -480,15 +462,15 @@ export function ia_backstep(
         hand: hand,
       });
     });
-    time += step2 + wait * this.hitSpeed + 0.5;
+    time += step1 + wait * this.hitSpeed + 0.5;
 
-    const step3 = end * this.hitSpeed;
+    const step2 = end * this.hitSpeed;
     this.step(time, () => {
-      weapon1.finalStage(step3, easing.easeInOutQuad);
-      this.finalStage(step3, easing.easeInOutQuad);
+      weapon1.finalStage(step2, easing.easeInOutQuad);
+      this.finalStage(step2, easing.easeInOutQuad);
       this.checkNextHit(this.hitStage + 1);
     });
-    time += step3;
+    time += step2;
 
     this.step(time, () => {
       this.finishHit();

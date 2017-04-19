@@ -538,19 +538,15 @@ function createGame() {
               layer.alpha = 1;
               let d = pz - lz;
               let db = 0 / 6;
-              let de = 5 / 6;
+              let de = 8 / 6;
               if (d < -de) {
                 layer.alpha = 0;
               } else if (d <= -db) {
                 layer.alpha = 1 - Math.pow(-(d + db) / (de - db), 0.5);
               }
-              //layer.alpha = 1;
               if (cd > 0) {
-                layer.alpha = 3 - cd2;
+                layer.alpha = 1 - cd2;
               }
-              // if (pz >= 2 && clz < 2) {
-              //   layer.alpha = 0;
-              // }
             }
             layer.alpha *= af;
             layer.alpha = Math.max(layer.alpha, 0);
@@ -679,7 +675,7 @@ function createGame() {
                   game.layers[i].sub['affects1' + (j + 1)].scale.x;
                 let gbx = game.cameraPos.x -
                   game.w * 0.5 / f;
-                gbx -= (AF - 1) * 0.5 * WALL_SIZE / f;
+                gbx -= (AF) * 0.5 * WALL_SIZE / f;
                 gbx = Math.floor(gbx / ts);
                 let gby = game.cameraPos.y -
                   game.h * 0.5 / f;
@@ -691,7 +687,7 @@ function createGame() {
                 gex = Math.floor(gex / ts);
                 let gey = game.cameraPos.y +
                   game.h * 0.5 / f;
-                gey += (AF - 1) * 0.5 * WALL_SIZE / f;
+                gey += (AF + 1) * 0.5 * WALL_SIZE / f;
                 gey = Math.floor(gey / ts);
 
                 for (let x = gbx; x <= gex; ++x) {

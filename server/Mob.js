@@ -428,8 +428,14 @@ export class Mob {
       nextY = next.y * WALL_SIZE + WALL_SIZE * 0.5;
     }
 
-    let canAttack;
     let inRun;
+    if (!this.target && Math.random() < 0.35) {
+      nextX = this.fighter.pos.x + Math.random() * 400 - 200;
+      nextY = this.fighter.pos.y + Math.random() * 400 - 200;
+      inRun = false;
+    }
+
+    let canAttack;
 
     if (this.target) {
       const dx = this.fighter.pos.x - this.target.pos.x;

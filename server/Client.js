@@ -283,6 +283,7 @@ export class Client extends global.Client {
       if (!this.gameLevelZone) {
         return;
       }
+      this.gameLevelZone.restart();
       this.gameLevelZone.rebornPlayer(this.player);
       this.player.reborn();
       this.emit('restart', {});

@@ -120,6 +120,7 @@ export function loadStage1() {
   game.load.image('stones', 'assets/stage1/stones.png');
   game.load.image('toxic', 'assets/stage1/toxic.png');
   game.load.image('water', 'assets/stage1/water.png');
+  game.load.image('deep-water', 'assets/stage1/deep-water.png');
   game.load.image('whole', 'assets/stage1/whole.png');
 }
 
