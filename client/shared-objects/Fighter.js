@@ -287,6 +287,7 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     if (this.id === client.playerID) {
       client.player = this;
+      console.log('NEW FIGHTER');
     }
 
     this.moveTime = 0;

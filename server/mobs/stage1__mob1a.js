@@ -233,6 +233,7 @@ export const stage1__mob1a7 = patch(stage1__mob1, {
 });
 // boss1
 export const stage1__mob1a__boss1 = patch(stage1__mob1, {
+  IS_BOSS: true,
   VOIDS_COUNT: 5000,
   AGRO_D: 10,
   RUN_D: 30,
@@ -254,7 +255,7 @@ export const stage1__mob1a__boss1 = patch(stage1__mob1, {
     damage: 10,
     BALANCE: 100,
     HP: 1000,
-    ACC: 900,
+    ACC: 100,
     RUN_ACC: 1000,
   },
   rightHand: {

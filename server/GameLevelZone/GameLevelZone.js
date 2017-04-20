@@ -352,7 +352,7 @@ export class GameLevelZone {
             y: py + Math.sin(a) * WALL_SIZE,
           };
           player.z = checkpointObj.z;
-          Checkpoint.USE(player);
+          checkpointObj.use(player);
           return;
         }
       }

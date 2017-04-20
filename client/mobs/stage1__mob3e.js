@@ -181,20 +181,20 @@ export const weapon__stage1__mob3e5__leftHand__default = patch(
 
 // boss1
 export const stage1__mob3e__boss1 = patch(stage1__mob3, {
-  GRAY_TINT: 0xffffff,
-  COLOR_TINT: 0x9bd3fb,
-  AMBIENT_TINT: [0x0e1d29, 1],
-  SPECIAL_TINT: 0xcc0000,
-  ADD_COLOR_TINT: 0x727b84,
-  ADD_AMBIENT_TINT: 0x0b171e,
-  ADD_SPECIAL_TINT: 0xfcff00,
+  GRAY_TINT: 0x4f4f4f,
+  COLOR_TINT: 0x000000,
+  AMBIENT_TINT: [0x101010, 1],
+  SPECIAL_TINT: 0x888888,
+  ADD_COLOR_TINT: 0x000000,
+  ADD_AMBIENT_TINT: 0x000000,
+  ADD_SPECIAL_TINT: 0xf86402,
 });
 export const weapon__stage1__mob3e__boss1__rightHand__default = patch(
   weapon__stage1__mob3__rightHand__default, {
     createView() {
       const view = makeHSL(hslMap['stage1__mob3--hand'], 0.3, 0.7, [
-        0xffffff, 0x9bd3fb, [0x0e1d29, 1],
-        0xcc0000, 0x727b84, 0x0b171e, 0xfcff00
+        0x4f4f4f, 0x000000, [0x101010, 1],
+        0x888888, 0x000000, 0x000000, 0xf86402
       ]);
       return view;
     }
@@ -206,8 +206,8 @@ export const weapon__stage1__mob3e__boss1__leftHand__default = patch(
         image.scale.x *= -1;
       }
       const view = makeHSL(hslMap['stage1__mob3--hand'], 0.3, 0.7, [
-        0xffffff, 0x9bd3fb, [0x0e1d29, 1],
-        0xcc0000, 0x727b84, 0x0b171e, 0xfcff00
+        0x4f4f4f, 0x000000, [0x101010, 1],
+        0x888888, 0x000000, 0x000000, 0xf86402
       ]);
       prepare(view.blackTex);
       prepare(view.tex);

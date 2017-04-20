@@ -60,6 +60,19 @@ export const client__item__sword = {
     return image;
   },
 };
+export const client__item__sword2 = {
+  LANG_RU: 'Меч Ветра',
+
+  createView() {
+    const image = weapon__sword2__default.createView();
+    image.scale.set(0.4);
+    image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
+    image.angle = 45;
+    return image;
+  },
+};
 export const client__item__big__sword = {
   LANG_RU: 'Двуручный Меч',
 
@@ -74,7 +87,7 @@ export const client__item__big__sword = {
   },
 };
 export const client__item__big__sword2 = {
-  LANG_RU: 'Меч синего пламени',
+  LANG_RU: 'Меч Синего Пламени',
 
   createView() {
     const image = weapon__bigsword2__default.createView();
@@ -99,11 +112,37 @@ export const client__item__axe = {
     return image;
   },
 };
+export const client__item__axe2 = {
+  LANG_RU: 'Топор Красного Пламени',
+
+  createView() {
+    const image = weapon__axe2__default.createView();
+    image.scale.set(0.4);
+    image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
+    image.angle = 45;
+    return image;
+  },
+};
 export const client__item__bigaxe = {
   LANG_RU: 'Алебарда',
 
   createView() {
-    const image = weapon__axe__default.createView();
+    const image = weapon__bigaxe__default.createView();
+    image.scale.set(0.5);
+    image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
+    image.angle = 45;
+    return image;
+  },
+};
+export const client__item__bigaxe2 = {
+  LANG_RU: 'Жаждущая Крови Алебарда',
+
+  createView() {
+    const image = weapon__bigaxe2__default.createView();
     image.scale.set(0.5);
     image.tex.anchor.set(0.5);
     image.blackTex.anchor.set(0.5);
@@ -125,6 +164,19 @@ export const client__item__kopie = {
     return image;
   },
 };
+export const client__item__kopie2 = {
+  LANG_RU: 'Копьё Крадущейся Тени',
+
+  createView() {
+    const image = weapon__kopie2__default.createView();
+    image.scale.set(0.5);
+    image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
+    image.angle = 45;
+    return image;
+  },
+};
 export const client__item__molot = {
   LANG_RU: 'Молот',
 
@@ -138,11 +190,37 @@ export const client__item__molot = {
     return image;
   },
 };
+export const client__item__molot2 = {
+  LANG_RU: 'Молот Грозы',
+
+  createView() {
+    const image = weapon__molot2__default.createView();
+    image.scale.set(0.4);
+    image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
+    image.angle = 45;
+    return image;
+  },
+};
 export const client__item__bigmolot = {
   LANG_RU: 'Булава',
 
   createView() {
     const image = weapon__bigmolot__default.createView();
+    image.scale.set(0.5);
+    image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
+    image.angle = 45;
+    return image;
+  },
+};
+export const client__item__bigmolot2 = {
+  LANG_RU: 'Булава Бури',
+
+  createView() {
+    const image = weapon__bigmolot2__default.createView();
     image.scale.set(0.5);
     image.tex.anchor.set(0.5);
     image.blackTex.anchor.set(0.5);
@@ -190,6 +268,19 @@ export const client__item__kinjal = {
     return image;
   },
 };
+export const client__item__kinjal2 = {
+  LANG_RU: 'Кинжал Яростного Пламени',
+
+  createView() {
+    const image = weapon__kinjal2__default.createView();
+    image.scale.set(0.4);
+    image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
+    image.angle = 45;
+    return image;
+  },
+};
 export const client__item__shield = {
   LANG_RU: 'Щит',
 
@@ -208,6 +299,19 @@ export const client__item__luk = {
 
   createView() {
     const image = weapon__luk__default.createView();
+    image.scale.set(0.8);
+    image.tex.anchor.set(0.5);
+    image.blackTex.anchor.set(0.5);
+    image.addTex.anchor.set(0.5);
+    image.angle = 45;
+    return image;
+  },
+};
+export const client__item__luk2 = {
+  LANG_RU: 'Лук Чистого Неба',
+
+  createView() {
+    const image = weapon__luk2__default.createView();
     image.scale.set(0.8);
     image.tex.anchor.set(0.5);
     image.blackTex.anchor.set(0.5);

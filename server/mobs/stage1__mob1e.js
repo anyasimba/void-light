@@ -162,20 +162,3 @@ export const stage1__mob1e4 = patch(stage1__mob1, {
     bodyScale: 1.6,
   },
 });
-// boss1
-export const stage1__mob1e__boss1 = patch(stage1__mob1, {
-  VOIDS_COUNT: 30,
-  FIGHTER: {
-    LANG_RU: 'Эссенция Чистого Огня',
-    name: 'stage1__mob1e__boss1',
-    hitSpeed: 2,
-  },
-  rightHand: {
-    type: 'weapon',
-    kind: 'stage1__mob1e__boss1__rightHand',
-  },
-  leftHand: {
-    type: 'weapon',
-    kind: 'stage1__mob1e__boss1__leftHand',
-  },
-});

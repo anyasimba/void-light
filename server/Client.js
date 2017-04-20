@@ -109,6 +109,14 @@ export class Client extends global.Client {
       });
     }
 
+    this.params.checkpoints = this.params.checkpoints || {};
+    this.params.checkpoints.list = this.params.checkpoints.list || [];
+    this.emit('param', {
+      slug: 'checkpoints',
+      key: 'list',
+      value: this.params.checkpoints.list,
+    });
+
     this.params.info = this.params.info || {}
     this.params.info.params = this.params.info.params || {}
     this.params.info.params.lastConnect = new Date();
@@ -230,6 +238,7 @@ export class Client extends global.Client {
 
     let complex = 0;
     this.gameLevelZone.removeClient(this);
+    this.emit('changeZone', {});
     this.gameLevelZone = getGameLevelZone(mapName, complex);
     this.gameLevelZone.addClient(this, target);
   }
@@ -314,6 +323,7 @@ export class Client extends global.Client {
     this.on('upLevel', data => this.onUpLevel(this.validate(data)));
     this.on('incParam', data => this.onIncParam(this.validate(data)));
     this.on('clothe', data => this.onClothe(this.validate(data)));
+    this.on('travel', data => this.onTravel(this.validate(data)));
   }
 
   /**
@@ -592,6 +602,36 @@ export class Client extends global.Client {
     }
   }
 
+  onTravel(data) {
+    if (typeof data.target !== 'number') {
+      return;
+    }
+
+    if (!this.player.canCheckpoint) {
+      return;
+    }
+
+    const list = this.params.checkpoints.list;
+    if (list.length - 1 < data.target || data.target < 0) {
+      return;
+    }
+    const c = list[data.target];
+    console.log(c.mapName, this.gameLevelZone.mapName);
+    if (c.mapName !== this.gameLevelZone.mapName) {
+      this.emit('map', {
+        name: c.mapName,
+      });
+    }
+
+    let complex = 0;
+    this.gameLevelZone.removeClient(this);
+    this.emit('changeZone', {});
+    this.gameLevelZone = getGameLevelZone(c.mapName, complex);
+    this.params.checkpoint.mapName = c.mapName;
+    this.params.checkpoint.mapID.mapID = c.mapID;
+    this.gameLevelZone.addClient(this);
+  }
+
   updateFighter() {
     const params = this.params.fighter.params;
     this.player.moveTimeF = 1 + this.getStep(
@@ -602,7 +642,7 @@ export class Client extends global.Client {
     this.player.damage_f = this.getStep(
       params.Strength, 10, 2, 30, 1, 50, 0.5, 0.25) * 0.6;
     this.player.damage_d = this.getStep(
-      params.Dexterity, 10, 2, 30, 1, 50, 0.5, 0.25) * 0.3;
+      params.Dexterity, 10, 2, 30, 1, 50, 0.5, 0.25) * 0.2;
     this.player.hitSpeed = 0.9 + 0.5 / (this.getStep(
       params.Dexterity, 10, 0.1, 30, 0.3, 50, 0.5, 1) * 0.1 + 1);
 

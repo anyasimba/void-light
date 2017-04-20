@@ -106,8 +106,8 @@ export const stage1__mob3e3 = patch(stage1__mob3, {
     SCALE: 2,
     ACC: 100,
     RUN_ACC: 300,
-    damage: 60,
-    HP: 700,
+    damage: 30,
+    HP: 400,
   },
   rightHand: {
     type: 'weapon',
@@ -148,7 +148,7 @@ export const stage1__mob3e4 = patch(stage1__mob3, {
     SCALE: 1,
     ACC: 100,
     RUN_ACC: 300,
-    damage: 60,
+    damage: 20,
     HP: 200,
   },
   rightHand: {
@@ -210,18 +210,43 @@ export const stage1__mob3e5 = patch(stage1__mob3, {
 });
 // boss1
 export const stage1__mob3e__boss1 = patch(stage1__mob3, {
-  VOIDS_COUNT: 40,
+  IS_BOSS: true,
+  VOIDS_COUNT: 30000,
+  AGRO_D: 10,
+  RUN_D: 30,
+  HIT_D: [0, 400],
+  HIT_VER: 0.8,
+  MOVE_VER: 0.5,
+  MOVE_TIME: [0.5, 1],
+  LONG_MOVE_VER: 0.5,
+  LONG_MOVE_TIME: [1, 2],
+  STOP_TIME: [0, 0.5],
+
+  ROLL_TIME: [30, 60],
+  JUMP_TIME: [30, 60],
   FIGHTER: {
     LANG_RU: 'Первый Грех',
     name: 'stage1__mob3e__boss1',
     hitSpeed: 2,
+    SCALE: 3,
+    damage: 50,
+    BALANCE: 200,
+    STAMINA: 1000,
+    HP: 4000,
+    ACC: 100,
+    RUN_ACC: 1000,
   },
   rightHand: {
     type: 'weapon',
     kind: 'stage1__mob3e__boss1__rightHand',
+    bodyScale: 1.4,
+    staminaUse: 10,
+    staminaUseTime: 1,
+    stunTime: 0.5,
   },
   leftHand: {
     type: 'weapon',
     kind: 'stage1__mob3e__boss1__leftHand',
+    bodyScale: 1.4,
   },
 });

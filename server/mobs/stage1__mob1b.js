@@ -69,11 +69,12 @@ export const stage1__mob1b2 = patch(stage1__mob1, {
 });
 // boss1
 export const stage1__mob1b__boss1 = patch(stage1__mob1, {
+  IS_BOSS: true,
   VOIDS_COUNT: 15000,
   AGRO_D: 10,
   RUN_D: 30,
   HIT_D: [0, 200],
-  HIT_VER: 0.3,
+  HIT_VER: 0.7,
   MOVE_VER: 0.5,
   MOVE_TIME: [0.5, 1],
   LONG_MOVE_VER: 0.5,
@@ -90,7 +91,7 @@ export const stage1__mob1b__boss1 = patch(stage1__mob1, {
     damage: 30,
     BALANCE: 100,
     HP: 1500,
-    ACC: 600,
+    ACC: 100,
     RUN_ACC: 1000,
   },
   rightHand: {
@@ -106,46 +107,5 @@ export const stage1__mob1b__boss1 = patch(stage1__mob1, {
     type: 'weapon',
     kind: 'stage1__mob1b__boss1__leftHand',
     bodyScale: 1.5,
-  },
-});
-// boss2
-export const stage1__mob1b__boss2 = patch(stage1__mob1, {
-  VOIDS_COUNT: 15000,
-  AGRO_D: 10,
-  RUN_D: 30,
-  HIT_D: [0, 400],
-  HIT_VER: 0.6,
-  MOVE_VER: 0.5,
-  MOVE_TIME: [0.5, 1],
-  LONG_MOVE_VER: 0.5,
-  LONG_MOVE_TIME: [1, 2],
-  STOP_TIME: [0, 0.5],
-
-  ROLL_TIME: [30, 60],
-  JUMP_TIME: [1, 2],
-  FIGHTER: {
-    LANG_RU: 'Эссенция Чистой Пустоты',
-    name: 'stage1__mob1b__boss2',
-    hitSpeed: 0.9,
-    SCALE: 2,
-    damage: 10,
-    BALANCE: 100,
-    HP: 1500,
-    ACC: 600,
-    RUN_ACC: 1000,
-  },
-  rightHand: {
-    type: 'weapon',
-    kind: 'stage1__mob1b__boss2__rightHand',
-    bodyScale: 2,
-    balance: 1,
-    staminaUse: 3,
-    staminaUseTime: 0.3,
-    stunTime: 0.3,
-  },
-  leftHand: {
-    type: 'weapon',
-    kind: 'stage1__mob1b__boss2__leftHand',
-    bodyScale: 2,
   },
 });

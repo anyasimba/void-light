@@ -655,9 +655,6 @@ function createGame() {
               }
 
               for (let j = 1; j <= ln; ++j) {
-                if (game.layers[i].sub['affects1' + j].alpha <= 0.0) {
-                  continue;
-                }
                 game.layers[i].sub['affects1' + j].removeAll();
                 game.layers[i].sub['affects2' + j].removeAll();
                 game.layers[i].sub['walls' + j].removeAll();

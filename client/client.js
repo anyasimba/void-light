@@ -117,11 +117,22 @@ export class Client extends global.Client {
 
     game.input.keyboard.addKey(Phaser.Keyboard.ESC)
       .onDown.add(() => {
+        let needShowMenu = true;
+        if (isGameMenuShowed) {
+          hideGameMenu();
+          needShowMenu = false;
+        }
+        if (isCheckpointsListShowed) {
+          hideCheckpointsList();
+          needShowMenu = false;
+        }
         if (this.message) {
           disableMessage();
-          return;
+          needShowMenu = false;
         }
-        showGameMenu();
+        if (needShowMenu) {
+          showGameMenu();
+        }
       });
 
     game.input.onDown.add(() => {
@@ -275,6 +286,12 @@ export class Client extends global.Client {
   onPlayerID(data) {
     this.playerID = data.playerID;
   }
+  onChangeZone() {
+    for (const k in gameObjects) {
+      const object = gameObjects[k];
+      object.destructor();
+    }
+  }
   onRestart(data) {
     this.mainTheme();
     game.texts.removeAll();
@@ -375,7 +392,9 @@ export class Client extends global.Client {
 
   onUseCheckpoint() {
     makeMessage('Душа прикреплена к кольцу', '#AAEEFF', 'Neucha');
-    makeMessageOption('Переместиться', '#AAAAAA', 'Neucha', -1, () => {});
+    makeMessageOption('Переместиться', '#AAEEFF', 'Neucha', -1, () => {
+      showCheckpointsList();
+    });
 
     makeMessageOption('Повысить уровень', '#AAEEFF', 'Neucha', 0.5, () => {
       const voidsCount = levelLimit(this.params.fighter.params.level);
@@ -406,7 +425,7 @@ export class Client extends global.Client {
       });
     });
 
-    makeMessageOption('Отдать свету', '#AAAAAA', 'Neucha', 2, () => {});
+    makeMessageOption('Отдать свету', '#AAEEFF', 'Neucha', 2, () => {});
   }
 
   mainTheme() {

@@ -225,7 +225,7 @@ function makeGameMenuTab6() {
   return titleView;
 }
 //
-let isGameMenuShowed = false;
+export let isGameMenuShowed = false;
 
 export function makeGameMenu() {
   global.gameMenuView = new Phaser.Group(game);
@@ -327,7 +327,7 @@ export function makeGameMenu() {
       if (gameMenuView.needHide) {
         delete gameMenuView.needHide;
         gameMenuView.visible = false;
-        isGameMenuShowed = false;
+        global.isGameMenuShowed = false;
       }
     }
     if (gameMenuView.alpha > 1) {
@@ -349,7 +349,7 @@ export function showGameMenu(force) {
   game.ui.remove(gameMenuView);
   game.ui.add(gameMenuView);
 
-  isGameMenuShowed = true;
+  global.isGameMenuShowed = true;
   gameMenuView.needShow = true;
 
   gameMenuView.x = game.ui.w * 0.5 - gameMenuView.w * 0.5;

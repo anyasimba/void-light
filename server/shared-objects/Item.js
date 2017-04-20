@@ -44,6 +44,31 @@ export function ItemSword(parent) {
     hAngle: 20,
   });
 }
+export function ItemSword2(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'sword2',
+    hand: 1,
+    bodyScale: 1.5,
+    scale_f: 0.8,
+    scale_d: 0.4,
+    damage: 20,
+    balance: 8,
+    stamina: 6,
+    staminaTime: 0.5,
+    staminaUse: 15,
+    staminaUseTime: 0.4,
+    stunTime: 1.2,
+    pos: {
+      x: -10,
+      y: 40,
+    },
+    angle: 15,
+    vAngle: 20,
+    hAngle: 20,
+  });
+}
 export function ItemBigSword(parent) {
   return new global.Item({
     parent: parent,
@@ -118,6 +143,31 @@ export function ItemAxe(parent) {
     hAngle: 30,
   });
 }
+export function ItemAxe2(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'axe2',
+    hand: 1,
+    scale_f: 0.5,
+    scale_d: 0.7,
+    damage: 16,
+    bodyScale: 1.3,
+    balance: 6,
+    stamina: 4,
+    staminaTime: 0.4,
+    staminaUse: 12,
+    staminaUseTime: 0.3,
+    stunTime: 0.7,
+    pos: {
+      x: -10,
+      y: 40,
+    },
+    angle: 15,
+    vAngle: 30,
+    hAngle: 30,
+  });
+}
 export function ItemBigAxe(parent) {
   return new global.Item({
     parent: parent,
@@ -134,6 +184,31 @@ export function ItemBigAxe(parent) {
     staminaUse: 16,
     staminaUseTime: 0.3,
     stunTime: 1,
+    pos: {
+      x: -10,
+      y: 40,
+    },
+    angle: 15,
+    vAngle: 30,
+    hAngle: 30,
+  });
+}
+export function ItemBigAxe2(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'bigaxe2',
+    hand: 1,
+    bodyScale: 3,
+    scale_f: 0.6,
+    scale_d: 0.6,
+    damage: 24,
+    balance: 16,
+    stamina: 10,
+    staminaTime: 0.6,
+    staminaUse: 24,
+    staminaUseTime: 0.7,
+    stunTime: 1.2,
     pos: {
       x: -10,
       y: 40,
@@ -168,6 +243,31 @@ export function ItemKopie(parent) {
     hAngle: 30,
   });
 }
+export function ItemKopie2(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'kopie2',
+    hand: 1,
+    bodyScale: 4,
+    scale_f: 0,
+    scale_d: 1,
+    damage: 15,
+    balance: 10,
+    stamina: 6,
+    staminaTime: 0.5,
+    staminaUse: 18,
+    staminaUseTime: 0.4,
+    stunTime: 1.4,
+    pos: {
+      x: -10,
+      y: 40,
+    },
+    angle: 15,
+    vAngle: 30,
+    hAngle: 30,
+  });
+}
 export function ItemMolot(parent) {
   return new global.Item({
     parent: parent,
@@ -193,6 +293,31 @@ export function ItemMolot(parent) {
     hAngle: 30,
   });
 }
+export function ItemMolot2(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'molot2',
+    hand: 1,
+    bodyScale: 1.1,
+    scale_f: 0.8,
+    scale_d: 0.0,
+    damage: 16,
+    balance: 12,
+    stamina: 7,
+    staminaTime: 0.6,
+    staminaUse: 14,
+    staminaUseTime: 0.5,
+    stunTime: 1.2,
+    pos: {
+      x: -10,
+      y: 40,
+    },
+    angle: 15,
+    vAngle: 30,
+    hAngle: 30,
+  });
+}
 export function ItemBigMolot(parent) {
   return new global.Item({
     parent: parent,
@@ -209,6 +334,31 @@ export function ItemBigMolot(parent) {
     staminaUse: 25,
     staminaUseTime: 0.6,
     stunTime: 1.5,
+    pos: {
+      x: -10,
+      y: 40,
+    },
+    angle: 15,
+    vAngle: 30,
+    hAngle: 30,
+  });
+}
+export function ItemBigMolot2(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'bigmolot2',
+    hand: 1,
+    bodyScale: 3,
+    scale_f: 1,
+    scale_d: 0.0,
+    damage: 60,
+    balance: 30,
+    stamina: 14,
+    staminaTime: 0.8,
+    staminaUse: 40,
+    staminaUseTime: 1,
+    stunTime: 2,
     pos: {
       x: -10,
       y: 40,
@@ -293,6 +443,31 @@ export function ItemKinjal(parent) {
     hAngle: 20,
   });
 }
+export function ItemKinjal2(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'kinjal2',
+    hand: 1,
+    bodyScale: 0.9,
+    scale_f: 0,
+    scale_d: 1,
+    damage: 15,
+    balance: 5,
+    stamina: 2,
+    staminaTime: 0.7,
+    staminaUse: 8,
+    staminaUseTime: 0,
+    stunTime: 0.7,
+    pos: {
+      x: -10,
+      y: 40,
+    },
+    angle: 15,
+    vAngle: 20,
+    hAngle: 20,
+  });
+}
 export function ItemShield(parent) {
   return new global.Item({
     parent: parent,
@@ -323,6 +498,32 @@ export function ItemLuk(parent) {
     staminaTime: 0.4,
     staminaUse: 10,
     staminaUseTime: 0.5,
+    stunTime: 1,
+    pos: {
+      x: 0,
+      y: 0,
+    },
+    angle: -20,
+    vAngle: 20,
+    hAngle: 0,
+  });
+}
+export function ItemLuk2(parent) {
+  return new global.Item({
+    parent: parent,
+    type: 'weapon',
+    kind: 'luk2',
+    hand: 1,
+    isRange: true,
+    bodyScale: 1,
+    scale_f: 0,
+    scale_d: 1,
+    damage: 15,
+    balance: 5,
+    stamina: 2,
+    staminaTime: 0.7,
+    staminaUse: 15,
+    staminaUseTime: 0.7,
     stunTime: 1,
     pos: {
       x: 0,

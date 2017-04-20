@@ -26,6 +26,11 @@ export const item__sword = {
   WEAPON: 'weapon__sword__default',
   SLUG: 'ItemSword',
 };
+export const item__sword2 = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__sword2__default',
+  SLUG: 'ItemSword2',
+};
 export const item__big__sword = {
   IS_UNIQUE: true,
   WEAPON: 'weapon__bigsword__default',
@@ -41,25 +46,50 @@ export const item__axe = {
   WEAPON: 'weapon__axe__default',
   SLUG: 'ItemAxe',
 };
+export const item__axe2 = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__axe2__default',
+  SLUG: 'ItemAxe2',
+};
 export const item__bigaxe = {
   IS_UNIQUE: true,
   WEAPON: 'weapon__bigaxe__default',
   SLUG: 'ItemBigAxe',
+};
+export const item__bigaxe2 = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__bigaxe2__default',
+  SLUG: 'ItemBigAxe2',
 };
 export const item__kopie = {
   IS_UNIQUE: true,
   WEAPON: 'weapon__kopie__default',
   SLUG: 'ItemKopie',
 };
+export const item__kopie2 = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__kopie2__default',
+  SLUG: 'ItemKopie2',
+};
 export const item__molot = {
   IS_UNIQUE: true,
   WEAPON: 'weapon__molot__default',
   SLUG: 'ItemMolot',
 };
+export const item__molot2 = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__molot2__default',
+  SLUG: 'ItemMolot2',
+};
 export const item__bigmolot = {
   IS_UNIQUE: true,
   WEAPON: 'weapon__bigmolot__default',
   SLUG: 'ItemBigMolot',
+};
+export const item__bigmolot2 = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__bigmolot2__default',
+  SLUG: 'ItemBigMolot2',
 };
 export const item__dubina = {
   IS_UNIQUE: true,
@@ -76,6 +106,11 @@ export const item__kinjal = {
   WEAPON: 'weapon__kinjal__default',
   SLUG: 'ItemKinjal',
 };
+export const item__kinjal2 = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__kinjal2__default',
+  SLUG: 'ItemKinjal2',
+};
 export const item__shield = {
   IS_UNIQUE: true,
   SHIELD: 'shield__default__default',
@@ -85,4 +120,9 @@ export const item__luk = {
   IS_UNIQUE: true,
   WEAPON: 'weapon__luk__default',
   SLUG: 'ItemLuk',
+};
+export const item__luk2 = {
+  IS_UNIQUE: true,
+  WEAPON: 'weapon__luk2__default',
+  SLUG: 'ItemLuk2',
 };

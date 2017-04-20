@@ -52,6 +52,7 @@ export const stage1__mob2d3__sword = patch(stage1__mob2, {
 });
 // boss 1
 export const stage1__mob2d__boss1 = patch(stage1__mob2, {
+  IS_BOSS: true,
   VOIDS_COUNT: 40,
   FIGHTER: {
     LANG_RU: 'Сгнивший',

@@ -74,12 +74,43 @@ export class Checkpoint extends mix(
     player.mp = player.MP;
     player.emitParams();
   }
+  saveInList(player) {
+    const checkpoints = player.owner.params.checkpoints =
+      player.owner.params.checkpoints || {};
+    const list = checkpoints.list = checkpoints.list || [];
+
+    let isExists = false;
+    for (let i = 0; i < list.length; ++i) {
+      const c = list[i];
+      if (c.mapName === this.gameLevelZone.mapName) {
+        if (c.mapID === this.opts.mapID) {
+          isExists = true;
+        }
+      }
+    }
+    if (!isExists) {
+      list.push({
+        mapName: this.gameLevelZone.mapName,
+        mapID: this.opts.mapID,
+      });
+    }
+    list.sort((a, b) => {
+      if (a.mapName === b.mapName) {
+        return a.mapID - b.mapID;
+      } else if (a.mapName > b.mapName) {
+        return 1;
+      }
+      return -1;
+    });
+    player.owner.saveSharedParam('checkpoints', 'list', list);
+  }
   use(player) {
     Checkpoint.USE(player);
     player.owner.saveParam('checkpoint', 'mapID', {
       mapID: this.opts.mapID,
       name: this.slug,
     });
+    this.saveInList(player);
     player.owner.saveParam('checkpoint', 'mapName', this.gameLevelZone.mapName);
     player.owner.emit('useCheckpoint', {});
     this.gameLevelZone.restart();

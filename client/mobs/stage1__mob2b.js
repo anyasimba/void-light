@@ -93,25 +93,25 @@ export const weapon__stage1__mob2b4__sword__default = patch(
 
 // boss1
 export const stage1__mob2b__boss1 = patch(stage1__mob2, {
-  GRAY_TINT: 0x000000,
-  COLOR_TINT: 0x141414,
-  AMBIENT_TINT: [0x282925, 1],
-  SPECIAL_TINT: 0xccc1c1,
-  ADD_COLOR_TINT: 0x200400,
+  GRAY_TINT: 0x444444,
+  COLOR_TINT: 0xb3b3b3,
+  AMBIENT_TINT: [0x000000, 1],
+  SPECIAL_TINT: 0x484848,
+  ADD_COLOR_TINT: 0x000000,
   ADD_AMBIENT_TINT: 0x000000,
-  ADD_SPECIAL_TINT: 0x990000,
+  ADD_SPECIAL_TINT: 0x000000,
 });
 export const weapon__stage1__mob2b__boss1__default = patch(
   weapon__stage1__mob2__sword__default, {
     createView() {
-      const image = makeHSL(hslMap['axe'], 0.5, 0.75, [
-        0x141414,
-        0x141414,
-        0x141414,
+      const image = makeHSL(hslMap['sword'], 0.5, 0.75, [
+        0xFFFFFF,
+        0x444444,
+        0x444444,
         0x000000,
-        0x200400,
-        0x200400,
-        0x200400
+        0xb3b3b3,
+        0xb3b3b3,
+        0xb3b3b3
       ]);
       image.scale.x = 0.5;
       image.scale.y = 0.5;
@@ -125,13 +125,13 @@ export const shield__stage1__mob2b__boss1__default = new class {
   }
   createView(isHost, kind) {
     const image = makeHSL(hslMap['shield'], 0.5, 0.5, [
-      0x141414,
-      0x141414,
-      0x141414,
+      0xFFFFFF,
+      0x444444,
+      0x444444,
       0x000000,
-      0x200400,
-      0x200400,
-      0x200400
+      0xb3b3b3,
+      0xb3b3b3,
+      0xb3b3b3
     ]);
     image.scale.x = 1;
     image.scale.y = 1;

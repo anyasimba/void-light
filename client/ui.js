@@ -282,6 +282,7 @@ function makeItemsBar() {
 
 export function initUI() {
   game.ui.add(makeGameMenu());
+  game.ui.add(makeCheckpointsList());
 
   makeBar(0xFF3300, 0, 0, 600, 30, (inner) => {
     if (global.client && global.client.player) {

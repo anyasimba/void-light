@@ -83,18 +83,43 @@ export const stage1__mob1c2 = patch(stage1__mob1, {
 
 // boss1
 export const stage1__mob1c__boss1 = patch(stage1__mob1, {
-  VOIDS_COUNT: 30,
+  IS_BOSS: true,
+  VOIDS_COUNT: 25000,
+  AGRO_D: 10,
+  RUN_D: 30,
+  HIT_D: [0, 400],
+  HIT_VER: 0.8,
+  MOVE_VER: 0.5,
+  MOVE_TIME: [0.5, 1],
+  LONG_MOVE_VER: 0.5,
+  LONG_MOVE_TIME: [1, 2],
+  STOP_TIME: [0, 0.5],
+
+  ROLL_TIME: [2, 5],
+  JUMP_TIME: [30, 60],
   FIGHTER: {
-    LANG_RU: 'Эссенция Чистой Магии',
+    LANG_RU: 'Чистая Эссенция Магии',
     name: 'stage1__mob1c__boss1',
-    hitSpeed: 2,
+    hitSpeed: 1.3,
+    SCALE: 3,
+    damage: 35,
+    BALANCE: 200,
+    STAMINA: 1000,
+    HP: 3000,
+    ACC: 100,
+    RUN_ACC: 1000,
   },
   rightHand: {
     type: 'weapon',
     kind: 'stage1__mob1c__boss1__rightHand',
+    bodyScale: 1.4,
+    staminaUse: 20,
+    staminaUseTime: 1,
+    stunTime: 0.5,
   },
   leftHand: {
     type: 'weapon',
     kind: 'stage1__mob1c__boss1__leftHand',
+    bodyScale: 1.4,
   },
 });

@@ -125,6 +125,23 @@ export const weapon__sword__default = new class {
     return image;
   }
 }
+export const weapon__sword2__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView() {
+    const image = makeHSL(hslMap['sword'], 0.5, 0.75, [
+      0xAACCAA,
+      0x444444,
+      0x999999,
+      0x999999
+    ]);
+    image.scale.x = 0.5;
+    image.scale.y = 0.5;
+    return image;
+  }
+}
 export const weapon__bigsword__default = new class {
   constructor() {
     this.update = weapon__family.update;
@@ -176,6 +193,23 @@ export const weapon__axe__default = new class {
     return image;
   }
 }
+export const weapon__axe2__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView() {
+    const image = makeHSL(hslMap['axe'], 0.5, 0.75, [
+      0xFFCCAA,
+      0x444444,
+      0xFF9955,
+      0xFF9955
+    ]);
+    image.scale.x = 0.5;
+    image.scale.y = 0.5;
+    return image;
+  }
+}
 export const weapon__bigaxe__default = new class {
   constructor() {
     this.update = weapon__family.update;
@@ -193,6 +227,23 @@ export const weapon__bigaxe__default = new class {
     return image;
   }
 }
+export const weapon__bigaxe2__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView() {
+    const image = makeHSL(hslMap['axe'], 0.5, 0.75, [
+      0xFF8888,
+      0x444444,
+      0xFF5555,
+      0xFF5555
+    ]);
+    image.scale.x = 0.5;
+    image.scale.y = 0.5;
+    return image;
+  }
+}
 export const weapon__kopie__default = new class {
   constructor() {
     this.update = weapon__family.update;
@@ -203,6 +254,23 @@ export const weapon__kopie__default = new class {
       0xFFFFFF,
       0x888888,
       0x888888,
+      0x660088,
+    ]);
+    image.scale.x = 0.4;
+    image.scale.y = 0.4;
+    return image;
+  }
+}
+export const weapon__kopie2__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView(isHost, kind) {
+    const image = makeHSL(hslMap['kopie'], 0.5, 0.75, [
+      0x000000,
+      0x888888,
+      0x550088,
       0x660088,
     ]);
     image.scale.x = 0.4;
@@ -227,6 +295,23 @@ export const weapon__molot__default = new class {
     return image;
   }
 }
+export const weapon__molot2__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView() {
+    const image = makeHSL(hslMap['molot'], 0.5, 0.75, [
+      0x111111,
+      0x003388,
+      0x003388,
+      0x003388,
+    ]);
+    image.scale.x = 0.6;
+    image.scale.y = 0.6;
+    return image;
+  }
+}
 export const weapon__bigmolot__default = new class {
   constructor() {
     this.update = weapon__family.update;
@@ -238,6 +323,23 @@ export const weapon__bigmolot__default = new class {
       0x8899AA,
       0x8899AA,
       0x8899AA
+    ]);
+    image.scale.x = 0.6;
+    image.scale.y = 0.6;
+    return image;
+  }
+}
+export const weapon__bigmolot2__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView() {
+    const image = makeHSL(hslMap['molot'], 0.5, 0.75, [
+      0x334455,
+      0x555555,
+      0x555555,
+      0x555555,
     ]);
     image.scale.x = 0.6;
     image.scale.y = 0.6;
@@ -289,6 +391,23 @@ export const weapon__kinjal__default = new class {
       0x8899AA,
       0x8899AA,
       0x8899AA
+    ]);
+    image.scale.x = 0.9;
+    image.scale.y = 0.9;
+    return image;
+  }
+}
+export const weapon__kinjal2__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  createView() {
+    const image = makeHSL(hslMap['kinjal'], 0.5, 0.75, [
+      0x44FF44,
+      0x8899AA,
+      0x8899AA,
+      0x44FF44
     ]);
     image.scale.x = 0.9;
     image.scale.y = 0.9;
@@ -373,6 +492,26 @@ export const weapon__luk__default = new class {
       0x8899AA,
       0x8899AA,
       0x8899AA
+    ]);
+    image.scale.x = -0.9;
+    image.scale.y = 0.9;
+    return image;
+  }
+}
+export const weapon__luk2__default = new class {
+  constructor() {
+    this.update = weapon__family.update;
+    this.onStun = weapon__family.onStun;
+  }
+  get isRange() {
+    return true;
+  }
+  createView() {
+    const image = makeHSL(hslMap['luk'], 0.5, 0.5, [
+      0x88AAFF,
+      0x4444FF,
+      0x4444FF,
+      0xFFFFFF
     ]);
     image.scale.x = -0.9;
     image.scale.y = 0.9;
