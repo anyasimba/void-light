@@ -1013,7 +1013,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
 
     new Bullet(this, {
       pos: this.pos.clone(),
-      speed: this.hitVec.unit().multiply(4400),
+      speed: this.hitVec.unit().multiply(3500),
     });
   }
 }

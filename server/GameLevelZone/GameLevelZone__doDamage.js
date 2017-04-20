@@ -156,7 +156,7 @@ Object.assign(GameLevelZone.prototype, {
       }
     }
   },
-  doDamage(source, opts, other) {
+  doDamage(source, opts, other, fromBullet) {
     if (other.rollBlockTime && !other.inHit && !other.inJump) {
       return true;
     }
@@ -204,21 +204,23 @@ Object.assign(GameLevelZone.prototype, {
     let damageF = 1;
     const isJumpHit = source.isJumpHit || source.inJump;
     const isRollHit = source.isRollHit || source.inRoll;
-    if (isRollHit) {
-      balanceF = 1.5;
-      damageF = 1.2;
-    }
-    if (isJumpHit) {
-      balanceF = 2;
-      damageF = 1.3;
-    }
-    if (isRollHit && isJumpHit) {
-      balanceF = 2.5;
-      damageF = 1.5;
-    }
-    if (!source.inBlock) {
-      balanceF *= 1.5;
-      damageF *= 1.3;
+    if (!fromBullet) {
+      if (isRollHit) {
+        balanceF = 1.5;
+        damageF = 1.2;
+      }
+      if (isJumpHit) {
+        balanceF = 2;
+        damageF = 1.3;
+      }
+      if (isRollHit && isJumpHit) {
+        balanceF = 2.5;
+        damageF = 1.5;
+      }
+      if (!source.inBlock) {
+        balanceF *= 1.5;
+        damageF *= 1.3;
+      }
     }
 
     let isInBlock = other.shield &&
@@ -268,6 +270,10 @@ Object.assign(GameLevelZone.prototype, {
         source.damage_d * source.weapon.scale_d +
         source.weapon.damage;
     }
+    if (fromBullet) {
+      superHit = false;
+      isBackstep = false;
+    }
     damage *= damageF;
     if (superHit) {
       damage += other.HP * 0.4;
@@ -308,15 +314,15 @@ Object.assign(GameLevelZone.prototype, {
     } else {
       other.speed.init();
     }
-    if (isJumpHit) {
+    if (isJumpHit && !fromBullet) {
       other.speed = other.speed.add(opts.hitVec.multiply(
         opts.impulse * 3 * source.scale));
     } else {
       other.speed = other.speed.add(opts.hitVec.multiply(
         opts.impulse * source.scale));
     }
-    other.isFall = false;
-    other.speedZ = 0;
-    other.emitPos();
+    if (!fromBullet) {
+      other.emitPos();
+    }
   },
 });

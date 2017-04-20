@@ -69,22 +69,22 @@ export function player_moveset(begin, wait, end, imp, a, tf, impf, af) {
 }
 
 export const weapon__sword__default__doHit = ia_sword__doHit([
-  player_moveset(0.2, 0.3, 0.2, 700, 30, 0.88, 0.9, 0.9),
-  player_moveset(0.15, 0.2, 0.2, 800, 10, 0.88, 1, 1),
-  player_moveset(0.25, 0.4, 0.3, 600, 60, 0.88, 0.9, 1.1), //
+  player_moveset(0.2, 0.3, 0.2, 700, 30, 0.85, 0.9, 0.9),
+  player_moveset(0.15, 0.2, 0.2, 800, 10, 0.85, 1, 1),
+  player_moveset(0.25, 0.4, 0.3, 600, 60, 0.85, 0.9, 1.1), //
   [0.4, 0.3, 0.3, 0, 10],
-  player_moveset(0.2, 0.3, 0.2, 700, 10, 0.88, 0.9, 0.9),
-  player_moveset(0.15, 0.2, 0.2, 800, 10, 0.88, 1, 1),
-  player_moveset(0.25, 0.4, 0.3, 600, 40, 0.88, 0.9, 1.1),
+  player_moveset(0.2, 0.3, 0.2, 700, 10, 0.85, 0.9, 0.9),
+  player_moveset(0.15, 0.2, 0.2, 800, 10, 0.85, 1, 1),
+  player_moveset(0.25, 0.4, 0.3, 600, 40, 0.85, 0.9, 1.1),
 ]);
 export const weapon__sword2__default__doHit = ia_sword__doHit([
-  player_moveset(0.2, 0.3, 0.2, 700, 30, 0.84, 1, 0.9),
-  player_moveset(0.15, 0.2, 0.2, 800, 10, 0.84, 1, 1),
-  player_moveset(0.25, 0.4, 0.3, 600, 60, 0.84, 1, 1.1), //
+  player_moveset(0.15, 0.3, 0.2, 700, 30, 0.82, 1, 1.1),
+  player_moveset(0.15, 0.2, 0.2, 800, 10, 0.82, 1, 1),
+  player_moveset(0.15, 0.4, 0.3, 600, 60, 0.82, 1, 1.2), //
   [0.4, 0.3, 0.3, 0, 10],
-  player_moveset(0.2, 0.3, 0.2, 700, 10, 0.84, 1, 0.9),
-  player_moveset(0.15, 0.2, 0.2, 800, 10, 0.84, 1, 1),
-  player_moveset(0.25, 0.4, 0.3, 600, 40, 0.84, 1, 1.1),
+  player_moveset(0.15, 0.3, 0.2, 700, 10, 0.82, 1, 1.1),
+  player_moveset(0.15, 0.2, 0.2, 800, 10, 0.82, 1, 1),
+  player_moveset(0.15, 0.4, 0.3, 600, 40, 0.82, 1, 1.2),
 ]);
 export const weapon__bigsword__default__doHit = ia_sword__doHit([
   player_moveset(0.4, 0.4, 0.4, 800, 5, 0.88, 0.9, 2),
@@ -105,11 +105,11 @@ export const weapon__bigsword2__default__doHit = ia_sword__doHit([
   player_moveset(0.4, 0.4, 0.5, 1200, 90, 0.85, 0.9, 1.1),
 ]);
 export const weapon__axe__default__doHit = ia_axe__doHit([
-  player_moveset(0.15, 0.3, 0.2, 600, 70, 0.88, 0.9, 0.9),
-  player_moveset(0.15, 0.3, 0.2, 600, 100, 0.88, 0.9, 0.9), //
+  player_moveset(0.15, 0.3, 0.2, 600, 70, 0.85, 0.9, 0.9),
+  player_moveset(0.15, 0.3, 0.2, 600, 100, 0.85, 0.9, 0.9), //
   [0.3, 0.3, 0.3, 0, 10],
-  player_moveset(0.15, 0.3, 0.2, 600, 20, 0.88, 0.9, 0.9),
-  player_moveset(0.15, 0.3, 0.2, 600, 80, 0.88, 0.9, 0.9),
+  player_moveset(0.15, 0.3, 0.2, 600, 20, 0.85, 0.9, 0.9),
+  player_moveset(0.15, 0.3, 0.2, 600, 80, 0.85, 0.9, 0.9),
 ]);
 export const weapon__axe2__default__doHit = ia_axe__doHit([
   player_moveset(0.1, 0.2, 0.2, 600, 70, 1, 0.9, 0.9),
@@ -164,11 +164,11 @@ export const weapon__bigmolot__default__doHit = ia_molot__doHit([
   player_moveset(0.4, 0.35, 0.3, 600, 80, 0.88, 0.9, 0.9),
 ]);
 export const weapon__bigmolot2__default__doHit = ia_molot__doHit([
-  player_moveset(0.7, 0.35, 0.3, 600, 10, 0.88, 0.9, 0.9),
-  player_moveset(0.7, 0.35, 0.3, 600, 100, 0.88, 0.9, 0.9), //
+  player_moveset(0.7, 0.35, 0.3, 1000, 10, 0.88, 0.9, 0.9),
+  player_moveset(0.7, 0.35, 0.3, 1600, 100, 0.88, 0.9, 0.9), //
   [0.6, 0.3, 0.3, 0, 10],
-  player_moveset(0.7, 0.35, 0.3, 600, 20, 0.88, 0.9, 0.9),
-  player_moveset(0.7, 0.35, 0.3, 600, 80, 0.88, 0.9, 0.9),
+  player_moveset(0.7, 0.35, 0.3, 1000, 20, 0.88, 0.9, 0.9),
+  player_moveset(0.7, 0.35, 0.3, 1600, 80, 0.88, 0.9, 0.9),
 ]);
 export const weapon__dubina__default__doHit = ia_dubina__doHit([
   player_moveset(0.3, 0.3, 0.2, 600, 70, 0.88, 0.9, 0.9),

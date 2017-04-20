@@ -88,6 +88,8 @@ export function loadPlayer() {
 }
 
 export function loadWeapon() {
+  game.load.image('arrow',
+    'assets/weapon/arrow.png');
   loadHsl('sword', 'assets/weapon/sword.png');
   loadHsl('axe', 'assets/weapon/axe.png');
   loadHsl('kopie', 'assets/weapon/kopie.png');

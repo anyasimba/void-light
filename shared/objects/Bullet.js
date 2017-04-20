@@ -11,7 +11,7 @@ export class Bullet {
     return 100;
   }
   get FRICTION() {
-    return 6000;
+    return 4000;
   }
 
   constructor() {
