@@ -392,7 +392,7 @@ void GameLevelZone__resolveCircle2CircleCollision(GameLevelZone *self, GameLevel
   v = v.unit();
 
   float force = object->speed.length() + other->speed.length();
-  float imp = 0.1f;
+  float imp = 0.5f;
   object->speed += v * (force * imp);
   other->speed -= v * (force * imp);
 }

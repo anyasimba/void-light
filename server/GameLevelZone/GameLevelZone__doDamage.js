@@ -157,6 +157,31 @@ Object.assign(GameLevelZone.prototype, {
     }
   },
   doDamage(source, opts, other, fromBullet) {
+    let damage = source.damage;
+    if (!damage) {
+      damage = source.damage_f * source.weapon.scale_f +
+        source.damage_d * source.weapon.scale_d +
+        source.weapon.damage;
+    }
+
+    if (other.type === 'Decor') {
+      if (other.body) {
+        other.emitAll('otherHit', {});
+
+        other.hp = other.hp || 100;
+        other.hp -= damage;
+        if (other.hp <= 0) {
+          other.destructor();
+          return;
+        }
+        other.speed = other.speed.add(opts.hitVec.multiply(
+          opts.impulse * source.scale * 0.5));
+        if (!fromBullet) {
+          other.emitPos();
+        }
+      }
+      return;
+    }
     if (other.rollBlockTime && !other.inHit && !other.inJump) {
       return true;
     }
@@ -263,12 +288,6 @@ Object.assign(GameLevelZone.prototype, {
 
     if (superHit) {
       damageF = 4;
-    }
-    let damage = source.damage;
-    if (!damage) {
-      damage = source.damage_f * source.weapon.scale_f +
-        source.damage_d * source.weapon.scale_d +
-        source.weapon.damage;
     }
     if (fromBullet) {
       superHit = false;

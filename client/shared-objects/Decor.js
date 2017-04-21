@@ -11,17 +11,31 @@ export class Decor extends mix(global.Decor, MixGameObject) {
 
   constructor(data) {
     data.pos = new vec3(data.pos);
+    data.speed = new vec3(data.speed);
 
     super(data, data);
+
+    const slug = data.slug;
+    if (global[slug]) {
+      const data = global[slug];
+
+      if (data.views) {
+        for (let i = 0; i < data.views.length; ++i) {
+          const v = data.views[i];
+          const image = new Phaser.Image(game, 0, 0, v.slug);
+          image.anchor.x = v.ax;
+          image.anchor.y = v.ay;
+          image.scale.x = v.sx;
+          image.scale.y = v.sy;
+          this[v.target].add(image);
+        }
+      }
+    }
 
     this.group.x = this.pos.x;
     this.group.y = this.pos.y;
 
     const opts = global[this.slug];
-    if (opts.VIEW) {
-      this.view = Decor.createView(opts);
-      this.middleGroup.add(this.view);
-    }
 
     if (opts.LIGHT) {
       this.light = genLight();
@@ -52,6 +66,9 @@ export class Decor extends mix(global.Decor, MixGameObject) {
     if (!client.player) {
       return;
     }
+    this.group.x = this.pos.x;
+    this.group.y = this.pos.y;
+
     this.z = this.z || 0;
     let l = Math.floor(this.z / 100.0);
     l = Math.min(l, 5);
@@ -66,6 +83,15 @@ export class Decor extends mix(global.Decor, MixGameObject) {
       const y = (this.pos.y - game.ui.y + ly) / light.scale.y;
       light.texture.renderXY(this.light, x, y, false);
     }
+  }
+
+  onPos(data) {
+    this.pos.init(data.pos);
+    this.speed.init(data.speed);
+    this.z = data.z;
+  }
+  onOtherHit(data) {
+    this.playSound('block');
   }
 }
 

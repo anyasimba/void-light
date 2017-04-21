@@ -42,6 +42,7 @@ const int WALL_SIZE = 240;
 #include "!GameLevelZone.cc"
 #include "Bullet.cc"
 #include "Checkpoint.cc"
+#include "Decor.cc"
 #include "Door.cc"
 #include "Fighter.cc"
 #include "ItemOnMap.cc"
@@ -67,6 +68,9 @@ void init(Local<Object> exports) {
 
   NODE_SET_METHOD(exports, "new__Checkpoint", new__Checkpoint);
   updates[VTABLE::CHECKPOINT] = (VFN) Checkpoint__update;
+
+  NODE_SET_METHOD(exports, "new__Decor", new__Decor);
+  updates[VTABLE::DECOR] = (VFN) Decor__update;
 
   NODE_SET_METHOD(exports, "new__Door", new__Door);
   updates[VTABLE::DOOR] = (VFN) Door__update;

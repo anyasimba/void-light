@@ -1,6 +1,7 @@
 enum VTABLE {
   BULLET,
   CHECKPOINT,
+  DECOR,
   DOOR,
   FIGHTER,
   ITEM_ON_MAP,

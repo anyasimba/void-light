@@ -1,12 +1,12 @@
 export const sharedZones = {};
 export const gameZones = [];
+export const gameZonesMap = {};
 
 export function getGameLevelZone(mapName, complex) {
   const opts = global[mapName];
   if (!opts) {
     return;
   }
-
   return new GameLevelZone(mapName, complex);
 }
 
@@ -16,6 +16,9 @@ export class GameLevelZone {
   }
 
   constructor(mapName, complex) {
+    gameZonesMap[mapName] = gameZonesMap[mapName] || [];
+    gameZonesMap[mapName].push(this);
+
     this.clients = [];
 
     this.objects = [];
@@ -47,6 +50,8 @@ export class GameLevelZone {
   }
   destructor() {
     gameZones.splice(gameZones.indexOf(this), 1);
+    gameZonesMap[this.mapName].splice(
+      gameZonesMap[this.mapName].indexOf(this), 1);
     if (!this.isPrivate) {
       delete sharedZones[this.mapName][this.complex];
       console.log('Destroy SHARED game zone', this.mapName, this.complex);
@@ -176,6 +181,7 @@ export class GameLevelZone {
               this.mapObjects[data.mapID] = new ItemOnMap(this, data);
               break;
             case 'decor__light':
+              data.slug = o.name || data.slug;
               this.mapObjects[data.mapID] = new Decor(this, data);
               break;
           }
@@ -231,8 +237,9 @@ export class GameLevelZone {
     if (object.native) {
       native.GameLevelZone__addObject(this.native, object.native);
     }
-    for (let i = 0; i < this.clients.length; ++i) {
-      object.emitTo(this.clients[i])
+    const clients = object.clients;
+    for (let i = 0; i < clients.length; ++i) {
+      object.emitTo(clients[i])
     }
 
     this.objects.push(object);

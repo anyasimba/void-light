@@ -380,6 +380,7 @@ function createGame() {
         loadAudio();
         loadPlayer();
         loadWeapon();
+        loadMisc();
         loadStage1();
         loadStage1__mobs();
 

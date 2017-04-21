@@ -4,6 +4,24 @@ preMain(async() => {
 
 export class Fighter extends mix(global.Fighter, MixNativeGameObject,
   MixGameObject) {
+
+  get clients() {
+    if (this.gameLevelZone) {
+      if (this.kind !== 'player') {
+        return this.gameLevelZone.clients;
+      }
+      const list = [];
+      const mapName = this.gameLevelZone.mapName;
+      for (let i = 0; i < gameZonesMap[mapName].length; ++i) {
+        const zone = gameZonesMap[mapName][i];
+        for (let j = 0; j < zone.clients.length; ++j) {
+          list.push(zone.clients[j]);
+        }
+      }
+      return list;
+    }
+  }
+
   get state() {
     return {
       lang: this.lang,

@@ -100,6 +100,13 @@ export function loadWeapon() {
   loadHsl('luk', 'assets/weapon/luk.png');
 }
 
+export function loadMisc() {
+  game.load.image('barrel',
+    'assets/misc/barrel.png');
+  game.load.image('barrel-top',
+    'assets/misc/barrel-top.png');
+}
+
 export function loadStage1() {
   game.load.image('bricks', 'assets/stage1/bricks.png');
   game.load.image('bricks2', 'assets/stage1/bricks2.png');
