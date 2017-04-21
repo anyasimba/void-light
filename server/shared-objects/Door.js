@@ -74,11 +74,13 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
   }
 
   preCreate(opts) {
-    this.body = {
-      kind: 'staticRect',
-      w: opts.size.x,
-      h: opts.size.y,
-      z2: 500.0 / 6.0,
+    if (!opts.IS_SIGN) {
+      this.body = {
+        kind: 'staticRect',
+        w: opts.size.x,
+        h: opts.size.y,
+        z2: 500.0 / 6.0,
+      }
     }
 
     this.native = native.new__Door(this);
@@ -97,6 +99,8 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
       isExit: opts.isExit,
       exitWay: opts.exitWay,
       target: opts.target,
+
+      SIGN: opts.SIGN,
 
       progress: 0,
     });

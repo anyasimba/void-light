@@ -3,7 +3,7 @@ export const client__item__heal__regular = {
 
   createView() {
     const g = new Phaser.Image(game, 0, 0, 'item__heal__regular');
-    g.blendMode = PIXI.blendModes.ADD;
+    g.blendMode = PIXI.blendModes.NORMAL;
     g.scale.set(1.4);
     g.anchor.set(0.5);
     return g;
@@ -11,18 +11,18 @@ export const client__item__heal__regular = {
 };
 
 export const client__item__heal__stone = {
-  LANG_RU: 'Красноватый свет',
+  LANG_RU: 'Красноватый Свет',
 
   createView() {
     const g = new Phaser.Image(game, 0, 0, 'item__heal__stone');
-    g.blendMode = PIXI.blendModes.ADD;
+    g.blendMode = PIXI.blendModes.NORMAL;
     g.scale.set(1.4);
     g.anchor.set(0.5);
     return g;
   },
 };
 export const client__item__mp__stone = {
-  LANG_RU: 'Синий свет',
+  LANG_RU: 'Синий Свет',
 
   createView() {
     const graphics = new Phaser.Graphics(game, 0, 0);
@@ -36,16 +36,74 @@ export const client__item__mp__stone = {
   },
 };
 export const client__item__stamina__stone = {
-  LANG_RU: 'Зеленоватый свет',
+  LANG_RU: 'Зеленоватый Свет',
 
   createView() {
     const g = new Phaser.Image(game, 0, 0, 'item__stamina__stone');
-    g.blendMode = PIXI.blendModes.ADD;
+    g.blendMode = PIXI.blendModes.NORMAL;
     g.scale.set(1.4);
     g.anchor.set(0.5);
     return g;
   },
 };
+
+//
+export const client__item__green_sign = {
+  LANG_RU: 'Зеленая Краска',
+
+  createView() {
+    const g = new Phaser.Image(game, 0, 0, 'item__green-sign');
+    g.blendMode = PIXI.blendModes.NORMAL;
+    g.scale.set(1.4);
+    g.anchor.set(0.5);
+    return g;
+  },
+}
+export const client__item__red_sign = {
+  LANG_RU: 'Красная Краска',
+
+  createView() {
+    const g = new Phaser.Image(game, 0, 0, 'item__red-sign');
+    g.blendMode = PIXI.blendModes.NORMAL;
+    g.scale.set(1.4);
+    g.anchor.set(0.5);
+    return g;
+  },
+}
+export const client__item__blue_sign = {
+  LANG_RU: 'Синяя Краска',
+
+  createView() {
+    const g = new Phaser.Image(game, 0, 0, 'item__blue-sign');
+    g.blendMode = PIXI.blendModes.NORMAL;
+    g.scale.set(1.4);
+    g.anchor.set(0.5);
+    return g;
+  },
+}
+export const client__item__gray_sign = {
+  LANG_RU: 'Серая Краска',
+
+  createView() {
+    const g = new Phaser.Image(game, 0, 0, 'item__gray-sign');
+    g.blendMode = PIXI.blendModes.NORMAL;
+    g.scale.set(1.4);
+    g.anchor.set(0.5);
+    return g;
+  },
+}
+export const client__item__chaos = {
+  LANG_RU: 'Эссенция Хаоса',
+
+  createView() {
+    const g = new Phaser.Image(game, 0, 0, 'item__chaos');
+    g.blendMode = PIXI.blendModes.NORMAL;
+    g.scale.set(1.4);
+    g.anchor.set(0.5);
+    return g;
+  },
+}
+//
 
 export const client__item__sword = {
   LANG_RU: 'Меч',

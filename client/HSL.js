@@ -258,5 +258,5 @@ export function makeHSL(hsl, ax, ay, tints, g) {
 }
 
 export function changeHSL(v, tints) {
-  makeHSL(v.hsl, v.gray.anchor.x, v.gray.anchor.y, tints, v);
+  makeHSL(v.hsl, v.tex.anchor.x, v.tex.anchor.y, tints, v);
 }

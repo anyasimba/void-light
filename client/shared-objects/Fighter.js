@@ -154,6 +154,28 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
   }
 
+  updateColors() {
+    this.group.alpha = 1;
+    if (this.id === client.playerID) {
+      this.tints = [0xFFFFFF, 0x999999, 0x111111, 0xCCCCCC];
+    } else if (this.invade) {
+      this.tints = [0xFF2200, 0x881100, 0x110000, 0xCC2200];
+    } else if (this.ally) {
+      this.tints = [0x22FF22, 0x118811, 0x001100, 0x22CC22];
+    } else {
+      this.tints = [0xFFFFFF, 0x999999, 0x111111, 0xCCCCCC];
+    }
+
+    if (this.zoneID !== client.zoneID) {
+      this.group.alpha = 0.2;
+    }
+
+    for (const k in this.viewsForTint) {
+      const v = this.viewsForTint[k];
+      changeHSL(v, this.tints);
+    }
+  }
+
   constructor(data) {
     data.pos = new vec3(data.pos);
     data.speed = new vec3(data.speed);
@@ -162,8 +184,22 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     super(data, data);
 
-    this.angle = 0;
+    if (this.zoneID === client.zoneID) {
+      if (this.id === client.playerID) {
+        if (this.invade) {
+          makeSuperMessage('ВЫ ВТОРГАЕТЕСЬ', '#FF7700');
+        }
+        if (this.ally) {
+          makeSuperMessage('ВЫ ПОМОГАЕТЕ', '#FF7700');
+        }
+      } else if (this.invade) {
+        makeSuperMessage('ВТОРЖЕНИЕ', '#FF7700');
+      } else if (this.ally) {
+        makeSuperMessage('СОЮЗНИК', '#FF7700');
+      }
+    }
 
+    this.angle = 0;
 
     this.tints = [0xFFFFFF];
     if (this.kind === 'mob') {
@@ -218,20 +254,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       for (let i = 0; i < 1; ++i) {
         this.light.rt.renderXY(this.light.rtImage, 0, 0, false);
       }
-
-      if (this.id !== client.playerID) {
-        this.tints[0] = 0x88FF33;
-        this.tints[1] = 0x88FF33;
-        this.tints[2] = 0x111111;
-        this.tints[3] = 0x88FF33;
-        this.light.tint = 0x88FF33;
-      } else {
-        this.tints[0] = 0xFFFFFF;
-        this.tints[1] = 0x999999;
-        this.tints[2] = 0x111111;
-        this.tints[3] = 0xCCCCCC;
-        this.light.tint = 0xFFFFFF;
-      }
     }
 
     this.viewsForTint = [];
@@ -271,6 +293,10 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.footViews[1].addTex.time = this.views[0].addTex.time;
     }
 
+    if (this.kind === 'player') {
+      this.updateColors();
+    }
+
     if (this.kind === 'mob' || this.id !== client.playerID) {
       const opts = global[this.name];
 
@@ -287,7 +313,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     if (this.id === client.playerID) {
       client.player = this;
-      console.log('NEW FIGHTER');
     }
 
     this.moveTime = 0;
@@ -410,23 +435,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     }
   }
 
-  onInvade(data) {
-    this.invade = true;
-    if (this.id !== client.playerID) {
-      makeSuperMessage('ВТОРЖЕНИЕ', '#FF7700');
-      this.tints[0] = 0xFF8811;
-      this.tints[1] = 0xFF8811;
-      this.tints[2] = 0xFF8811;
-      this.tints[3] = 0xFF8811;
-      for (const k in this.viewsForTint) {
-        const v = this.viewsForTint[k];
-        changeHSL(v, this.tints);
-      }
-    } else {
-      makeSuperMessage('ВЫ ВТОРГАЕТЕСЬ', '#FF7700');
-    }
-  }
-
   onEffects(data) {
     this.effects = data.effects;
   }
@@ -446,8 +454,12 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       client.diedTheme();
       makeSuperMessage('ВЫ ПОГИБЛИ', '#991100');
     } else if (this.kind === 'player') {
-      if (this.invade) {
+      if (this.ally) {
+        makeSuperMessage('СОЮЗНИК ПОГИБ', '#991100');
+      } else if (this.invade) {
         makeSuperMessage('ВТОРЖЕНИЕ ЗАВЕРШЕНО', '#991100');
+      } else if (client.player.invade) {
+        makeSuperMessage('УСПЕШНОЕ ВТОРЖЕНИЕ', '#991100');
       }
     }
 

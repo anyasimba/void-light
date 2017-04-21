@@ -19,9 +19,9 @@ export class Decor extends mix(global.Decor,
       if (data.body) {
         this.body = data.body;
       }
-
-      this.native = native.new__Decor(this, opts);
     }
+
+    this.native = native.new__Decor(this, opts);
   }
 
   constructor(gameLevelZone, opts) {

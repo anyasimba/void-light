@@ -254,6 +254,9 @@ export class Client extends global.Client {
     }
     if (name === 'new') {
       const className = packet.data[1]['class'];
+      if (gameObjects[id]) {
+        gameObjects[id].destructor();
+      }
       return new global[className](data);
     }
 
@@ -286,7 +289,11 @@ export class Client extends global.Client {
   onPlayerID(data) {
     this.playerID = data.playerID;
   }
+  onZoneID(data) {
+    this.zoneID = data.ID;
+  }
   onChangeZone() {
+    console.log('CLEAR ALL');
     for (const k in gameObjects) {
       const object = gameObjects[k];
       object.destructor();
@@ -323,11 +330,35 @@ export class Client extends global.Client {
     gameMenuView.onItems(data);
   }
 
-  onOpenDoor() {
-    makeSuperMessage('ОТКРЫТО', '#2299FF');
+  onMessage(data) {
+    makeMessage(data.message, '#AAEEFF');
   }
 
-  onCanItem() {
+  onCanItem(data) {
+    if (data.slug === 'green-sign') {
+      if (data.target === client.playerID) {
+        makeMessage('Нажмите [C] чтобы убрать..', '#AAEEFF');
+      } else {
+        makeMessage('Нажмите [C] чтобы помочь..', '#AAEEFF');
+      }
+      return;
+    }
+    if (data.slug === 'red-sign') {
+      if (data.target === client.playerID) {
+        makeMessage('Нажмите [C] чтобы убрать..', '#AAEEFF');
+      } else {
+        makeMessage('Нажмите [C] чтобы принять вызов..', '#AAEEFF');
+      }
+      return;
+    }
+    if (data.slug === 'blue-sign') {
+      if (data.target === client.playerID) {
+        makeMessage('Нажмите [C] чтобы убрать..', '#AAEEFF');
+      } else {
+        makeMessage('Нажмите [C] чтобы принять помощь..', '#AAEEFF');
+      }
+      return;
+    }
     makeMessage('Нажмите [C] чтобы поднять..', '#AAEEFF');
   }
   onCanOpenDoor() {

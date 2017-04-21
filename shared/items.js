@@ -21,6 +21,33 @@ export const item__stamina__stone = {
   DURATION: 60,
 };
 
+//
+export const item__green_sign = {
+  IS_UNIQUE: true,
+  IS_KEEP: true,
+  IS_GREEN_SIGN: true,
+};
+export const item__red_sign = {
+  IS_UNIQUE: true,
+  IS_KEEP: true,
+  IS_RED_SIGN: true,
+};
+export const item__blue_sign = {
+  IS_UNIQUE: true,
+  IS_KEEP: true,
+  IS_BLUE_SIGN: true,
+};
+export const item__gray_sign = {
+  IS_UNIQUE: true,
+  IS_KEEP: true,
+  IS_GRAY_SIGN: true,
+};
+export const item__chaos = {
+  IS_UNIQUE: false,
+  IS_CHAOS: true,
+};
+//
+
 export const item__sword = {
   IS_UNIQUE: true,
   WEAPON: 'weapon__sword__default',

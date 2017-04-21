@@ -130,6 +130,9 @@ export function prevBarItem() {
 }
 export function setBarItem(g, i, mainI) {
   const item = client.params.items.list[i];
+  if (!item) {
+    return;
+  }
   const clientItemData = global['client__' + item.slug];
   const v = clientItemData.createView();
   if (mainI === undefined) {

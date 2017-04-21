@@ -246,6 +246,9 @@ void GameLevelZone__updateObjectWithBodyCells(GameLevelZone *self, GameLevelZone
     remove_first(cell.list, object);
   }
   object->cells.clear();
+  if (object->BODY_TYPE == NO_BODY) {
+    return;
+  }
 
   int CELL_SIZE = GameLevelZone::CELL_SIZE();
   int xb = (int)floor(
@@ -272,6 +275,9 @@ void GameLevelZone__updateObjectWithBodyCells(GameLevelZone *self, GameLevelZone
 }
 void GameLevelZone__objectWithBodyOthers(GameLevelZone *self, GameLevelZoneObject *object) {
   object->others.clear();
+  if (object->BODY_TYPE == NO_BODY) {
+    return;
+  }
   for (int i = 0; i < (int)object->cells.size(); ++i) {
     GameLevelZoneObjectCell& cell = object->cells[i];
     vector<GameLevelZoneObject *>& list = *cell.list;

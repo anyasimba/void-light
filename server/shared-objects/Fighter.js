@@ -26,6 +26,8 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     return {
       lang: this.lang,
 
+      zoneID: this.zoneID,
+
       pos: this.pos,
       look: this.look,
       z: this.z,
@@ -39,6 +41,9 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       inBlock: this.inBlock,
 
       moveTimeF: this.moveTimeF,
+
+      invade: this.invade,
+      ally: this.ally,
 
       kind: this.kind,
       size: this.size,
@@ -360,6 +365,8 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
 
     super({
       lang: opts.LANG_RU,
+
+      zoneID: owner.gameLevelZone.ID,
 
       look: opts.look || new vec3,
 
@@ -817,20 +824,81 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     if (!this.isInGameLevelZone()) {
       return;
     }
+    if (this !== this.gameLevelZone.clients[0].player) {
+      return;
+    }
 
     if (this.canItem) {
       const item = this.canItem;
       const gameLevelZone = item.gameLevelZone;
       const opts = item.opts;
-      item.gameLevelZone.timeouts.push({
-        time: 60,
-        fn: () => {
-          new ItemOnMap(gameLevelZone, opts);
-        },
-      });
       item.destructor();
       delete this.canItem;
       this.owner.emit('stopCan', {});
+
+      if (item.slug === 'green-sign') {
+        if (item.target !== this) {
+          this.ally = true;
+          this.invade = false;
+
+          if (this.sign) {
+            this.sign.destructor();
+            delete this.sign;
+          }
+
+          this.gameLevelZone.removeClient(this.owner);
+          this.owner.gameLevelZone = item.target.owner.gameLevelZone;
+          this.zoneID = this.owner.gameLevelZone.ID;
+          this.owner.emit('zoneID', {
+            ID: this.owner.gameLevelZone.ID,
+          });
+          this.owner.emit('changeZone', {});
+          item.target.owner.gameLevelZone.addClient(this.owner);
+        }
+        return;
+      }
+      if (item.slug === 'red-sign') {
+        if (item.target !== this) {
+          this.invade = true;
+          this.ally = false;
+
+          if (this.sign) {
+            this.sign.destructor();
+            delete this.sign;
+          }
+
+          this.gameLevelZone.removeClient(this.owner);
+          this.owner.gameLevelZone = item.target.owner.gameLevelZone;
+          this.zoneID = this.owner.gameLevelZone.ID;
+          this.owner.emit('zoneID', {
+            ID: this.owner.gameLevelZone.ID,
+          });
+          this.owner.emit('changeZone', {});
+          item.target.owner.gameLevelZone.addClient(this.owner);
+        }
+        return;
+      }
+      if (item.slug === 'blue-sign') {
+        if (item.target !== this) {
+          item.target.ally = true;
+          item.target.invade = false;
+
+          if (item.target.sign) {
+            item.target.sign.destructor();
+            delete item.target.sign;
+          }
+
+          item.target.owner.gameLevelZone.removeClient(item.target.owner);
+          item.target.owner.gameLevelZone = this.gameLevelZone;
+          item.target.zoneID = this.gameLevelZone.ID;
+          item.target.owner.emit('zoneID', {
+            ID: this.gameLevelZone.ID,
+          });
+          item.target.owner.emit('changeZone', {});
+          this.gameLevelZone.addClient(item.target.owner);
+        }
+        return;
+      }
 
       const itemData = global[item.slug];
       if (itemData.IS_UNIQUE) {
@@ -894,10 +962,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
   }
   onKeyQ() {}
   onKeyE() {}
-  onKeyH() {
-    this.invade = true;
-    this.emitAll('invade', {});
-  }
+  onKeyH() {}
 
   doRoll(data) {
     const canRoll = this.stamina > 0 &&

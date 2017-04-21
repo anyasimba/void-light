@@ -10,6 +10,7 @@ enum VTABLE {
 };
 
 enum BODY_TYPE_ENUM {
+  NO_BODY,
   CIRCLE,
   STATIC_RECT,
 };
@@ -156,21 +157,24 @@ void GameLevelZone__addObject(const FunctionCallbackInfo<Value>& args) {
   GameLevelZoneObject *object = (GameLevelZoneObject *)node::Buffer::Data(args[1]->ToObject());
 
   Local<Object> js = Local<Object>::New(isolate, object->js);
-
-  Local<Object> body = js->GET("body")->ToObject();
-  Local<String> kind = body->GET("kind")->ToString();
-  if (strcmp(*String::Utf8Value(kind), "circle") == 0) {
-    object->BODY_TYPE = CIRCLE;
-    object->BODY_P1 = (float) body->GET("size")->NumberValue();
-    object->AREA_W = object->BODY_P1 + 300;
-    object->AREA_H = object->BODY_P1 + 300;
-  } else if (strcmp(*String::Utf8Value(kind), "staticRect") == 0) {
-    object->BODY_TYPE = STATIC_RECT;
-    object->BODY_P1 = (float) body->GET("w")->NumberValue();
-    object->BODY_P2 = (float) body->GET("h")->NumberValue();
-    object->BODY_P3 = (float) body->GET("z2")->NumberValue();
-    object->AREA_W = object->BODY_P1 + 300;
-    object->AREA_H = object->BODY_P2 + 300;
+  if (js->HAS("body")) {
+    Local<Object> body = js->GET("body")->ToObject();
+    Local<String> kind = body->GET("kind")->ToString();
+    if (strcmp(*String::Utf8Value(kind), "circle") == 0) {
+      object->BODY_TYPE = CIRCLE;
+      object->BODY_P1 = (float) body->GET("size")->NumberValue();
+      object->AREA_W = object->BODY_P1 + 300;
+      object->AREA_H = object->BODY_P1 + 300;
+    } else if (strcmp(*String::Utf8Value(kind), "staticRect") == 0) {
+      object->BODY_TYPE = STATIC_RECT;
+      object->BODY_P1 = (float) body->GET("w")->NumberValue();
+      object->BODY_P2 = (float) body->GET("h")->NumberValue();
+      object->BODY_P3 = (float) body->GET("z2")->NumberValue();
+      object->AREA_W = object->BODY_P1 + 300;
+      object->AREA_H = object->BODY_P2 + 300;
+    }
+  } else {
+    object->BODY_TYPE = NO_BODY;
   }
 
   object->isNeedDestroy = false;

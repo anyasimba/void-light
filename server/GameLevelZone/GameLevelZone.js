@@ -19,6 +19,10 @@ export class GameLevelZone {
     gameZonesMap[mapName] = gameZonesMap[mapName] || [];
     gameZonesMap[mapName].push(this);
 
+    global.zoneID = global.zoneID || 0;
+    ++global.zoneID;
+    this.ID = zoneID;
+
     this.clients = [];
 
     this.objects = [];
@@ -384,6 +388,18 @@ export class GameLevelZone {
       const object = objects[id];
       object.emitTo(client);
     }
+    const mapName = this.mapName;
+    for (let i = 0; i < gameZonesMap[mapName].length; ++i) {
+      const zone = gameZonesMap[mapName][i];
+      for (let j = 0; j < zone.clients.length; ++j) {
+        zone.clients[j].player.emitTo(client);
+      }
+    }
+    signsMap[mapName] = signsMap[mapName] || [];
+    for (let i = 0; i < signsMap[mapName].length; ++i) {
+      const sign = signsMap[mapName][i];
+      sign.emitTo(client);
+    }
   }
 
   update() {
@@ -497,6 +513,18 @@ export class GameLevelZone {
       }
     }
 
+    if (signsMap[this.mapName]) {
+      const list = signsMap[this.mapName];
+      for (let i = 0; i < list.length; ++i) {
+        const item = list[i];
+        const dx = player.pos.x - item.pos.x;
+        const dy = player.pos.y - item.pos.y;
+        if (Math.abs(dx) < 100 && Math.abs(dy) < 100) {
+          player.canItem = item;
+        }
+      }
+    }
+
     //
     if (canItem && !player.canItem) {
       player.owner.emit('stopCan', {});
@@ -522,8 +550,17 @@ export class GameLevelZone {
       return;
     }
     //
-    if (!canItem && player.canItem) {
-      player.owner.emit('canItem', {});
+    if (player.canItem && player.canItem !== canItem) {
+      if (player.canItem.target) {
+        player.owner.emit('canItem', {
+          slug: player.canItem.slug,
+          target: player.canItem.target.id,
+        });
+      } else {
+        player.owner.emit('canItem', {
+          slug: player.canItem.slug,
+        });
+      }
       return;
     }
     if (!canOpenDoor && player.canOpenDoor) {

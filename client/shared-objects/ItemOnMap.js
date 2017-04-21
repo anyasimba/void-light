@@ -17,8 +17,25 @@ export class ItemOnMap extends mix(global.ItemOnMap, MixGameObject) {
     this.group.x = this.pos.x;
     this.group.y = this.pos.y;
 
-    this.view = ItemOnMap.createView();
-    this.middleGroup.add(this.view);
+    if (data.slug === 'green-sign') {
+      this.view = new Phaser.Image(game, 0, 0, 'item__green-sign');
+      this.view.anchor.set(0.5);
+      this.view.scale.set(1);
+      this.bottomGroup.add(this.view);
+    } else if (data.slug === 'red-sign') {
+      this.view = new Phaser.Image(game, 0, 0, 'item__red-sign');
+      this.view.anchor.set(0.5);
+      this.view.scale.set(1);
+      this.bottomGroup.add(this.view);
+    } else if (data.slug === 'blue-sign') {
+      this.view = new Phaser.Image(game, 0, 0, 'item__blue-sign');
+      this.view.anchor.set(0.5);
+      this.view.scale.set(1);
+      this.bottomGroup.add(this.view);
+    } else {
+      this.view = ItemOnMap.createView();
+      this.middleGroup.add(this.view);
+    }
 
     this.light = genLight();
     this.light.scale.set(3 * this.light.f);

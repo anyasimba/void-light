@@ -54,6 +54,7 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
           g.scale.x = this.group.scale.x;
           g.scale.y = this.group.scale.y;
           g.angle = this.group.angle;
+          g.alpha = this.group.alpha;
 
           if (i < 3) {
             const f =
@@ -71,6 +72,7 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
         }
         this.infoGroup.x = this.group.x;
         this.infoGroup.y = this.group.y;
+        this.infoGroup.alpha = this.group.alpha;
       }
 
       this.updateViewScale();

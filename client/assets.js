@@ -85,6 +85,16 @@ export function loadPlayer() {
     'assets/player/item__heal__stone.png');
   game.load.image('item__stamina__stone',
     'assets/player/item__stamina__stone.png');
+  game.load.image('item__green-sign',
+    'assets/player/item__green-sign.png');
+  game.load.image('item__red-sign',
+    'assets/player/item__red-sign.png');
+  game.load.image('item__blue-sign',
+    'assets/player/item__blue-sign.png');
+  game.load.image('item__gray-sign',
+    'assets/player/item__gray-sign.png');
+  game.load.image('item__chaos',
+    'assets/player/item__chaos.png');
 }
 
 export function loadWeapon() {

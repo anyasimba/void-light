@@ -178,6 +178,11 @@ export class Client extends global.Client {
           name: this.gameLevelZone.mapName,
         });
 
+        this.player.zoneID = this.gameLevelZone.ID;
+        this.emit('zoneID', {
+          ID: this.gameLevelZone.ID,
+        });
+
         this.gameLevelZone.switchClient(this, other);
         await this.loadClient();
 
@@ -225,7 +230,10 @@ export class Client extends global.Client {
     this.emit('map', {
       name: this.gameLevelZone.mapName,
     });
-
+    this.player.zoneID = this.gameLevelZone.ID;
+    this.emit('zoneID', {
+      ID: this.gameLevelZone.ID,
+    });
     this.gameLevelZone.addClient(this);
     this.registerEvents();
 
@@ -235,11 +243,19 @@ export class Client extends global.Client {
     this.emit('map', {
       name: mapName,
     });
+    if (this.player.sign) {
+      this.player.sign.destructor();
+      delete this.player.sign;
+    }
 
     let complex = 0;
     this.gameLevelZone.removeClient(this);
     this.emit('changeZone', {});
     this.gameLevelZone = getGameLevelZone(mapName, complex);
+    this.player.zoneID = this.gameLevelZone.ID;
+    this.emit('zoneID', {
+      ID: this.gameLevelZone.ID,
+    });
     this.gameLevelZone.addClient(this, target);
   }
 
@@ -281,16 +297,32 @@ export class Client extends global.Client {
     console.log('User disconnected', this.username);
   }
 
-  onDie(source) {
-    if (!this.player.invade) {
-      this.params.fighter.params.voidsCount = 0;
-      this.saveSharedParam('fighter', 'params', this.params.fighter.params);
-    } else {
-      delete this.player.invade;
+  onBackMap(force) {
+    if (this.player.sign) {
+      this.player.sign.destructor();
+      delete this.player.sign;
+    }
+
+    delete this.player.invade;
+    delete this.player.ally;
+    if (force) {
+      this.changeZone(this.gameLevelZone.mapName);
+      return;
     }
     setTimeout(() => {
       if (!this.gameLevelZone) {
         return;
+      }
+      this.changeZone(this.gameLevelZone.mapName);
+    }, 6000);
+  }
+  makeSolo() {
+    if (this === this.gameLevelZone.clients[0]) {
+      if (this.gameLevelZone.clients.length > 1) {
+        for (let i = 1; i < this.gameLevelZone.clients.length; ++i) {
+          const c = this.gameLevelZone.clients[i];
+          c.onBackMap(true);
+        }
       }
       this.gameLevelZone.restart();
       this.gameLevelZone.rebornPlayer(this.player);
@@ -298,7 +330,36 @@ export class Client extends global.Client {
       this.emit('restart', {});
       this.player.emitParams();
       this.player.emitPos();
-    }, 6000);
+      return;
+    }
+
+    this.onBackMap(true);
+  }
+  onDie(source) {
+    if (this === this.gameLevelZone.clients[0]) {
+      if (this.gameLevelZone.clients.length > 1) {
+        for (let i = 1; i < this.gameLevelZone.clients.length; ++i) {
+          const c = this.gameLevelZone.clients[i];
+          c.onBackMap();
+        }
+      }
+      setTimeout(() => {
+        if (!this.gameLevelZone) {
+          return;
+        }
+        this.gameLevelZone.restart();
+        this.gameLevelZone.rebornPlayer(this.player);
+        this.player.reborn();
+        this.emit('restart', {});
+        this.player.emitParams();
+        this.player.emitPos();
+      }, 6000);
+      this.params.fighter.params.voidsCount = 0;
+      this.saveSharedParam('fighter', 'params', this.params.fighter.params);
+      return;
+    }
+
+    this.onBackMap();
   }
 
   validate(data) {
@@ -416,6 +477,97 @@ export class Client extends global.Client {
 
       if (canUse) {
         this.player.useItem(itemData, () => {
+          if (itemData.IS_CHAOS) {
+            if (this !== this.gameLevelZone.clients[0]) {
+              return;
+            }
+
+            const mapName = this.gameLevelZone.mapName;
+            const list = gameZonesMap[mapName];
+            if (list.length <= 1) {
+              this.emit('message', {
+                message: 'Вторжение не удалось.. Мы здесь одни.',
+              });
+              return;
+            }
+
+            let zone = this.gameLevelZone;
+            while (zone === this.gameLevelZone) {
+              const i = Math.floor(Math.random() * list.length);
+              zone = list[i];
+            }
+            this.player.invade = true;
+
+            if (this.player.sign) {
+              this.player.sign.destructor();
+              delete this.player.sign;
+            }
+
+            this.gameLevelZone.removeClient(this);
+            this.gameLevelZone = zone;
+            this.player.zoneID = this.gameLevelZone.ID;
+            this.emit('zoneID', {
+              ID: this.gameLevelZone.ID,
+            });
+            this.emit('changeZone', {});
+            zone.addClient(this);
+          }
+          let signX = this.player.pos.x + this.player.look.x * 100;
+          let signY = this.player.pos.y + this.player.look.y * 100;
+          if (itemData.IS_GRAY_SIGN) {
+            this.makeSolo();
+          }
+          if (itemData.IS_GREEN_SIGN) {
+            if (this !== this.gameLevelZone.clients[0]) {
+              return;
+            }
+            if (this.player.sign) {
+              this.player.sign.destructor();
+              delete this.player.sign;
+            }
+            const sign = new ItemOnMap(this.gameLevelZone, {
+              mapX: signX,
+              mapY: signY,
+              z: Math.floor(this.player.z / 6) * 6,
+              slug: 'green-sign',
+              target: this.player,
+              isSign: true,
+            });
+            this.player.sign = sign;
+          }
+          if (itemData.IS_RED_SIGN) {
+            if (this.player.sign) {
+              this.player.sign.destructor();
+              delete this.player.sign;
+            }
+            const sign = new ItemOnMap(this.gameLevelZone, {
+              mapX: signX,
+              mapY: signY,
+              z: Math.floor(this.player.z / 6) * 6,
+              slug: 'red-sign',
+              target: this.player,
+              isSign: true,
+            });
+            this.player.sign = sign;
+          }
+          if (itemData.IS_BLUE_SIGN) {
+            if (this !== this.gameLevelZone.clients[0]) {
+              return;
+            }
+            if (this.player.sign) {
+              this.player.sign.destructor();
+              delete this.player.sign;
+            }
+            const sign = new ItemOnMap(this.gameLevelZone, {
+              mapX: signX,
+              mapY: signY,
+              z: Math.floor(this.player.z / 6) * 6,
+              slug: 'blue-sign',
+              target: this.player,
+              isSign: true,
+            });
+            this.player.sign = sign;
+          }
           if (item.count !== undefined && item.count > 0) {
             --item.count;
           }
@@ -622,6 +774,10 @@ export class Client extends global.Client {
         name: c.mapName,
       });
     }
+    if (this.player.sign) {
+      this.player.sign.destructor();
+      delete this.player.sign;
+    }
 
     let complex = 0;
     this.gameLevelZone.removeClient(this);
@@ -629,6 +785,10 @@ export class Client extends global.Client {
     this.gameLevelZone = getGameLevelZone(c.mapName, complex);
     this.params.checkpoint.mapName = c.mapName;
     this.params.checkpoint.mapID.mapID = c.mapID;
+    this.player.zoneID = this.gameLevelZone.ID;
+    this.emit('zoneID', {
+      ID: this.gameLevelZone.ID,
+    });
     this.gameLevelZone.addClient(this);
   }
 
