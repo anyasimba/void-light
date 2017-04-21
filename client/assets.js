@@ -1,4 +1,4 @@
-function detectIE() {
+export function detectIE() {
   var ua = window.navigator.userAgent;
 
   var msie = ua.indexOf('MSIE ');
@@ -82,6 +82,9 @@ export function loadPlayer() {
   loadHsl('player-tail', 'assets/player/player-tail.png');
   loadHsl('player-hand', 'assets/player/player-hand.png');
   loadHsl('player-foot', 'assets/player/player-foot.png');
+
+  game.load.image('hitbar',
+    'assets/player/hitbar.png');
 
   game.load.image('item__heal__regular',
     'assets/player/item__heal__regular.png');

@@ -7,7 +7,7 @@ export class Fighter {
     return 400;
   }
   static get RUN_ACC() {
-    return 600;
+    return 6000;
   }
   static get AIR_FRICTION() {
     return 0.02;

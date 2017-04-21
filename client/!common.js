@@ -291,7 +291,6 @@ function create() {
 
   game.backSound = game.add.sound('back', 0.5, true);
   game.backSound.play();
-  game.bossBackSound = game.add.sound('bossBack', 1, true);
   game.youDiedSound = game.add.sound('youDied', 1, false);
 
   game.bossAreaSound = game.add.sound('bossArea', 1, false);
@@ -415,7 +414,13 @@ function createGame() {
           totalLoaded, totalFiles) => {
           loadingProgress(progress);
           if (progress === 100) {
-            create();
+            if (global.client) {
+              if (client.loadingCB) {
+                client.loadingCB();
+              }
+            } else {
+              create();
+            }
           }
         });
 

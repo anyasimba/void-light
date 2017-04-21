@@ -136,10 +136,28 @@ export class Client extends global.Client {
       });
 
     game.input.onDown.add(() => {
-      global.lmx = global.mx;
-      global.lmy = global.my;
+      if (!client.player) {
+        return;
+      }
+      global.lmx = global.mx - game.cameraPos.x;
+      global.lmy = global.my - game.cameraPos.y;
+
+      const image = new Phaser.Image(game, 0, 0, 'hitbar');
+      image.anchor.set(0.5);
+      image.scale.set(2);
+      image.angle = new vec3(lmx, lmy).toAngle() + 90;
+      image.alpha = 0.5;
+      image.update = () => {
+        image.x = game.cameraPos.x + lmx;
+        image.y = game.cameraPos.y + lmy;
+      }
+      game.scene.add(image);
+      game.hitbar = image;
     });
     game.input.onUp.add(() => {
+      if (game.hitbar) {
+        game.hitbar.destroy();
+      }
       if (!global.lmx) {
         return;
       }
@@ -159,7 +177,9 @@ export class Client extends global.Client {
         return;
       }
       let type = 0;
-      const m = (new vec3(lmx, lmy)).subtract(client.player.pos);
+      global.lmx += game.cameraPos.x;
+      global.lmy += game.cameraPos.y;
+      const m = (new vec3(lmx, lmy)).subtract(game.cameraPos);
       const mouseD = (new vec3(mx, my)).subtract(new vec3(lmx, lmy));
       let a = m.toAngle() - mouseD.toAngle();
       if (a > 180) {
@@ -189,6 +209,7 @@ export class Client extends global.Client {
         'y': lmy,
         'type': type,
       });
+      delete global.lmx;
     });
 
     let lookInterval = false;
@@ -460,8 +481,37 @@ export class Client extends global.Client {
     });
   }
 
+  loadBossAudio() {
+    let fmt = '.ogg';
+    if (detectIE()) {
+      fmt = '.mp3';
+    }
+    const config = {
+      stage1__1: 'assets/audio/boss1__Dark Descent (Extended Cut)',
+      stage1__2: 'assets/audio/boss2__TheLoomingBattle',
+      stage1__3: 'assets/audio/boss3__Welcome to Com-Mecha',
+      stage1__3a: 'assets/audio/boss3a__Defying Commodus',
+      stage1__4: 'assets/audio/boss4__Инструментальная симфония',
+      stage1__5: 'assets/audio/boss5__medieval',
+      stage1__6: 'assets/audio/boss6__Brave Solders',
+    }
+    const mapName = this.mapName;
+    this.loadingCB = () => {
+      delete this.loadingCB;
+      game.bossBackSound[mapName] = game.add.sound(
+        'bossBack__' + mapName, 0.5, true);
+      game.bossBackSound[mapName].restart('', 0, 1, true);
+    }
+    game.load.audio(
+      'bossBack__' + mapName, config[mapName] + fmt);
+    game.load.start();
+  }
   mainTheme() {
-    game.bossBackSound.stop();
+    delete this.loadingCB;
+    game.bossBackSound = game.bossBackSound || {};
+    if (game.bossBackSound[this.mapName]) {
+      game.bossBackSound[this.mapName].stop();
+    }
     game.youDiedSound.stop();
     game.backSound.restart('', 0, 0.5, true);
     game.isBoss = false;
@@ -470,13 +520,23 @@ export class Client extends global.Client {
   bossTheme() {
     game.backSound.stop();
     game.youDiedSound.stop();
-    game.bossBackSound.restart('', 0, 1, true);
     game.isBoss = true;
     game.preZoom = 0.8;
+
+    game.bossBackSound = game.bossBackSound || {};
+    if (!game.bossBackSound[this.mapName]) {
+      this.loadBossAudio();
+    } else {
+      game.bossBackSound[this.mapName].restart('', 0, 1, true);
+    }
   }
   diedTheme() {
+    delete this.loadingCB;
+    game.bossBackSound = game.bossBackSound || {};
+    if (game.bossBackSound[this.mapName]) {
+      game.bossBackSound[this.mapName].stop();
+    }
     game.backSound.stop();
-    game.bossBackSound.stop();
     game.isBoss = false;
     game.youDiedSound.play('', 0, 1, false);
   }
