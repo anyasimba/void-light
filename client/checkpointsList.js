@@ -67,8 +67,18 @@ export function showCheckpointsList() {
   checkpointsListView.x = game.ui.w * 0.5 - checkpointsListView.w * 0.5;
   checkpointsListView.y = game.ui.h * 0.5 - checkpointsListView.h * 0.5;
 
+  const titleView = new Phaser.Text(
+    game, 50, 20, 'Выберите Кольцо Света:', {
+      font: 'Neucha',
+      fontSize: 60,
+      fontWeight: 'bold',
+      fill: '#AAEEFF',
+      stroke: '#050505',
+      strokeThickness: 6,
+    });
+  checkpointsListView.add(titleView);
+
   const list = client.params.checkpoints.list;
-  console.log(list);
 
   checkpointsListView.innerView.removeAll();
   checkpointsListView.innerView.parentGroup = checkpointsListView;
@@ -93,7 +103,6 @@ export function showCheckpointsList() {
       40,
       0, i * 60, 0,
       () => {
-        console.log('TRAVEL ' + title);
         hideCheckpointsList();
         client.emit('travel', {
           target: i,

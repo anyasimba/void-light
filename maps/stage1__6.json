@@ -821,6 +821,28 @@
                  "width":320,
                  "x":2944,
                  "y":2432
+                }, 
+                {
+                 "height":32,
+                 "id":1163,
+                 "name":"Block",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":256,
+                 "x":3744,
+                 "y":608
+                }, 
+                {
+                 "height":32,
+                 "id":1164,
+                 "name":"Block",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":256,
+                 "x":3776,
+                 "y":1568
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -931,7 +953,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":1163,
+ "nextobjectid":1165,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tileheight":32,

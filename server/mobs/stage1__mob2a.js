@@ -246,8 +246,8 @@ export const stage1__mob2a__luk = patch(stage1__mob2, {
     staminaUseTime: 0.5,
     stunTime: 1,
     pos: {
-      x: 0,
-      y: 0,
+      x: 30,
+      y: 30,
     },
     angle: -20,
     vAngle: 20,

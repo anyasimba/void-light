@@ -7,6 +7,8 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
       basePos: this.basePos.clone(),
       baseSize: this.baseSize.clone(),
 
+      isBlock: this.isBlock,
+
       isOpened: this.isOpened,
       isOpening: this.isOpening,
       isClosing: this.isClosing,
@@ -44,6 +46,14 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
       v = 0;
     }
     native.Door__setIsOpened(this.native, v);
+    const params = this.gameLevelZone.host.params.maps[
+      this.gameLevelZone.mapName];
+    if (this.mapID) {
+      params[this.mapID] = params[this.mapID] || {};
+      params[this.mapID].isOpened = v;
+      this.gameLevelZone.host.saveParam(
+        'maps', this.gameLevelZone.mapName, params);
+    }
   }
   get basePos() {
     return new vec3(
@@ -90,6 +100,10 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
     super({
       isStatic: true,
 
+      isBlock: opts.isBlock,
+
+      mapID: opts.mapID,
+
       pos: new vec3(opts.mapX, opts.mapY),
       z: opts.z,
       size: new vec3(opts.mapW, opts.mapH),
@@ -100,8 +114,6 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
       exitWay: opts.exitWay,
       target: opts.target,
 
-      SIGN: opts.SIGN,
-
       progress: 0,
     });
 
@@ -109,6 +121,9 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
   }
 
   checkNear(object) {
+    if (this.isBlock) {
+      return;
+    }
     if (this.isOpening || this.isClosing) {
       return;
     }
@@ -139,6 +154,9 @@ export class Door extends mix(global.Door, MixNativeGameObject, MixGameObject) {
   }
 
   open(player) {
+    if (this.isBlock) {
+      return;
+    }
     if (this.isExit) {
       player.wait(3);
       player.speed.init();

@@ -49,6 +49,8 @@ export class ItemOnMap extends mix(global.ItemOnMap,
 
       opts: opts,
 
+      mapID: opts.mapID,
+
       slug: opts.slug,
       isSign: opts.isSign,
       target: opts.target,

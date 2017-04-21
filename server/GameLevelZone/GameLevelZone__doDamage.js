@@ -68,14 +68,18 @@ Object.assign(GameLevelZone.prototype, {
     const rel = source.pos
       .subtract(other.pos);
     let a = Math.abs(rel.toAngle() - other.look.toAngle());
-    if (other.inHit) {
-      a = Math.abs(rel.toAngle() - other.hitVec.toAngle());
-    }
     if (other.absLook && !other.inHit) {
       if (gameObjects[other.absLook]) {
         const pos = gameObjects[other.absLook].subtract(other.pos);
         a = Math.abs(rel.toAngle() - pos.toAngle());
       }
+    }
+    if (other.inHit) {
+      a = Math.abs(rel.toAngle() - other.hitVec.toAngle());
+    }
+    if (other.inRoll || other.inJump) {
+      const v = other.speed.toAngle();
+      a = Math.abs(rel.toAngle() - v);
     }
     if (a > 180) {
       a = 360 - a;

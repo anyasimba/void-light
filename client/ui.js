@@ -109,10 +109,15 @@ export function makeVoidsCount() {
     fill: '#AAAAAA',
   });
   voidsCountView.anchor.x = 1;
+  let actual;
   voidsCountView.update = () => {
     const params = getParams();
     if (params) {
-      voidsCountView.text = params.voidsCount + ' пустоты';
+      if (actual === undefined) {
+        actual = params.voidsCount;
+      }
+      actual += (params.voidsCount - actual) * 0.05;
+      voidsCountView.text = Math.round(actual) + ' пустоты';
     }
   }
   game.ui.add(voidsCountView);

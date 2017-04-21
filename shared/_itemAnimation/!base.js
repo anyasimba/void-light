@@ -487,7 +487,7 @@ export function ia_luk() {
       this.weapon.stage(step1, easing.easeInQuad, {
         pos: new vec3({
           x: 0,
-          y: 0,
+          y: 30,
         }),
         angle: 0,
         vAngle: 0,

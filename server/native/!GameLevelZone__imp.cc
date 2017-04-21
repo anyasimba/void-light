@@ -314,6 +314,15 @@ void GameLevelZone__resolveCollision(GameLevelZone *self, GameLevelZoneObject *o
     GameLevelZone__resolveCircle2CircleCollision(self, object, other);
   }
   if (object->BODY_TYPE == CIRCLE && other->BODY_TYPE == STATIC_RECT) {
+    Local<Object> js = Local<Object>::New(isolate, object->js);
+
+    Local<Object> otherJS = Local<Object>::New(isolate, other->js);
+    if (otherJS->HAS("isBlock") && !js->HAS("area")) {
+      if (otherJS->GET("isBlock")->BooleanValue()) {
+        return;
+      }
+    }
+
     GameLevelZone__resolveCircle2StaticRectCollision(self, object,
       other->pos.x, other->pos.y, other->BODY_P1, other->BODY_P2, other->z, other->z + other->BODY_P3);
   }

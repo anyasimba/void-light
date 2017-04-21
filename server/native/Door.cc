@@ -49,7 +49,8 @@ void Door__update(Door *self, GameLevelZone *gameLevelZone, float dt) {
     }
 
     if (self->isOpening <= 0) {
-      self->isOpened = true;
+      Local<Object> js = Local<Object>::New(isolate, self->js);
+      js->SET("isOpened", Boolean::New(isolate, true));
     }
   }
   if (self->isClosing > 0.f) {
@@ -67,7 +68,8 @@ void Door__update(Door *self, GameLevelZone *gameLevelZone, float dt) {
     }
 
     if (self->isClosing <= 0) {
-      self->isOpened = false;
+      Local<Object> js = Local<Object>::New(isolate, self->js);
+      js->SET("isOpened", Boolean::New(isolate, false));
     }
   }
 

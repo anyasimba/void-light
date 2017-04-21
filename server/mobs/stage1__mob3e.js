@@ -212,7 +212,7 @@ export const stage1__mob3e5 = patch(stage1__mob3, {
 export const stage1__mob3e__boss1 = patch(stage1__mob3, {
   IS_BOSS: true,
   VOIDS_COUNT: 30000,
-  AGRO_D: 10,
+  AGRO_D: 20,
   RUN_D: 30,
   HIT_D: [0, 400],
   HIT_VER: 0.8,

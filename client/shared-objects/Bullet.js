@@ -13,7 +13,7 @@ export class Bullet extends mix(global.Bullet, MixGameObject) {
       speed: new vec3(data.speed),
       view: Bullet.createView(),
     });
-    this.middleGroup.add(this.view);
+    this.bottom2Group.add(this.view);
   }
   destructor() {
     super.destructor();

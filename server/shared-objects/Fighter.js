@@ -366,8 +366,6 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     super({
       lang: opts.LANG_RU,
 
-      zoneID: owner.gameLevelZone.ID,
-
       look: opts.look || new vec3,
 
       kind: opts.kind,
@@ -836,6 +834,20 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       delete this.canItem;
       this.owner.emit('stopCan', {});
 
+      if (item.slug === 'blood') {
+        delete this.blood;
+
+        this.owner.params.fighter.blood = {
+          count: 0,
+        };
+        this.owner.saveParam('fighter', 'blood',
+          this.owner.params.fighter.blood);
+        this.owner.params.fighter.params.voidsCount +=
+          item.count;
+        this.owner.saveSharedParam('fighter', 'params',
+          this.owner.params.fighter.params);
+        return;
+      }
       if (item.slug === 'green-sign') {
         if (item.target !== this) {
           this.ally = true;
@@ -901,33 +913,53 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
       }
 
       const itemData = global[item.slug];
-      if (itemData.IS_UNIQUE) {
-        this.owner.params.items.list.push({
-          slug: item.slug,
-        });
-      } else {
-        let exists = false;
-        for (const k in this.owner.params.items.list) {
-          const subItem = this.owner.params.items.list[k];
-          if (subItem.slug === item.slug) {
-            ++subItem.count;
-            exists = true;
-            break;
-          }
-        }
-        if (!exists) {
+      if (!itemData.IS_VOIDS) {
+        if (itemData.IS_UNIQUE) {
           this.owner.params.items.list.push({
             slug: item.slug,
-            count: item.count || 1,
           });
+        } else {
+          let exists = false;
+          for (const k in this.owner.params.items.list) {
+            const subItem = this.owner.params.items.list[k];
+            if (subItem.slug === item.slug) {
+              ++subItem.count;
+              exists = true;
+              break;
+            }
+          }
+          if (!exists) {
+            this.owner.params.items.list.push({
+              slug: item.slug,
+              count: item.count || 1,
+            });
+          }
         }
+
+        this.owner.emit('gotItem', {
+          slug: item.slug,
+          count: item.count,
+        });
+        this.owner.saveSharedParam('items', 'list', this.owner.params.items.list);
+        this.owner.emit('items', this.owner.params.items);
+      } else {
+        this.owner.params.fighter.params.voidsCount += itemData.count;
+        this.owner.saveSharedParam('fighter', 'params',
+          this.owner.params.fighter.params);
+
+        this.owner.emit('message', {
+          message: 'Вы находите ' + itemData.count + ' Пустоты',
+        });
       }
-      this.owner.emit('gotItem', {
-        slug: item.slug,
-        count: item.count,
-      });
-      this.owner.saveSharedParam('items', 'list', this.owner.params.items.list);
-      this.owner.emit('items', this.owner.params.items);
+
+      const params = this.owner.params.maps[
+        this.owner.gameLevelZone.mapName];
+      if (item.mapID) {
+        params[item.mapID] = params[item.mapID] || {};
+        params[item.mapID].isOpened = true;
+        this.owner.saveParam(
+          'maps', this.gameLevelZone.mapName, params);
+      }
       return;
     }
     if (this.canOpenDoor) {
@@ -1095,7 +1127,7 @@ export class Fighter extends mix(global.Fighter, MixNativeGameObject,
     }
 
     new Bullet(this, {
-      pos: this.pos.clone(),
+      pos: this.pos.clone().add(this.hitVec.multiply(50)),
       speed: this.hitVec.unit().multiply(3500),
     });
   }

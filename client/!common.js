@@ -157,6 +157,10 @@ function createLayer() {
     layer.sub['shadows2' + i] = l.add(new Phaser.Group(game));
     layer.sub['mix' + i] = layer.add(new Phaser.Group(game));
     layer.sub['mixDead' + i] = layer.add(new Phaser.Group(game));
+    layer.sub['mix' + i + '2'] = layer.add(new Phaser.Group(game));
+    layer.sub['mixDead' + i + '2'] = layer.add(new Phaser.Group(game));
+    layer.sub['mix' + i + '3'] = layer.add(new Phaser.Group(game));
+    layer.sub['mixDead' + i + '3'] = layer.add(new Phaser.Group(game));
   }
   layer.sub.layer7 = layer.add(new Phaser.Group(game));
   const l = layer.sub.layer7;
@@ -168,6 +172,10 @@ function createLayer() {
   layer.sub.shadows27 = l.add(new Phaser.Group(game));
   layer.sub.mix7 = layer.add(new Phaser.Group(game));
   layer.sub.mixDead7 = layer.add(new Phaser.Group(game));
+  layer.sub.mix72 = layer.add(new Phaser.Group(game));
+  layer.sub.mixDead72 = layer.add(new Phaser.Group(game));
+  layer.sub.mix73 = layer.add(new Phaser.Group(game));
+  layer.sub.mixDead73 = layer.add(new Phaser.Group(game));
   layer.sub.info = layer.add(new Phaser.Group(game));
 
   return layer;
@@ -582,6 +590,18 @@ function createGame() {
               makeSubLayer3D(
                 layer.sub['mixDead' + (j + 1)], i + j, -4,
                 pf / (pf + z - j * 100 / 6));
+              makeSubLayer3D(
+                layer.sub['mix' + (j + 1) + '2'], k, -4,
+                pf / (pf + z - j * 100 / 6 - 100 / 18));
+              makeSubLayer3D(
+                layer.sub['mixDead' + (j + 1) + '2'], i + j, -4,
+                pf / (pf + z - j * 100 / 6 - 100 / 18));
+              makeSubLayer3D(
+                layer.sub['mix' + (j + 1) + '3'], k, -4,
+                pf / (pf + z - j * 100 / 6 - 200 / 18));
+              makeSubLayer3D(
+                layer.sub['mixDead' + (j + 1) + '3'], i + j, -4,
+                pf / (pf + z - j * 100 / 6 - 200 / 18));
             }
             makeSubLayer3D(
               layer.sub.info, i + 3, -3, pf / (pf + z - 500 / 6));

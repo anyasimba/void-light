@@ -13,10 +13,6 @@ export const mobs__hands__family = {
       const step1 = 0.2;
       this.parent.step(time, () => {
         this.stage(step1, easing.easeOutCubic, {
-          pos: {
-            x: -40,
-            y: 40,
-          },
           angle: 120,
           vAngle: 0,
           hAngle: 0,
@@ -29,10 +25,6 @@ export const mobs__hands__family = {
       step2FN = () => {
         const step2 = 1;
         this.stage(step2, easing.easeInOutCubic, {
-          pos: {
-            x: -40,
-            y: 40,
-          },
           angle: 80,
           sideAngle: -50,
         });
@@ -41,10 +33,6 @@ export const mobs__hands__family = {
       step3FN = () => {
         const step3 = 1;
         this.stage(step3, easing.easeInOutCubic, {
-          pos: {
-            x: -40,
-            y: 40,
-          },
           angle: 60,
           sideAngle: -30,
         });
@@ -67,10 +55,6 @@ export const mobs__hands__family = {
       const step1 = 0.2;
       this.parent.step(time, () => {
         this.stage(step1, easing.easeOutCubic, {
-          pos: {
-            x: -40,
-            y: -40,
-          },
           angle: -120,
           sideAngle: 30,
         });
@@ -81,10 +65,6 @@ export const mobs__hands__family = {
       step2FN = () => {
         const step2 = 1;
         this.stage(step2, easing.easeInOutCubic, {
-          pos: {
-            x: -40,
-            y: -40,
-          },
           angle: -80,
           sideAngle: 50,
         });
@@ -93,10 +73,6 @@ export const mobs__hands__family = {
       step3FN = () => {
         const step3 = 1;
         this.stage(step3, easing.easeInOutCubic, {
-          pos: {
-            x: -40,
-            y: -40,
-          },
           angle: -60,
           sideAngle: 30,
         });

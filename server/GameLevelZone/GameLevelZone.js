@@ -2,12 +2,12 @@ export const sharedZones = {};
 export const gameZones = [];
 export const gameZonesMap = {};
 
-export function getGameLevelZone(mapName, complex) {
+export function getGameLevelZone(mapName, host, complex) {
   const opts = global[mapName];
   if (!opts) {
     return;
   }
-  return new GameLevelZone(mapName, complex);
+  return new GameLevelZone(mapName, host, complex);
 }
 
 export class GameLevelZone {
@@ -15,7 +15,7 @@ export class GameLevelZone {
     return WALL_SIZE * 4;
   }
 
-  constructor(mapName, complex) {
+  constructor(mapName, host, complex) {
     gameZonesMap[mapName] = gameZonesMap[mapName] || [];
     gameZonesMap[mapName].push(this);
 
@@ -33,6 +33,10 @@ export class GameLevelZone {
     this.mobs = [];
     this.tempMobs = [];
     this.timeouts = [];
+
+    this.host = host;
+    host.params.maps = host.params.maps || {};
+    host.params.maps[mapName] = host.params.maps[mapName] || {};
 
     this.complex = complex;
     this.mapName = mapName;
@@ -66,6 +70,8 @@ export class GameLevelZone {
 
   loadMap(mapName) {
     console.log('BEGIN load map', mapName);
+    const params = this.host.params.maps[mapName];
+
     global.mapCache = global.mapCache || {};
     mapCache[mapName] = mapCache[mapName] || {};
     const cache = mapCache[mapName];
@@ -142,7 +148,11 @@ export class GameLevelZone {
         const y = o.y / 32 * WALL_SIZE - WALL_SIZE * 0.5;
         let z = i * 100;
 
-        if (o.name !== 'Door' && o.name !== 'Exit' && o.name !== 'BossArea') {
+        if (o.name !== 'Door' &&
+          o.name !== 'Block' &&
+          o.name !== 'Exit' &&
+          o.name !== 'BossArea') {
+
           const cx = Math.floor(x / WALL_SIZE);
           const cy = Math.floor(y / WALL_SIZE);
           if (this.grid[i] && this.grid[i][cx] && this.grid[i][cx][cy]) {
@@ -177,12 +187,16 @@ export class GameLevelZone {
             case 'bad_npc':
             case 'mob':
             case 'boss':
-              data.slug = o.name;
-              this.enemyPoints.push(data);
+              if (slug !== 'boss' || !params[data.mapID]) {
+                data.slug = o.name;
+                this.enemyPoints.push(data);
+              }
               break;
             case 'item':
               data.slug = o.name;
-              this.mapObjects[data.mapID] = new ItemOnMap(this, data);
+              if (!params[data.mapID]) {
+                this.mapObjects[data.mapID] = new ItemOnMap(this, data);
+              }
               break;
             case 'decor__light':
               data.slug = o.name || data.slug;
@@ -194,6 +208,27 @@ export class GameLevelZone {
           data.slug = o.name;
           switch (o.name) {
             case 'Door':
+              this.mapObjects[data.mapID] = new Door(this, data);
+              if (params[data.mapID]) {
+                if (params[data.mapID].isOpened === 1) {
+                  const door = this.mapObjects[data.mapID];
+                  door.isOpened = true;
+                  if (door.baseSize.x < door.baseSize.y) {
+                    door.size = new vec3(door.baseSize.x, 0, 0);
+                    door.pos = new vec3(
+                      door.basePos.x,
+                      door.basePos.y - door.baseSize.y * 0.5);
+                  } else {
+                    door.size = new vec3(0, door.baseSize.y, 0);
+                    door.pos = new vec3(
+                      door.basePos.x - door.baseSize.x * 0.5,
+                      door.basePos.y);
+                  }
+                }
+              }
+              break;
+            case 'Block':
+              data.isBlock = true;
               this.mapObjects[data.mapID] = new Door(this, data);
               break;
             case 'Exit':
@@ -207,6 +242,19 @@ export class GameLevelZone {
             default:
           }
         }
+      }
+    }
+
+    if (this.host.params.fighter.blood) {
+      const blood = this.host.params.fighter.blood;
+      if (blood.mapName && blood.mapName === this.mapName && blood.count > 0) {
+        this.host.player.blood = new ItemOnMap(this, {
+          mapX: blood.x,
+          mapY: blood.y,
+          z: blood.z,
+          slug: 'blood',
+          count: blood.count,
+        });
       }
     }
 
@@ -505,22 +553,24 @@ export class GameLevelZone {
     delete player.canTalk;
     delete player.canCheckpoint;
 
-    const others = player.others;
-    for (const k in others) {
-      const other = others[k];
-      if (other.checkNear) {
-        other.checkNear(player);
+    if (player === this.clients[0].player) {
+      const others = player.others;
+      for (const k in others) {
+        const other = others[k];
+        if (other.checkNear) {
+          other.checkNear(player);
+        }
       }
-    }
 
-    if (signsMap[this.mapName]) {
-      const list = signsMap[this.mapName];
-      for (let i = 0; i < list.length; ++i) {
-        const item = list[i];
-        const dx = player.pos.x - item.pos.x;
-        const dy = player.pos.y - item.pos.y;
-        if (Math.abs(dx) < 100 && Math.abs(dy) < 100) {
-          player.canItem = item;
+      if (signsMap[this.mapName]) {
+        const list = signsMap[this.mapName];
+        for (let i = 0; i < list.length; ++i) {
+          const item = list[i];
+          const dx = player.pos.x - item.pos.x;
+          const dy = player.pos.y - item.pos.y;
+          if (Math.abs(dx) < 100 && Math.abs(dy) < 100) {
+            player.canItem = item;
+          }
         }
       }
     }
@@ -584,7 +634,7 @@ export class GameLevelZone {
   checkBossAreas() {
     for (const k in this.bossAreas) {
       const area = this.bossAreas[k];
-      if (area.boss.fighter.isAlive) {
+      if (area.boss && area.boss.fighter.isAlive) {
         for (const k in this.clients) {
           const client = this.clients[k];
           if (client.player && client.player.hp > 0 && !client.player.area) {

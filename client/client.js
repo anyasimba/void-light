@@ -332,6 +332,9 @@ export class Client extends global.Client {
 
   onMessage(data) {
     makeMessage(data.message, '#AAEEFF');
+    setTimeout(() => {
+      disableMessage();
+    }, 5000);
   }
 
   onCanItem(data) {
@@ -423,11 +426,11 @@ export class Client extends global.Client {
 
   onUseCheckpoint() {
     makeMessage('Душа прикреплена к кольцу', '#AAEEFF', 'Neucha');
-    makeMessageOption('Переместиться', '#AAEEFF', 'Neucha', -1, () => {
+    makeMessageOption('Переместиться', '#AAEEFF', 'Neucha', -0.5, () => {
       showCheckpointsList();
     });
 
-    makeMessageOption('Повысить уровень', '#AAEEFF', 'Neucha', 0.5, () => {
+    makeMessageOption('Повысить уровень', '#AAEEFF', 'Neucha', 1.5, () => {
       const voidsCount = levelLimit(this.params.fighter.params.level);
       makeMessage(`Повысить уровень за ${voidsCount} пустоты?`,
         '#AAEEFF', 'Neucha');
@@ -455,25 +458,26 @@ export class Client extends global.Client {
         this.onUseCheckpoint();
       });
     });
-
-    makeMessageOption('Отдать свету', '#AAEEFF', 'Neucha', 2, () => {});
   }
 
   mainTheme() {
     game.bossBackSound.stop();
     game.youDiedSound.stop();
     game.backSound.restart('', 0, 0.5, true);
+    game.isBoss = false;
     game.preZoom = 1;
   }
   bossTheme() {
     game.backSound.stop();
     game.youDiedSound.stop();
     game.bossBackSound.restart('', 0, 1, true);
+    game.isBoss = true;
     game.preZoom = 0.8;
   }
   diedTheme() {
     game.backSound.stop();
     game.bossBackSound.stop();
+    game.isBoss = false;
     game.youDiedSound.play('', 0, 1, false);
   }
   onBossArea() {

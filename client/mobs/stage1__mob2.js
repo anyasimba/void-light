@@ -1,6 +1,6 @@
 export const stage1__mob2 = {
   VIEW: 'player',
-  SCALE: 0.2,
+  SCALE: 0.25,
   GRAY_TINT: 0xFFFFFF,
   COLOR_TINT: 0x666666,
   AMBIENT_TINT: [0x333333, 1],
@@ -10,6 +10,11 @@ export const stage1__mob2 = {
   ADD_SPECIAL_TINT: 0x000000,
   BACK_VIEW: 'player-back',
   DEAD_VIEW: 'player-back',
+  LEFT_FOOT_VIEW: 'player-foot',
+  RIGHT_FOOT_VIEW: 'player-foot',
+  BODY_VIEW: 'player-body',
+  TAIL: 'player-tail',
+  HAND: 'player-hand',
 
   LIGHT: 0xFFFFFF,
   LIGHT_I: 0,

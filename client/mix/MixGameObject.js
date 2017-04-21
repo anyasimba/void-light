@@ -9,8 +9,14 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
       state.parent = gameObjects[data.parentID];
     }
     state.bottomGroup = new Phaser.Group(game);
+    state.bottom2Group = new Phaser.Group(game);
+    state.bottom3Group = new Phaser.Group(game);
     state.middleGroup = new Phaser.Group(game);
+    state.middle2Group = new Phaser.Group(game);
+    state.middle3Group = new Phaser.Group(game);
     state.topGroup = new Phaser.Group(game);
+    state.top2Group = new Phaser.Group(game);
+    state.top3Group = new Phaser.Group(game);
     state.ceilGroup = new Phaser.Group(game);
     state.infoGroup = new Phaser.Group(game);
     state.group = new Phaser.Group(game);
@@ -19,10 +25,16 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
 
     if (data.parentID) {
       this.group.add(this.bottomGroup);
+      this.group.add(this.bottom2Group);
+      this.group.add(this.bottom3Group);
       this.group.add(this.middleGroup);
+      this.group.add(this.middle2Group);
+      this.group.add(this.middle3Group);
       this.group.add(this.topGroup);
+      this.group.add(this.top2Group);
+      this.group.add(this.top3Group);
       this.group.add(this.ceilGroup);
-      this.parent.middleGroup.add(this.group);
+      this.parent.bottom3Group.addAt(this.group, 0);
       this.parent.infoGroup.add(this.infoGroup);
     } else {
       this.group.update = () => {
@@ -42,8 +54,14 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
 
         const groups = [
           this.bottomGroup,
+          this.bottom2Group,
+          this.bottom3Group,
           this.middleGroup,
+          this.middle2Group,
+          this.middle3Group,
           this.topGroup,
+          this.top2Group,
+          this.top3Group,
           this.ceilGroup,
         ];
         let i = 0;
@@ -56,11 +74,11 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
           g.angle = this.group.angle;
           g.alpha = this.group.alpha;
 
-          if (i < 3) {
+          if (i < 9) {
             const f =
-              (pf / (pf + client.player.z - this.z - i * 100 / 6)) /
-              (pf / (pf + client.player.z - Math.min(this.lastL + i, 36) *
-                100 / 6));
+              (pf / (pf + game.cameraZ - this.z - i * 100 / 18)) /
+              (pf / (pf + game.cameraZ - Math.min(
+                this.lastL + i / 3, 36) * 100 / 6));
             g.scale.x *= f;
             g.scale.y *= f;
             g.x = p.x - px * f + 1500 * Math.cos(a * Math.PI / 180.0) *
@@ -110,15 +128,27 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
           fy + h)) {
         this.visible = true;
         this.bottomGroup.visible = true;
+        this.bottom2Group.visible = true;
+        this.bottom3Group.visible = true;
         this.middleGroup.visible = true;
+        this.middle2Group.visible = true;
+        this.middle3Group.visible = true;
         this.topGroup.visible = true;
+        this.top2Group.visible = true;
+        this.top3Group.visible = true;
         this.infoGroup.visible = true;
         this.ceilGroup.visible = true;
       } else {
         this.visible = false;
         this.bottomGroup.visible = false;
+        this.bottom2Group.visible = true;
+        this.bottom3Group.visible = false;
         this.middleGroup.visible = false;
+        this.middle2Group.visible = false;
+        this.middle3Group.visible = false;
         this.topGroup.visible = false;
+        this.top2Group.visible = false;
+        this.top3Group.visible = false;
         this.infoGroup.visible = false;
         this.ceilGroup.visible = false;
       }
@@ -142,14 +172,48 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
     let li = Math.floor(this.z / 100.0 + 1 / 12);
     li = Math.min(li, 5);
     li = Math.max(li, 0);
-    if (l !== this.lastL) {
-      game.layers[li].sub['mix' + Math.min(l - li * 6 + 1, 7)].add(this.bottomGroup);
-      game.layers[li].sub['mix' + Math.min(l - li * 6 + 2, 7)].add(this.middleGroup);
-      game.layers[li].sub['mix' + Math.min(l - li * 6 + 3, 7)].add(this.topGroup);
+    if (l !== this.lastL || this.lastInRoll !== this.inRoll) {
+      if (!this.inRoll) {
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 1, 7)].add(this.bottomGroup);
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 1, 7) + '2'].add(
+          this.bottom2Group);
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 1, 7) + '3'].add(
+          this.bottom3Group);
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 2, 7)].add(this.middleGroup);
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 2, 7) + '2'].add(
+          this.middle2Group);
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 2, 7) + '3'].add(
+          this.middle3Group);
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 3, 7)].add(this.topGroup);
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 3, 7) + '2'].add(
+          this.top2Group);
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 3, 7) + '3'].add(
+          this.top3Group);
+      } else {
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 2, 7) + '3'].add(
+          this.bottomGroup);
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 2, 7) + '2'].add(
+          this.bottom2Group);
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 2, 7)].add(
+          this.bottom3Group);
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 1, 7) + '3'].add(
+          this.middleGroup);
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 1, 7) + '2'].add(
+          this.middle2Group);
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 1, 7)].add(
+          this.middle3Group);
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 1, 7) + '3'].add(
+          this.topGroup);
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 1, 7) + '2'].add(
+          this.top2Group);
+        game.layers[li].sub['mix' + Math.min(l - li * 6 + 1, 7)].add(
+          this.top3Group);
+      }
       game.layers[li].sub.ceil.add(this.ceilGroup);
       game.layers[li].sub.info.add(this.group);
       game.layers[li].sub.info.add(this.infoGroup);
     }
+    this.lastInRoll = this.inRoll;
     this.lastL = l;
   }
   destructor() {
@@ -181,8 +245,14 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
           clearInterval(interval);
           group.destroy();
           this.bottomGroup.destroy();
+          this.bottom2Group.destroy();
+          this.bottom3Group.destroy();
           this.middleGroup.destroy();
+          this.middle2Group.destroy();
+          this.middle3Group.destroy();
           this.topGroup.destroy();
+          this.top2Group.destroy();
+          this.top3Group.destroy();
           this.group.destroy();
           this.infoGroup.destroy();
         } else {
@@ -193,8 +263,14 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
     }
 
     this.bottomGroup.destroy();
+    this.bottom2Group.destroy();
+    this.bottom3Group.destroy();
     this.middleGroup.destroy();
+    this.middle2Group.destroy();
+    this.middle3Group.destroy();
     this.topGroup.destroy();
+    this.top2Group.destroy();
+    this.top3Group.destroy();
     this.ceilGroup.destroy();
     this.group.destroy();
     this.infoGroup.destroy();

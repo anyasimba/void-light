@@ -68,8 +68,8 @@ export class Checkpoint extends mix(global.Checkpoint, MixGameObject) {
     this.bottomGroup.add(this.view2S);
     this.bottomGroup.add(this.view3S);
     this.bottomGroup.add(this.view4S);
-    this.middleGroup.add(this.view2);
-    this.topGroup.add(this.view3);
+    this.bottom3Group.add(this.view2);
+    this.middle2Group.add(this.view3);
     this.topGroup.add(this.view4);
 
     this.light = genLight();

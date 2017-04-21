@@ -32,6 +32,11 @@ export class ItemOnMap extends mix(global.ItemOnMap, MixGameObject) {
       this.view.anchor.set(0.5);
       this.view.scale.set(1);
       this.bottomGroup.add(this.view);
+    } else if (data.slug === 'blood') {
+      this.view = new Phaser.Image(game, 0, 0, 'blood');
+      this.view.anchor.set(0.5);
+      this.view.scale.set(1);
+      this.bottomGroup.add(this.view);
     } else {
       this.view = ItemOnMap.createView();
       this.middleGroup.add(this.view);

@@ -15,7 +15,7 @@ export class Door extends mix(global.Door, MixGameObject) {
     this.group.x = this.pos.x - this.size.x * 0.5;
     this.group.y = this.pos.y - this.size.y * 0.5;
 
-    if (!this.isExit) {
+    if (!this.isExit && !this.isBlock) {
       this.view = Door.createView();
       this.view.texture = makeDarken(this.view, 0x606060);
       this.view.x = 0;
@@ -75,7 +75,7 @@ export class Door extends mix(global.Door, MixGameObject) {
   update() {
     super.update();
 
-    if (!this.isExit) {
+    if (!this.isExit && !this.isBlock) {
       let ax = 0;
       let ay = 0;
       if (this.baseSize.x > this.baseSize.y) {
@@ -115,11 +115,20 @@ export class Door extends mix(global.Door, MixGameObject) {
         this.sound.volume = this.soundVolume() * 0.3;
       }
     } else {
+      if (this.isBlock && !game.isBoss) {
+        return;
+      }
       if (Math.random() < dt * 10) {
         const g = new Phaser.Graphics(game, 0, 0);
         this.middleGroup.add(g);
-        g.lineStyle(3, 0x8833AA, 0.5);
-        g.beginFill(0x8822FF, 0.01);
+        let c1 = 0x8833AA;
+        let c2 = 0x8822FF;
+        if (this.isBlock) {
+          c1 = 0xAA3333;
+          c2 = 0xFF2222;
+        }
+        g.lineStyle(3, c1, 0.5);
+        g.beginFill(c2, 0.01);
         const PAD = 0.5 + Math.random() * 0.7;
         g.drawRect(
           this.size.x * (1 - PAD) * 0.5,

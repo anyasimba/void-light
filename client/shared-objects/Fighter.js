@@ -29,6 +29,33 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     return [outer, inner, text];
   }
+  static createBodyView(isHost, kind, name, size, tints) {
+    let orient = Math.floor(Math.random() * 2);
+    let scale = 0.3;
+
+    let image;
+    if (kind === 'mob') {
+      const opts = global[name];
+      if (!opts.CAN_MIRROR_VIEW) {
+        orient = 0;
+      }
+      if (!opts.BODY_VIEW) {
+        return;
+      }
+
+      image = makeHSL(hslMap[opts.BODY_VIEW], 0.5, 0.5, tints);
+      scale = opts.SCALE || 1;
+    } else {
+      image = makeHSL(hslMap['player-body'], 0.5, 0.5, tints);
+    }
+
+    image.scale.set(scale);
+    image.angle = 90;
+    if (orient) {
+      image.scale.x = -image.scale.x;
+    }
+    return image;
+  }
   static createView(isHost, kind, name, size, tints) {
     let orient = Math.floor(Math.random() * 2);
     let scale = 0.25;
@@ -128,6 +155,49 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
     return images;
   }
+  static createHandsView(isHost, kind, name, size, tints) {
+    if (kind === 'mob') {
+      const opts = global[name];
+      if (!opts.HAND) {
+        return;
+      }
+      let views = [];
+      //
+      const prepare = (image) => {
+        image.angle = 90;
+        image.smoothed = true;
+        image.scaleF = opts.SCALE || 1;
+      }; {
+        const view = makeHSL(hslMap[opts.HAND], 0.5, 0.5, tints);
+        prepare(view);
+        views.push(view);
+      } {
+        const view = makeHSL(hslMap[opts.HAND], 0.5, 0.5, tints);
+        prepare(view);
+        views.push(view);
+      }
+
+      return views;
+    } else {
+      let views = [];
+      //
+      const prepare = (image) => {
+        image.angle = 90;
+        image.smoothed = true;
+        image.scaleF = 0.25;
+      }; {
+        const view = makeHSL(hslMap['player-hand'], 0.5, 0.5, tints);
+        prepare(view);
+        views.push(view);
+      } {
+        const view = makeHSL(hslMap['player-hand'], 0.5, 0.5, tints);
+        prepare(view);
+        views.push(view);
+      }
+
+      return views;
+    }
+  }
   static createFootView(isHost, kind, name, size, tints) {
     if (kind === 'mob') {
       const opts = global[name];
@@ -139,13 +209,50 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       const prepare = (image) => {
         image.angle = 90;
         image.smoothed = true;
+        image.scaleF = opts.SCALE || 1;
       }; {
-        const view = makeHSL(hslMap[opts.LEFT_FOOT_VIEW],
-          0.5, 0.5, tints);
+        const view = makeHSL(hslMap[opts.LEFT_FOOT_VIEW], 0.5, 0.5, tints);
         prepare(view);
         views.push(view);
       } {
         const view = makeHSL(hslMap[opts.RIGHT_FOOT_VIEW], 0.5, 0.5, tints);
+        prepare(view);
+        views.push(view);
+      }
+      if (opts.TAIL) {
+        {
+          const view = makeHSL(hslMap[opts.TAIL], 0.5, 0.5, tints);
+          prepare(view);
+          views.push(view);
+        } {
+          const view = makeHSL(hslMap[opts.TAIL], 0.5, 0.5, tints);
+          prepare(view);
+          views.push(view);
+        }
+      }
+
+      return views;
+    } else {
+      let views = [];
+      //
+      const prepare = (image) => {
+        image.angle = 90;
+        image.smoothed = true;
+        image.scaleF = 0.25;
+      }; {
+        const view = makeHSL(hslMap['player-foot'], 0.5, 0.5, tints);
+        prepare(view);
+        views.push(view);
+      } {
+        const view = makeHSL(hslMap['player-foot'], 0.5, 0.5, tints);
+        prepare(view);
+        views.push(view);
+      } {
+        const view = makeHSL(hslMap['player-tail'], 0.5, 0.5, tints);
+        prepare(view);
+        views.push(view);
+      } {
+        const view = makeHSL(hslMap['player-tail'], 0.5, 0.5, tints);
         prepare(view);
         views.push(view);
       }
@@ -271,14 +378,29 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.middleGroup.add(this.views[1]);
       this.middleGroup.add(this.views[2]);
     } else {
-      this.topGroup.add(this.views[0]);
-      this.middleGroup.add(this.views[1]);
-      this.topGroup.add(this.views[2]);
+      this.middle2Group.add(this.views[0]);
+      this.middle2Group.add(this.views[1]);
+      this.middle2Group.add(this.views[2]);
     }
     this.viewsForTint.push(this.views[0]);
     this.viewsForTint.push(this.views[1]);
     this.viewsForTint.push(this.views[2]);
 
+    this.handViews = Fighter.createHandsView(
+      this.id === client.playerID,
+      this.kind, this.name, this.size, this.tints);
+    if (this.handViews) {
+      this.handView1 = new Phaser.Group(game, null);
+      this.handView1.add(this.handViews[0]);
+      this.bottom3Group.add(this.handView1);
+      this.handView2 = new Phaser.Group(game, null);
+      this.handView2.add(this.handViews[1]);
+      this.bottom3Group.add(this.handView2);
+      this.viewsForTint.push(this.handViews[0]);
+      this.viewsForTint.push(this.handViews[1]);
+      this.handViews[0].addTex.time = this.views[0].addTex.time;
+      this.handViews[1].addTex.time = this.views[0].addTex.time;
+    }
     this.footViews = Fighter.createFootView(
       this.id === client.playerID,
       this.kind, this.name, this.size, this.tints);
@@ -291,6 +413,26 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.viewsForTint.push(this.footViews[1]);
       this.footViews[0].addTex.time = this.views[0].addTex.time;
       this.footViews[1].addTex.time = this.views[0].addTex.time;
+
+      if (this.footViews[2]) {
+        this.footViewsRoot2 = new Phaser.Group(game);
+        this.bottom2Group.add(this.footViewsRoot2);
+        this.footViewsRoot2.add(this.footViews[2]);
+        this.footViewsRoot2.add(this.footViews[3]);
+        this.viewsForTint.push(this.footViews[2]);
+        this.viewsForTint.push(this.footViews[3]);
+        this.footViews[2].addTex.time = this.views[0].addTex.time;
+        this.footViews[3].addTex.time = this.views[0].addTex.time;
+      }
+    }
+
+    this.bodyView = Fighter.createBodyView(
+      this.id === client.playerID,
+      this.kind, this.name, this.size, this.tints);
+    if (this.bodyView) {
+      this.viewsForTint.push(this.bodyView);
+      this.bottom3Group.add(this.bodyView);
+      this.bodyView.addTex.time = this.views[0].addTex.time;
     }
 
     if (this.kind === 'player') {
@@ -349,6 +491,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     this.hitType = data.hitType;
 
     this.clearSteps();
+    if (this.shield) {
+      this.shield.finalStage(0, easing.easeInOutCubic);
+    }
     global[this.kind + '__doHit'].call(this);
   }
   onBreakHit(data) {
@@ -506,14 +651,13 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
   update() {
     const sideVec = new vec3(this.look.y, -this.look.x, this.look.z).unit();
 
-    this.moveTime += this.speed.length() * dt * 0.01;
+    this.moveTime += this.speed.length() * dt * 0.02;
     this.moveShift = Math.sin(this.moveTime) *
       (this.speed.length() + 100) / (this.speed.length() + 200);
     if (this.inJump || this.inRoll) {
       this.moveShift = 0;
     }
     if (this.kind === 'mob') {
-      this.moveTime += this.speed.length() * dt * 0.01;
       this.moveShift *= 2;
     }
 
@@ -556,56 +700,185 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       this.group.y += Math.sin(this.stunTime * f) * 5;
       this.group.angle += Math.cos(this.stunTime * f * 1.3) * 10;
     }
+    if (this.handViews) {
+      this.hand1 = this.hands[0];
+      this.hand2 = this.hands[1];
+      if (this.hand1) {
+        this.handViews[0].angle = this.hand1.view.angle + 20;
+        this.handViews[0].x = this.hand1.view.x * 0.9;
+        this.handViews[0].y = this.hand1.view.y * 0.9;
+        this.handViews[0].scale.x = this.hand1.view.scale.x *
+          this.handViews[0].scaleF / this.hand1.sx;
+        this.handViews[0].scale.y = this.hand1.view.scale.y *
+          this.handViews[0].scaleF / this.hand1.sy;
 
+        this.handView1.angle = this.hand1.group.angle;
+      } else {
+        this.handViews[0].angle = 90 - 10;
+        this.handViews[0].x = 20 + this.moveShift + 1;
+        this.handViews[0].y = 20 - this.moveShift * 2 + 2;
+        this.handViews[0].scale.x = 1 *
+          this.handViews[0].scaleF;
+        this.handViews[0].scale.y = 1 *
+          this.handViews[0].scaleF;
+
+        this.handView1.angle = -30;
+      }
+      if (this.hand2) {
+        this.handViews[1].angle = this.hand2.view.angle - 20;
+        this.handViews[1].x = this.hand2.view.x * 0.9;
+        this.handViews[1].y = this.hand2.view.y * 0.9;
+        this.handViews[1].scale.x = this.hand2.view.scale.x *
+          this.handViews[0].scaleF / this.hand2.sx;
+        this.handViews[1].scale.y = this.hand2.view.scale.y *
+          this.handViews[0].scaleF / this.hand2.sy;
+
+        this.handView2.angle = this.hand2.group.angle;
+      } else {
+        this.handViews[1].angle = 90 + 10;
+        this.handViews[1].x = 20 + this.moveShift + 1;
+        this.handViews[1].y = -20 - this.moveShift * 2 + 2;
+        this.handViews[1].scale.x = 1 *
+          this.handViews[1].scaleF;
+        this.handViews[1].scale.y = 1 *
+          this.handViews[1].scaleF;
+
+        this.handView2.angle = 30;
+      }
+    }
     if (this.footViews) {
       this.footSpeed = this.footSpeed || this.speed.clone();
       vec3.add(
         this.footSpeed,
         this.speed
         .subtract(this.footSpeed)
-        .multiply(1 - Math.pow(0.95, dt)))
-      if (this.speed.length() > 10 && this.footSpeed.length() > 2) {
-        const l = 200;
-        let footTime = this.moveTime * 100 / l * 0.5 / this.scale;
+        .multiply(1 - Math.pow(0.95, dt)));
+      let l = 200;
+      if (this.footViews[0].scaleF < 1) {
+        l = 450;
+      }
+      if (this.speed.length() > 10 &&
+        this.footSpeed.length() > 2 &&
+        !this.inJump && !this.inRoll) {
+
+        let footTime = this.moveTime * 100 / l * 0.5 / this.scale /
+          this.footViews[0].scaleF;
 
         let sign = Math.sign((footTime % 2) - 1);
         let step = footTime % 1;
         this.footViewsRoot.angle = this.speed.toAngle() - this.look.toAngle();
+        if (this.footViewsRoot2) {
+          this.footViewsRoot2.angle = this.speed.toAngle() - this.look.toAngle();
+        }
 
         if (!isAngleInRange(this.footViewsRoot.angle, -90, 90)) {
           sign = -sign;
           step = 1 - step;
           this.footViewsRoot.angle += 180;
+          if (this.footViewsRoot2) {
+            this.footViewsRoot2.angle += 180;
+          }
         }
         const scaleStep =
           1 - Math.abs(Math.sin((step - 0.5) * Math.PI));
         const hf = 0.3;
-        this.footViews[0].x = (0.5 - step) * l * sign;
-        this.footViews[0].y = -60;
+        this.footViews[0].x = (0.5 - step) * l * sign *
+          this.footViews[0].scaleF;
+        this.footViews[0].y = -60 *
+          this.footViews[0].scaleF;
         this.footViews[0].scale.x =
-          1 + scaleStep * hf * -Math.sign(sign - 1);
+          this.footViews[0].scaleF +
+          scaleStep * hf * -Math.sign(sign - 1) *
+          this.footViews[0].scaleF;
         this.footViews[0].scale.y =
-          1 + scaleStep * hf * -Math.sign(sign - 1);
+          this.footViews[0].scaleF +
+          scaleStep * hf * -Math.sign(sign - 1) *
+          this.footViews[0].scaleF;
+        if (this.footViews[2]) {
+          this.footViews[2].x = (0.5 - step) * l * sign *
+            this.footViews[2].scaleF * 0.2;
+          this.footViews[2].y = -60 *
+            this.footViews[2].scaleF;
+          this.footViews[2].scale.x =
+            this.footViews[2].scaleF +
+            scaleStep * hf * -Math.sign(sign - 1) *
+            this.footViews[2].scaleF;
+          this.footViews[2].scale.y =
+            this.footViews[2].scaleF +
+            scaleStep * hf * -Math.sign(sign - 1) *
+            this.footViews[2].scaleF;
+        }
 
-        this.footViews[1].x = (step - 0.5) * l * sign;
-        this.footViews[1].y = 60;
+        this.footViews[1].x = (step - 0.5) * l * sign *
+          this.footViews[1].scaleF;
+        this.footViews[1].y = 60 *
+          this.footViews[1].scaleF;
         this.footViews[1].scale.x =
-          1 + scaleStep * hf * Math.sign(sign + 1);
+          this.footViews[1].scaleF +
+          scaleStep * hf * Math.sign(sign + 1) *
+          this.footViews[1].scaleF;
         this.footViews[1].scale.y =
-          1 + scaleStep * hf * Math.sign(sign + 1);
+          this.footViews[1].scaleF +
+          scaleStep * hf * Math.sign(sign + 1) *
+          this.footViews[1].scaleF;
+        if (this.footViews[2]) {
+          this.footViews[3].x = (step - 0.5) * l * sign *
+            this.footViews[3].scaleF * 0.2;
+          this.footViews[3].y = 60 *
+            this.footViews[3].scaleF;
+          this.footViews[3].scale.x =
+            this.footViews[3].scaleF +
+            scaleStep * hf * Math.sign(sign + 1) *
+            this.footViews[3].scaleF;
+          this.footViews[3].scale.y =
+            this.footViews[3].scaleF +
+            scaleStep * hf * Math.sign(sign + 1) *
+            this.footViews[3].scaleF;
+        }
       } else {
-        this.footViews[0].x = 10;
-        this.footViews[0].y = -60;
-        this.footViews[0].scale.x = 1;
-        this.footViews[0].scale.y = 1;
+        this.footViews[0].x = l * 0.2 *
+          this.footViews[0].scaleF;
+        this.footViews[0].y = -60 *
+          this.footViews[0].scaleF;
+        this.footViews[0].scale.x = 1 *
+          this.footViews[0].scaleF;
+        this.footViews[0].scale.y = 1 *
+          this.footViews[0].scaleF;
 
-        this.footViews[1].x = -10;
-        this.footViews[1].y = 60;
-        this.footViews[1].scale.x = 1;
-        this.footViews[1].scale.y = 1;
+        if (this.footViews[2]) {
+          this.footViews[2].x = l * 0.04 *
+            this.footViews[2].scaleF;
+          this.footViews[2].y = -60 *
+            this.footViews[2].scaleF;
+          this.footViews[2].scale.x = 1 *
+            this.footViews[2].scaleF;
+          this.footViews[2].scale.y = 1 *
+            this.footViews[2].scaleF;
+        }
+
+        this.footViews[1].x = -l * 0.2 *
+          this.footViews[1].scaleF;
+        this.footViews[1].y = 60 *
+          this.footViews[1].scaleF;
+        this.footViews[1].scale.x = 1 *
+          this.footViews[1].scaleF;
+        this.footViews[1].scale.y = 1 *
+          this.footViews[1].scaleF;
+        if (this.footViews[2]) {
+          this.footViews[3].x = -l * 0.04 *
+            this.footViews[3].scaleF;
+          this.footViews[3].y = 60 *
+            this.footViews[3].scaleF;
+          this.footViews[3].scale.x = 1 *
+            this.footViews[3].scaleF;
+          this.footViews[3].scale.y = 1 *
+            this.footViews[3].scaleF;
+        }
       }
-      if (this.footViews[0].mirror) {
-        this.footViews[0].scale.x = -this.footViews[0].scale.x;
+      this.footViews[0].scale.x = -this.footViews[0].scale.x;
+
+      if (this.footViews[2]) {
+        this.footViews[2].scale.x = -this.footViews[2].scale.x;
       }
     }
 
@@ -642,6 +915,9 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
 
   checkBlock(opts) {}
   doDamageRadialArea(opts) {
+    if (this.zoneID && this.zoneID !== client.zoneID) {
+      return;
+    }
     if (!this.hitVec) {
       return;
     }
@@ -685,12 +961,12 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
     for (let i = 0; i < 2; ++i) {
       const g = new Phaser.Graphics(game, this.pos.x, this.pos.y);
       g.blendMode = PIXI.blendModes.ADD;
-      g.lineStyle(4, color, 0.02);
-      g.beginFill(color, 0.2);
+      g.lineStyle(4, color, 0.015);
+      g.beginFill(color, 0.15);
       if (i === 1) {
         g.blendMode = PIXI.blendModes.MULTIPLY;
-        g.lineStyle(4, color, 0.04);
-        g.beginFill(color, 0.2);
+        g.lineStyle(4, color, 0.03);
+        g.beginFill(color, 0.15);
       }
 
       g.arc(0, 0, d, a1, a2, true);

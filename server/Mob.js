@@ -662,62 +662,29 @@ export class Mob {
           client.emit('bossDead', {});
         }
       }
-    }
 
-    if (!source) {
-      return;
-    }
-    this.opts.dies = this.opts.dies || 0;
-
-    if (this.opts.dies === 0) {
-      this.gameLevelZone.timeouts.push({
-        breakable: true,
-        time: 60 * 5,
-        fn: () => {
-          this.reborn();
-        },
-      });
-    }
-    if (this.opts.dies < this.opts.DIES || 0) {
-      for (let i = 0; i < this.opts.DIES_N; ++i) {
-        this.gameLevelZone.timeouts.push({
-          breakable: true,
-          time: 0.1 + Math.random() * 0.1,
-          fn: () => {
-            const opts = {};
-            for (const k in this.opts) {
-              opts[k] = this.opts[k];
-            }
-            opts.FIGHTER = {};
-            for (const k in this.opts.FIGHTER) {
-              opts.FIGHTER[k] = this.opts.FIGHTER[k];
-            }
-            Object.assign(opts, {
-              dies: opts.dies + 1,
-              x: this.fighter.pos.x + Math.random() * 2,
-              y: this.fighter.pos.y + Math.random() * 2,
-            });
-            Object.assign(opts.FIGHTER, {
-              HP: opts.FIGHTER.HP * opts.DIES_SCALE,
-              SCALE: opts.FIGHTER.SCALE * opts.DIES_SCALE,
-              hitSpeed: opts.FIGHTER.hitSpeed * opts.DIES_SCALE,
-              damage: opts.FIGHTER.damage * opts.DIES_SCALE,
-              BALANCE_SCALE: (opts.FIGHTER.BALANCE_SCALE || 1) *
-                0.5,
-              BALANCE: opts.FIGHTER.BALANCE * opts.DIES_SCALE,
-            });
-            const mob = new Mob(this.gameLevelZone, opts);
-            this.gameLevelZone.tempMobs.push(mob);
-          },
-        });
+      const params = this.gameLevelZone.host.params.maps[
+        this.gameLevelZone.mapName];
+      if (this.opts.mapID) {
+        params[this.opts.mapID] = params[this.opts.mapID] || {};
+        params[this.opts.mapID].isOpened = true;
+        this.gameLevelZone.host.saveParam(
+          'maps', this.gameLevelZone.mapName, params);
       }
     }
 
-    if (source.kind === 'player' && this.opts.VOIDS_COUNT) {
-      source.owner.params.fighter.params.voidsCount +=
-        this.opts.VOIDS_COUNT;
-      source.owner.saveSharedParam('fighter', 'params',
-        source.owner.params.fighter.params);
+    this.opts.dies = this.opts.dies || 0;
+    if (this.opts.VOIDS_COUNT) {
+      for (let i = 0; i < this.gameLevelZone.clients.length; ++i) {
+        const player = this.gameLevelZone.clients[i].player;
+        if (player.invade) {
+          continue;
+        }
+        player.owner.params.fighter.params.voidsCount +=
+          this.opts.VOIDS_COUNT;
+        player.owner.saveSharedParam('fighter', 'params',
+          player.owner.params.fighter.params);
+      }
     }
   }
 }

@@ -78,6 +78,10 @@ export function loadAudio() {
 export function loadPlayer() {
   loadHsl('player', 'assets/player/player.png');
   loadHsl('player-back', 'assets/player/player-back.png');
+  loadHsl('player-body', 'assets/player/player-body.png');
+  loadHsl('player-tail', 'assets/player/player-tail.png');
+  loadHsl('player-hand', 'assets/player/player-hand.png');
+  loadHsl('player-foot', 'assets/player/player-foot.png');
 
   game.load.image('item__heal__regular',
     'assets/player/item__heal__regular.png');
@@ -85,6 +89,8 @@ export function loadPlayer() {
     'assets/player/item__heal__stone.png');
   game.load.image('item__stamina__stone',
     'assets/player/item__stamina__stone.png');
+  game.load.image('blood',
+    'assets/player/blood.png');
   game.load.image('item__green-sign',
     'assets/player/item__green-sign.png');
   game.load.image('item__red-sign',
@@ -156,6 +162,10 @@ export function loadStage1__mobs() {
     'assets/stage1__mobs/stage1__mob1--foot.png');
   loadHsl('stage1__mob1--hand',
     'assets/stage1__mobs/stage1__mob1--hand.png');
+  loadHsl('stage1__mob1--tail',
+    'assets/stage1__mobs/stage1__mob1--tail.png');
+  loadHsl('stage1__mob1--body',
+    'assets/stage1__mobs/stage1__mob1--body.png');
 
   loadHsl('stage1__mob3',
     'assets/stage1__mobs/stage1__mob3.png');
@@ -169,4 +179,8 @@ export function loadStage1__mobs() {
     'assets/stage1__mobs/stage1__mob3--foot.png');
   loadHsl('stage1__mob3--hand',
     'assets/stage1__mobs/stage1__mob3--hand.png');
+  loadHsl('stage1__mob3--tail',
+    'assets/stage1__mobs/stage1__mob3--tail.png');
+  loadHsl('stage1__mob3--body',
+    'assets/stage1__mobs/stage1__mob3--body.png');
 }

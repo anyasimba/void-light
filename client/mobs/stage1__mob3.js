@@ -10,6 +10,8 @@ export const stage1__mob3 = {
   LEFT_HAND: 'stage1__mob3--hand',
   RIGHT_HAND: 'stage1__mob3--hand',
   CAN_MIRROR_HANDS: true,
+  BODY_VIEW: 'stage1__mob3--body',
+  TAIL: 'stage1__mob3--tail',
 
   GRAY_TINT: 0x402020,
   COLOR_TINT: 0x202020,

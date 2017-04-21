@@ -500,8 +500,8 @@ export function ItemLuk(parent) {
     staminaUseTime: 0.5,
     stunTime: 1,
     pos: {
-      x: 0,
-      y: 0,
+      x: 30,
+      y: 30,
     },
     angle: -20,
     vAngle: 20,
@@ -526,8 +526,8 @@ export function ItemLuk2(parent) {
     staminaUseTime: 0.7,
     stunTime: 1,
     pos: {
-      x: 0,
-      y: 0,
+      x: 30,
+      y: 30,
     },
     angle: -20,
     vAngle: 20,

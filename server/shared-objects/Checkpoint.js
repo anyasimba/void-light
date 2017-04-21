@@ -58,13 +58,13 @@ export class Checkpoint extends mix(
       const i = player.owner.params.items.list[k];
       if (i.slug === 'item__heal__regular') {
         exists = true;
-        i.count = 3;
+        i.count = 5;
       }
     }
     if (!exists) {
       player.owner.params.items.list.push({
         slug: 'item__heal__regular',
-        count: 3,
+        count: 5,
       });
     }
     player.owner.saveSharedParam('items', 'list', player.owner.params.items.list);

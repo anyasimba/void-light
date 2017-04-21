@@ -163,18 +163,6 @@
                  "y":2336
                 }, 
                 {
-                 "gid":2,
-                 "height":32,
-                 "id":1098,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":288,
-                 "y":2272
-                }, 
-                {
                  "gid":43,
                  "height":32,
                  "id":1100,
@@ -890,6 +878,28 @@
                  "width":32,
                  "x":3584,
                  "y":1504
+                }, 
+                {
+                 "height":32,
+                 "id":1170,
+                 "name":"Block",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":192,
+                 "x":3904,
+                 "y":2112
+                }, 
+                {
+                 "height":32,
+                 "id":1171,
+                 "name":"Block",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":224,
+                 "x":3840,
+                 "y":2496
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1000,7 +1010,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":1170,
+ "nextobjectid":1172,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tileheight":32,

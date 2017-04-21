@@ -20,7 +20,35 @@ export const item__stamina__stone = {
   STAMINA: 400,
   DURATION: 60,
 };
-
+//
+export const item__voids1 = {
+  IS_VOIDS: true,
+  count: 10,
+};
+export const item__voids2 = {
+  IS_VOIDS: true,
+  count: 50,
+};
+export const item__voids3 = {
+  IS_VOIDS: true,
+  count: 100,
+};
+export const item__voids4 = {
+  IS_VOIDS: true,
+  count: 200,
+};
+export const item__voids5 = {
+  IS_VOIDS: true,
+  count: 500,
+};
+export const item__voids6 = {
+  IS_VOIDS: true,
+  count: 1000,
+};
+export const item__voids7 = {
+  IS_VOIDS: true,
+  count: 5000,
+};
 //
 export const item__green_sign = {
   IS_UNIQUE: true,

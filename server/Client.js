@@ -46,6 +46,9 @@ export class Client extends global.Client {
 
     if (!this.params.items || !this.params.items.list) {
       await this.saveSharedParam('items', 'list', [{
+        slug: 'item__heal__regular',
+        count: 5,
+      }, {
         slug: 'item__heal__stone',
         count: 10,
       }, {
@@ -59,6 +62,7 @@ export class Client extends global.Client {
       await this.saveSharedParam('items', 'clothed', {
         '0': 0,
         '1': 1,
+        '2': 2,
         'rightHand1': 2,
       });
     } else {
@@ -203,25 +207,26 @@ export class Client extends global.Client {
   login() {
     let complex = 0;
 
-    if (this.params.checkpoint && this.params.checkpoint.mapName) {
-      this.gameLevelZone = getGameLevelZone(
-        this.params.checkpoint.mapName, complex);
-    } else {
-      this.gameLevelZone = getGameLevelZone('stage1__1', 0);
-    }
-
     this.player = {};
     this.updateFighter();
     this.player = new Fighter(this, Object.assign({
       kind: 'player',
       isPlayer: true,
       name: this.username,
+      LANG_RU: this.username,
 
       BALANCE: 10,
       MP: 100,
 
       SCALE: 1,
     }, this.player));
+
+    if (this.params.checkpoint && this.params.checkpoint.mapName) {
+      this.gameLevelZone = getGameLevelZone(
+        this.params.checkpoint.mapName, this, complex);
+    } else {
+      this.gameLevelZone = getGameLevelZone('stage1__1', this, 0);
+    }
 
     this.emit('playerID', {
       playerID: this.player.id,
@@ -240,6 +245,14 @@ export class Client extends global.Client {
     console.log('User login', this.username);
   }
   changeZone(mapName, target) {
+    if (this === this.gameLevelZone.clients[0]) {
+      if (this.gameLevelZone.clients.length > 1) {
+        for (let i = 1; i < this.gameLevelZone.clients.length; ++i) {
+          const c = this.gameLevelZone.clients[i];
+          c.onBackMap();
+        }
+      }
+    }
     this.emit('map', {
       name: mapName,
     });
@@ -251,7 +264,7 @@ export class Client extends global.Client {
     let complex = 0;
     this.gameLevelZone.removeClient(this);
     this.emit('changeZone', {});
-    this.gameLevelZone = getGameLevelZone(mapName, complex);
+    this.gameLevelZone = getGameLevelZone(mapName, this, complex);
     this.player.zoneID = this.gameLevelZone.ID;
     this.emit('zoneID', {
       ID: this.gameLevelZone.ID,
@@ -354,6 +367,35 @@ export class Client extends global.Client {
         this.player.emitParams();
         this.player.emitPos();
       }, 6000);
+      if (this.player.blood) {
+        this.player.blood.destructor();
+        delete this.player.blood;
+        if (this.params.fighter.params.voidsCount <= 0) {
+          this.params.fighter.blood = {
+            count: 0,
+          };
+          this.saveParam('fighter', 'blood',
+            this.params.fighter.blood);
+        }
+      }
+      if (this.params.fighter.params.voidsCount > 0) {
+        this.params.fighter.blood = {
+          mapName: this.gameLevelZone.mapName,
+          x: this.player.pos.x,
+          y: this.player.pos.y,
+          z: Math.floor(this.player.z / 6) * 6,
+          count: this.params.fighter.params.voidsCount,
+        };
+        this.saveParam('fighter', 'blood',
+          this.params.fighter.blood);
+        this.player.blood = new ItemOnMap(this.gameLevelZone, {
+          mapX: this.player.pos.x,
+          mapY: this.player.pos.y,
+          z: Math.floor(this.player.z / 6) * 6,
+          slug: 'blood',
+          count: this.params.fighter.params.voidsCount,
+        });
+      }
       this.params.fighter.params.voidsCount = 0;
       this.saveSharedParam('fighter', 'params', this.params.fighter.params);
       return;
@@ -479,6 +521,9 @@ export class Client extends global.Client {
         this.player.useItem(itemData, () => {
           if (itemData.IS_CHAOS) {
             if (this !== this.gameLevelZone.clients[0]) {
+              return;
+            }
+            if (this.gameLevelZone.clients.length > 1) {
               return;
             }
 
@@ -782,7 +827,7 @@ export class Client extends global.Client {
     let complex = 0;
     this.gameLevelZone.removeClient(this);
     this.emit('changeZone', {});
-    this.gameLevelZone = getGameLevelZone(c.mapName, complex);
+    this.gameLevelZone = getGameLevelZone(c.mapName, this, complex);
     this.params.checkpoint.mapName = c.mapName;
     this.params.checkpoint.mapID.mapID = c.mapID;
     this.player.zoneID = this.gameLevelZone.ID;
