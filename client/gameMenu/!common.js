@@ -232,7 +232,7 @@ export function makeGameMenu() {
   gameMenuView.onItems = data => {
     gameMenuView.tabs[1].onItems(data);
     gameMenuView.tabs[2].onItems(data);
-    gameMenuView.tabs[3].onItems(data);
+    //gameMenuView.tabs[3].onItems(data);
 
     updateBarItems();
   };
@@ -265,7 +265,7 @@ export function makeGameMenu() {
     0, 100, w, 5));
 
   gameMenuView.add(new Phaser.Text(
-    game, 20, 0, '[esc] - закрыть\\открыть меню', {
+    game, 20, 10, '[esc] - закрыть\\открыть меню', {
       font: 'Tinos',
       fontSize: 26,
       fontWeight: 'normal',
@@ -278,8 +278,8 @@ export function makeGameMenu() {
     gameMenuView.add(makeGameMenuTab1()),
     gameMenuView.add(makeGameMenuTab2()),
     gameMenuView.add(makeGameMenuTab3()),
-    gameMenuView.add(makeGameMenuTab4()),
-    gameMenuView.add(makeGameMenuTab5()),
+    // gameMenuView.add(makeGameMenuTab4()),
+    // gameMenuView.add(makeGameMenuTab5()),
     gameMenuView.add(makeGameMenuTab6()),
   ];
   gameMenuView.tabs = tabs;

@@ -341,7 +341,7 @@ export const stage1__mob2a__boss1 = patch(stage1__mob2, {
   AGRO_D: 16,
   RUN_D: 24,
   FIGHTER: {
-    LANG_RU: 'Ателард, Мастер Пыток',
+    LANG_RU: 'Ателард, Мастер Наказаний',
     name: 'stage1__mob2a__boss1',
 
     moveTimeF: 0.4,

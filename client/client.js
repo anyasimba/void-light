@@ -139,8 +139,16 @@ export class Client extends global.Client {
       if (!client.player) {
         return;
       }
-      global.lmx = global.mx - game.cameraPos.x;
-      global.lmy = global.my - game.cameraPos.y;
+      if (isGameMenuShowed || isCheckpointsListShowed) {
+        return;
+      }
+      global.lmx = global.mx - client.player.pos.x;
+      global.lmy = global.my - client.player.pos.y;
+
+      const vx = mx - game.cameraPos.x;
+      const vy = my - game.cameraPos.y;
+      global.lvx = vx;
+      global.lvy = vy;
 
       const image = new Phaser.Image(game, 0, 0, 'hitbar');
       image.anchor.set(0.5);
@@ -148,8 +156,8 @@ export class Client extends global.Client {
       image.angle = new vec3(lmx, lmy).toAngle() + 90;
       image.alpha = 0.5;
       image.update = () => {
-        image.x = game.cameraPos.x + lmx;
-        image.y = game.cameraPos.y + lmy;
+        image.x = game.cameraPos.x + vx;
+        image.y = game.cameraPos.y + vy;
       }
       game.scene.add(image);
       game.hitbar = image;
@@ -157,9 +165,6 @@ export class Client extends global.Client {
     game.input.onUp.add(() => {
       if (game.hitbar) {
         game.hitbar.destroy();
-      }
-      if (!global.lmx) {
-        return;
       }
       if (global.mouseCapture) {
         global.mouseCapture();
@@ -176,11 +181,14 @@ export class Client extends global.Client {
       if (global.mouseCapture) {
         return;
       }
+      if (!global.lmx) {
+        return;
+      }
       let type = 0;
-      global.lmx += game.cameraPos.x;
-      global.lmy += game.cameraPos.y;
-      const m = (new vec3(lmx, lmy)).subtract(game.cameraPos);
-      const mouseD = (new vec3(mx, my)).subtract(new vec3(lmx, lmy));
+      const m = new vec3(lmx, lmy);
+      const mouseD = (new vec3(mx, my)).subtract(new vec3(
+        lvx + game.cameraPos.x,
+        lvy + game.cameraPos.y));
       let a = m.toAngle() - mouseD.toAngle();
       if (a > 180) {
         a -= 360;
@@ -205,8 +213,8 @@ export class Client extends global.Client {
         }
       }
       this.emit('mouseDown', {
-        'x': lmx,
-        'y': lmy,
+        'x': lvx + game.cameraPos.x,
+        'y': lvy + game.cameraPos.y,
         'type': type,
       });
       delete global.lmx;

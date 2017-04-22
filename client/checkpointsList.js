@@ -100,8 +100,8 @@ export function showCheckpointsList() {
       title,
       '#AAEEFF',
       'Neucha',
-      40,
-      0, i * 60, 0,
+      30,
+      0, i * 50, 0,
       () => {
         hideCheckpointsList();
         client.emit('travel', {

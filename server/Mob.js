@@ -430,9 +430,11 @@ export class Mob {
 
     let inRun;
     if (!this.target && Math.random() < 0.35) {
-      nextX = this.fighter.pos.x + Math.random() * 400 - 200;
-      nextY = this.fighter.pos.y + Math.random() * 400 - 200;
-      inRun = false;
+      if (!this.opts.IS_NPC) {
+        nextX = this.fighter.pos.x + Math.random() * 400 - 200;
+        nextY = this.fighter.pos.y + Math.random() * 400 - 200;
+        inRun = false;
+      }
     }
 
     let canAttack;

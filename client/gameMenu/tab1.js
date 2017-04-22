@@ -22,7 +22,7 @@ export function makeGameMenuTab1() {
     }));
 
   const paramViews = [];
-  for (let i = 0; i < PLAYER_PARAMS.length; ++i) {
+  for (let i = 0; i < PLAYER_PARAMS.length - 2; ++i) {
     const param = PLAYER_PARAMS[i];
     paramViews.push(contentView.add(new Phaser.Text(
       game, 0, 180 + i * 70, '', {
@@ -44,9 +44,16 @@ export function makeGameMenuTab1() {
         y: 0
       },
       () => {
-        client.emit('incParam', {
-          i: i
+        const title = PLAYER_PARAMS_LANG_RU[i];
+        makeMessage(
+          `Усилить ${title}? Это действие будет нельзя отменить.`,
+          '#AAEEFF', 'Neucha');
+        makeMessageOption('Да', '#AAEEFF', 'Neucha', 0, () => {
+          client.emit('incParam', {
+            i: i
+          });
         });
+        makeMessageOption('Нет', '#AAEEFF', 'Neucha', 1, () => {});
       }));
     paramViews[i].incView.parentGroup = contentView;
   }

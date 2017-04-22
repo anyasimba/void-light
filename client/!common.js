@@ -297,7 +297,7 @@ function create() {
   game.bossDeadSound = game.add.sound('bossDead', 1, false);
 
   showGameMenu(true);
-  gameMenuView.switch(5);
+  gameMenuView.switch(3);
 
   const preUpdate = game.scene.preUpdate;
   game.scene.preUpdate = () => {

@@ -46,24 +46,31 @@ export class Client extends global.Client {
 
     if (!this.params.items || !this.params.items.list) {
       await this.saveSharedParam('items', 'list', [{
-        slug: 'item__heal__regular',
-        count: 5,
-      }, {
-        slug: 'item__heal__stone',
-        count: 10,
-      }, {
-        slug: 'item__stamina__stone',
-        count: 3,
-      }, {
-        slug: 'item__sword',
-      }, {
-        slug: 'item__axe',
-      }, ]);
+          slug: 'item__heal__regular',
+          count: 5,
+        }, {
+          slug: 'item__heal__stone',
+          count: 10,
+        }, {
+          slug: 'item__stamina__stone',
+          count: 3,
+        },
+        {
+          slug: 'item__gray_sign',
+        },
+        {
+          slug: 'item__sword',
+        },
+        {
+          slug: 'item__axe',
+        },
+      ]);
       await this.saveSharedParam('items', 'clothed', {
         '0': 0,
         '1': 1,
         '2': 2,
-        'rightHand1': 2,
+        '3': 3,
+        'rightHand1': 4,
       });
     } else {
       this.emit('param', {
@@ -635,7 +642,8 @@ export class Client extends global.Client {
             check('rightHand2');
           }
           this.saveSharedParam('items', 'list', this.params.items.list);
-          this.saveSharedParam('items', 'clothed', this.params.items.clothed);
+          this.saveSharedParam('items', 'clothed', this.params.items
+            .clothed);
           this.emit('items', this.params.items);
         });
       }
