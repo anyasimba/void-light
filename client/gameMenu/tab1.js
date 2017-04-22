@@ -193,7 +193,7 @@ export function makeGameMenuTab1() {
     usernameView.text = params.username;
     levelView.text = 'Уровень ' + params.level;
     let total = 0;
-    for (let i = 0; i < PLAYER_PARAMS.length; ++i) {
+    for (let i = 0; i < PLAYER_PARAMS.length - 2; ++i) {
       const param = PLAYER_PARAMS[i];
       total += params[param];
     }

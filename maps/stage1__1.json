@@ -1326,6 +1326,18 @@
                  "width":32,
                  "x":1696,
                  "y":4160
+                }, 
+                {
+                 "gid":4,
+                 "height":32,
+                 "id":1331,
+                 "name":"item__shield",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1952,
+                 "y":3520
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1616,7 +1628,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":1331,
+ "nextobjectid":1333,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tileheight":32,
