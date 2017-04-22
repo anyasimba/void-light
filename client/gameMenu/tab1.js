@@ -197,7 +197,7 @@ export function makeGameMenuTab1() {
       const param = PLAYER_PARAMS[i];
       total += params[param];
     }
-    for (let i = 0; i < PLAYER_PARAMS.length; ++i) {
+    for (let i = 0; i < PLAYER_PARAMS.length - 2; ++i) {
       const param = PLAYER_PARAMS[i];
       paramViews[i].text = PLAYER_PARAMS_LANG_RU[i] + ': ' + params[param];
       paramViews[i].incView.x = paramViews[i].width + 20;
