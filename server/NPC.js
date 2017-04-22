@@ -15,12 +15,8 @@ export const npc = {
 
   ROLL_TIME: [5, 15],
   JUMP_TIME: [10, 15],
-}
 
-export const npc__strannic = patch(npc, {
   FIGHTER: {
-    LANG_RU: 'Загадочный Путник',
-    name: 'npc__strannic',
 
     hitSpeed: 1.8,
     moveTimeF: 1,
@@ -35,5 +31,55 @@ export const npc__strannic = patch(npc, {
     HP: 10000,
     MP: 100,
     STAMINA: 30,
+  },
+}
+
+export const npc__strannic = patch(npc, {
+  FIGHTER: {
+    LANG_RU: 'Загадочный Путник',
+    name: 'npc__strannic',
+  },
+});
+export const npc__otr = patch(npc, {
+  FIGHTER: {
+    LANG_RU: 'Отрешенный',
+    name: 'npc__otr',
+  },
+});
+export const npc__otr_uch = patch(npc, {
+  FIGHTER: {
+    LANG_RU: 'Отрешенный Ученик Магии',
+    name: 'npc__otr_uch',
+  },
+});
+// 2
+export const npc__posl = patch(npc, {
+  FIGHTER: {
+    LANG_RU: 'Жрец Солнца',
+    name: 'npc__posl',
+  },
+});
+export const npc__posl2 = patch(npc, {
+  FIGHTER: {
+    LANG_RU: 'Жрец Солнца',
+    name: 'npc__posl2',
+  },
+});
+export const npc__posl_chaos = patch(npc, {
+  FIGHTER: {
+    LANG_RU: 'Тень',
+    name: 'npc__posl_chaos',
+  },
+});
+export const npc__razb = patch(npc, {
+  FIGHTER: {
+    LANG_RU: 'Разбойник',
+    name: 'npc__razb',
+  },
+});
+export const npc__hran = patch(npc, {
+  FIGHTER: {
+    LANG_RU: 'Хранительница Леса',
+    name: 'npc__hran',
   },
 });

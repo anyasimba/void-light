@@ -354,8 +354,13 @@ export class GameLevelZone {
       client.player.emitPos();
       client.player.emitEffects();
     }
+
+    const params = this.host.params.maps[this.mapName];
     for (const k in this.mobs) {
       const mob = this.mobs[k];
+      if (mob.opts.IS_BOSS && mob.opts.mapID && params[mob.opts.mapID]) {
+        continue;
+      }
       mob.reborn();
       mob.fighter.emitParams();
       mob.fighter.emitPos();

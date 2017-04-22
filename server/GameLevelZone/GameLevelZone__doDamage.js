@@ -312,7 +312,7 @@ Object.assign(GameLevelZone.prototype, {
     });
     if (other.hp <= 0) {
       other.onDie(source);
-    } else if (other.kind === 'mob') {
+    } else if (other.kind === 'mob' && !other.owner.opts.IS_NPC) {
       other.owner.target = source;
     }
     if (other.inHit && other.balance <= other.BALANCE * 0.5) {

@@ -673,6 +673,16 @@ export class Mob {
         this.gameLevelZone.host.saveParam(
           'maps', this.gameLevelZone.mapName, params);
       }
+    } else {
+      if (Math.random() < 0.04) {
+        new ItemOnMap(this.gameLevelZone, {
+          mapX: this.fighter.pos.x,
+          mapY: this.fighter.pos.y,
+          z: Math.floor(this.fighter.z / 6) * 6,
+          slug: 'item__chaos',
+          count: 3,
+        });
+      }
     }
 
     this.opts.dies = this.opts.dies || 0;

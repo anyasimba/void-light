@@ -154,7 +154,7 @@ export class Client extends global.Client {
       image.anchor.set(0.5);
       image.scale.set(2);
       image.angle = new vec3(lmx, lmy).toAngle() + 90;
-      image.alpha = 0.2;
+      image.alpha = 0.1;
       image.update = () => {
         image.x = game.cameraPos.x + vx;
         image.y = game.cameraPos.y + vy;

@@ -25,3 +25,24 @@ export const npc = {
 export const npc__strannic = patch(npc, {
   GRAY_TINT: 0x3388FF,
 });
+export const npc__otr = patch(npc, {
+  GRAY_TINT: 0x888888,
+});
+export const npc__otr_uch = patch(npc, {
+  GRAY_TINT: 0x6666FF,
+});
+export const npc__posl = patch(npc, {
+  GRAY_TINT: 0xFFFF33,
+});
+export const npc__posl2 = patch(npc, {
+  GRAY_TINT: 0xFFFF33,
+});
+export const npc__posl_chaos = patch(npc, {
+  GRAY_TINT: 0xFF3333,
+});
+export const npc__razb = patch(npc, {
+  GRAY_TINT: 0x888888,
+});
+export const npc__hran = patch(npc, {
+  GRAY_TINT: 0x000088,
+});

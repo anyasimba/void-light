@@ -113,7 +113,6 @@ export const stage1__mob3d__boss1 = patch(stage1__mob3, {
 
   ROLL_TIME: [5, 15],
   JUMP_TIME: [10, 15],
-  VOIDS_COUNT: 350,
   FIGHTER: {
     LANG_RU: 'Обжорство',
     name: 'stage1__mob3d__boss1',

@@ -288,7 +288,7 @@ export const client__item__bigmolot2 = {
   },
 };
 export const client__item__dubina = {
-  LANG_RU: 'Лапа великана',
+  LANG_RU: 'Лапа Великана',
 
   createView() {
     const image = weapon__dubina__default.createView();
@@ -301,7 +301,7 @@ export const client__item__dubina = {
   },
 };
 export const client__item__bigdubina = {
-  LANG_RU: 'Лапа гиганта',
+  LANG_RU: 'Лапа Гиганта',
 
   createView() {
     const image = weapon__bigdubina__default.createView();
