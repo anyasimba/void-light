@@ -52,8 +52,11 @@ export function makeGameMenuTab1() {
           client.emit('incParam', {
             i: i
           });
+          disableMessage();
         });
-        makeMessageOption('Нет', '#AAEEFF', 'Neucha', 1, () => {});
+        makeMessageOption('Нет', '#AAEEFF', 'Neucha', 1, () => {
+          disableMessage();
+        });
       }));
     paramViews[i].incView.parentGroup = contentView;
   }
