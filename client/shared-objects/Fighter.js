@@ -972,12 +972,6 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       g.arc(0, 0, d, a1, a2, true);
 
       g.angle = this.hitVec.toAngle() + hitP.toAngle();
-      g.update = () => {
-        g.alpha -= dt * 1.5;
-        if (g.alpha <= 0.0) {
-          g.destroy();
-        }
-      };
       let l = Math.floor(this.z / 100.0 * 6 + 0.5);
       l = Math.max(l, 0);
 
@@ -985,6 +979,18 @@ export class Fighter extends mix(global.Fighter, MixGameObject) {
       li = Math.min(li, 5);
       li = Math.max(li, 0);
       game.layers[li].sub['mix' + Math.min(l - li * 6 + 2, 7)].add(g);
+
+      const cg = new Phaser.Group(game, null);
+      game.scene.add(cg);
+      cg.update = () => {
+        g.alpha -= dt * 1.5;
+        if (g.alpha <= 0.0) {
+          g.destroy();
+          cg.destroy();
+        } else {
+          game.layers[li].sub['mix' + Math.min(l - li * 6 + 2, 7)].add(g);
+        }
+      };
     }
   }
 }

@@ -675,10 +675,6 @@ function createGame() {
               if (!game.mapTextures[i]) {
                 break;
               }
-              if (game.layers[i].sub.affects11.alpha <= 0.0 &&
-                game.layers[i].sub.affects17.alpha <= 0.0) {
-                continue;
-              }
 
               for (let j = 1; j <= ln; ++j) {
                 game.layers[i].sub['affects1' + j].removeAll();
@@ -686,6 +682,19 @@ function createGame() {
                 game.layers[i].sub['walls' + j].removeAll();
                 game.layers[i].sub['shadows1' + j].removeAll();
                 game.layers[i].sub['shadows2' + j].removeAll();
+                game.layers[i].sub['mix' + j].removeAll();
+                game.layers[i].sub['mixDead' + j].removeAll();
+                game.layers[i].sub['mix' + j + '2'].removeAll();
+                game.layers[i].sub['mixDead' + j + '2'].removeAll();
+                game.layers[i].sub['mix' + j + '3'].removeAll();
+                game.layers[i].sub['mixDead' + j + '3'].removeAll();
+                game.layers[i].sub['affects1' + j].removeAll();
+              }
+              game.layers[i].sub['ceil'].removeAll();
+              game.layers[i].sub['info'].removeAll();
+              if (game.layers[i].sub.affects11.alpha <= 0.0 &&
+                game.layers[i].sub.affects17.alpha <= 0.0) {
+                continue;
               }
 
               const texs = game.mapTextures[i];

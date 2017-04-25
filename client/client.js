@@ -499,7 +499,7 @@ export class Client extends global.Client {
       stage1__2: 'assets/audio/boss2__TheLoomingBattle',
       stage1__3: 'assets/audio/boss3__Welcome to Com-Mecha',
       stage1__3a: 'assets/audio/boss3a__Defying Commodus',
-      stage1__4: 'assets/audio/boss4__Инструментальная симфония',
+      stage1__4: 'assets/audio/boss4__instrumentalnaya-simfoniya',
       stage1__5: 'assets/audio/boss5__medieval',
       stage1__6: 'assets/audio/boss6__Brave Solders',
     }

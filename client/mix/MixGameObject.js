@@ -124,8 +124,9 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
       li = Math.max(li, 0);
       const la = game.layers[li].sub['mix' + Math.min(l - li * 6 + 1, 7)].alpha;
 
-      if (la <= 0.0 || (dx < game.w * 0.5 * fx + w && dy < game.h * 0.5 *
-          fy + h)) {
+      if (la <= 0.0 ||
+        (dx < game.w * 0.5 * fx + w && dy < game.h * 0.5 * fy + h)) {
+
         this.visible = true;
         this.bottomGroup.visible = true;
         this.bottom2Group.visible = true;
@@ -165,6 +166,7 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
     }
   }
   updateViewScale() {
+    delete this.lastL;
     this.z = this.z || 0;
     let l = Math.floor(this.z / 100.0 * 6 + 0.5);
     l = Math.max(l, 0);
@@ -210,8 +212,8 @@ export const MixGameObject = base => class extends mix(base, MixGameObjectBase) 
           this.top3Group);
       }
       game.layers[li].sub.ceil.add(this.ceilGroup);
-      game.layers[li].sub.info.add(this.group);
       game.layers[li].sub.info.add(this.infoGroup);
+      game.scene.add(this.group);
     }
     this.lastInRoll = this.inRoll;
     this.lastL = l;

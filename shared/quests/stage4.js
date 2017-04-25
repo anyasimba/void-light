@@ -1,4 +1,4 @@
-export const npc__razb = {
+export const npc__razb__stage1__4 = {
   1: {
     LANG_RU: `
       Ты далеко забрался..
